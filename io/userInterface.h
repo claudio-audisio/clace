@@ -1,0 +1,105 @@
+#pragma once
+
+#include <conio.h>
+
+#include "../clace.h"
+
+using namespace std;
+
+
+void clearScreen() {
+	cout << "\033[2J\033[1;1H";
+}
+
+unsigned int readInt() {
+	unsigned int value;
+	cout << "> ";
+	cin >> value;
+
+	return value;
+}
+
+string readString() {
+	string value;
+	cout << "> ";
+	getline(cin, value);
+	return value;
+}
+
+unsigned int menu() {
+	cout << endl;
+	cout << "Please choose type of game" << endl;
+	cout << "\t1. game" << endl;
+	cout << "\t2. perft" << endl;
+	cout << "\t0. <-- exit" << endl;
+	return readInt();
+}
+
+unsigned int readGamesQuantity() {
+	cout << "Enter how many games: " << endl;
+	return readInt();
+}
+
+string readBoard() {
+	cout << "Enter FEN board: " << endl;
+	return readString();
+}
+
+unsigned int readDepth() {
+	cout << "Enter depth: " << endl;
+	return readInt();
+}
+
+unsigned int readPerftQuantity() {
+	cout << "Enter how many runs: " << endl;
+	return readInt();
+}
+
+unsigned int readPerftType() {
+	cout << "Please choose type of perft" << endl;
+	cout << "\t1. complete" << endl;
+	cout << "\t2. bulk" << endl;
+	return readInt();
+}
+
+unsigned int menuGame() {
+	cout << endl;
+	cout << "Please choose type of game" << endl;
+	cout << "\t1. computer vs computer" << endl;
+	cout << "\t2. white user vs computer" << endl;
+	cout << "\t3. black user vs computer" << endl;
+	cout << "\t4. user vs user" << endl;
+	cout << "\t5. computer vs computer (more games)" << endl;
+	cout << "\t6. user vs computer (board provided)" << endl;
+	cout << "\t0. <-- back" << endl;
+	return readInt();
+}
+
+void waitInteraction() {
+	getch();
+}
+
+void printLogo() {
+	cout << "        |" << endl;
+	cout << "   __|  |   _` |   __|   _ \\ " << endl;
+	cout << "  (     |  (   |  (      __/ " << endl;
+	cout << " \\___| _| \\__,_| \\___| \\___| " << endl;
+}
+
+unsigned int getPieceCode(Piece pieceType) {
+	switch (pieceType) {
+		case WPawn: return 0x0050;
+		case BPawn: return 0x0070;
+		case WRook: return 0x0052;
+		case BRook: return 0x0072;
+		case WKnight: return 0x004E;
+		case BKnight: return 0x006E;
+		case WBishop: return 0x0042;
+		case BBishop: return 0x0062;
+		case WQueen: return 0x0051;
+		case BQueen: return 0x0071;
+		case WKing: return 0x004B;
+		case BKing: return 0x006B;
+		default: return 0x0020;
+	}
+}
