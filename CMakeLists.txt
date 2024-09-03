@@ -29,7 +29,7 @@ add_executable (clace
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingInfoHelper.h" "utils/positions.h" "utils/pieceHelper.h"
- )
+  "utils/boardUtils.h")
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"io/userInterface.h" 
@@ -39,7 +39,7 @@ add_library(claceLib
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingInfoHelper.h" "utils/positions.h" "utils/pieceHelper.h"
- )
+  "utils/boardUtils.h")
 
  if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET clace PROPERTY CXX_STANDARD 20)
@@ -68,13 +68,24 @@ add_executable(
   "tests/boardTest.cpp"
 )
 
-  add_executable(
+add_executable(
+  boardUtilsTest
+  "tests/boardUtilsTest.cpp"
+)
+
+add_executable(
   fenTest
   "tests/fenTest.cpp"
- )
+)
 
 target_link_libraries(
   boardTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  boardUtilsTest
   GTest::gtest_main
   claceLib
 )
@@ -87,4 +98,5 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(boardTest)
+gtest_discover_tests(boardUtilsTest)
 gtest_discover_tests(fenTest)

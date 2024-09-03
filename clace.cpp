@@ -3,6 +3,8 @@
 
 #include "clace.h"
 #include "io/userInterface.h"
+#include "utils/boardUtils.h"
+#include "board/board.h"
 
 using namespace std;
 
@@ -11,6 +13,15 @@ void managePerft();
 
 int main(int argc, char* argv[])
 {
+	/*
+	for (int position = 0; position < 64; position++) {
+		cout << position << endl;
+		BoardUtils::printBoard(Board::antiDiagonalMask(position));
+	}
+
+	UI::waitInteraction();
+	*/
+
 	if (argc == 0) {
 		// uci mode
 		// TODO

@@ -16,12 +16,12 @@ class FEN {
 public:
 
     static Game* fenToNewGame(const string& fenPosition) {
-        Game game = *(new Game());
-        game.resetPlayersPieces();
+        Game* game = new Game();
+        game->resetPlayersPieces();
 
-        fenToGame(fenPosition, game);
+        fenToGame(fenPosition, *game);
 
-        return &game;
+        return game;
     }
 
     static void fenToGame(const string& fenPosition, Game& game) {
