@@ -1,16 +1,21 @@
-#pragma once;
+#pragma once
+
+#include <string>
 
 #include "../board/piece.h"
 
+using namespace std;
+
 class Move {
 public:
-	Move();
+	Move(string& move, bool white);
+	Move(Position sourcePosition, Position destinationPosition, bool white);
 	~Move();
 
 private:
-	const int sourcePosition;
-	const int destinationPosition;
-	const bool white;
+	int sourcePosition;
+	int destinationPosition;
+	bool white;
 	Piece pieceType;
 	bool castling = false;
 	bool enPassant = false;

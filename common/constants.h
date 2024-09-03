@@ -1,7 +1,6 @@
-#pragma once;
+#pragma once
 
 #include <climits>
-
 
 const int NO_POS = 64;
 const double KING_WT = 200.0;

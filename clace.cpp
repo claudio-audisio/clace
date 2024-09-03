@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 		bool exit = false;
 
 		while (!exit) {
-			clearScreen();
-			printLogo();
-			const unsigned int choice = menu();
+			UI::clearScreen();
+			UI::printLogo();
+			const unsigned int choice = UI::menu();
 
 			switch (choice) {
 				case 1: manageGame(); break;
@@ -39,9 +39,9 @@ void manageGame() {
 }
 
 void managePerft() {
-	const unsigned int type = readPerftType();
-	const unsigned int depth = readDepth();
-	unsigned int runs = readPerftQuantity();
+	const unsigned int type = UI::readPerftType();
+	const unsigned int depth = UI::readDepth();
+	unsigned int runs = UI::readPerftQuantity();
 
 	while (runs != 0) {
 		if (type == 1) {
@@ -54,5 +54,5 @@ void managePerft() {
 		--runs;
 	}
 	
-	waitInteraction();
+	UI::waitInteraction();
 }

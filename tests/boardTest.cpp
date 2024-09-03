@@ -16,7 +16,7 @@ TEST(BoardTest, ConstructorTest) {
 TEST(BoardTest, allBoardsTest) {
     // TODO
     /*
-    final Board board = FENConverter.fenToNewBoard(Positions.INITIAL_FEN_POSITION);
+    final Board board = FENConverter.fenToNewGame(Positions.INITIAL_FEN_POSITION);
     final board board = board.getboard();
 
     assertThat(board.BOARD(), board.WHITE() | board.BLACK());
