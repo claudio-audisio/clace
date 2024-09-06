@@ -14,8 +14,15 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+if (MSVC)
+    add_compile_options(/O2)
+else()
+    # additional warnings
+    add_compile_options(-O2)
+endif()
+
+#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/O2>")
+#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/O2>")
 
 project ("clace")
 
@@ -28,8 +35,8 @@ add_executable (clace
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
-	"utils/fen.h" "utils/castlingInfoHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h")
+	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h")
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"io/userInterface.h" 
@@ -38,8 +45,8 @@ add_library(claceLib
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
-	"utils/fen.h" "utils/castlingInfoHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h")
+	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h")
 
  if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET clace PROPERTY CXX_STANDARD 20)
@@ -74,8 +81,18 @@ add_executable(
 )
 
 add_executable(
+  boardPerformanceTest
+  "tests/boardPerformanceTest.cpp"
+)
+
+add_executable(
   fenTest
   "tests/fenTest.cpp"
+)
+
+add_executable(
+  rollbackTest
+  "tests/rollbackTest.cpp"
 )
 
 target_link_libraries(
@@ -91,7 +108,19 @@ target_link_libraries(
 )
 
 target_link_libraries(
+  boardPerformanceTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
   fenTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  rollbackTest
   GTest::gtest_main
   claceLib
 )
@@ -99,4 +128,6 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)
+gtest_discover_tests(boardPerformanceTest)
 gtest_discover_tests(fenTest)
+gtest_discover_tests(rollbackTest)

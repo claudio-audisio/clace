@@ -6,7 +6,7 @@
 
 #include "../clace.h"
 #include "../game/game.h"
-#include "../utils/castlingInfoHelper.h"
+#include "../utils/castlingHelper.h"
 #include "../utils/positions.h"
 #include "../utils/pieceHelper.h"
 
@@ -17,6 +17,7 @@ public:
 
     static Game* fenToNewGame(const string& fenPosition) {
         Game* game = new Game();
+        game->initPlayers();
         game->resetPlayersPieces();
 
         fenToGame(fenPosition, *game);
@@ -36,7 +37,7 @@ public:
         delete tokens;
     }
 
-    static string gameToFEN(Game& game) {
+    static string gameToFEN(const Game& game) {
         string fenBoard;
         fenBoard.append(chessBoardToFEN(game.getBoard()));
         fenBoard.append(string(1, SEPARATOR));
@@ -52,11 +53,11 @@ public:
         return fenBoard;
     }
 
-    static Game* mirrorGame(Game& game) {
+    static Game* mirrorGame(const Game& game) {
         return fenToNewGame(mirrorFenGame(gameToFEN(game)));
     }
 
-    static string mirrorFenGame(string& fenGame) {
+    static string mirrorFenGame(const string& fenGame) {
         vector<string>* tokens = tokenize(fenGame, SEPARATOR, 6);
         const string positions = mirrorPositions(tokens->at(0));
         const string whoMoves = mirrorWhoMoves(tokens->at(1));
@@ -67,7 +68,7 @@ public:
         return mirror;
     }
 
-    static bool isWhiteToMove(string& fenPosition) {
+    static bool isWhiteToMove(const string& fenPosition) {
         vector<string> *tokens = tokenize(fenPosition, SEPARATOR, 6);
         const bool res = tokens->at(1) == "w" || tokens->at(1) == "W";
         delete tokens;
@@ -125,13 +126,13 @@ private:
     }
 
     static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
-        CastlingInfo castlingInfo = CastlingInfoHelper::reset();
+        CastlingInfo castlingInfo = CastlingHelper::reset();
 
         if (strcmp(fenCastlingInfo.c_str(), "-") != 0) {
-            castlingInfo = CastlingInfoHelper::setBlackKing(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
-            castlingInfo = CastlingInfoHelper::setBlackQueen(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
-            castlingInfo = CastlingInfoHelper::setWhiteKing(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
-            castlingInfo = CastlingInfoHelper::setWhiteQueen(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
+            castlingInfo = CastlingHelper::setBlackKing(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
+            castlingInfo = CastlingHelper::setBlackQueen(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
+            castlingInfo = CastlingHelper::setWhiteKing(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
+            castlingInfo = CastlingHelper::setWhiteQueen(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
         }
 
         return castlingInfo;
@@ -145,7 +146,7 @@ private:
         return Positions::coordsToIndex(fenEnPassantPosition);
     }
 
-    static string chessBoardToFEN(Board& board) {
+    static string chessBoardToFEN(const Board& board) {
         string fenBoard;
         int empty = 0;
 
@@ -178,7 +179,7 @@ private:
         return fenBoard;
     }
 
-    static string pieceToFEN(Piece piece) {
+    static string pieceToFEN(const Piece piece) {
         switch (piece) {
             case WKing: return "K";
             case BKing: return "k";
@@ -200,22 +201,22 @@ private:
         return "";
     }
 
-    static string castlingInfoToFEN(CastlingInfo castlingInfo) {
+    static string castlingInfoToFEN(const CastlingInfo castlingInfo) {
         string fen = "";
 
-        if (CastlingInfoHelper::isWhiteKingCastling(castlingInfo)) {
+        if (CastlingHelper::isWhiteKingCastling(castlingInfo)) {
             fen += "K";
         }
 
-        if (CastlingInfoHelper::isWhiteQueenCastling(castlingInfo)) {
+        if (CastlingHelper::isWhiteQueenCastling(castlingInfo)) {
             fen += "Q";
         }
 
-        if (CastlingInfoHelper::isBlackKingCastling(castlingInfo)) {
+        if (CastlingHelper::isBlackKingCastling(castlingInfo)) {
             fen += "k";
         }
 
-        if (CastlingInfoHelper::isBlackQueenCastling(castlingInfo)) {
+        if (CastlingHelper::isBlackQueenCastling(castlingInfo)) {
             fen += "q";
         }
 
@@ -226,7 +227,7 @@ private:
         return fen;
     }
 
-    static string enPassantToFEN(Position position) {
+    static string enPassantToFEN(const Position position) {
         if (position == NO_POS) {
             return "-";
         }
@@ -234,7 +235,7 @@ private:
         return Positions::indexToCoords(position);
     }
 
-    static string mirrorPositions(string fenChessBoard) {
+    static string mirrorPositions(const string& fenChessBoard) {
         string positions = "";
 
         for (int i = 0; i < fenChessBoard.length(); ++i) {
@@ -245,7 +246,7 @@ private:
         return positions;
     }
 
-    static char mirrorPosition(char c) {
+    static char mirrorPosition(const char c) {
         if (isalpha(c)) {
             if (isupper(c)) {
                 return tolower(c);
@@ -258,14 +259,14 @@ private:
         return c;
     }
 
-    static string mirrorWhoMoves(string& whoMoves) {
+    static string mirrorWhoMoves(const string& whoMoves) {
         if (whoMoves == "w" || whoMoves == "W") {
             return "b";
         }
         return "w";
     }
 
-    static string mirrorCastlingInfo(string& castlingInfo) {
+    static string mirrorCastlingInfo(const string& castlingInfo) {
         if (castlingInfo != "-") {
             string newCastlingInfo;
 

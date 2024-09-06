@@ -1,6 +1,6 @@
 #include "board.h"
 #include "../utils/boardUtils.h"
-#include "../utils/castlingInfoHelper.h"
+#include "../utils/castlingHelper.h"
 
 Board::Board() {
 	pieceBoards = new Rawboard[SIZE];
@@ -8,8 +8,7 @@ Board::Board() {
 }
 
 Board::~Board() {
-    // TODO
-    //delete[] pieceBoards;
+    // TODO delete boards
 }
 
 void Board::reset() {
@@ -20,15 +19,15 @@ void Board::reset() {
     pieceBoards[EMPTY_IND] = EMPTY_BOARD;
 }
 
-Rawboard Board::EMPTY() {
+Rawboard Board::EMPTY() const {
     return pieceBoards[EMPTY_IND]; 
 }
 
-Rawboard Board::BOARD() {
+Rawboard Board::BOARD() const {
     return ~EMPTY();
 }
 
-Rawboard Board::WHITE() {
+Rawboard Board::WHITE() const {
     return pieceBoards[WPawn] |
         pieceBoards[WBishop] |
         pieceBoards[WQueen] |
@@ -37,7 +36,7 @@ Rawboard Board::WHITE() {
         pieceBoards[WRook];
 }
 
-Rawboard Board::BLACK() {
+Rawboard Board::BLACK() const {
     return pieceBoards[BPawn] |
         pieceBoards[BBishop] |
         pieceBoards[BQueen] |
@@ -46,19 +45,19 @@ Rawboard Board::BLACK() {
         pieceBoards[BRook];
 }
 
-Rawboard Board::getBoard(RawboardIndex boardIndex) {
+Rawboard Board::getBoard(const RawboardIndex boardIndex) const {
     return pieceBoards[boardIndex];
 }
 
-void Board::setBoard(RawboardIndex boardIndex, Rawboard pieceBoard) {
+void Board::setBoard(const RawboardIndex boardIndex, const Rawboard pieceBoard) {
     pieceBoards[boardIndex] = pieceBoard;
 }
 
-bool Board::isEmpty(Position position) {
+bool Board::isEmpty(const Position position) const {
     return (EMPTY() & Board::posInd(position)) != 0L;
 }
 
-bool Board::isWhite(Position position) {
+bool Board::isWhite(const Position position) const {
     return ((pieceBoards[WPawn] |
         pieceBoards[WBishop] |
         pieceBoards[WQueen] |
@@ -68,7 +67,7 @@ bool Board::isWhite(Position position) {
         & posInd(position)) != 0L;
 }
 
-bool Board::isBlack(Position position) {
+bool Board::isBlack(const Position position) const {
     return ((pieceBoards[BPawn] |
         pieceBoards[BBishop] |
         pieceBoards[BQueen] |
@@ -78,35 +77,35 @@ bool Board::isBlack(Position position) {
         & posInd(position)) != 0L;
 }
 
-bool Board::isPawn(Position position) {
+bool Board::isPawn(const Position position) const {
     return ((pieceBoards[WPawn] | pieceBoards[BPawn]) & posInd(position)) != 0L;
 }
 
-bool Board::isKnight(Position position) {
+bool Board::isKnight(const Position position) const {
     return ((pieceBoards[WKnight] | pieceBoards[BKnight]) & posInd(position)) != 0L;
 }
 
-bool Board::isBishop(Position position) {
+bool Board::isBishop(const Position position) const {
     return ((pieceBoards[WBishop] | pieceBoards[BBishop]) & posInd(position)) != 0L;
 }
 
-bool Board::isRook(Position position) {
+bool Board::isRook(const Position position) const {
     return ((pieceBoards[WRook] | pieceBoards[BRook]) & posInd(position)) != 0L;
 }
 
-bool Board::isRook(Position position, bool white) {
+bool Board::isRook(const Position position, bool white) const {
     return white ? (pieceBoards[WRook] & posInd(position)) != 0 : (pieceBoards[BRook] & posInd(position)) != 0L;
 }
 
-bool Board::isQueen(Position position) {
+bool Board::isQueen(const Position position) const {
     return ((pieceBoards[WQueen] | pieceBoards[BQueen]) & posInd(position)) != 0L;
 }
 
-bool Board::isKing(Position position) {
+bool Board::isKing(const Position position) const {
     return ((pieceBoards[WKing] | pieceBoards[BKing]) & posInd(position)) != 0L;
 }
 
-Piece Board::getPiece(Position position) {
+Piece Board::getPiece(const Position position) const {
     const Rawboard posIndex = posInd(position);
 
     // TODO PERF Ricerco su tutte le boards se in quella posizione c'e' qualcosa: e se avessi una mappa posizione -> board 
@@ -120,7 +119,7 @@ Piece Board::getPiece(Position position) {
     //throw new RuntimeException("chessboard internal error");
 }
 
-Piece Board::setPiece(Position position, Piece piece) {
+Piece Board::setPiece(const Position position, const Piece piece) {
     const Piece oldPiece = getPiece(position);
     const Rawboard posIndex = posInd(position);
     pieceBoards[oldPiece] &= ~posIndex;
@@ -128,7 +127,7 @@ Piece Board::setPiece(Position position, Piece piece) {
     return oldPiece;
 }
 
-Piece Board::move(Position source, Position destination, Piece piece) {
+Piece Board::move(const Position source, const Position destination, Piece piece) {
     if (piece == Empty) {
         piece = getPiece(source);
     }
@@ -139,25 +138,25 @@ Piece Board::move(Position source, Position destination, Piece piece) {
     return oldPiece;
 }
 
-void Board::set(Board& board) {
+void Board::set(const Board& board) {
     for (RawboardIndex i = 0; i < SIZE; ++i) {
         pieceBoards[i] = board.getBoard(i);
     }
 }
 
-bool Board::isUnderCheck(Position position, bool white) {
+bool Board::isUnderCheck(const Position position, const bool white) const {
     return BoardUtils::isUnderCheck(white ? getBlackAttacks() : getWhiteAttacks(), position);
 }
 
-Rawboard Board::getWhiteAttacks() {
+Rawboard Board::getWhiteAttacks() const {
     return getPawnAttacks(true) | getKnightAttacks(true) | getBishopAttacks(true) | getRookAttacks(true) | getQueenAttacks(true) | getKingAttacks(true);
 }
 
-Rawboard Board::getBlackAttacks() {
+Rawboard Board::getBlackAttacks() const {
     return getPawnAttacks(false) | getKnightAttacks(false) | getBishopAttacks(false) | getRookAttacks(false) | getQueenAttacks(false) | getKingAttacks(false);
 }
 
-Rawboard Board::getKingAttacks(bool white) {
+Rawboard Board::getKingAttacks(const bool white) const {
     Rawboard board = white ? pieceBoards[WKing] : pieceBoards[BKing];
     Rawboard attacks = eastOne(board) | westOne(board);
     board |= attacks;
@@ -166,18 +165,18 @@ Rawboard Board::getKingAttacks(bool white) {
     return attacks & (EMPTY() | oppositeBoard);
 }
 
-Rawboard Board::getKingMoves(bool white, CastlingInfo castlingInfo) {
+Rawboard Board::getKingMoves(const bool white, const CastlingInfo castlingInfo) const {
     return getKingAttacks(white) | getKingCastling(white, castlingInfo);
 }
 
-Rawboard Board::getQueenAttacks(bool white) {
+Rawboard Board::getQueenAttacks(const bool white) const {
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WQueen] : pieceBoards[BQueen];
 
     for (int i = 0; i < 64 && (board != 0); ++i) {
         if ((board & 1L) != 0) {
-            //attacks |= getQueenMoves(i, white);      // OLD
-            attacks |= queenAttacks(i, white);
+            attacks |= getQueenMoves(i, white);      // OLD
+            //attacks |= queenAttacks(i, white);
         }
         board = board >> 1;
     }
@@ -185,14 +184,14 @@ Rawboard Board::getQueenAttacks(bool white) {
     return attacks;
 }
 
-Rawboard Board::getRookAttacks(bool white) {
+Rawboard Board::getRookAttacks(const bool white) const {
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WRook] : pieceBoards[BRook];
 
     for (int i = 0; i < 64 && (board != 0); ++i) {
         if ((board & 1L) != 0) {
-            //attacks |= getRookMoves(i, white);       // OLD
-            attacks |= rookAttack(i, white);
+            attacks |= getRookMoves(i, white);       // OLD
+            //attacks |= rookAttack(i, white);
         }
         board = board >> 1;
     }
@@ -200,14 +199,14 @@ Rawboard Board::getRookAttacks(bool white) {
     return attacks;
 }
 
-Rawboard Board::getBishopAttacks(bool white) {
+Rawboard Board::getBishopAttacks(const bool white) const {
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WBishop] : pieceBoards[BBishop];
 
     for (int i = 0; i < 64 && (board != 0); ++i) {
         if ((board & 1L) != 0) {
-            //attacks |= getBishopMoves(i, white);     // OLD
-            attacks |= bishopAttack(i, white);
+            attacks |= getBishopMoves(i, white);     // OLD
+            //attacks |= bishopAttack(i, white);
         }
         board = board >> 1;
     }
@@ -215,7 +214,7 @@ Rawboard Board::getBishopAttacks(bool white) {
     return attacks;
 }
 
-Rawboard Board::getKnightAttacks(bool white) {
+Rawboard Board::getKnightAttacks(const bool white) const {
     Rawboard board = white ? pieceBoards[WKnight] : pieceBoards[BKnight];
     return (noNoEa(board) | noEaEa(board) |
         soEaEa(board) | soSoEa(board) |
@@ -224,7 +223,7 @@ Rawboard Board::getKnightAttacks(bool white) {
         (EMPTY() | (white ? BLACK() : WHITE()));
 }
 
-Rawboard Board::getPawnMoves(bool white, Position enPassantPos) {
+Rawboard Board::getPawnMoves(const bool white, const Position enPassantPos) const {
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WPawn] : pieceBoards[BPawn];
 
@@ -238,7 +237,7 @@ Rawboard Board::getPawnMoves(bool white, Position enPassantPos) {
     return attacks;
 }
 
-Rawboard Board::getPawnAttacks(bool white) {
+Rawboard Board::getPawnAttacks(const bool white) const {
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WPawn] : pieceBoards[BPawn];
     board = board >> 8;
@@ -253,7 +252,7 @@ Rawboard Board::getPawnAttacks(bool white) {
     return attacks;
 }
 
-Rawboard Board::getPawnMoves(Position position, bool white, Position enPassantPos) {
+Rawboard Board::getPawnMoves(const Position position, const bool white, const Position enPassantPos) const {
     const Rawboard posIndex = posInd(position);
 
     if (white) {
@@ -270,7 +269,7 @@ Rawboard Board::getPawnMoves(Position position, bool white, Position enPassantPo
     }
 }
 
-Rawboard Board::getPawnAttacks(Position position, bool white) {
+Rawboard Board::getPawnAttacks(const Position position, const bool white) const {
     const Rawboard posIndex = posInd(position);
 
     if (white) {
@@ -281,7 +280,7 @@ Rawboard Board::getPawnAttacks(Position position, bool white) {
     }
 }
 
-Rawboard Board::getPawnEnPassant(Rawboard position, bool white, Position enPassantPos) {
+Rawboard Board::getPawnEnPassant(const Rawboard position, const bool white, const Position enPassantPos) const {
     if (enPassantPos != NO_POS) {
         const Rawboard passantPos = posInd(enPassantPos);
         if (white && (position & ROW_5) != 0) {
@@ -299,7 +298,7 @@ Rawboard Board::getPawnEnPassant(Rawboard position, bool white, Position enPassa
     return 0;
 }
 
-Rawboard Board::getKnightMoves(Position position, bool white) {
+Rawboard Board::getKnightMoves(const Position position, const bool white) const {
     const Rawboard posIndex = posInd(position);
     return (noNoEa(posIndex) | noEaEa(posIndex) |
         soEaEa(posIndex) | soSoEa(posIndex) |
@@ -308,7 +307,7 @@ Rawboard Board::getKnightMoves(Position position, bool white) {
         (EMPTY() | (white ? BLACK() : WHITE()));
 }
 
-Rawboard Board::getBishopMoves(Position position, bool white) {
+Rawboard Board::getBishopMoves(const Position position, const bool white) const {
     const Rawboard posIndex = posInd(position);
     const Rawboard oppositeBoard = white ? BLACK() : WHITE();
 
@@ -318,7 +317,7 @@ Rawboard Board::getBishopMoves(Position position, bool white) {
         slidingAttack(noWestOne, posIndex, oppositeBoard);
 }
 
-Rawboard Board::getRookMoves(Position position, bool white) {
+Rawboard Board::getRookMoves(const Position position, const bool white) const {
     const Rawboard posIndex = posInd(position);
     const Rawboard oppositeBoard = white ? BLACK() : WHITE();
 
@@ -328,39 +327,38 @@ Rawboard Board::getRookMoves(Position position, bool white) {
         slidingAttack(westOne, posIndex, oppositeBoard);
 }
 
-Rawboard Board::getQueenMoves(Position position, bool white) {
+Rawboard Board::getQueenMoves(const Position position, const bool white) const {
     return getBishopMoves(position, white) | getRookMoves(position, white);
 }
 
-Rawboard Board::getKingMoves(Position position, bool white, CastlingInfo castlingInfo) {
+Rawboard Board::getKingMoves(const Position position, const bool white, const CastlingInfo castlingInfo) const {
     return getKingAttacks(position, white) | getKingCastling(position, white, castlingInfo);
 }
 
-Rawboard Board::getKingAttacks(Position position, bool white) {
+Rawboard Board::getKingAttacks(const Position position, const bool white) const {
     const Rawboard posIndex = posInd(position);
     return (northOne(posIndex) | noEastOne(posIndex) | eastOne(posIndex) | soEastOne(posIndex) |
         southOne(posIndex) | soWestOne(posIndex) | westOne(posIndex) | noWestOne(posIndex))
         & (EMPTY() | (white ? BLACK() : WHITE()));
 }
 
-Rawboard Board::getKingCastling(bool white, CastlingInfo castlingInfo) {
+Rawboard Board::getKingCastling(const bool white, const CastlingInfo castlingInfo) const {
     const Rawboard board = white ? pieceBoards[WKing] : pieceBoards[BKing];
     const Position position = BoardUtils::getFirstPos(board);
     return getKingCastling(position, white, castlingInfo);
 }
 
-Rawboard Board::getKingCastling(Position position, bool white, CastlingInfo castlingInfo) {
-
-    long positions = 0L;
+Rawboard Board::getKingCastling(const Position position, const bool white, const CastlingInfo castlingInfo) const {
+    Rawboard positions = 0L;
 
     if (position == 4 && !white) {
-        if (CastlingInfoHelper::isBlackKingCastling(castlingInfo)) {
+        if (CastlingHelper::isBlackKingCastling(castlingInfo)) {
             const Rawboard posIndex = posInd(position);
             if ((eastOne(posIndex) & EMPTY()) != 0) {
                 positions |= eastOne(eastOne(posIndex)) & EMPTY();
             }
         }
-        if (CastlingInfoHelper::isBlackQueenCastling(castlingInfo)) {
+        if (CastlingHelper::isBlackQueenCastling(castlingInfo)) {
             const Rawboard posIndex = posInd(position);
             if ((westOne(posIndex) & EMPTY()) != 0) {
                 positions |= westOne(westOne(posIndex)) & EMPTY();
@@ -368,13 +366,13 @@ Rawboard Board::getKingCastling(Position position, bool white, CastlingInfo cast
         }
     }
     else if (position == 60 && white) {
-        if (CastlingInfoHelper::isWhiteKingCastling(castlingInfo)) {
+        if (CastlingHelper::isWhiteKingCastling(castlingInfo)) {
             const Rawboard posIndex = posInd(position);
             if ((eastOne(posIndex) & EMPTY()) != 0) {
                 positions |= eastOne(eastOne(posIndex)) & EMPTY();
             }
         }
-        if (CastlingInfoHelper::isWhiteQueenCastling(castlingInfo)) {
+        if (CastlingHelper::isWhiteQueenCastling(castlingInfo)) {
             const Rawboard posIndex = posInd(position);
             if ((westOne(posIndex) & EMPTY()) != 0) {
                 positions |= westOne(westOne(posIndex)) & EMPTY();
@@ -385,7 +383,7 @@ Rawboard Board::getKingCastling(Position position, bool white, CastlingInfo cast
     return positions;
 }
 
-Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) {
+Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard oppositeBoard) const {
     Rawboard positions = 0;
     Rawboard newPos = position;
     Rawboard emptyPos;
@@ -406,18 +404,18 @@ Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position,
 }
 
 // sliding piece
-Rawboard Board::rookAttack(Position position, bool white) {
+Rawboard Board::rookAttack(const Position position, const bool white) const {
     const Rawboard occupied = BOARD();
     const Rawboard notWhite = white ? ~WHITE() : ~BLACK();
     return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position)) & notWhite;
 }
 
-Rawboard Board::bishopAttack(Position position, bool white) {
+Rawboard Board::bishopAttack(const Position position, const bool white) const {
     const Rawboard occupied = BOARD();
     const Rawboard notWhite = white ? ~WHITE() : ~BLACK();
     return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notWhite;
 }
 
-Rawboard Board::queenAttacks(Position position, bool white) {
+Rawboard Board::queenAttacks(const Position position, const bool white) const {
     return rookAttack(position, white) | bishopAttack(position, white);
 }

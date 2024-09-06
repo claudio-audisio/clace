@@ -9,7 +9,7 @@ using namespace std;
 class BoardUtils {
 public:
 
-    static void printBoard(Rawboard board) {
+    static void printBoard(const Rawboard board) {
         for (int i = 0; i < 64; ++i) {
             if (i % 8 == 0) {
                 cout << "";
@@ -27,7 +27,7 @@ public:
         cout << endl;
     }
 
-    static Rawboard posInd(Position position) {
+    static Rawboard posInd(const Position position) {
         return 1LL << position;
     }
 
@@ -56,7 +56,7 @@ public:
     }
 
     template <typename... SetOfPosition>
-    static Rawboard listToBoard(SetOfPosition... positions) {
+    static Rawboard listToBoard(const SetOfPosition... positions) {
         Rawboard board = 0;
 
         for (Position position : {positions...}) {
@@ -66,7 +66,7 @@ public:
         return board;
     }
 
-    static bool isUnderCheck(Rawboard board, Position position) {
+    static bool isUnderCheck(const Rawboard board, const Position position) {
         return (board & posInd(position)) != 0;
     }
 
