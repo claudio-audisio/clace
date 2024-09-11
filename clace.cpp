@@ -2,7 +2,7 @@
 //
 
 #include "clace.h"
-#include "io/userInterface.h"
+#include "ui/userInterface.h"
 #include "utils/boardUtils.h"
 #include "board/board.h"
 

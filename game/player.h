@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #include "../clace.h"
 #include "../engine/iengine.h"
 
@@ -20,6 +22,11 @@ class Player {
 		void incrementPieces(const Piece piece);
 		string getNameAndColor();
 		void onCaptured(const Piece piece);
+		string getCapturedList();
+		string& addToCapturedList(string& capturedList, unsigned int times, Piece piece);
+		void startMoveTime();
+		void stopMoveTime();
+		string getMoveTime();
 
 		bool isComputer() const {
 			return computer;
@@ -29,13 +36,17 @@ class Player {
 			return pieces;
 		}
 
+		unsigned long long getGameTime() const {
+			return gameTime;
+		}
+
 	private:
 		string name;
 		bool white;
 		bool computer;
 		IEngine* engine = nullptr;
-		int gameTime = 0;
-		int currentMoveTime;
+		unsigned long long gameTime = 0;
+		chrono::time_point<chrono::steady_clock> currentMoveTime;
 		char* pieces = new char[7];
 
 		void initPieces();

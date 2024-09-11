@@ -29,24 +29,24 @@ project ("clace")
 # Add source to this project's executable.
 add_executable (clace 
 	"clace.cpp" "clace.h"
-	"io/userInterface.h" 
+	"ui/userInterface.h" 
 	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp" 
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h")
 add_library(claceLib 
 	"clace.cpp" "clace.h"
-	"io/userInterface.h" 
+	"ui/userInterface.h" 
 	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"  
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h")
 
  if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET clace PROPERTY CXX_STANDARD 20)
@@ -58,7 +58,6 @@ else()
     message(STATUS "C++ standard version is not set explicitly.")
 endif()
 
-# TODO: Add tests and install targets if needed.
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -86,6 +85,11 @@ add_executable(
 )
 
 add_executable(
+  gameTest
+  "tests/gameTest.cpp"
+)
+
+add_executable(
   fenTest
   "tests/fenTest.cpp"
 )
@@ -93,6 +97,31 @@ add_executable(
 add_executable(
   rollbackTest
   "tests/rollbackTest.cpp"
+)
+
+add_executable(
+  pieceHelperTest
+  "tests/pieceHelperTest.cpp"
+)
+
+add_executable(
+  moveTest
+  "tests/moveTest.cpp"
+)
+
+add_executable(
+  playerTest
+  "tests/playerTest.cpp"
+)
+
+add_executable(
+  movesGeneratorTest
+  "tests/movesGeneratorTest.cpp"
+)
+
+add_executable(
+  positionsTest
+  "tests/positionsTest.cpp"
 )
 
 target_link_libraries(
@@ -114,6 +143,12 @@ target_link_libraries(
 )
 
 target_link_libraries(
+  gameTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
   fenTest
   GTest::gtest_main
   claceLib
@@ -125,9 +160,45 @@ target_link_libraries(
   claceLib
 )
 
+target_link_libraries(
+  pieceHelperTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  moveTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  playerTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  movesGeneratorTest
+  GTest::gtest_main
+  claceLib
+)
+
+target_link_libraries(
+  positionsTest
+  GTest::gtest_main
+  claceLib
+)
+
 include(GoogleTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)
 gtest_discover_tests(boardPerformanceTest)
+gtest_discover_tests(gameTest)
 gtest_discover_tests(fenTest)
 gtest_discover_tests(rollbackTest)
+gtest_discover_tests(pieceHelperTest)
+gtest_discover_tests(moveTest)
+gtest_discover_tests(playerTest)
+gtest_discover_tests(movesGeneratorTest)
+gtest_discover_tests(positionsTest)

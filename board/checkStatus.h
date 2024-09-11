@@ -20,8 +20,32 @@ class CheckStatus {
         void reset();
         void set(const CheckStatus& checkStatus);
 
+        const Rawboard getAllCheckPositions() const {
+            return allCheckPositions;
+        }
+
+        const unordered_map<Position, Rawboard>& getCheckPositions() const {
+            return checkPositions;
+        }
+
+        const unordered_map<Position, Rawboard>& getXRayPositions() const {
+            return xRayPositions;
+        }
+
         const bool isCheck() const {
             return check;
+        }
+
+        const bool isDoubleCheck() const {
+            return doubleCheck;
+        }
+
+        const bool isDiscoveryCheck() const {
+            return discoveryCheck;
+        }
+
+        const bool isCheckmate() const {
+            return checkmate;
         }
 
 	private:
@@ -36,28 +60,6 @@ class CheckStatus {
         bool isDiscoveryCheck(const Position kingPosition, const Move* lastMove) const;
         void adjustChecks();
 
-        const Rawboard getAllCheckPositions() const {
-            return allCheckPositions;
-        }
-
-        const unordered_map<Position, Rawboard>& getCheckPositions() const {
-            return checkPositions;
-        }
         
-        const unordered_map<Position, Rawboard>& getXRayPositions() const {
-            return xRayPositions;
-        }
-
-        const bool isDiscoveryCheck() const {
-            return discoveryCheck;
-        }
-
-        const bool isDoubleCheck() const {
-            return doubleCheck;
-        }
-
-        const bool isCheckmate() const {
-            return checkmate;
-        }
 
 };

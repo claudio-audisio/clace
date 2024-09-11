@@ -5,6 +5,7 @@
 #include "../clace.h"
 #include "../utils/boardUtils.h"
 #include "../game/game.h"
+#include "../utils/pieceHelper.h"
 
 using namespace std;
 
@@ -123,6 +124,7 @@ public:
         return count;
     }
 
+    // TODO da trasformare in bitset
     class PieceAndDest {
     public:
         PieceAndDest(const Rawboard board, const Piece piece) {
@@ -228,21 +230,18 @@ public:
         return abs(getRow(firstPosition) - getRow(secondPosition)) == abs(getColumn(firstPosition) - getColumn(secondPosition));
     }
 
-    // TODO da finire
-    /*
     static bool isOnXRay(const Game& game, const Position sourcePosition, const Position excludePosition) {
         unordered_set<Position>* piecePositions = getPiecePositions(game, PieceHelper::getXRayTypes(!game.isWhiteToMove()));
         piecePositions->erase(excludePosition);
 
         Rawboard xRayPositions = 0;
 
-        for (Position position : piecePositions) {
-            xRayPositions |= getPositions(board, position).board;
+        for (Position position : *piecePositions) {
+            xRayPositions |= getPositions(game, position)->getBoard();
         }
 
-        return ChessboardUtils.isUnderCheck(xRayPositions, sourcePosition);
+        return BoardUtils::isUnderCheck(xRayPositions, sourcePosition);
     }
-    */
     
     static Position getRow(const Position position) {
         return position / 8;

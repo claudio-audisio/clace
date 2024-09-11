@@ -9,6 +9,7 @@
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
 #include "../game/player.h"
+#include "statistics.h"
 
 using namespace std;
 
@@ -65,7 +66,7 @@ class Game {
 		void lightRollback();
 		Player* getCurrentPlayer() const;
 		bool isComputerToMove() const;
-		void setLastMove(Move& move);
+		void setLastMove(Move* move);
 		void setPlayerPieces(const Game& game);
 		void resetPlayersPieces();
 		void incrementPlayerPieces(const Piece piece);
@@ -147,6 +148,18 @@ class Game {
 			return blackPlayer;
 		}
 
+		list<Move*>& getNextMoves() {
+			return nextMoves;
+		}
+
+		Move* getLastMove() {
+			return lastMove;
+		}
+
+		deque<Move*>& getMovesHistory() {
+			return movesHistory;
+		}
+
 		class MoveResult {
 		public:
 			MoveResult(bool captured, bool promoted, bool enPassant, bool castling) {
@@ -159,12 +172,20 @@ class Game {
 			bool promoted;
 			bool enPassant;
 			bool castling;
+
+			bool isCaptured() const {
+				return captured;
+			}
+
+			bool isPromoted() const {
+				return promoted;
+			}
 		};
 
     private:
 		Board board;
-		list<Move> nextMoves;
-		deque<Move> movesHistory;	// TODO renderla thread safe
+		list<Move*> nextMoves;
+		deque<Move*> movesHistory;	// TODO renderla thread safe
 		Rollback rollback;
 		CastlingInfo castlingInfo;
 		CheckStatus checkStatus;
@@ -177,6 +198,6 @@ class Game {
 		unsigned int halfMoveClock;
 		Player* whitePlayer = nullptr;
 		Player* blackPlayer = nullptr;
-		//GamesStatistics statistics;		// TODO da fare
+		Statistics* statistics = nullptr;
 		
 };

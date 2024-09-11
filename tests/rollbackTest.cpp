@@ -1,16 +1,18 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <numeric>
 
 #include "../move/rollback.h"
 #include "../game/game.h"
 #include "../utils/fen.h"
+#include "../utils/utils.h"
 
 using namespace std;
 
 
-TEST(RollbackkTest, rollbackTest1) {
-	GTEST_SKIP();
+TEST(RollbackTest, rollbackTest1) {
 	Game game;
+	game.init();
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
@@ -27,86 +29,100 @@ TEST(RollbackkTest, rollbackTest1) {
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
-/*
-void rollbackInfo2Test() {
-	Move move = new Move(57, 40, true);
-	rollbackMoveInfo.save(board);
+TEST(RollbackTest, rollbackInfo2Test) {
+	Game game;
+	game.init();
+	Rollback* rollback = new Rollback();
+	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(1);
+	Move* move = new Move(57, 40, true);
+	rollback->save(game);
 
-	board.applyMove(move);
+	EXPECT_EQ(rollback->getRollbackSize(), 1);
+
+	game.applyMove(*move);
 
 	move = new Move(40, 57, true);
-	rollbackMoveInfo.save(board);
+	rollback->save(game);
 
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(2);
+	EXPECT_EQ(rollback->getRollbackSize(), 2);
 
-	board.applyMove(move);
+	game.applyMove(*move);
 
 	move = new Move(57, 40, true);
-	rollbackMoveInfo.save(board);
+	rollback->save(game);
 
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(3);
+	EXPECT_EQ(rollback->getRollbackSize(), 3);
 
-	board.applyMove(move);
+	game.applyMove(*move);
 
-	rollbackMoveInfo.rollback(board);
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(2);
-	rollbackMoveInfo.rollback(board);
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(1);
-	rollbackMoveInfo.rollback(board);
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(0);
+	rollback->rollback(game);
+	EXPECT_EQ(rollback->getRollbackSize(), 2);
+	rollback->rollback(game);
+	EXPECT_EQ(rollback->getRollbackSize(), 1);
+	rollback->rollback(game);
+	EXPECT_EQ(rollback->getRollbackSize(), 0);
 
-	String boardAfterRollback = FENConverter.boardToFEN(board);
+	string boardAfterRollback = FEN::gameToFEN(game);
 
-	assertThat(boardBeforeRollback).isEqualTo(boardAfterRollback);
+	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
-@Test
-void rollbackInfoFailureTest() {
-	Move move = new Move(48, 32, true);
-	rollbackMoveInfo.save(board);
 
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(1);
+TEST(RollbackTest, rollbackInfoFailureTest) {
+	GTEST_SKIP();
+	Game game;
+	game.init();
+	Rollback* rollback = new Rollback();
+	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	board.applyMove(move);
-	rollbackMoveInfo.rollback(board);
-	String boardAfterRollback = FENConverter.boardToFEN(board);
+	Move* move = new Move(48, 32, true);
+	rollback->save(game);
 
-	assertThat(rollbackMoveInfo.getRollbackSize()).isEqualTo(0);
-	assertThat(boardBeforeRollback).isEqualTo(boardAfterRollback);
+	EXPECT_EQ(rollback->getRollbackSize(), 1);
 
+	game.applyMove(*move);
+	rollback->rollback(game);
+	string boardAfterRollback = FEN::gameToFEN(game);
+
+	EXPECT_EQ(rollback->getRollbackSize(), 0);
+	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
+
+	/*	TODO da finire quando gestiamo le eccezioni
 	Exception exception = assertThrows(RuntimeException.class, () -> {
-		rollbackMoveInfo.rollback(board);
+		rollback->rollback(board);
 	});
 
-	assertThat(exception.getMessage()).isEqualTo("rollback failed: empty stack");
+	EXPECT_EQ(exception.getMessage(), "rollback failed: empty stack");
+
+	EXPECT_THROW(statement,exception_type)
+	*/
 }
 
-@Disabled
-@Test
-void performanceTest() {
-	List<Long> saveTimes = new ArrayList<>();
-	List<Long> rollbackTimes = new ArrayList<>();
-	Board board = FENConverter.fenToNewBoard(Positions.PERFT_FEN_POSITION_2);
-	board.verifyChecks();
+TEST(RollbackTest, performanceTest) {
+	GTEST_SKIP();
+	list<long long> saveTimes;
+	list<long long> rollbackTimes;
+	Game* game = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
+	game->verifyChecks();
 
-	for (int i = 0; i < 10000000; ++i) {
-		long time = System.nanoTime();
-		board.save();
-		saveTimes.add(System.nanoTime() - time);
+	for (int i = 0; i < 10000; ++i) {
+		auto start = chrono::steady_clock::now();
+		game->save();
+		saveTimes.push_back(Utils::getElapsedNanos(start));
 
-		board.applyMove(new Move("g2-h3", true));
+		game->applyMove(*(new Move("g2-h3", true)));
 
-		time = System.nanoTime();
-		board.rollbackLastMove();
-		rollbackTimes.add(System.nanoTime() - time);
+		start = chrono::steady_clock::now();
+		game->rollbackLastMove();
+		rollbackTimes.push_back(Utils::getElapsedNanos(start));
 	}
 
-	System.out.println("save avg time: " + saveTimes.stream().collect(Collectors.averagingLong(Long::longValue)));
-	System.out.println("rollback avg time: " + rollbackTimes.stream().collect(Collectors.averagingLong(Long::longValue)));
+	EXPECT_NE(1, 1)
+		<< "save avg time: " << accumulate(saveTimes.begin(), saveTimes.end(), 0.0) / saveTimes.size() << endl
+		<< "rollback avg time: " << accumulate(rollbackTimes.begin(), rollbackTimes.end(), 0.0) / rollbackTimes.size() << endl;
+	
 
-	// 650
-	// 560
+	// 200
+	// 60
 }
-*/

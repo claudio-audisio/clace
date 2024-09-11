@@ -1,7 +1,11 @@
+#include <chrono>
+
 #include "player.h"
 #include "../board/piece.h"
 #include "../utils/pieceHelper.h"
 #include "../engine/r_engine.h"
+#include "../ui/userInterface.h"
+#include "../utils/utils.h"
 
 Player::Player() {
 }
@@ -33,6 +37,7 @@ void Player::init(const string& name, const bool computer, const bool white, IEn
 }
 
 void Player::initPieces() {
+	pieces[Empty] = 0;
 	pieces[WKing] = 1;
 	pieces[WQueen] = 1;
 	pieces[WRook] = 2;
@@ -48,6 +53,7 @@ void Player::setPieces(char* pieces) {
 }
 
 void Player::resetPieces() {
+	pieces[Empty] = 0;
 	pieces[WKing] = 0;
 	pieces[WQueen] = 0;
 	pieces[WRook] = 0;
@@ -79,9 +85,9 @@ void Player::onCaptured(const Piece piece) {
 	}
 }
 
-/*
-public String getCapturedList() {
-	String capturedList = "";
+
+string Player::getCapturedList() {
+	string capturedList = "";
 
 	if (pieces[WKing] != 1) {
 		capturedList = addToCapturedList(capturedList, 1, white ? WKing : BKing);
@@ -110,25 +116,25 @@ public String getCapturedList() {
 	return capturedList;
 }
 
-private String addToCapturedList(String capturedList, int times, byte pieceType) {
+string& Player::addToCapturedList(string& capturedList, unsigned int times, Piece piece) {
 	while (times > 0) {
-		capturedList = capturedList.concat((char)PrintUtils.getPieceCode(pieceType) + " ");
+		capturedList += string(1, UI::getPieceCode(piece)) + " ";
 		times--;
 	}
 
 	return capturedList;
 }
 
-public void startMoveTime() {
-	currentMoveTime = System.currentTimeMillis();
+void Player::startMoveTime() {
+	currentMoveTime = chrono::steady_clock::now();
 }
 
-public void stopMoveTime() {
-	long timeMillis = System.currentTimeMillis();
-	gameTime += timeMillis - currentMoveTime;
+void Player::stopMoveTime() {
+	gameTime += Utils::getElapsedMillis(currentMoveTime);
 }
 
-public String getMoveTime() {
-	return String.format("%02d:%02d:%02d", gameTime / 3600000, (gameTime / 60000) % 60, (gameTime / 1000) % 60);
+string Player::getMoveTime() {
+	ostringstream stringStream;
+	stringStream << int(gameTime / 3600000) << ":" << int((gameTime / 60000) % 60) << ":" << int((gameTime / 1000) % 60);
+	return stringStream.str();
 }
-*/

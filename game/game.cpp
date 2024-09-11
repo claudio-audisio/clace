@@ -6,19 +6,18 @@
 
 
 Game::Game() {
-	init();
 }
 
 Game::~Game() {
-
 }
 
 void Game::init() {
-	initFromFEN(Positions::INITIAL_FEN_POSITION);
 	initPlayers();
+	initFromFEN(Positions::INITIAL_FEN_POSITION);	
 }
 
 void Game::initFromFEN(const string& fenPosition) {
+	initPlayers();
 	FEN::fenToGame(fenPosition, *this);
 }
 
@@ -69,7 +68,7 @@ Game::MoveResult* Game::finalizeMove(Move& move) {
 const Game::MoveResult* Game::applyMove(Move& move) {
 	const MoveResult* moveResult = finalizeMove(move);
 	lastMove = &move;
-	movesHistory.push_front(move);
+	movesHistory.push_front(&move);
 	checkStatus.reset();
 
 	if (!move.isWhite()) {
@@ -104,8 +103,8 @@ void Game::simulateMove(const Move& move) {
 void Game::verifyChecks() {
 	Positions::calculateCheckPositions(*this, !isWhiteToMove());
 	const Position kingPosition = isWhiteToMove() ? whiteKingPosition : blackKingPosition;
-	Move& move = movesHistory.front();
-	checkStatus.updateStatus(kingPosition, &move);
+	Move* move = movesHistory.empty() ? nullptr : movesHistory.front();
+	checkStatus.updateStatus(kingPosition, move);
 }
 
 EndGameType Game::checkEndGame() {
@@ -142,16 +141,16 @@ bool Game::checkControl(const Move& move) {
 	if (move.isCastling()) {
 		if (!move.isWhite()) {
 			switch (move.getDestinationPosition()) {
-			case 2: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 3); break;
-			case 6: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 5); break;
-			default: break;
+				case 2: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 3); break;
+				case 6: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 5); break;
+				default: break;
 			}
 		}
 		else {
 			switch (move.getDestinationPosition()) {
-			case 58: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 59); break;
-			case 62: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 61); break;
-			default: break;
+				case 58: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 59); break;
+				case 62: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 61); break;
+				default: break;
 			}
 		}
 	}
@@ -316,7 +315,8 @@ void Game::lightSave() {
 void Game::rollbackLastMove() {
 	checkStatus.reset();
 	movesHistory.pop_front();
-	lastMove = &(movesHistory.front());
+	delete lastMove;
+	lastMove = movesHistory.empty() ? nullptr : movesHistory.front();
 	rollback.rollback(*this);
 }
 
@@ -351,9 +351,9 @@ bool Game::isComputerToMove() const {
 	return player->isComputer();
 }
 
-void Game::setLastMove(Move& move) {
+void Game::setLastMove(Move* move) {
 	movesHistory.push_front(move);
-	lastMove = &move;
+	lastMove = move;
 }
 
 void Game::setPlayerPieces(const Game& game) {
@@ -388,7 +388,7 @@ Game* Game::duplicate() {
 	newGame->setEnPassantPosition(enPassantPosition);
 	newGame->setFullMoves(fullMoves);
 	newGame->setHalfMoveClock(halfMoveClock);
-	dequeAddAll(movesHistory, newGame->movesHistory);
+	Utils::dequeAddAll(movesHistory, newGame->movesHistory);
 	newGame->getCheckStatus().set(checkStatus);
 	newGame->setPlayerPieces(*this);
 	return newGame;

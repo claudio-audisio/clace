@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <unordered_set>
 
 #include "../board/piece.h"
 
@@ -8,6 +9,11 @@ using namespace std;
 
 class PieceHelper {
 public:
+
+	inline static const list<Piece> WHITE_PROMOTION_PIECES = list<Piece>{ WRook, WKnight, WBishop, WQueen };
+	inline static const list<Piece> BLACK_PROMOTION_PIECES = list<Piece>{ WRook, WKnight, WBishop, WQueen };
+	inline static const unordered_set<Piece> WHITE_XRAY_PIECES = unordered_set<Piece>{ WRook, WBishop, WQueen };
+	inline static const unordered_set<Piece> BLACK_XRAY_PIECES = unordered_set<Piece>{ BRook, BBishop, BQueen };
 
 	static bool isWhite(const Piece piece) {
 		return piece < BPawn && piece != Empty;
@@ -53,16 +59,12 @@ public:
 		return isEmpty(piece) || isOpponent(piece, white);
 	}
 
-	static list<Piece>* getPromotionTypes(const bool white) {
-		return white ?
-			new list<Piece>{ WRook, WKnight, WBishop, WQueen } :
-			new list<Piece>{ BRook, BKnight, BBishop, BQueen };
+	static const list<Piece>& getPromotionTypes(const bool white) {
+		return white ? WHITE_PROMOTION_PIECES : BLACK_PROMOTION_PIECES;
 	}
 
-	static list<Piece>* getXRayTypes(const bool white) {
-		return white ?
-			new list<Piece>{ WRook, WBishop, WQueen } :
-			new list<Piece>{ BRook, BBishop, BQueen };
+	static const unordered_set<Piece>& getXRayTypes(const bool white) {
+		return white ? WHITE_XRAY_PIECES : BLACK_XRAY_PIECES;
 	}
 
 	/*
@@ -77,24 +79,29 @@ public:
 	}
 	*/
 
-	/*	TODO
 	static Piece valueOf(const string& stringPiece) {
-		switch (stringPiece) {
-			case "WPawn" -> 1;
-			case "WKnight" -> 2;
-			case "WBishop" -> 3;
-			case "WRook" -> 4;
-			case "WQueen" -> 5;
-			case "WKing" -> 6;
-			case "BPawn" -> 7;
-			case "BKnight" -> 8;
-			case "BBishop" -> 9;
-			case "BRook" -> 10;
-			case "BQueen" -> 11;
-			case "BKing" -> 12;
-			default -> 0;
-		};
+		const string type = stringPiece.substr(1);
+		const unsigned int color = stringPiece.at(0) == 'W' ? 0 : 6;
+
+		if (strcmp(type.c_str(), "Pawn") == 0) {
+			return 1 + color;
+		}
+		else if (strcmp(type.c_str(), "Knight") == 0) {
+			return 2 + color;
+		}
+		else if (strcmp(type.c_str(), "Bishop") == 0) {
+			return 3 + color;
+		}
+		else if (strcmp(type.c_str(), "Rook") == 0) {
+			return 4 + color;
+		}
+		else if (strcmp(type.c_str(), "Queen") == 0) {
+			return 5 + color;
+		}
+		else if (strcmp(type.c_str(), "King") == 0) {
+			return 6 + color;
+		}
+		else return 0;
 	}
-	*/
 
 };

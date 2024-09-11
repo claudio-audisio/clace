@@ -15,7 +15,7 @@ public:
 	~Move();
 
 	void decorate(const Piece piece, const Position enPassantPosition, const bool isComputerToMove);
-	void setCaptured(const bool captured);
+	string toString() const;
 
 	Position getSourcePosition() const {
 		return sourcePosition;
@@ -45,12 +45,24 @@ public:
 		return pawnPromotion;
 	}
 
+	void setCaptured(const bool captured) {
+		this->captured = captured;
+	}
+
 	bool isCaptured() const {
 		return captured;
 	}
 
 	Piece getPromotion() const {
 		return promotion;
+	}
+
+	void setPromotion(const Piece promotion) {
+		this->promotion = promotion;
+	}
+
+	bool isComputer() const {
+		return computer;
 	}
 
 private:
@@ -63,7 +75,7 @@ private:
 	bool pawnPromotion = false;
 	bool captured = false;
 	Piece promotion = Empty;
-	bool isComputer;
+	bool computer;
 	double evaluationValue;
 
 };

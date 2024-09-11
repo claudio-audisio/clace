@@ -21,15 +21,11 @@ Move::Move(const Position sourcePosition, const Position destinationPosition, co
 	this->sourcePosition = sourcePosition;
 	this->destinationPosition = destinationPosition;
 	this->white = white;
-	this->isComputer = false;
+	this->computer = false;
 	this->evaluationValue = DRAW_VALUE;
 }
 
 Move::~Move() {
-}
-
-void Move::setCaptured(const bool captured) {
-	this->captured = captured;
 }
 
 void Move::decorate(const Piece piece, const Position enPassantPosition, const bool isComputerToMove) {
@@ -49,19 +45,20 @@ void Move::decorate(const Piece piece, const Position enPassantPosition, const b
 		pawnPromotion = Positions::isEighthRow(destinationPosition, white);
 	}
 
-	isComputer = isComputerToMove;
+	computer = isComputerToMove;
 }
 
 /*
 public boolean isWinning() {
 	return Optional.ofNullable(evaluationValue).map(v->v.equals(Constants.WIN_VALUE)).orElse(false);
 }
+*/
 
-@Override
-public String toString() {
-	return Positions.indexToCoords(sourcePosition) + "-" + Positions.indexToCoords(destinationPosition);
+string Move::toString() const {
+	return Positions::indexToCoords(sourcePosition) + "-" + Positions::indexToCoords(destinationPosition);
 }
 
+/*
 public String toStringWithEvaluation() {
 	return String.format(toString() + " --> " + new DecimalFormat("0.00").format(evaluationValue));
 }
