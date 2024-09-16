@@ -5,6 +5,7 @@ typedef unsigned char RawboardIndex;
 typedef unsigned long long Rawboard;
 typedef unsigned char Piece;
 typedef unsigned char CastlingInfo;
+typedef unsigned long long unsLL;
 
 enum class EndGameType
 {

@@ -11,9 +11,7 @@ using namespace std;
 
 class MovesGenerator {
 public:
-	static list<Move*>* getPseudoLegalMoves(Game& game) {
-		list<Move*>* pseudoLegalMoves = new list<Move*>();
-
+	static void getPseudoLegalMoves(Game& game, list<Move*>& pseudoLegalMoves) {
 		for (Position i = 0; i < 64; i++) {
 			if (game.checkColor(i)) {
 				if (game.getCheckStatus().isDoubleCheck() && !game.isKing(i)) {
@@ -32,26 +30,25 @@ public:
 							Move* promotionMove = new Move(i, destination, game.isWhiteToMove());
 							promotionMove->decorate(pieceAndDest->getPiece(), game.getEnPassantPosition(), game.isComputerToMove());
 							promotionMove->setPromotion(promotion);
-							pseudoLegalMoves->push_back(promotionMove);
+							pseudoLegalMoves.push_back(promotionMove);
 						}
 					}
 					else {
-						pseudoLegalMoves->push_back(move);
+						pseudoLegalMoves.push_back(move);
 					}
 				}
 
 				delete pieceAndDest;
 			}
 		}
-
-		return pseudoLegalMoves;
 	}
 
 	static void calculateLegalMoves(Game& game) {
 		game.getNextMoves().clear();
-		list<Move*>* pseudoLegalMoves = getPseudoLegalMoves(game);
+		list<Move*> pseudoLegalMoves;
+		getPseudoLegalMoves(game, pseudoLegalMoves);
 
-		for (Move* move : *pseudoLegalMoves) {
+		for (Move* move : pseudoLegalMoves) {
 			if (isValid(game, move)) {
 				game.getNextMoves().push_back(move);
 			}
@@ -59,8 +56,6 @@ public:
 				delete move;
 			}
 		}
-
-		delete pseudoLegalMoves;
 	}
 
 	static bool isValid(Game& game, Move* move) {

@@ -5,6 +5,8 @@
 #include "ui/userInterface.h"
 #include "utils/boardUtils.h"
 #include "board/board.h"
+#include "perft/perft.h"
+#include "utils/positions.h"
 
 using namespace std;
 
@@ -59,7 +61,8 @@ void managePerft() {
 			// new Perft(INITIAL_FEN_POSITION, depth).run(true);
 		}
 		else {
-			// new Perft(INITIAL_FEN_POSITION, depth).runBulk();
+			Perft* perft = new Perft(Positions::INITIAL_FEN_POSITION, depth);
+			perft->runBulk();
 		}
 
 		--runs;

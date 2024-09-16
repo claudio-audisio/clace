@@ -36,7 +36,7 @@ add_executable (clace
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp")
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -46,7 +46,7 @@ add_library(claceLib
 	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp")
 
  if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET clace PROPERTY CXX_STANDARD 20)
@@ -124,6 +124,11 @@ add_executable(
   "tests/positionsTest.cpp"
 )
 
+add_executable(
+  perftTest
+  "tests/perftTest.cpp"
+)
+
 target_link_libraries(
   boardTest
   GTest::gtest_main
@@ -190,6 +195,12 @@ target_link_libraries(
   claceLib
 )
 
+target_link_libraries(
+  perftTest
+  GTest::gtest_main
+  claceLib
+)
+
 include(GoogleTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)
@@ -202,3 +213,4 @@ gtest_discover_tests(moveTest)
 gtest_discover_tests(playerTest)
 gtest_discover_tests(movesGeneratorTest)
 gtest_discover_tests(positionsTest)
+gtest_discover_tests(perftTest)

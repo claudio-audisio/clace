@@ -19,15 +19,15 @@ public:
 		}
 	}
 
-	static long long getElapsedNanos(const chrono::time_point<chrono::steady_clock> start) {
+	static unsLL getElapsedNanos(const chrono::time_point<chrono::steady_clock> start) {
 		return chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - start).count();
 	}
 
-	static long long getElapsedMillis(const chrono::time_point<chrono::steady_clock> start) {
+	static unsLL getElapsedMillis(const chrono::time_point<chrono::steady_clock> start) {
 		return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start).count();
 	}
 
-	static long long getElapsedSeconds(const chrono::time_point<chrono::steady_clock> start) {
+	static unsLL getElapsedSeconds(const chrono::time_point<chrono::steady_clock> start) {
 		return chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
 	}
 

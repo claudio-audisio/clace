@@ -14,10 +14,11 @@ TEST(MovesGeneratorTest, getPseudoLegalMovesTest) {
 	game->setLastMove(new Move("a5-b3", false));
 	game->verifyChecks();
 
-	list<Move*>* pseudoLegalMoves = MovesGenerator::getPseudoLegalMoves(*game);
+	list<Move*> pseudoLegalMoves;
+	MovesGenerator::getPseudoLegalMoves(*game, pseudoLegalMoves);
 
-	EXPECT_EQ(pseudoLegalMoves->size(), 2);
-	GTEST_ASSERT_TRUE(TestUtils::containsExactlyInAnyOrder(*pseudoLegalMoves, "a1-a2", "a1-b1"));
+	EXPECT_EQ(pseudoLegalMoves.size(), 2);
+	GTEST_ASSERT_TRUE(TestUtils::containsExactlyInAnyOrder(pseudoLegalMoves, "a1-a2", "a1-b1"));
 }
 
 

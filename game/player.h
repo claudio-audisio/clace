@@ -36,7 +36,7 @@ class Player {
 			return pieces;
 		}
 
-		unsigned long long getGameTime() const {
+		unsLL getGameTime() const {
 			return gameTime;
 		}
 
@@ -45,7 +45,7 @@ class Player {
 		bool white;
 		bool computer;
 		IEngine* engine = nullptr;
-		unsigned long long gameTime = 0;
+		unsLL gameTime = 0;
 		chrono::time_point<chrono::steady_clock> currentMoveTime;
 		char* pieces = new char[7];
 
