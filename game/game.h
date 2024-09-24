@@ -5,7 +5,6 @@
 
 #include "../clace.h"
 #include "../board/board.h"
-#include "../move/move.h"
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
 #include "../game/player.h"
@@ -13,27 +12,30 @@
 
 using namespace std;
 
+
 class Game {
 public:
     Game();
     ~Game();
 
-	class MoveResult;
-
 	void init();
 	void initFromFEN(const string& fenPosition);
 	void initPlayers();
 	void initPlayers(Player* white, Player* black);
-	Piece rawMove(const Position source, const Position destination, const Piece piece);
-	MoveResult* finalizeMove(Move& move);
-	const MoveResult* applyMove(Move& move);
+	Piece rawMove(Position source, Position destination, Piece piece);
+	MoveResult finalizeMove(Move& move);
+	MoveResult applyMove(Move& move);
 	void applyMoves(list<Move>& moves);
-	void simulateMove(const Move& move);
+	void simulateMove(Move& move);
+    void undoSimulateMove(Move& move);
+    void undoKingPosition(Move& move);
+    void undoCastlingMove(Move& move);
+    void undoEnPassant(Move& move);
 	void verifyChecks();
-	EndGameType checkEndGame();
+	EndGameType checkEndGame(bool noMoves);
 	EndGameType checkFiftyMoveRule();
 	bool checkFiveFoldRepetitions();
-	bool isUnderCheck(const Position position, const bool white);
+	bool isUnderCheck(Position position, bool white);
 	bool checkControl(const Move& move);
 	void setKingPositions();
 	void updateKingPosition(const Move& move);
@@ -42,20 +44,20 @@ public:
 	void completeCastlingMove(const Move& move);
 	Piece completeEnPassant(const Move& move);
 	void completePawnPromotion(const Move& move);
-	bool processCapture(const Piece piece, const bool white);
+	bool processCapture(Piece piece, bool white);
 	void changeTurn();
-	Piece getPiece(const Position position) const;
-	Piece setPiece(const Position position, const Piece piece);
-	Piece setEmptyPiece(const Position position);
-	bool checkColor(const Position position) const;
-	bool checkColor(const Position position, const bool white) const;
+	Piece getPiece(Position position) const;
+	Piece setPiece(Position position, Piece piece);
+	Piece setEmptyPiece(Position position);
+	bool checkColor(Position position) const;
+	bool checkColor(Position position, bool white) const;
 	bool checkColor(const Move& move) const;
-	bool isWhite(const Position position) const;
-	bool isEmpty(const Position position) const;
-	bool isPawn(const Position position) const;
-	bool isRook(const Position position) const;
-	bool isRook(const Position position, bool white) const;
-	bool isKing(const Position position) const;
+	bool isWhite(Position position) const;
+	bool isEmpty(Position position) const;
+	bool isPawn(Position position) const;
+	bool isRook(Position position) const;
+	bool isRook(Position position, bool white) const;
+	bool isKing(Position position) const;
 	bool isWhiteKingCastling() const;
 	bool isWhiteQueenCastling() const;
 	bool isBlackKingCastling() const;
@@ -66,14 +68,16 @@ public:
 	void lightRollback();
 	Player* getCurrentPlayer() const;
 	bool isComputerToMove() const;
-	void setLastMove(Move* move);
+	void setLastMove(const Move& move);
 	void setPlayerPieces(const Game& game);
 	void resetPlayersPieces();
-	void incrementPlayerPieces(const Piece piece);
+	void incrementPlayerPieces(Piece piece);
 	Game* duplicate();
+	//Rawboard getRawBoard();
+	Rawboard getRawBoard(bool white) const;
 
-	void setBoard(const Board& board) {
-		this->board.set(board);
+	void setBoard(const Board& b) {
+		this->board.set(b);
 	}
 
 	const Board& getBoard() const {
@@ -148,56 +152,34 @@ public:
 		return blackPlayer;
 	}
 
-	list<Move*>& getNextMoves() {
-		return nextMoves;
-	}
-
-	Move* getLastMove() {
+	Move getLastMove() const {
 		return lastMove;
 	}
 
-	deque<Move*>& getMovesHistory() {
+	deque<Move>& getMovesHistory() {
 		return movesHistory;
 	}
 
-	class MoveResult {
-	public:
-		MoveResult(bool captured, bool promoted, bool enPassant, bool castling) {
-			this->captured = captured;
-			this->promoted = promoted;
-			this->enPassant = enPassant;
-			this->castling = castling;
-		}
-		bool captured;
-		bool promoted;
-		bool enPassant;
-		bool castling;
+    void addNextMove(const Move move) {
+        nextMoves.push_back(move);
+    }
 
-		bool isCaptured() const {
-			return captured;
-		}
+    vector<Move>& getNextMoves() {
+        return nextMoves;
+    }
 
-		bool isPromoted() const {
-			return promoted;
-		}
-
-		bool isEnPassant() const {
-			return enPassant;
-		}
-
-		bool isCastling() const {
-			return castling;
-		}
-	};
+    void clearNextMoves() {
+        nextMoves.clear();
+    }
 
 private:
 	Board board;
-	list<Move*> nextMoves;
-	deque<Move*> movesHistory;	// TODO renderla thread safe
+    vector<Move> nextMoves;
+	deque<Move> movesHistory;	// TODO renderla thread safe
 	Rollback rollback;
 	CastlingInfo castlingInfo;
 	CheckStatus checkStatus;
-	Move* lastMove = nullptr;
+	Move lastMove = 0;
 	bool whiteToMove;
 	Position whiteKingPosition;
 	Position blackKingPosition;

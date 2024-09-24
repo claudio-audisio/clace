@@ -1,5 +1,7 @@
 #include "checkStatus.h"
 #include "../utils/boardUtils.h"
+#include "../move/move.h"
+
 
 CheckStatus::CheckStatus() {
 	check = discoveryCheck = doubleCheck = checkmate = false;
@@ -22,9 +24,9 @@ void CheckStatus::addXRayPosition(const Position position, const Rawboard newPos
     xRayPositions[position] = newPositions;
 }
 
-void CheckStatus::updateStatus(const Position kingPosition, Move* move) {
+void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
     if (move) {
-        check = BoardUtils::isUnderCheck(checkPositions.at(move->getDestinationPosition()), kingPosition);
+        check = BoardUtils::isUnderCheck(checkPositions.at(MoveHelper::getDestinationPosition(move)), kingPosition);
         discoveryCheck = isDiscoveryCheck(kingPosition, move);
         adjustChecks();
     }
@@ -33,17 +35,17 @@ void CheckStatus::updateStatus(const Position kingPosition, Move* move) {
     }
 }
 
-bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move* lastMove) const {
-    if (lastMove->isEnPassant() && lastMove->isCaptured()) {
+bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move lastMove) const {
+    if (MoveHelper::isEnPassant(lastMove) && MoveHelper::isCaptured(lastMove)) {
         for (const pair<const Position, Rawboard>& checkPos : checkPositions) {
-            if (checkPos.first != lastMove->getDestinationPosition() && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
+            if (checkPos.first != MoveHelper::getDestinationPosition(lastMove) && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
                 return true;
             }
         }
     }
     else {
         for (const pair<const Position, Rawboard>& checkPos : xRayPositions) {
-            if (checkPos.first != lastMove->getDestinationPosition() && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
+            if (checkPos.first != MoveHelper::getDestinationPosition(lastMove) && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
                 return true;
             }
         }

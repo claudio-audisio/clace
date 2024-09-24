@@ -53,6 +53,16 @@ public:
         return fenBoard;
     }
 
+    // TODO scrivere test per FENKey
+    static string gameToFENKey(const Game& game) {
+        string fenKey;
+        fenKey.append(chessBoardToFENKey(game.getBoard()));
+        fenKey.append(game.isWhiteToMove() ? "w" : "b");
+        fenKey.append(castlingInfoToFEN(game.getCastlingInfo()));
+        fenKey.append(enPassantToFEN(game.getEnPassantPosition()));
+        return fenKey;
+    }
+
     static Game* mirrorGame(const Game& game) {
         return fenToNewGame(mirrorFenGame(gameToFEN(game)));
     }
@@ -177,6 +187,35 @@ private:
         }
 
         return fenBoard;
+    }
+
+    static string chessBoardToFENKey(const Board& board) {
+        string fenKey;
+        int empty = 0;
+
+        for (int i = 0; i < 64; i++) {
+            const Piece piece = board.getPiece(i);
+
+            if (PieceHelper::isEmpty(piece)) {
+                empty++;
+            }
+            else {
+                if (empty > 0) {
+                    fenKey.append(to_string(empty));
+                    empty = 0;
+                }
+                fenKey.append(pieceToFEN(piece));
+            }
+
+            if ((i + 1) % 8 == 0) {
+                if (empty > 0) {
+                    fenKey.append(to_string(empty));
+                    empty = 0;
+                }
+            }
+        }
+
+        return fenKey;
     }
 
     static string pieceToFEN(const Piece piece) {

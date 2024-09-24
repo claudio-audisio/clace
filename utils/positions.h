@@ -23,6 +23,7 @@ public:
     inline static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 
     static void calculateCheckPositions(Game& game, bool white) {
+        // TODO prendere i bianchi senza iterare come uno scemo
         for (Position pos = 0; pos < 64; pos++) {
             if (game.checkColor(pos, white)) {
                 const Piece piece = game.getPiece(pos);
@@ -117,54 +118,33 @@ public:
 
         for (Position i = 0; i < 64; i++) {
             if (game.checkColor(i, white)) {
-                count += BoardUtils::positionsCount(getDestinationPositions(game, i)->getBoard());
+                const Rawboard destinations = getDestinationPositions(game, i);
+                count += BoardUtils::positionsCount(destinations);
             }
         }
 
         return count;
     }
 
-    // TODO da trasformare in bitset
-    class PieceAndDest {
-    public:
-        PieceAndDest(const Rawboard board, const Piece piece) {
-            this->board = board;
-            this->piece = piece;
-        }
-
-        Rawboard board;
-        Piece piece;
-
-        Rawboard getBoard() {
-            return board;
-        }
-
-        Piece getPiece() {
-            return piece;
-        }
-    };
-    
-    static PieceAndDest* getDestinationPositions(const Game& game, const Position position) {
-        return getPositions(game, position);
+    static Rawboard getDestinationPositions(const Game& game, const Position position) {
+        return getDestinationPositions(game, position, game.getPiece(position));
     }
     
-    static PieceAndDest* getPositions(const Game& game, const Position position) {
-        const Piece piece = game.getPiece(position);
-
+    static Rawboard getDestinationPositions(const Game& game, const Position position, const Piece piece) {
         switch (piece) {
-            case WPawn: return new PieceAndDest(game.getBoard().getPawnMoves(position, true, game.getEnPassantPosition()), WPawn);
-            case BPawn: return new PieceAndDest(game.getBoard().getPawnMoves(position, false, game.getEnPassantPosition()), BPawn);
-            case WRook: return new PieceAndDest(game.getBoard().getRookMoves(position, true), WRook);
-            case BRook: return new PieceAndDest(game.getBoard().getRookMoves(position, false), BRook);
-            case WKnight: return new PieceAndDest(game.getBoard().getKnightMoves(position, true), WKnight);
-            case BKnight: return new PieceAndDest(game.getBoard().getKnightMoves(position, false), BKnight);
-            case WBishop: return new PieceAndDest(game.getBoard().getBishopMoves(position, true), WBishop);
-            case BBishop: return new PieceAndDest(game.getBoard().getBishopMoves(position, false), BBishop);
-            case WQueen: return new PieceAndDest(game.getBoard().getQueenMoves(position, true), WQueen);
-            case BQueen: return new PieceAndDest(game.getBoard().getQueenMoves(position, false), BQueen);
-            case WKing: return new PieceAndDest(game.getBoard().getKingMoves(position, true, game.getCastlingInfo()), WKing);
-            case BKing: return new PieceAndDest(game.getBoard().getKingMoves(position, false, game.getCastlingInfo()), BKing);
-            default: return new PieceAndDest(0, Empty);
+            case WPawn: return game.getBoard().getPawnMoves(position, true, game.getEnPassantPosition());
+            case BPawn: return game.getBoard().getPawnMoves(position, false, game.getEnPassantPosition());
+            case WRook: return game.getBoard().getRookMoves(position, true);
+            case BRook: return game.getBoard().getRookMoves(position, false);
+            case WKnight: return game.getBoard().getKnightMoves(position, true);
+            case BKnight: return game.getBoard().getKnightMoves(position, false);
+            case WBishop: return game.getBoard().getBishopMoves(position, true);
+            case BBishop: return game.getBoard().getBishopMoves(position, false);
+            case WQueen: return game.getBoard().getQueenMoves(position, true);
+            case BQueen: return game.getBoard().getQueenMoves(position, false);
+            case WKing: return game.getBoard().getKingMoves(position, true, game.getCastlingInfo());
+            case BKing: return game.getBoard().getKingMoves(position, false, game.getCastlingInfo());
+            default: return 0;
         };
     }
 
@@ -237,7 +217,7 @@ public:
         Rawboard xRayPositions = 0;
 
         for (Position position : *piecePositions) {
-            xRayPositions |= getPositions(game, position)->getBoard();
+            xRayPositions |= getDestinationPositions(game, position);
         }
 
         return BoardUtils::isUnderCheck(xRayPositions, sourcePosition);

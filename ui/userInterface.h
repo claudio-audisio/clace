@@ -1,9 +1,6 @@
 ﻿#pragma once
 
-#include <conio.h>
-
 #include "../clace.h"
-
 #include "../board/piece.h"
 
 using namespace std;
@@ -32,6 +29,7 @@ public:
 
 	static unsigned int menu() {
 		cout << endl;
+        cout << "_____________________________________________" << endl;
 		cout << "Please choose type of game" << endl;
 		cout << "\t1. game" << endl;
 		cout << "\t2. perft" << endl;
@@ -79,10 +77,6 @@ public:
 		return readInt();
 	}
 
-	static void waitInteraction() {
-		getch();
-	}
-
 	static void printLogo() {
 		cout << "        |" << endl;
 		cout << "   __|  |   _` |   __|   _ \\ " << endl;
@@ -107,6 +101,12 @@ public:
 		default: return 0x0020;
 		}
 	}
+
+    static void addLines(unsigned int lines) {
+        while (lines-- > 0) {
+            cout << endl;
+        }
+    }
 
 	/*
 	public static void printBoard(Board board) {

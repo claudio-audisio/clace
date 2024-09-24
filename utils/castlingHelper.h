@@ -7,7 +7,7 @@ class CastlingHelper {
 public:
 
 	static CastlingInfo update(CastlingInfo castlingInfo, const Move& move) {
-		switch (move.getSourcePosition()) {
+		switch (MoveHelper::getSourcePosition(move)) {
 			case 0: castlingInfo &= 0b1110; break;
 			case 4: castlingInfo &= 0b1100; break;
 			case 7: castlingInfo &= 0b1101; break;

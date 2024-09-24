@@ -15,28 +15,17 @@ void managePerft();
 
 int main(int argc, char* argv[])
 {
-	/*
-	for (int position = 0; position < 64; position++) {
-		cout << position << endl;
-		BoardUtils::printBoard(Board::antiDiagonalMask(position));
-	}
-
-	UI::waitInteraction();
-	*/
-
 	if (argc == 0) {
 		// uci mode
 		// TODO
 	} else if (strcmp(argv[1], "console") == 0) {
 		// console mode
 		bool exit = false;
+        UI::clearScreen();
+        UI::printLogo();
 
 		while (!exit) {
-			UI::clearScreen();
-			UI::printLogo();
-			const unsigned int choice = UI::menu();
-
-			switch (choice) {
+			switch (UI::menu()) {
 				case 1: manageGame(); break;
 				case 2: managePerft(); break;
 				default: exit = true; break;
@@ -57,16 +46,17 @@ void managePerft() {
 	unsigned int runs = UI::readPerftQuantity();
 
 	while (runs != 0) {
+        auto perft = new Perft(Positions::INITIAL_FEN_POSITION, depth);
+
 		if (type == 1) {
-			// new Perft(INITIAL_FEN_POSITION, depth).run(true);
+            perft->run(true);
 		}
 		else {
-			Perft* perft = new Perft(Positions::INITIAL_FEN_POSITION, depth);
 			perft->runBulk();
 		}
 
 		--runs;
 	}
 	
-	UI::waitInteraction();
+	UI::addLines(2);
 }

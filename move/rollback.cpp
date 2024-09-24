@@ -39,6 +39,7 @@ void Rollback::rollback(Game& game) {
 	game.getWhitePlayer()->setPieces(moveInfo->whitePieces);
 	game.getBlackPlayer()->setPieces(moveInfo->blackPieces);
 	boards.pop_front();
+    delete moveInfo;
 }
 
 void Rollback::lightSave(const Game& game) {

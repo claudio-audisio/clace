@@ -1,13 +1,19 @@
 #pragma once
 
 #include <list>
+#include <bit>
 
 #include "../clace.h"
+//#include "../common/boardDef.h"
 
 using namespace std;
 
 class BoardUtils {
 public:
+
+    static Rawboard posInd(const Position position) {
+        return 1LL << position;
+    }
 
     static void printBoard(const Rawboard board) {
         for (int i = 0; i < 64; ++i) {
@@ -27,32 +33,18 @@ public:
         cout << endl;
     }
 
-    static Rawboard posInd(const Position position) {
-        return 1LL << position;
-    }
-
     static Position getFirstPos(Rawboard board) {
-        for (Position i = 0; i < 64 && (board != 0); ++i) {
-            if ((board & 1L) != 0) {
-                return i;
-            }
-            board = board >> 1;
-        }
-
-        return NO_POS;
+        return countr_zero(board);
     }
 
-    static list<Position> boardToList(Rawboard board) {
-        list<Position> positions;
-
+    static void boardToList(Rawboard board, list<Position>& positions) {
+        positions.clear();
         for (Position i = 0; i < 64 && (board != 0); ++i) {
             if ((board & 1L) != 0) {
                 positions.push_back(i);
             }
             board = board >> 1;
         }
-
-        return positions;
     }
 
     template <typename... SetOfPosition>
@@ -71,14 +63,7 @@ public:
     }
 
     static int positionsCount(Rawboard board) {
-        int count = 0;
-
-        while (board != 0) {
-            count++;
-            board &= board - 1; // reset LS1B
-        }
-
-        return count;
+        return popcount(board);
     }
 
 };

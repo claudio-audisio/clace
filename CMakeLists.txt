@@ -5,24 +5,11 @@ cmake_minimum_required (VERSION 3.14)
 
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
-
-if (MSVC)
-    add_compile_options(/O2)
-else()
-    # additional warnings
-    add_compile_options(-O2)
-endif()
-
-#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/O2>")
-#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/O2>")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 project ("clace")
 
@@ -33,24 +20,22 @@ add_executable (clace
 	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp" 
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
-	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
+	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
+		"common/boardDef.h")
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
 	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"  
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
-	"move/move.h" "move/rollback.h" "move/move.cpp" "move/rollback.cpp" 
+	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp")
-
- if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET clace PROPERTY CXX_STANDARD 20)
-endif()
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
+		"common/boardDef.h")
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -82,6 +67,7 @@ add_executable(
 add_executable(
   boardPerformanceTest
   "tests/boardPerformanceTest.cpp"
+		utils/vectorPool.h
 )
 
 add_executable(

@@ -2,6 +2,8 @@
 
 #include <list>
 #include <unordered_set>
+#include <string>
+#include <cstring>
 
 #include "../board/piece.h"
 

@@ -30,17 +30,19 @@ TEST(BoardUtilsTest, boardToListTest) {
 	board.setPiece(42, WQueen);
 	board.setPiece(58, BKnight);
 	board.setPiece(63, BRook);
-	EXPECT_EQ(BoardUtils::boardToList(board.BOARD()).size(), 5);
-	GTEST_ASSERT_TRUE(containsAll(BoardUtils::boardToList(board.BOARD()), 2, 8, 42, 58, 63));
+	list<Position> positions;
+	BoardUtils::boardToList(~board.EMPTY, positions);
+	EXPECT_EQ(positions.size(), 5);
+	GTEST_ASSERT_TRUE(containsAll(positions, 2, 8, 42, 58, 63));
 }
 
 TEST(BoardUtilsTest, positionsCountTest) {
 	Board board;
-	EXPECT_EQ(BoardUtils::positionsCount(board.BOARD()), 0);
+	EXPECT_EQ(BoardUtils::positionsCount(~board.EMPTY), 0);
 	board.setPiece(2, WPawn);
 	board.setPiece(8, BPawn);
 	board.setPiece(42, WQueen);
 	board.setPiece(58, BKnight);
 	board.setPiece(63, BRook);
-	EXPECT_EQ(BoardUtils::positionsCount(board.BOARD()), 5);
+	EXPECT_EQ(BoardUtils::positionsCount(~board.EMPTY), 5);
 }

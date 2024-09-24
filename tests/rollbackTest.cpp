@@ -16,12 +16,12 @@ TEST(RollbackTest, rollbackTest1) {
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	Move* move = new Move(48, 32, true);
+	Move move = MoveHelper::getMove(48, 32, true);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 1);
 
-	game.applyMove(*move);
+	game.applyMove(move);
 	rollback->rollback(game);
 	const string boardAfterRollback = FEN::gameToFEN(game);
 
@@ -35,26 +35,26 @@ TEST(RollbackTest, rollbackInfo2Test) {
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	Move* move = new Move(57, 40, true);
+	Move move = MoveHelper::getMove(57, 40, true);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 1);
 
-	game.applyMove(*move);
+	game.applyMove(move);
 
-	move = new Move(40, 57, true);
+	move = MoveHelper::getMove(40, 57, true);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 2);
 
-	game.applyMove(*move);
+	game.applyMove(move);
 
-	move = new Move(57, 40, true);
+	move = MoveHelper::getMove(57, 40, true);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 3);
 
-	game.applyMove(*move);
+	game.applyMove(move);
 
 	rollback->rollback(game);
 	EXPECT_EQ(rollback->getRollbackSize(), 2);
@@ -76,12 +76,12 @@ TEST(RollbackTest, rollbackInfoFailureTest) {
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	Move* move = new Move(48, 32, true);
+	Move move = MoveHelper::getMove(48, 32, true);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 1);
 
-	game.applyMove(*move);
+	game.applyMove(move);
 	rollback->rollback(game);
 	string boardAfterRollback = FEN::gameToFEN(game);
 
@@ -111,7 +111,8 @@ TEST(RollbackTest, performanceTest) {
 		game->save();
 		saveTimes.push_back(Utils::getElapsedNanos(start));
 
-		game->applyMove(*(new Move("g2-h3", true)));
+		Move move = MoveHelper::getMove("g2-h3", true);
+		game->applyMove(move);
 
 		start = chrono::steady_clock::now();
 		game->rollbackLastMove();

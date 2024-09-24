@@ -12,7 +12,9 @@ using namespace std;
 
 
 TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
-	GTEST_SKIP();
+	//GTEST_SKIP();
+	vector<Move> moves;
+    moves.reserve(5000);
 	Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -23,40 +25,41 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 10000; ++i) {
-		MovesGenerator::calculateLegalMoves(*boardInitial);
+		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardInitial);
+		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft2);
+		MovesGenerator::calculateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft2);
+		MovesGenerator::calculateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft3);
+		MovesGenerator::calculateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft3);
+		MovesGenerator::calculateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft4);
+		MovesGenerator::calculateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft4);
+		MovesGenerator::calculateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft5);
+		MovesGenerator::calculateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft5);
+		MovesGenerator::calculateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft6);
+		MovesGenerator::calculateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft6);
+		MovesGenerator::calculateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
+		moves.clear();
 	}
 
-	EXPECT_NE(1, 1)
-		<< "time: " << Utils::getElapsedMillis(begin) << endl;
+	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 1950
+	// 700
+	// 800     (attacks)
 }
 
 TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -81,14 +84,14 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 		gamePerft6->getBoard().getBlackAttacks();
 	}
 
-	EXPECT_NE(1, 1)
-		<< "time: " << Utils::getElapsedMillis(begin) << endl;
+	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 1750
+	// 1350
+	// 1800     (attacks)
 }
 
 TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -113,9 +116,8 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 		gamePerft6->getBoard().getQueenAttacks(false);
 	}
 
-	EXPECT_NE(1, 1)
-		<< "time: " << Utils::getElapsedMillis(begin) << endl;
+    cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 3800 (getQueenMoves)
-	// 5600 (queenAttacks)
+	// 2500
+	// 3250     (attacks)
 }

@@ -11,58 +11,60 @@ using namespace std;
 
 class MovesGenerator {
 public:
-	static void getPseudoLegalMoves(Game& game, list<Move*>& pseudoLegalMoves) {
-		for (Position i = 0; i < 64; i++) {
-			if (game.checkColor(i)) {
-				if (game.getCheckStatus().isDoubleCheck() && !game.isKing(i)) {
-					continue;
-				}
+	static void calculateLegalMoves(Game& game, vector<Move>& moves) {
+		const bool white = game.isWhiteToMove();
+		Rawboard sources = game.getRawBoard(white);
 
-				Positions::PieceAndDest* pieceAndDest = Positions::getDestinationPositions(game, i);
-				const list<Position> destinationCells = BoardUtils::boardToList(pieceAndDest->getBoard());
+		while (sources) {
+            const Position position = countr_zero(sources);
+			
+			if (game.getCheckStatus().isDoubleCheck() && !game.isKing(position)) {
+				sources &= (sources - 1);
+				continue;
+			}
 
-				for (Position destination : destinationCells) {
-					Move* move = new Move(i, destination, game.isWhiteToMove());
-					move->decorate(pieceAndDest->getPiece(), game.getEnPassantPosition(), game.isComputerToMove());
+            const Piece piece = game.getPiece(position);
+			Rawboard destinations = Positions::getDestinationPositions(game, position, piece);
+            unsigned int count = 0;
 
-					if (move->isPawnPromotion()) {
-						for (Piece promotion : PieceHelper::getPromotionTypes(move->isWhite())) {
-							Move* promotionMove = new Move(i, destination, game.isWhiteToMove());
-							promotionMove->decorate(pieceAndDest->getPiece(), game.getEnPassantPosition(), game.isComputerToMove());
-							promotionMove->setPromotion(promotion);
-							pseudoLegalMoves.push_back(promotionMove);
+			while (destinations) {
+                const Position destination = countr_zero(destinations);
+				Move move = MoveHelper::getMove(position, destination, white);
+				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), game.isComputerToMove());
+
+				if (MoveHelper::isPawnPromotion(move)) {
+					for (Piece promotion : PieceHelper::getPromotionTypes(white)) {
+						Move promotionMove = MoveHelper::getMove(position, destination, white);
+						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), game.isComputerToMove());
+						MoveHelper::setPromotion(promotionMove, promotion);
+						
+						if (isValid(game, promotionMove)) {
+                            moves.push_back(promotionMove);
 						}
 					}
-					else {
-						pseudoLegalMoves.push_back(move);
-					}
+				}
+				else if (isValid(game, move)) {
+					moves.push_back(move);
 				}
 
-				delete pieceAndDest;
+				destinations &= (destinations - 1);
 			}
+
+			sources &= (sources - 1);
 		}
+
+        // TODO
+        // Dovrei tenere una cache con le mosse gia' calcolate a partire da una data scacchiere utilizzando anche enPassant e Castling
+        // Se viene fatta una mossa non reversibile allora posso svuotare la cache
+        // Come chiave potrei utilizzare una sorta di FEN ristretto
 	}
 
-	static void calculateLegalMoves(Game& game) {
-		game.getNextMoves().clear();
-		list<Move*> pseudoLegalMoves;
-		getPseudoLegalMoves(game, pseudoLegalMoves);
-
-		for (Move* move : pseudoLegalMoves) {
-			if (isValid(game, move)) {
-				game.getNextMoves().push_back(move);
-			}
-			else {
-				delete move;
-			}
-		}
-	}
-
-	static bool isValid(Game& game, Move* move) {
-		game.lightSave();
-		game.simulateMove(*move);
-		const bool checkControl = game.checkControl(*move);
-		game.lightRollback();
+	static bool isValid(Game& game, Move& move) {
+		//game.lightSave();
+		game.simulateMove(move);
+		const bool checkControl = game.checkControl(move);
+		//game.lightRollback();
+        game.undoSimulateMove(move);
 
 		return checkControl;
 	}

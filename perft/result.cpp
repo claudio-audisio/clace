@@ -1,4 +1,5 @@
 #include "result.h"
+#include "../move/move.h"
 
 
 Result::Result(const unsigned int depth) {
@@ -43,20 +44,20 @@ void Result::incrementCounters(const CheckStatus& checkStatus, const unsigned in
 	}
 }
 
-void Result::incrementCounters(const Game::MoveResult& moveResult, const unsigned int currentDepth) {
-	if (moveResult.isCaptured()) {
+void Result::incrementCounters(const MoveResult moveResult, const unsigned int currentDepth) {
+	if (MoveHelper::isCapturedMR(moveResult)) {
 		captures[currentDepth]++;
 	}
 
-	if (moveResult.isEnPassant()) {
+	if (MoveHelper::isEnPassantMR(moveResult)) {
 		enPassant[currentDepth]++;
 	}
 
-	if (moveResult.isCastling()) {
+	if (MoveHelper::isCastlingMR(moveResult)) {
 		castling[currentDepth]++;
 	}
 
-	if (moveResult.isPromoted()) {
+	if (MoveHelper::isPromotedMR(moveResult)) {
 		promotions[currentDepth]++;
 	}
 }
@@ -119,7 +120,8 @@ void Result::print() {
 }
 
 void Result::printGeneratedMoves(const unsLL moves, const unsLL time) {
-	cout << endl << "generated " << moves << " moves in " << time << " msec (" << formatUnsLL((moves * 1000) / time) << " moves/sec)" << endl;
+    const string rate = time > 0 ? formatUnsLL((moves * 1000) / time) : "too much";
+	cout << endl << "generated " << moves << " moves in " << time << " msec (" << rate << " moves/sec)" << endl;
 }
 
 string Result::getTabs(unsigned int maxTabs, const string& number) {

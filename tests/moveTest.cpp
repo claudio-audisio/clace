@@ -30,11 +30,11 @@ TEST_P(ConstructorTest, decorateTest) {
     TestParams* params = GetParam();
 
     if (params->sourcePosition != NO_POS) {
-        Move* move = new Move(params->stringMove, params->white);
+        Move move = MoveHelper::getMove(params->stringMove, params->white);
 
-        EXPECT_EQ(move->getSourcePosition(), params->sourcePosition);
-        EXPECT_EQ(move->getDestinationPosition(), params->destinationPosition);
-        EXPECT_EQ(move->isWhite(), params->white);
+        EXPECT_EQ(MoveHelper::getSourcePosition(move), params->sourcePosition);
+        EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
+        EXPECT_EQ(MoveHelper::isWhite(move), params->white);
     }
     /* TODO da fare quandoo gestiamo le eccezioni
     else {
@@ -92,14 +92,14 @@ class DecorateTest : public ::testing::TestWithParam<TestParams2*> {};
 TEST_P(DecorateTest, decorateTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    Move* move = new Move(params->sourcePosition, params->destinationPosition, game->isWhite(params->sourcePosition));
-    move->decorate(params->piece, game->getEnPassantPosition(), game->isComputerToMove());
+    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhite(params->sourcePosition));
+    MoveHelper::decorate(move, params->piece, game->getEnPassantPosition(), game->isComputerToMove());
 
-    EXPECT_EQ(move->getPiece(), params->piece);
-    EXPECT_EQ(move->isCastling(), params->isCastling);
-    EXPECT_EQ(move->isEnPassant(), params->isEnPassant);
-    EXPECT_EQ(move->isPawnPromotion(), params->isPawnPromotion);
-    GTEST_ASSERT_TRUE(move->isComputer());
+    EXPECT_EQ(MoveHelper::getPiece(move), params->piece);
+    EXPECT_EQ(MoveHelper::isCastling(move), params->isCastling);
+    EXPECT_EQ(MoveHelper::isEnPassant(move), params->isEnPassant);
+    EXPECT_EQ(MoveHelper::isPawnPromotion(move), params->isPawnPromotion);
+    GTEST_ASSERT_TRUE(MoveHelper::isComputer(move));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -114,4 +114,38 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams2("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 11, 2, WPawn, false, false, true),
         new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1", 34, 43, BPawn, false, true, false)
     )
+);
+
+
+class PositionsTest : public ::testing::TestWithParam<Position> {};
+
+TEST_P(PositionsTest, positionsTest) {
+    Position position = GetParam();
+    Move move = 0;
+    MoveHelper::setSourcePosition(move, position);
+    MoveHelper::setDestinationPosition(move, position);
+    EXPECT_EQ(position, MoveHelper::getSourcePosition(move));
+    EXPECT_EQ(position, MoveHelper::getDestinationPosition(move));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MoveTest,
+    PositionsTest,
+    ::testing::Values(0, 12, 45, 63)
+);
+
+
+class PiecesTest : public ::testing::TestWithParam<Piece> {};
+
+TEST_P(PiecesTest, piecesTest) {
+    Piece piece = GetParam();
+    Move move = 0;
+    MoveHelper::setPiece(move, piece);
+    EXPECT_EQ(piece, MoveHelper::getPiece(move));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MoveTest,
+    PiecesTest,
+    ::testing::Values(WPawn, BKing, WQueen, BRook, Empty)
 );

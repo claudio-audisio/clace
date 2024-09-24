@@ -15,18 +15,18 @@ public:
 	~Result();
 
 	void init();
-	void incrementNodes(unsLL qty, const unsigned int currentDepth);
-	void incrementCounters(const CheckStatus& checkStatus, const unsigned int currentDepth);
-	void incrementCounters(const Game::MoveResult& moveResult, const unsigned int currentDepth);
-	void incrementCheckmates(const unsigned int currentDepth);
+	void incrementNodes(unsLL qty, unsigned int currentDepth);
+	void incrementCounters(const CheckStatus& checkStatus, unsigned int currentDepth);
+	void incrementCounters(MoveResult moveResult, unsigned int currentDepth);
+	void incrementCheckmates(unsigned int currentDepth);
 	void add(const Result& result);
-	void print(const string& fenGame, const bool consoleMode);
+	void print(const string& fenGame, bool consoleMode);
 	void print();
 
-	static void printGeneratedMoves(const unsLL moves, const unsLL time);
+	static void printGeneratedMoves(unsLL moves, unsLL time);
 	static string getTabs(unsigned int maxTabs, const string& number);
-	static string createTabs(const unsigned int amount);
-	static string formatUnsLL(const unsLL number);
+	static string createTabs(unsigned int amount);
+	static string formatUnsLL(unsLL number);
 
 	unsigned int getDepth() const {
 		return depth;

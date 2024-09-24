@@ -10,10 +10,12 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->depth = depth;
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
+    this->pool = new VectorPool(depth);
 }
 
 Perft::~Perft() {
-
+    delete this->result;
+    delete this->pool;
 }
 
 Result* Perft::runBulk() {
@@ -26,18 +28,18 @@ Result* Perft::runBulk() {
 }
 
 unsLL Perft::runBulkPerft(const unsigned int depth) {
-    MovesGenerator::calculateLegalMoves(*game);
+    vector<Move>& moves = pool->getVector(depth - 1);
+    MovesGenerator::calculateLegalMoves(*game, moves);
 
     if (depth == 1) {
-        return game->getNextMoves().size();
+        return moves.size();
     }
 
     unsLL nodes = 0;
-    list<Move*> moves = game->getNextMoves();
 
-    for (Move* move : moves) {
+    for (Move move : moves) {
         game->save();
-        game->applyMove(*move);
+        game->applyMove(move);
         nodes += runBulkPerft(depth - 1);
         game->rollbackLastMove();
     }
@@ -45,23 +47,35 @@ unsLL Perft::runBulkPerft(const unsigned int depth) {
     return nodes;
 }
 
-unsLL Perft::runBulkPerft2(const unsigned int depth) {
-    if (depth == 0) {
-        return 1;
+Result* Perft::run(const bool consoleMode) {
+    result->startTime();
+    runPerft(depth);
+    result->stopTime();
+    result->print(fenGame, consoleMode);
+    return result;
+}
+
+void Perft::runPerft(const unsigned int currentDepth) {
+    vector<Move> moves;
+    moves.reserve(200);
+    MovesGenerator::calculateLegalMoves(*game, moves);
+
+    if (game->getCheckStatus().isCheck() && moves.empty()) {
+        result->incrementCheckmates((depth - currentDepth) - 1);
+        return;
     }
 
-    unsLL nodes = 0;
-    list<Move*> moves;
-    MovesGenerator::getPseudoLegalMoves(*game, moves);
+    if (currentDepth == 0) {
+        return;
+    }
 
-    for (Move* move : moves) {
+    for (Move move : moves) {
         game->save();
-        game->applyMove(*move);
-        if (game->checkControl(*move)) {
-            nodes += runBulkPerft2(depth - 1);
-        }
+        MoveResult moveResult = game->applyMove(move);
+        result->incrementCounters(moveResult, depth - currentDepth);
+        game->verifyChecks();
+        result->incrementCounters(game->getCheckStatus(), depth - currentDepth);
+        runPerft(currentDepth - 1);
         game->rollbackLastMove();
     }
-
-    return nodes;
 }

@@ -5,7 +5,7 @@
 #include <list>
 #include <string>
 
-#include "../move/move.h"
+#include "../common/types.h"
 
 using namespace std;
 
