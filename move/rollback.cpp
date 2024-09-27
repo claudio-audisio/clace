@@ -42,7 +42,7 @@ void Rollback::rollback(Game& game) {
     delete moveInfo;
 }
 
-void Rollback::lightSave(const Game& game) {
+/*void Rollback::lightSave(const Game& game) {
 	lightBoard.setBoard(game.getBoard());
 	lightBoard.whiteKingPosition = game.getWhiteKingPosition();
 	lightBoard.blackKingPosition = game.getBlackKingPosition();
@@ -52,7 +52,7 @@ void Rollback::lightRollback(Game& game) {
 	game.setBoard(lightBoard.board);
 	game.setWhiteKingPosition(lightBoard.whiteKingPosition);
 	game.setBlackKingPosition(lightBoard.blackKingPosition);
-}
+}*/
 
 unsigned int Rollback::getRollbackSize() const {
 	return boards.size();

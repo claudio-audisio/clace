@@ -22,7 +22,7 @@ private:
 	unsigned int depth;
 	string fenGame;
 	Result* result;
-    VectorPool* pool;
+    VectorPool<Move>* pool;
 
 	unsLL runBulkPerft(unsigned int depth);
     void runPerft(unsigned int depth);

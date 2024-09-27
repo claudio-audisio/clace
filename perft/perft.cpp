@@ -10,7 +10,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->depth = depth;
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
-    this->pool = new VectorPool(depth);
+    this->pool = new VectorPool<Move>(depth + 1, MAX_MOVES);
 }
 
 Perft::~Perft() {
@@ -27,20 +27,27 @@ Result* Perft::runBulk() {
     return result;
 }
 
-unsLL Perft::runBulkPerft(const unsigned int depth) {
-    vector<Move>& moves = pool->getVector(depth - 1);
+unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
+    vector<Move>& moves = pool->getVector(currentDepth - 1);
     MovesGenerator::calculateLegalMoves(*game, moves);
 
-    if (depth == 1) {
+    if (currentDepth == 1) {
+        /*for (Move move : moves) {
+            cout << MoveHelper::toString(move) << " ";
+        }
+        cout << endl;*/
         return moves.size();
     }
 
     unsLL nodes = 0;
+    //int counter = 0;
 
     for (Move move : moves) {
         game->save();
         game->applyMove(move);
-        nodes += runBulkPerft(depth - 1);
+        //cout << ++counter << "\t" << MoveHelper::toString(move) << endl;
+        const unsLL newNodes = runBulkPerft(currentDepth - 1);
+        nodes += newNodes;
         game->rollbackLastMove();
     }
 
@@ -56,8 +63,7 @@ Result* Perft::run(const bool consoleMode) {
 }
 
 void Perft::runPerft(const unsigned int currentDepth) {
-    vector<Move> moves;
-    moves.reserve(200);
+    vector<Move>& moves = pool->getVector(currentDepth);
     MovesGenerator::calculateLegalMoves(*game, moves);
 
     if (game->getCheckStatus().isCheck() && moves.empty()) {
@@ -71,10 +77,11 @@ void Perft::runPerft(const unsigned int currentDepth) {
 
     for (Move move : moves) {
         game->save();
-        MoveResult moveResult = game->applyMove(move);
+        const MoveResult moveResult = game->applyMove(move);
         result->incrementCounters(moveResult, depth - currentDepth);
         game->verifyChecks();
         result->incrementCounters(game->getCheckStatus(), depth - currentDepth);
+        //cout << game->printMovesHistory() << " done " << endl;
         runPerft(currentDepth - 1);
         game->rollbackLastMove();
     }

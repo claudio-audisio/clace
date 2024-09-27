@@ -40,7 +40,7 @@ Rawboard Board::BLACK() const {
         pieceBoards[BRook];
 }
 
-void Board::setBoard(const RawboardIndex boardIndex, const Rawboard pieceBoard) {
+void Board::setBoard(const Piece boardIndex, const Rawboard pieceBoard) {
     // TODO gestire piecePositions
     pieceBoards[boardIndex] = pieceBoard;
 }
@@ -162,19 +162,11 @@ Rawboard Board::getQueenAttacks(const bool white) const {
     Rawboard board = white ? pieceBoards[WQueen] : pieceBoards[BQueen];
 
     while (board) {
-        const Position position = countr_zero(board);
+        const Position position = Utils::getFirstPos(board);
         attacks |= getQueenMoves(position, white);      // OLD
         //attacks |= queenAttacks(position, white);
         board &= (board - 1);
     }
-
-    /*for (int i = 0; i < 64 && (board != 0); ++i) {
-        if ((board & 1L) != 0) {
-            attacks |= getQueenMoves(i, white);      // OLD
-            //attacks |= queenAttacks(i, white);
-        }
-        board = board >> 1;
-    }*/
 
     return attacks;
 }
@@ -184,19 +176,11 @@ Rawboard Board::getRookAttacks(const bool white) const {
     Rawboard board = white ? pieceBoards[WRook] : pieceBoards[BRook];
 
     while (board) {
-        const Position position = countr_zero(board);
+        const Position position = Utils::getFirstPos(board);
         attacks |= getRookMoves(position, white);       // OLD
         //attacks |= rookAttack(position, white);
         board &= (board - 1);
     }
-
-    /*for (int i = 0; i < 64 && (board != 0); ++i) {
-        if ((board & 1L) != 0) {
-            attacks |= getRookMoves(i, white);       // OLD
-            //attacks |= rookAttack(i, white);
-        }
-        board = board >> 1;
-    }*/
 
     return attacks;
 }
@@ -206,19 +190,11 @@ Rawboard Board::getBishopAttacks(const bool white) const {
     Rawboard board = white ? pieceBoards[WBishop] : pieceBoards[BBishop];
 
     while (board) {
-        const Position position = countr_zero(board);
+        const Position position = Utils::getFirstPos(board);
         attacks |= getBishopMoves(position, white);       // OLD
         //attacks |= bishopAttack(position, white);
         board &= (board - 1);
     }
-
-    /*for (int i = 0; i < 64 && (board != 0); ++i) {
-        if ((board & 1L) != 0) {
-            attacks |= getBishopMoves(i, white);     // OLD
-            //attacks |= bishopAttack(i, white);
-        }
-        board = board >> 1;
-    }*/
 
     return attacks;
 }
@@ -236,11 +212,10 @@ Rawboard Board::getPawnMoves(const bool white, const Position enPassantPos) cons
     Rawboard attacks = 0;
     Rawboard board = white ? pieceBoards[WPawn] : pieceBoards[BPawn];
 
-    for (int i = 0; i < 64 && (board != 0); ++i) {
-        if ((board & 1L) != 0) {
-            attacks |= getPawnMoves(i, white, enPassantPos);
-        }
-        board = board >> 1;
+    while (board) {
+        const Position position = Utils::getFirstPos(board);
+        attacks |= getPawnMoves(position, white, enPassantPos);
+        board &= (board - 1);
     }
 
     return attacks;
@@ -252,17 +227,10 @@ Rawboard Board::getPawnAttacks(const bool white) const {
     //board = board >> 8;
 
     while (board) {
-        const Position position = countr_zero(board);
+        const Position position = Utils::getFirstPos(board);
         attacks |= getPawnAttacks(position, white);       // OLD
         board &= (board - 1);
     }
-
-    /*for (int i = 8; i < 56 && (board != 0); ++i) {
-        if ((board & 1L) != 0) {
-            attacks |= getPawnAttacks(i, white);
-        }
-        board = board >> 1;
-    }*/
 
     return attacks;
 }
@@ -359,7 +327,7 @@ Rawboard Board::getKingAttacks(const Position position, const bool white) const 
 
 Rawboard Board::getKingCastling(const bool white, const CastlingInfo castlingInfo) const {
     const Rawboard board = white ? pieceBoards[WKing] : pieceBoards[BKing];
-    const Position position = BoardUtils::getFirstPos(board);
+    const Position position = Utils::getFirstPos(board);
     return getKingCastling(position, white, castlingInfo);
 }
 
@@ -367,31 +335,19 @@ Rawboard Board::getKingCastling(const Position position, const bool white, const
     Rawboard positions = 0L;
 
     if (position == 4 && !white) {
-        if (CastlingHelper::isBlackKingCastling(castlingInfo)) {
-            const Rawboard posIndex = posInd(position);
-            if ((eastOne(posIndex) & EMPTY) != 0) {
-                positions |= eastOne(eastOne(posIndex)) & EMPTY;
-            }
+        if (CastlingHelper::isBlackKingCastling(castlingInfo) && isEmpty(5)) {
+            positions |= posInd(6) & EMPTY;
         }
-        if (CastlingHelper::isBlackQueenCastling(castlingInfo)) {
-            const Rawboard posIndex = posInd(position);
-            if ((westOne(posIndex) & EMPTY) != 0) {
-                positions |= westOne(westOne(posIndex)) & EMPTY;
-            }
+        if (CastlingHelper::isBlackQueenCastling(castlingInfo) && isEmpty(3) && isEmpty(1)) {
+            positions |= posInd(2) & EMPTY;
         }
     }
     else if (position == 60 && white) {
-        if (CastlingHelper::isWhiteKingCastling(castlingInfo)) {
-            const Rawboard posIndex = posInd(position);
-            if ((eastOne(posIndex) & EMPTY) != 0) {
-                positions |= eastOne(eastOne(posIndex)) & EMPTY;
-            }
+        if (CastlingHelper::isWhiteKingCastling(castlingInfo) && isEmpty(61)) {
+            positions |= posInd(62) & EMPTY;
         }
-        if (CastlingHelper::isWhiteQueenCastling(castlingInfo)) {
-            const Rawboard posIndex = posInd(position);
-            if ((westOne(posIndex) & EMPTY) != 0) {
-                positions |= westOne(westOne(posIndex)) & EMPTY;
-            }
+        if (CastlingHelper::isWhiteQueenCastling(castlingInfo) && isEmpty(59) && isEmpty(57)) {
+            positions |= posInd(58) & EMPTY;
         }
     }
 

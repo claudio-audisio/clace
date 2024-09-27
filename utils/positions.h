@@ -22,93 +22,115 @@ public:
     inline static const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
     inline static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 
-    static void calculateCheckPositions(Game& game, bool white) {
-        // TODO prendere i bianchi senza iterare come uno scemo
-        for (Position pos = 0; pos < 64; pos++) {
-            if (game.checkColor(pos, white)) {
-                const Piece piece = game.getPiece(pos);
+    static void calculateCheckPositions(Game& game, const bool white) {
+        if (white) {
+            Rawboard positions = game.getBoard().WHITE();
+
+            while(positions) {
+                const Position position = Utils::getFirstPos(positions);
+                const Piece piece = game.getPiece(position);
 
                 switch (piece) {
                     case WPawn: {
-                        const Rawboard pawnAttacks = game.getBoard().getPawnAttacks(pos, true);
+                        const Rawboard pawnAttacks = game.getBoard().getPawnAttacks(position, true);
                         game.getCheckStatus().updateAllCheckPositions(pawnAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, pawnAttacks);
-                        break;
-                    }
-                    case BPawn: {
-                        const Rawboard pawnAttacks = game.getBoard().getPawnAttacks(pos, false);
-                        game.getCheckStatus().updateAllCheckPositions(pawnAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, pawnAttacks);
+                        game.getCheckStatus().addCheckPosition(position, pawnAttacks);
                         break;
                     }
                     case WRook: {
-                        const Rawboard rookAttacks = game.getBoard().getRookMoves(pos, true);
+                        const Rawboard rookAttacks = game.getBoard().getRookMoves(position, true);
                         game.getCheckStatus().updateAllCheckPositions(rookAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, rookAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, rookAttacks);
-                        break;
-                    }
-                    case BRook: {
-                        const Rawboard rookAttacks = game.getBoard().getRookMoves(pos, false);
-                        game.getCheckStatus().updateAllCheckPositions(rookAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, rookAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, rookAttacks);
+                        game.getCheckStatus().addCheckPosition(position, rookAttacks);
+                        game.getCheckStatus().addXRayPosition(position, rookAttacks);
                         break;
                     }
                     case WKnight: {
-                        const Rawboard knightAttacks = game.getBoard().getKnightMoves(pos, true);
+                        const Rawboard knightAttacks = game.getBoard().getKnightMoves(position, true);
                         game.getCheckStatus().updateAllCheckPositions(knightAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, knightAttacks);
-                        break;
-                    }
-                    case BKnight: {
-                        const Rawboard knightAttacks = game.getBoard().getKnightMoves(pos, false);
-                        game.getCheckStatus().updateAllCheckPositions(knightAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, knightAttacks);
+                        game.getCheckStatus().addCheckPosition(position, knightAttacks);
                         break;
                     }
                     case WBishop: {
-                        const Rawboard bishopAttacks = game.getBoard().getBishopMoves(pos, true);
+                        const Rawboard bishopAttacks = game.getBoard().getBishopMoves(position, true);
                         game.getCheckStatus().updateAllCheckPositions(bishopAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, bishopAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, bishopAttacks);
-                        break;
-                    }
-                    case BBishop: {
-                        const Rawboard bishopAttacks = game.getBoard().getBishopMoves(pos, false);
-                        game.getCheckStatus().updateAllCheckPositions(bishopAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, bishopAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, bishopAttacks);
+                        game.getCheckStatus().addCheckPosition(position, bishopAttacks);
+                        game.getCheckStatus().addXRayPosition(position, bishopAttacks);
                         break;
                     }
                     case WQueen: {
-                        const Rawboard queenAttacks = game.getBoard().getQueenMoves(pos, true);
+                        const Rawboard queenAttacks = game.getBoard().getQueenMoves(position, true);
                         game.getCheckStatus().updateAllCheckPositions(queenAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, queenAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, queenAttacks);
-                        break;
-                    }
-                    case BQueen: {
-                        const Rawboard queenAttacks = game.getBoard().getQueenMoves(pos, false);
-                        game.getCheckStatus().updateAllCheckPositions(queenAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, queenAttacks);
-                        game.getCheckStatus().addXRayPosition(pos, queenAttacks);
+                        game.getCheckStatus().addCheckPosition(position, queenAttacks);
+                        game.getCheckStatus().addXRayPosition(position, queenAttacks);
                         break;
                     }
                     case WKing: {
-                        const Rawboard kingAttacks = game.getBoard().getKingMoves(pos, true, game.getCastlingInfo());
+                        const Rawboard kingAttacks = game.getBoard().getKingMoves(position, true, game.getCastlingInfo());
                         game.getCheckStatus().updateAllCheckPositions(kingAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, kingAttacks);
+                        game.getCheckStatus().addCheckPosition(position, kingAttacks);
+                        break;
+                    }
+                    default:
+                        // TODO eccezione
+                        break;
+                }
+
+                positions &= (positions - 1);
+            }
+        } else {
+            // black
+            Rawboard positions = game.getBoard().BLACK();
+
+            while(positions) {
+                const Position position = Utils::getFirstPos(positions);
+                const Piece piece = game.getPiece(position);
+
+                switch (piece) {
+                    case BPawn: {
+                        const Rawboard pawnAttacks = game.getBoard().getPawnAttacks(position, false);
+                        game.getCheckStatus().updateAllCheckPositions(pawnAttacks);
+                        game.getCheckStatus().addCheckPosition(position, pawnAttacks);
+                        break;
+                    }
+                    case BRook: {
+                        const Rawboard rookAttacks = game.getBoard().getRookMoves(position, false);
+                        game.getCheckStatus().updateAllCheckPositions(rookAttacks);
+                        game.getCheckStatus().addCheckPosition(position, rookAttacks);
+                        game.getCheckStatus().addXRayPosition(position, rookAttacks);
+                        break;
+                    }
+                    case BKnight: {
+                        const Rawboard knightAttacks = game.getBoard().getKnightMoves(position, false);
+                        game.getCheckStatus().updateAllCheckPositions(knightAttacks);
+                        game.getCheckStatus().addCheckPosition(position, knightAttacks);
+                        break;
+                    }
+                    case BBishop: {
+                        const Rawboard bishopAttacks = game.getBoard().getBishopMoves(position, false);
+                        game.getCheckStatus().updateAllCheckPositions(bishopAttacks);
+                        game.getCheckStatus().addCheckPosition(position, bishopAttacks);
+                        game.getCheckStatus().addXRayPosition(position, bishopAttacks);
+                        break;
+                    }
+                    case BQueen: {
+                        const Rawboard queenAttacks = game.getBoard().getQueenMoves(position, false);
+                        game.getCheckStatus().updateAllCheckPositions(queenAttacks);
+                        game.getCheckStatus().addCheckPosition(position, queenAttacks);
+                        game.getCheckStatus().addXRayPosition(position, queenAttacks);
                         break;
                     }
                     case BKing: {
-                        const Rawboard kingAttacks = game.getBoard().getKingMoves(pos, false, game.getCastlingInfo());
+                        const Rawboard kingAttacks = game.getBoard().getKingMoves(position, false, game.getCastlingInfo());
                         game.getCheckStatus().updateAllCheckPositions(kingAttacks);
-                        game.getCheckStatus().addCheckPosition(pos, kingAttacks);
+                        game.getCheckStatus().addCheckPosition(position, kingAttacks);
                         break;
                     }
-                    default: break;
+                    default:
+                        // TODO eccezione
+                        break;
                 }
+
+                positions &= (positions - 1);
             }
         }
     }

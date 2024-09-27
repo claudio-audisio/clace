@@ -2,8 +2,6 @@
 #include "../utils/pieceHelper.h"
 #include "../utils/castlingHelper.h"
 #include "../utils/fen.h"
-#include "../utils/utils.h"
-
 
 Game::Game() {
 }
@@ -38,7 +36,7 @@ Piece Game::rawMove(const Position source, const Position destination, const Pie
 MoveResult Game::finalizeMove(Move& move) {
 	Piece captured = rawMove(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
 	updateKingPosition(move);
-	updateCastlingInfo(move);
+    CastlingHelper::update(castlingInfo, move);
 	updateEnPassantInfo(move);
 
     if (MoveHelper::isPawnPromotion(move)) {
@@ -75,7 +73,6 @@ MoveResult Game::applyMove(Move& move) {
 	MoveResult moveResult = finalizeMove(move);
 	lastMove = move;
 	movesHistory.push_front(move);
-	checkStatus.reset();
 
 	if (!MoveHelper::isWhite(move)) {
 		fullMoves++;
@@ -115,6 +112,9 @@ void Game::undoSimulateMove(Move& move) {
     const Piece piece = MoveHelper::getPiece(move);
     rawMove(MoveHelper::getDestinationPosition(move), MoveHelper::getSourcePosition(move), piece);
     const Piece captured = MoveHelper::getCaptured(move);
+
+    board.setPiece(MoveHelper::getDestinationPosition(move), Empty);
+    board.setPiece(MoveHelper::getSourcePosition(move), piece);
 
     if (captured != Empty) {
         if (MoveHelper::isEnPassant(move)) {
@@ -160,6 +160,7 @@ void Game::undoEnPassant(Move& move) {
 }
 
 void Game::verifyChecks() {
+    checkStatus.reset();
 	Positions::calculateCheckPositions(*this, !isWhiteToMove());
 	const Position kingPosition = isWhiteToMove() ? whiteKingPosition : blackKingPosition;
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
@@ -218,6 +219,7 @@ bool Game::checkControl(const Move& move) {
 }
 
 void Game::setKingPositions() {
+    // TODO ottimizzare
 	for (int i = 0; i < 64; i++) {
 		if (isKing(i)) {
 			if (isWhite(i)) {
@@ -250,10 +252,6 @@ void Game::updateEnPassantInfo(const Move& move) {
 	else {
 		enPassantPosition = NO_POS;
 	}
-}
-
-void Game::updateCastlingInfo(const Move& move) {
-	castlingInfo = CastlingHelper::update(castlingInfo, move);
 }
 
 void Game::completeCastlingMove(const Move& move) {
@@ -368,9 +366,9 @@ void Game::save() {
 	rollback.save(*this);
 }
 
-void Game::lightSave() {
+/*void Game::lightSave() {
 	rollback.lightSave(*this);
-}
+}*/
 
 void Game::rollbackLastMove() {
 	checkStatus.reset();
@@ -379,9 +377,9 @@ void Game::rollbackLastMove() {
 	rollback.rollback(*this);
 }
 
-void Game::lightRollback() {
+/*void Game::lightRollback() {
 	rollback.lightRollback(*this);
-}
+}*/
 
 /*
 public Evaluation evaluate(Move move) {
@@ -461,4 +459,16 @@ Rawboard Game::getRawBoard() {
 
 Rawboard Game::getRawBoard(const bool white) const {
 	return white ? board.WHITE() : board.BLACK();
+}
+
+string Game::printMovesHistory() {
+    string moves;
+    for (Move move : movesHistory) {
+        moves = MoveHelper::toString(move) + ", " + moves;
+    }
+    return moves.substr(0, moves.length() - 2);
+}
+
+string Game::printCastlingInfo() const {
+    return FEN::castlingInfoToFEN(castlingInfo);
 }

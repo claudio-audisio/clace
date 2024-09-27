@@ -17,7 +17,8 @@ typedef unsigned char MoveResult;
 enum class EndGameType
 {
 	FIFTY_MOVE_RULE,
-	// NOTE While castling is irreversible with respect to the castling rights and resets the position index to determine repetition of positions, castling doesn't reset, but increments the halfmove clock concerning the fifty-move rule [2] [3].
+	// NOTE While castling is irreversible with respect to the castling rights and resets the position index to determine repetition of positions,
+    // castling doesn't reset, but increments the halfmove clock concerning the fifty-move rule [2] [3].
 	FIVEFOLD_REPETITION,
 	STALEMATE,
 	CHECKMATE,

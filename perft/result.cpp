@@ -71,7 +71,7 @@ void Result::add(const Result& result) {
 		return;
 	}
 
-	for (int i = 0; i < depth; i++) {
+	for (unsigned int i = 0; i < depth; i++) {
 		nodes[i] += result.getNodes(i);
 		captures[i] += result.getCaptures(i);
 		enPassant[i] += result.getEnPassant(i);
@@ -132,7 +132,7 @@ string Result::getTabs(unsigned int maxTabs, const string& number) {
 string Result::createTabs(const unsigned int amount) {
 	string stringTabs = "";
 
-	for (int i = 0; i < amount; i++) {
+	for (unsigned int i = 0; i < amount; i++) {
 		stringTabs = stringTabs.append("\t");
 	}
 

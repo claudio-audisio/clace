@@ -33,10 +33,6 @@ public:
         cout << endl;
     }
 
-    static Position getFirstPos(Rawboard board) {
-        return countr_zero(board);
-    }
-
     static void boardToList(Rawboard board, list<Position>& positions) {
         positions.clear();
         for (Position i = 0; i < 64 && (board != 0); ++i) {

@@ -16,8 +16,8 @@ public:
 
 	void save(const Game& game);
 	void rollback(Game& game);
-	void lightSave(const Game& game);
-	void lightRollback(Game& game);
+	/*void lightSave(const Game& game);
+	void lightRollback(Game& game);*/
 	unsigned int getRollbackSize() const;
 	void reset();
 
@@ -44,6 +44,6 @@ private:
 	};
 
 	deque<MoveInfo*> boards;
-	MoveInfo lightBoard;
+	//MoveInfo lightBoard;
 
 };

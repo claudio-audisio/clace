@@ -12,7 +12,7 @@ using namespace std;
 
 
 TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 	vector<Move> moves;
     moves.reserve(5000);
 	Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
@@ -59,7 +59,7 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 }
 
 TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -91,7 +91,7 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 }
 
 TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -120,4 +120,25 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
 	// 2500
 	// 3250     (attacks)
+}
+
+TEST(BoardPerformanceTest, stuffTest) {
+    GTEST_SKIP();
+    Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
+    /*Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
+    Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
+    Game* boardPerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
+    Game* boardPerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
+    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);*/
+
+    auto begin = chrono::steady_clock::now();
+
+    for (int i = 1; i < 1000000000; ++i) {
+        // stuff
+    }
+
+    cout << "time: " << Utils::getElapsedMillis(begin) << endl;
+
+    // 700
+    // 800     (attacks)
 }

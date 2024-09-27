@@ -4,8 +4,9 @@
 #include <bit>
 
 #include "../common/types.h"
-#include "../common/boardDef.h"
+#include "../common/constants.h"
 #include "piece.h"
+#include "../utils/utils.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ public:
     void reset();
     Rawboard WHITE() const;
     Rawboard BLACK() const;
-    void setBoard(RawboardIndex boardIndex, Rawboard pieceBoard);
+    void setBoard(Piece boardIndex, Rawboard pieceBoard);
     bool isEmpty(Position position) const;
     bool isWhite(Position position) const;
     bool isBlack(Position position) const;
@@ -30,7 +31,7 @@ public:
     bool isQueen(Position position) const;
     bool isKing(Position position) const;
     Piece getPiece(Position position) const;
-    Piece setPiece(Position position, const Piece piece);
+    Piece setPiece(Position position, Piece piece);
     Piece move(Position source, Position destination, Piece piece);
     void set(const Board& board);
     bool isUnderCheck(Position position, bool white) const;
@@ -52,7 +53,6 @@ public:
     Rawboard getQueenMoves(Position position, bool white) const;
     Rawboard getKingMoves(Position position, bool white, CastlingInfo castlingInfo) const;
     Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
-    Rawboard slidingAttack2(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
 
     inline static Rawboard posInd(const Position position) {
         return 1LL << position;
@@ -232,7 +232,7 @@ private:
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
         if (blocker) {
-            const Position firstBlockPos = countr_zero(blocker);
+            const Position firstBlockPos = Utils::getFirstPos(blocker);
             attacks ^= direction(firstBlockPos);
         }
         return attacks;
@@ -242,7 +242,7 @@ private:
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
         if (blocker) {
-            const Position firstBlockPos = 63 - countl_zero(blocker);
+            const Position firstBlockPos = Utils::getFirstPosRevers(blocker);
             attacks ^= direction(firstBlockPos);
         }
         return attacks;

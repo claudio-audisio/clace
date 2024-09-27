@@ -40,7 +40,6 @@ public:
 	void setKingPositions();
 	void updateKingPosition(const Move& move);
 	void updateEnPassantInfo(const Move& move);
-	void updateCastlingInfo(const Move& move);
 	void completeCastlingMove(const Move& move);
 	Piece completeEnPassant(const Move& move);
 	void completePawnPromotion(const Move& move);
@@ -63,9 +62,9 @@ public:
 	bool isBlackKingCastling() const;
 	bool isBlackQueenCastling() const;
 	void save();
-	void lightSave();
+	//void lightSave();
 	void rollbackLastMove();
-	void lightRollback();
+	//void lightRollback();
 	Player* getCurrentPlayer() const;
 	bool isComputerToMove() const;
 	void setLastMove(const Move& move);
@@ -73,8 +72,9 @@ public:
 	void resetPlayersPieces();
 	void incrementPlayerPieces(Piece piece);
 	Game* duplicate();
-	//Rawboard getRawBoard();
-	Rawboard getRawBoard(bool white) const;
+    Rawboard getRawBoard(bool white) const;
+    string printMovesHistory();
+    string printCastlingInfo() const;
 
 	void setBoard(const Board& b) {
 		this->board.set(b);

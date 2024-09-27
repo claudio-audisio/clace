@@ -2,18 +2,19 @@
 
 #include <vector>
 
-#include "../move/move.h"
+#include "../common/constants.h"
 
 using namespace std;
 
+template<class T>
 class VectorPool {
 public:
-    VectorPool(unsigned int size) {
+    VectorPool(unsigned int size, unsigned int vectorSize) {
         this->size = size;
-        pool = new vector<vector<Move>*>(size);
+        pool = new vector<vector<T>*>(size);
 
         for (unsigned int index = 0; index < size; index++) {
-            (*pool)[index] = new vector<Move>(218);
+            (*pool)[index] = new vector<T>(vectorSize);
         }
     }
 
@@ -25,13 +26,13 @@ public:
         delete pool;
     }
 
-    vector<Move>& getVector(unsigned int index) {
-        vector<Move>& moves = *(*pool)[index];
-        moves.clear();
-        return moves;
+    vector<T>& getVector(unsigned int index) {
+        vector<T>& v = *(*pool)[index];
+        v.clear();
+        return v;
     }
 
 private:
     unsigned int size;
-    vector<vector<Move>*>* pool;
+    vector<vector<T>*>* pool;
 };

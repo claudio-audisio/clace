@@ -56,7 +56,7 @@ private:
     bool doubleCheck;
     bool checkmate;
 
-    bool isDiscoveryCheck(const Position kingPosition, const Move lastMove) const;
+    bool isDiscoveryCheck(Position kingPosition, const Move& lastMove) const;
     void adjustChecks();
 
 };

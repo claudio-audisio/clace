@@ -13,7 +13,7 @@ class PieceHelper {
 public:
 
 	inline static const list<Piece> WHITE_PROMOTION_PIECES = list<Piece>{ WRook, WKnight, WBishop, WQueen };
-	inline static const list<Piece> BLACK_PROMOTION_PIECES = list<Piece>{ WRook, WKnight, WBishop, WQueen };
+	inline static const list<Piece> BLACK_PROMOTION_PIECES = list<Piece>{ BRook, BKnight, BBishop, BQueen };
 	inline static const unordered_set<Piece> WHITE_XRAY_PIECES = unordered_set<Piece>{ WRook, WBishop, WQueen };
 	inline static const unordered_set<Piece> BLACK_XRAY_PIECES = unordered_set<Piece>{ BRook, BBishop, BQueen };
 

@@ -16,7 +16,7 @@ public:
 		Rawboard sources = game.getRawBoard(white);
 
 		while (sources) {
-            const Position position = countr_zero(sources);
+            const Position position = Utils::getFirstPos(sources);
 			
 			if (game.getCheckStatus().isDoubleCheck() && !game.isKing(position)) {
 				sources &= (sources - 1);
@@ -28,9 +28,17 @@ public:
             unsigned int count = 0;
 
 			while (destinations) {
-                const Position destination = countr_zero(destinations);
+                const Position destination = Utils::getFirstPos(destinations);
 				Move move = MoveHelper::getMove(position, destination, white);
 				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), game.isComputerToMove());
+
+                /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
+                    int stop = 1;
+                }
+
+                if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.getLastMove()) == "e5-d7") {
+                    int stop = 1;
+                }*/
 
 				if (MoveHelper::isPawnPromotion(move)) {
 					for (Piece promotion : PieceHelper::getPromotionTypes(white)) {
@@ -40,12 +48,19 @@ public:
 						
 						if (isValid(game, promotionMove)) {
                             moves.push_back(promotionMove);
-						}
+						}/* else {
+                            int notValid = 1;
+                        }*/
 					}
 				}
 				else if (isValid(game, move)) {
+                    /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
+                        cout << game.printMovesHistory() << ", " << MoveHelper::toString(move) << " - " << game.printCastlingInfo() << endl;
+                    }*/
 					moves.push_back(move);
-				}
+				}/* else {
+                    int notValid = 1;
+                }*/
 
 				destinations &= (destinations - 1);
 			}

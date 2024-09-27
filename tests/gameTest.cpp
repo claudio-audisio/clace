@@ -395,10 +395,20 @@ TEST_P(SimulateAndUndoMoveTest, checkControlTest) {
     Game* game = FEN::fenToNewGame(params->fenBoard);
     Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhiteToMove());
     MoveHelper::decorate(move, game->getPiece(params->sourcePosition), game->getEnPassantPosition(), game->isWhiteToMove());
+    Board board;
+    board.set(game->getBoard());
     game->simulateMove(move);
     game->undoSimulateMove(move);
 
     EXPECT_EQ(params->fenBoard, FEN::gameToFEN(*game));
+
+    for (int i = 0; i < SIZE; ++i) {
+        EXPECT_EQ(board.pieceBoards[i], game->getBoard().pieceBoards[i]);
+    }
+
+    for (int i = 0; i < 64; ++i) {
+        EXPECT_EQ(board.piecePositions[i], game->getBoard().piecePositions[i]);
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(

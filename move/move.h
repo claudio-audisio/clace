@@ -78,7 +78,7 @@ public:
 }
 
 	static Position getDestinationPosition(const Move move) {
-		return (move & DEST_POS_MASK) >> 8;
+		return static_cast<Position>((move & DEST_POS_MASK) >> 8);
 	}
 
 	static void setPiece(Move& move, const Piece piece) {
@@ -87,7 +87,7 @@ public:
 	}
 
 	static Piece getPiece(const Move move) {
-		return (move & PIECE_MASK) >> 16;
+		return static_cast<Piece>((move & PIECE_MASK) >> 16);
 	}
 
 	static void setPromotion(Move& move, const Piece promotion) {
@@ -96,7 +96,7 @@ public:
 	}
 
 	static Piece getPromotion(const Move move) {
-		return (move & PROMOTION_MASK) >> 24;
+		return static_cast<Piece>((move & PROMOTION_MASK) >> 24);
 	}
 
     static void setCaptured(Move& move, const Piece captured) {
@@ -105,7 +105,7 @@ public:
     }
 
     static Piece getCaptured(const Move move) {
-        return (move & CAPTURED_MASK) >> 32;
+        return static_cast<Piece>((move & CAPTURED_MASK) >> 32);
     }
 
     static bool isCaptured(const Move move) {
@@ -237,7 +237,6 @@ public:
     static bool isCastlingMR(const MoveResult moveResult) {
         return (moveResult & MR_CASTLING_MASK);
     }
-
 
 private:
 	static const Move SOURCE_POS_MASK = 0x00000000000000ffLL;

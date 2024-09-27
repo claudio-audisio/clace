@@ -2,16 +2,38 @@
 
 #include <climits>
 
-const int NO_POS = 64;
-const double KING_WT = 200.0;
-const double QUEEN_WT = 9.0;
-const double ROOK_WT = 5.0;
-const double BISHOP_WT = 3.5;
-const double KNIGHT_WT = 3.0;
-const double PAWN_WT = 1.0;
-//const double PAWN_WT = 1.0;	TODO peso per doubled, blocked and isolated pawns
-const double WIN_VALUE = SHRT_MAX / 2.0;
-const double LOSS_VALUE = -WIN_VALUE;
-const double DRAW_VALUE = 0;
-const double EVAL_WIN_VALUE = 9 * QUEEN_WT + 2 * ROOK_WT + 2 * BISHOP_WT + 2 * KNIGHT_WT;
-const double EVAL_LOSS_VALUE = -EVAL_WIN_VALUE;
+#define NO_POS 64
+#define KING_WT 200.0
+#define QUEEN_WT 9.0
+#define ROOK_WT 5.0
+#define BISHOP_WT 3.5
+#define KNIGHT_WT 3.0
+#define PAWN_WT 1.0
+//#define PAWN_WT 1.0	TODO peso per doubled, blocked and isolated pawns
+#define WIN_VALUE (SHRT_MAX / 2.0)
+#define LOSS_VALUE (-WIN_VALUE)
+#define DRAW_VALUE 0
+#define EVAL_WIN_VALUE (9 * QUEEN_WT + 2 * ROOK_WT + 2 * BISHOP_WT + 2 * KNIGHT_WT)
+#define EVAL_LOSS_VALUE (-EVAL_WIN_VALUE)
+
+#define SIZE 13
+#define EMPTY_IND 0    // This is related to Piece.Empty value
+#define EMPTY_BOARD 0xffffffffffffffffLL
+#define NOT_A_COL 0xfefefefefefefefeLL
+#define NOT_AB_COL 0xfcfcfcfcfcfcfcfcLL
+#define NOT_H_COL 0x7f7f7f7f7f7f7f7fLL
+#define NOT_GH_COL 0x3f3f3f3f3f3f3f3fLL
+#define SH_7DX_MSK 0x1ffffffffffffffLL
+#define SH_1DX_MSK 0x7fffffffffffffffLL
+#define SH_9DX_MSK 0x7fffffffffffffLL
+#define SH_8DX_MSK 0xffffffffffffffLL
+#define SH_15DX_MSK 0x1ffffffffffffLL
+#define SH_6DX_MSK 0x3ffffffffffffffLL
+#define SH_17DX_MSK 0x7fffffffffffLL
+#define SH_10DX_MSK 0x3fffffffffffffLL
+#define ROW_5 0x00000000ff000000LL
+#define ROW_4 0x000000ff00000000LL
+#define MAIN_DIAG 0x8040201008040201LL
+#define MAIN_ANTI_DIAG 0x0102040810204080LL
+#define MAX_MOVES 218
+

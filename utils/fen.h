@@ -135,14 +135,14 @@ private:
         return Empty;
     }
 
-    static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
+static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
         CastlingInfo castlingInfo = CastlingHelper::reset();
 
         if (strcmp(fenCastlingInfo.c_str(), "-") != 0) {
-            castlingInfo = CastlingHelper::setBlackKing(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
-            castlingInfo = CastlingHelper::setBlackQueen(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
-            castlingInfo = CastlingHelper::setWhiteKing(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
-            castlingInfo = CastlingHelper::setWhiteQueen(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
+            CastlingHelper::setBlackKing(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
+            CastlingHelper::setBlackQueen(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
+            CastlingHelper::setWhiteKing(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
+            CastlingHelper::setWhiteQueen(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
         }
 
         return castlingInfo;
@@ -240,6 +240,7 @@ private:
         return "";
     }
 
+public:
     static string castlingInfoToFEN(const CastlingInfo castlingInfo) {
         string fen = "";
 
@@ -266,6 +267,7 @@ private:
         return fen;
     }
 
+private:
     static string enPassantToFEN(const Position position) {
         if (position == NO_POS) {
             return "-";
