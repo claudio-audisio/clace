@@ -88,6 +88,8 @@ public:
 private:
     static const char SEPARATOR = ' ';
 
+
+
     static void fenToChessBoard(const string& fenChessBoard, Game& game) {
         vector<string>* tokens = tokenize(fenChessBoard, '/', 8);
 
@@ -108,31 +110,11 @@ private:
                 }
             }
             else {
-                const Piece piece = parseFENPiece(c);
+                const Piece piece = FEN_TO_PIECE.at(c);
                 game.setPiece(start++, piece);
                 game.incrementPlayerPieces(piece);
             }
         }
-    }
-
-    static Piece parseFENPiece(const char fenPiece) {
-        switch (fenPiece) {
-            case 'K': return WKing;
-            case 'Q': return WQueen;
-            case 'R': return WRook;
-            case 'N': return WKnight;
-            case 'B': return WBishop;
-            case 'P': return WPawn;
-            case 'k': return BKing;
-            case 'q': return BQueen;
-            case 'r': return BRook;
-            case 'n': return BKnight;
-            case 'b': return BBishop;
-            case 'p': return BPawn;
-            default: break;
-        }
-
-        return Empty;
     }
 
 static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
@@ -168,15 +150,15 @@ static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
             }
             else {
                 if (empty > 0) {
-                    fenBoard.append(to_string(empty));
+                    fenBoard.append(EMPTY_FEN[empty]);
                     empty = 0;
                 }
-                fenBoard.append(pieceToFEN(piece));
+                fenBoard.append(PIECE_TO_FEN[piece]);
             }
 
             if ((i + 1) % 8 == 0) {
                 if (empty > 0) {
-                    fenBoard.append(to_string(empty));
+                    fenBoard.append(EMPTY_FEN[empty]);
                     empty = 0;
                 }
 
@@ -201,15 +183,15 @@ static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
             }
             else {
                 if (empty > 0) {
-                    fenKey.append(to_string(empty));
+                    fenKey.append(EMPTY_FEN[empty]);
                     empty = 0;
                 }
-                fenKey.append(pieceToFEN(piece));
+                fenKey.append(PIECE_TO_FEN[piece]);
             }
 
             if ((i + 1) % 8 == 0) {
                 if (empty > 0) {
-                    fenKey.append(to_string(empty));
+                    fenKey.append(EMPTY_FEN[empty]);
                     empty = 0;
                 }
             }
@@ -218,50 +200,27 @@ static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
         return fenKey;
     }
 
-    static string pieceToFEN(const Piece piece) {
-        switch (piece) {
-            case WKing: return "K";
-            case BKing: return "k";
-            case WQueen: return "Q";
-            case BQueen: return "q";
-            case WRook: return "R";
-            case BRook: return "r";
-            case WKnight: return "N";
-            case BKnight: return "n";
-            case WBishop: return "B";
-            case BBishop: return "b";
-            case WPawn: return "P";
-            case BPawn: return "p";
-            default: break;
-        }
-
-        // TODO tirare eccezione
-        //throw new RuntimeException("error converting an empty piece to FEN");
-        return "";
-    }
-
 public:
     static string castlingInfoToFEN(const CastlingInfo castlingInfo) {
-        string fen = "";
+        if (!castlingInfo) {
+            return "-";
+        }
 
+        string fen;
         if (CastlingHelper::isWhiteKingCastling(castlingInfo)) {
-            fen += "K";
+            fen.append("K");
         }
 
         if (CastlingHelper::isWhiteQueenCastling(castlingInfo)) {
-            fen += "Q";
+            fen.append("Q");
         }
 
         if (CastlingHelper::isBlackKingCastling(castlingInfo)) {
-            fen += "k";
+            fen.append("k");
         }
 
         if (CastlingHelper::isBlackQueenCastling(castlingInfo)) {
-            fen += "q";
-        }
-
-        if (fen.empty()) {
-            fen = "-";
+            fen.append("q");
         }
 
         return fen;

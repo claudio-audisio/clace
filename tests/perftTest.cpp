@@ -3,7 +3,7 @@
 #include "../perft/perft.h"
 #include "../utils/positions.h"
 
-#define DEPTH 3
+#define DEPTH 5
 
 class PerftTest : public testing::Test {
 protected:
@@ -29,7 +29,7 @@ protected:
 };
 
 TEST_F(PerftTest, initialPositionBulkPerft) {
-    GTEST_SKIP();
+    //GTEST_SKIP();
     Perft* perft = new Perft(Positions::INITIAL_FEN_POSITION, DEPTH);
     Result* result = perft->runBulk();
 
@@ -39,7 +39,7 @@ TEST_F(PerftTest, initialPositionBulkPerft) {
     checkBulkPerftResult(197281, DEPTH, 4, *result);
     checkBulkPerftResult(4865609, DEPTH, 5, *result);
     checkBulkPerftResult(119060324, DEPTH, 6, *result);
-    checkBulkPerftResult(3195901860L, DEPTH, 7, *result);   // TODO
+    checkBulkPerftResult(3195901860L, DEPTH, 7, *result);
 }
 
 TEST_F(PerftTest, position2BulkPerft) {
@@ -126,7 +126,7 @@ TEST_F(PerftTest, initialPositionPerft) {
 }
 
 TEST_F(PerftTest, Position2Perft) {
-    //GTEST_SKIP();
+    GTEST_SKIP();
     Perft* perft = new Perft(Positions::PERFT_FEN_POSITION_2, DEPTH);
     Result* result = perft->run();
 

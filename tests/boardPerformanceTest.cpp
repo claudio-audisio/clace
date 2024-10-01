@@ -24,7 +24,7 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int i = 1; i < 10000; ++i) {
+	for (int i = 1; i < 50000; ++i) {
 		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
 		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
@@ -54,8 +54,8 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 700
-	// 800     (attacks)
+	// 1800
+	// 2250     (attacks)
 }
 
 TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
@@ -69,7 +69,7 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int i = 1; i < 1000000; ++i) {
+	for (int i = 1; i < 10000000; ++i) {
 		gameInitial->getBoard().getWhiteAttacks();
 		gameInitial->getBoard().getBlackAttacks();
 		gamePerft2->getBoard().getWhiteAttacks();
@@ -86,8 +86,8 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 1350
-	// 1800     (attacks)
+	// 5050
+	// 6950     (attacks)
 }
 
 TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
@@ -118,8 +118,8 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 2500
-	// 3250     (attacks)
+	// 1450
+	// 1900     (attacks)
 }
 
 TEST(BoardPerformanceTest, stuffTest) {
@@ -139,6 +139,4 @@ TEST(BoardPerformanceTest, stuffTest) {
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-    // 700
-    // 800     (attacks)
 }

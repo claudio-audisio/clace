@@ -64,6 +64,12 @@ public:
 		return readInt();
 	}
 
+    static unsigned int readPerftIndex() {
+        cout << "Please choose which perft" << endl;
+        cout << "\t1...6" << endl;
+        return readInt();
+    }
+
 	static unsigned int menuGame() {
 		cout << endl;
 		cout << "Please choose type of game" << endl;

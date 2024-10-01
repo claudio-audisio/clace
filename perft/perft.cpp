@@ -4,6 +4,8 @@
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
 
+#define USE_CACHE
+
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->fenGame = fenGame;
@@ -11,6 +13,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
     this->pool = new VectorPool<Move>(depth + 1, MAX_MOVES);
+    this->cache = new MovesCache(0);
 }
 
 Perft::~Perft() {
@@ -24,12 +27,27 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
+#ifdef USE_CACHE
+    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
+#endif
     return result;
 }
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth - 1);
+    const string fenKey = FEN::gameToFENKey(*game);
+
+#ifdef USE_CACHE
+    if (!cache->get(fenKey, moves)) {
+        MovesGenerator::calculateLegalMoves(*game, moves);
+        cache->add(fenKey, moves);
+        generatorUsage++;
+    } else {
+        cacheUsage++;
+    }
+#else
     MovesGenerator::calculateLegalMoves(*game, moves);
+#endif
 
     if (currentDepth == 1) {
         /*for (Move move : moves) {
@@ -59,12 +77,27 @@ Result* Perft::run(const bool consoleMode) {
     runPerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
+#ifdef USE_CACHE
+    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
+#endif
     return result;
 }
 
 void Perft::runPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth);
+    const string fenKey = FEN::gameToFENKey(*game);
+
+#ifdef USE_CACHE
+    if (!cache->get(fenKey, moves)) {
+        MovesGenerator::calculateLegalMoves(*game, moves);
+        cache->add(fenKey, moves);
+        generatorUsage++;
+    } else {
+        cacheUsage++;
+    }
+#else
     MovesGenerator::calculateLegalMoves(*game, moves);
+#endif
 
     if (game->getCheckStatus().isCheck() && moves.empty()) {
         result->incrementCheckmates((depth - currentDepth) - 1);

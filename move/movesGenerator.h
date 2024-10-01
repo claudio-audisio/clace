@@ -11,6 +11,7 @@ using namespace std;
 
 class MovesGenerator {
 public:
+
 	static void calculateLegalMoves(Game& game, vector<Move>& moves) {
 		const bool white = game.isWhiteToMove();
 		Rawboard sources = game.getRawBoard(white);
