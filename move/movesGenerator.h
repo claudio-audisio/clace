@@ -16,6 +16,10 @@ public:
 		const bool white = game.isWhiteToMove();
 		Rawboard sources = game.getRawBoard(white);
 
+		/*if (MoveHelper::toString(game.getLastMove()) == "c4-f7") {
+			int stop = 1;
+		}*/
+
 		while (sources) {
             const Position position = Utils::getFirstPos(sources);
 			
@@ -35,9 +39,9 @@ public:
 
                 /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
                     int stop = 1;
-                }
+                }*/
 
-                if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.getLastMove()) == "e5-d7") {
+                /*if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.getLastMove()) == "e5-d7") {
                     int stop = 1;
                 }*/
 

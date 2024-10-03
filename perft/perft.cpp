@@ -4,7 +4,7 @@
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
 
-#define USE_CACHE
+//#define USE_CACHE
 
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {
@@ -35,9 +35,9 @@ Result* Perft::runBulk() {
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth - 1);
-    const string fenKey = FEN::gameToFENKey(*game);
 
 #ifdef USE_CACHE
+	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
         MovesGenerator::calculateLegalMoves(*game, moves);
         cache->add(fenKey, moves);
@@ -58,13 +58,15 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     }
 
     unsLL nodes = 0;
-    //int counter = 0;
+    int counter = 0;
 
     for (Move move : moves) {
         game->save();
         game->applyMove(move);
-        //cout << ++counter << "\t" << MoveHelper::toString(move) << endl;
         const unsLL newNodes = runBulkPerft(currentDepth - 1);
+		/*if (currentDepth == 2) {
+			cout << ++counter << "\t" << MoveHelper::toString(move) << "\t" << newNodes << endl;
+		}*/
         nodes += newNodes;
         game->rollbackLastMove();
     }
@@ -85,9 +87,9 @@ Result* Perft::run(const bool consoleMode) {
 
 void Perft::runPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth);
-    const string fenKey = FEN::gameToFENKey(*game);
 
 #ifdef USE_CACHE
+	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
         MovesGenerator::calculateLegalMoves(*game, moves);
         cache->add(fenKey, moves);
@@ -116,6 +118,9 @@ void Perft::runPerft(const unsigned int currentDepth) {
         result->incrementCounters(game->getCheckStatus(), depth - currentDepth);
         //cout << game->printMovesHistory() << " done " << endl;
         runPerft(currentDepth - 1);
+		/*if (currentDepth == 3) {
+			cout << MoveHelper::toString(move) << "\t" << result->getCaptures(2) << endl;
+		}*/
         game->rollbackLastMove();
     }
 }

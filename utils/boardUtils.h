@@ -18,7 +18,7 @@ public:
     static void printBoard(const Rawboard board) {
         for (int i = 0; i < 64; ++i) {
             if (i % 8 == 0) {
-                cout << "";
+                cout << "\t";
             }
             if ((board & posInd(i)) == 0) {
                 cout << ". ";

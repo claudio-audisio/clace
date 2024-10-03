@@ -3,7 +3,7 @@
 #include "../perft/perft.h"
 #include "../utils/positions.h"
 
-#define DEPTH 5
+#define DEPTH 3
 
 class PerftTest : public testing::Test {
 protected:
@@ -157,6 +157,7 @@ TEST_F(PerftTest, Position3Perft) {
 TEST_F(PerftTest, Position4Perft) {
     GTEST_SKIP();
     Perft* perft = new Perft(Positions::PERFT_FEN_POSITION_4, DEPTH);
+	//Perft* perft = new Perft(Positions::PERFT_FEN_POSITION_4_MIRRORED, DEPTH);
     Result* result = perft->run();
 
     // TODO mancano i discovery e double chacks

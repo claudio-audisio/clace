@@ -35,6 +35,10 @@ int main(int argc, char* argv[])
 				default: exit = true; break;
 			}
 		}
+	} else {
+		const Rawboard board = stoull((argv[1]));
+		BoardUtils::printBoard(board);
+		cout << BoardUtils::positionsCount(board) << endl;
 	}
 	
 	return 0;

@@ -109,12 +109,9 @@ void Game::simulateMove(Move& move) {
 }
 
 void Game::undoSimulateMove(Move& move) {
-    const Piece piece = MoveHelper::getPiece(move);
-    rawMove(MoveHelper::getDestinationPosition(move), MoveHelper::getSourcePosition(move), piece);
+	board.setPiece(MoveHelper::getSourcePosition(move), MoveHelper::getPiece(move));
+	board.setPiece(MoveHelper::getDestinationPosition(move), Empty);
     const Piece captured = MoveHelper::getCaptured(move);
-
-    board.setPiece(MoveHelper::getDestinationPosition(move), Empty);
-    board.setPiece(MoveHelper::getSourcePosition(move), piece);
 
     if (captured != Empty) {
         if (MoveHelper::isEnPassant(move)) {
@@ -129,7 +126,6 @@ void Game::undoSimulateMove(Move& move) {
     }
 
     // Undo Pawn promotion is not needed because undoing original move we have already moved a Pawn
-
     undoKingPosition(move);
 }
 
