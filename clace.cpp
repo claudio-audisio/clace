@@ -65,6 +65,7 @@ void managePerft() {
 		}
 
 		--runs;
+		delete perft;
 	}
 	
 	UI::addLines(2);
