@@ -25,29 +25,29 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 50000; ++i) {
-		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
+		MovesGenerator::generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardInitial, moves);
+		MovesGenerator::generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft2, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft2, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft3, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft3, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft4, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft4, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft5, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft5, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft6, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
-		MovesGenerator::calculateLegalMoves(*boardPerft6, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
 		moves.clear();
 	}
@@ -70,18 +70,18 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 10000000; ++i) {
-		gameInitial->getBoard().getWhiteAttacks();
-		gameInitial->getBoard().getBlackAttacks();
-		gamePerft2->getBoard().getWhiteAttacks();
-		gamePerft2->getBoard().getBlackAttacks();
-		gamePerft3->getBoard().getWhiteAttacks();
-		gamePerft3->getBoard().getBlackAttacks();
-		gamePerft4->getBoard().getWhiteAttacks();
-		gamePerft4->getBoard().getBlackAttacks();
-		gamePerft5->getBoard().getWhiteAttacks();
-		gamePerft5->getBoard().getBlackAttacks();
-		gamePerft6->getBoard().getWhiteAttacks();
-		gamePerft6->getBoard().getBlackAttacks();
+		gameInitial->getBoard().getAttacks(WHITE);
+		gameInitial->getBoard().getAttacks(BLACK);
+		gamePerft2->getBoard().getAttacks(WHITE);
+		gamePerft2->getBoard().getAttacks(BLACK);
+		gamePerft3->getBoard().getAttacks(WHITE);
+		gamePerft3->getBoard().getAttacks(BLACK);
+		gamePerft4->getBoard().getAttacks(WHITE);
+		gamePerft4->getBoard().getAttacks(BLACK);
+		gamePerft5->getBoard().getAttacks(WHITE);
+		gamePerft5->getBoard().getAttacks(BLACK);
+		gamePerft6->getBoard().getAttacks(WHITE);
+		gamePerft6->getBoard().getAttacks(BLACK);
 	}
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
@@ -102,18 +102,18 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 10000000; ++i) {
-		gameInitial->getBoard().getQueenAttacks(true);
-		gameInitial->getBoard().getQueenAttacks(false);
-		gamePerft2->getBoard().getQueenAttacks(true);
-		gamePerft2->getBoard().getQueenAttacks(false);
-		gamePerft3->getBoard().getQueenAttacks(true);
-		gamePerft3->getBoard().getQueenAttacks(false);
-		gamePerft4->getBoard().getQueenAttacks(true);
-		gamePerft4->getBoard().getQueenAttacks(false);
-		gamePerft5->getBoard().getQueenAttacks(true);
-		gamePerft5->getBoard().getQueenAttacks(false);
-		gamePerft6->getBoard().getQueenAttacks(true);
-		gamePerft6->getBoard().getQueenAttacks(false);
+		gameInitial->getBoard().getQueenAttacks(WHITE);
+		gameInitial->getBoard().getQueenAttacks(BLACK);
+		gamePerft2->getBoard().getQueenAttacks(WHITE);
+		gamePerft2->getBoard().getQueenAttacks(BLACK);
+		gamePerft3->getBoard().getQueenAttacks(WHITE);
+		gamePerft3->getBoard().getQueenAttacks(BLACK);
+		gamePerft4->getBoard().getQueenAttacks(WHITE);
+		gamePerft4->getBoard().getQueenAttacks(BLACK);
+		gamePerft5->getBoard().getQueenAttacks(WHITE);
+		gamePerft5->getBoard().getQueenAttacks(BLACK);
+		gamePerft6->getBoard().getQueenAttacks(WHITE);
+		gamePerft6->getBoard().getQueenAttacks(BLACK);
 	}
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
@@ -125,16 +125,16 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 TEST(BoardPerformanceTest, stuffTest) {
     GTEST_SKIP();
     Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-    /*Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
+    Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
     Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
     Game* boardPerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
     Game* boardPerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);*/
+    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);
 
     auto begin = chrono::steady_clock::now();
 
     for (int i = 1; i < 1000000000; ++i) {
-        // stuff
+        boardInitial->getBoard().getRookAttacks(WHITE);
     }
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;

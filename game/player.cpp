@@ -46,7 +46,7 @@ void Player::initPieces() {
 	pieces[WPawn] = 8;
 }
 
-void Player::setPieces(char* pieces) {
+void Player::setPieces(Piece* pieces) {
 	for (unsigned int i = 0; i < 7; i++) {
 		this->pieces[i] = pieces[i];
 	}
@@ -78,7 +78,7 @@ string Player::getNameAndColor() {
 
 void Player::onCaptured(const Piece piece) {
 	if (PieceHelper::isBlack(piece)) {
-		pieces[piece - 6]--;
+		pieces[piece - SIDE_GAP]--;
 	}
 	else {
 		pieces[piece]--;

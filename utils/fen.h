@@ -29,7 +29,7 @@ public:
         vector<string>* tokens = tokenize(fenPosition, SEPARATOR, 6);
         fenToChessBoard(tokens->at(0), game);
         game.setKingPositions();
-        game.setWhiteToMove(tokens->at(1) == "w" || tokens->at(1) == "W");
+        game.setSideToMove((tokens->at(1) == "w" || tokens->at(1) == "W") ? WHITE : BLACK);
         game.setCastlingInfo(fenToCastlingInfo(tokens->at(2)));
         game.setEnPassantPosition(fenToEnPassantPosition(tokens->at(3)));
         game.setHalfMoveClock(stoi(tokens->at(4)));
@@ -115,6 +115,7 @@ private:
                 game.incrementPlayerPieces(piece);
             }
         }
+		//game.update();
     }
 
 static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {

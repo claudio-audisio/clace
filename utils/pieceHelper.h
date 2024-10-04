@@ -18,11 +18,11 @@ public:
 	inline static const unordered_set<Piece> BLACK_XRAY_PIECES = unordered_set<Piece>{ BRook, BBishop, BQueen };
 
 	static bool isWhite(const Piece piece) {
-		return piece < BPawn && piece != Empty;
+		return piece % 2;
 	}
 
 	static bool isBlack(const Piece piece) {
-		return piece > WKing;
+		return piece != Empty && !isWhite(piece);
 	}
 
 	static bool isEmpty(const Piece piece) {
@@ -61,12 +61,12 @@ public:
 		return isEmpty(piece) || isOpponent(piece, white);
 	}
 
-	static const list<Piece>& getPromotionTypes(const bool white) {
-		return white ? WHITE_PROMOTION_PIECES : BLACK_PROMOTION_PIECES;
+	static const list<Piece>& getPromotionTypes(const Side side) {
+		return side ? BLACK_PROMOTION_PIECES : WHITE_PROMOTION_PIECES;
 	}
 
-	static const unordered_set<Piece>& getXRayTypes(const bool white) {
-		return white ? WHITE_XRAY_PIECES : BLACK_XRAY_PIECES;
+	static const unordered_set<Piece>& getXRayTypes(const Side side) {
+		return side ? BLACK_XRAY_PIECES : WHITE_XRAY_PIECES;
 	}
 
 	/*
@@ -83,25 +83,25 @@ public:
 
 	static Piece valueOf(const string& stringPiece) {
 		const string type = stringPiece.substr(1);
-		const unsigned int color = stringPiece.at(0) == 'W' ? 0 : 6;
+		const Side side = stringPiece.at(0) == 'W' ? 0 : 1;
 
 		if (strcmp(type.c_str(), "Pawn") == 0) {
-			return 1 + color;
+			return 1 + side;
 		}
 		else if (strcmp(type.c_str(), "Knight") == 0) {
-			return 2 + color;
+			return 3 + side;
 		}
 		else if (strcmp(type.c_str(), "Bishop") == 0) {
-			return 3 + color;
+			return 5 + side;
 		}
 		else if (strcmp(type.c_str(), "Rook") == 0) {
-			return 4 + color;
+			return 7 + side;
 		}
 		else if (strcmp(type.c_str(), "Queen") == 0) {
-			return 5 + color;
+			return 9 + side;
 		}
 		else if (strcmp(type.c_str(), "King") == 0) {
-			return 6 + color;
+			return 11 + side;
 		}
 		else return 0;
 	}

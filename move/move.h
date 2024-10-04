@@ -11,31 +11,31 @@ using namespace std;
 class MoveHelper {
 public:
 	// Position sourcePosition;			0 - 7
-	// Position destinationPosition;		8 - 15
+	// Position destinationPosition;	8 - 15
 	// Piece piece;						16 - 23
 	// Piece promotion = Empty;			24 - 31
     // Piece captured;                  32 - 39
-	// bool white;						40
-	// bool castling = false;			41
-	// bool enPassant = false;			42
-	// bool pawnPromotion = false;		43
-	// bool computer;					44
+	// Side side;						40 - 47
+	// bool castling = false;			48
+	// bool enPassant = false;			49
+	// bool pawnPromotion = false;		50
+	// bool computer;					51
 
-	static Move getMove(const string& move, const bool white) {
+	static Move getMove(const string& move, const Side side) {
 		// TODO tirare un'eccezione
 	/*
 	if (move.length() != 5) {
 		throw new RuntimeException("move malformed");
 	}
 	*/
-		return getMove(Positions::coordsToIndex(move.substr(0, 2)), Positions::coordsToIndex(move.substr(3, 5)), white);
+		return getMove(Positions::coordsToIndex(move.substr(0, 2)), Positions::coordsToIndex(move.substr(3, 5)), side);
 	}
 
-	static Move getMove(const Position sourcePosition, const Position destinationPosition, const bool white) {
+	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side) {
 		Move move = 0;
 		setSourcePosition(move, sourcePosition);
 		setDestinationPosition(move, destinationPosition);
-		setWhite(move, white);
+		setSide(move, side);
 		return move;
 	}
 
@@ -112,17 +112,17 @@ public:
         return getCaptured(move) != Empty;
     }
 
-	static void setWhite(Move& move, const bool white) {
-		if (white) {
-			move |= WHITE_MASK;
-		}
-		else {
-			move &= ~WHITE_MASK;
-		}
+	static void setSide(Move& move, const Side side) {
+		move &= ~SIDE_MASK;
+		move |= (Move)side << 40;
+	}
+
+	static Side getSide(const Move move) {
+		return static_cast<Side>((move & SIDE_MASK) >> 40);
 	}
 
 	static bool isWhite(const Move move) {
-		return (move & WHITE_MASK) >> 40;
+		return getSide(move) == WHITE;
 	}
 
 	static void setCastling(Move& move, const bool castling) {
@@ -244,11 +244,11 @@ private:
 	static const Move PIECE_MASK = 0x0000000000ff0000LL;
 	static const Move PROMOTION_MASK = 0x00000000ff000000LL;
     static const Move CAPTURED_MASK = 0x000000ff00000000LL;
-	static const Move WHITE_MASK = 0x0000010000000000LL;
-	static const Move CASTLING_MASK = 0x0000020000000000LL;
-	static const Move EN_PASSANT_MASK = 0x0000040000000000LL;
-	static const Move PAWN_PROM_MASK = 0x0000080000000000LL;
-	static const Move COMPUTER_MASK = 0x0000100000000000LL;
+	static const Move SIDE_MASK = 0x0000ff0000000000LL;
+	static const Move CASTLING_MASK = 0x0001000000000000LL;
+	static const Move EN_PASSANT_MASK = 0x0002000000000000LL;
+	static const Move PAWN_PROM_MASK = 0x0004000000000000LL;
+	static const Move COMPUTER_MASK = 0x0008000000000000LL;
 
     static const MoveResult MR_CAPTURED_MASK = 0x01;
     static const MoveResult MR_PROMOTED_MASK = 0x02;

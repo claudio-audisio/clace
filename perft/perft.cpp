@@ -46,7 +46,7 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
         cacheUsage++;
     }
 #else
-    MovesGenerator::calculateLegalMoves(*game, moves);
+	MovesGenerator::generateLegalMoves(*game, moves);
 #endif
 
     if (currentDepth == 1) {
@@ -64,7 +64,7 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
         game->save();
         game->applyMove(move);
         const unsLL newNodes = runBulkPerft(currentDepth - 1);
-		/*if (currentDepth == 2) {
+		/*if (currentDepth == 3) {
 			cout << ++counter << "\t" << MoveHelper::toString(move) << "\t" << newNodes << endl;
 		}*/
         nodes += newNodes;
@@ -98,7 +98,7 @@ void Perft::runPerft(const unsigned int currentDepth) {
         cacheUsage++;
     }
 #else
-    MovesGenerator::calculateLegalMoves(*game, moves);
+	MovesGenerator::generateLegalMoves(*game, moves);
 #endif
 
     if (game->getCheckStatus().isCheck() && moves.empty()) {

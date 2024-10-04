@@ -11,17 +11,17 @@ using namespace std;
 class Player {
 public:
 	Player();
-	Player(const bool white);
-	Player(const bool white, IEngine* engine);
-	Player(const string& name, const bool white);
+	Player(bool white);
+	Player(bool white, IEngine* engine);
+	Player(const string& name, bool white);
 	~Player();
 
-	void init(const string& name, const bool computer, const bool white, IEngine* engine);
-	void setPieces(char* pieces);
+	void init(const string& name, bool computer, bool white, IEngine* engine);
+	void setPieces(Piece* pieces);
 	void resetPieces();
-	void incrementPieces(const Piece piece);
+	void incrementPieces(Piece piece);
 	string getNameAndColor();
-	void onCaptured(const Piece piece);
+	void onCaptured(Piece piece);
 	string getCapturedList();
 	string& addToCapturedList(string& capturedList, unsigned int times, Piece piece);
 	void startMoveTime();
@@ -32,7 +32,7 @@ public:
 		return computer;
 	}
 
-	char* getPieces() const {
+	Piece* getPieces() const {
 		return pieces;
 	}
 
@@ -47,7 +47,7 @@ private:
 	IEngine* engine = nullptr;
 	unsLL gameTime = 0;
 	chrono::time_point<chrono::steady_clock> currentMoveTime;
-	char* pieces = new char[7];
+	Piece* pieces = new Piece[7];
 
 	void initPieces();
 		

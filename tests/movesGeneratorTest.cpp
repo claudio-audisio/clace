@@ -15,7 +15,7 @@ TEST(MovesGeneratorTest, calculateLegalMoves) {
 	game->verifyChecks();
 
 	list<Move> moves;
-	MovesGenerator::calculateLegalMoves(*game, moves);
+	MovesGenerator::generateLegalMoves(*game, moves);
 
 	EXPECT_EQ(moves.size(), 2);
 	GTEST_ASSERT_TRUE(TestUtils::containsExactlyInAnyOrder(moves, "a1-a2", "a1-b1"));
@@ -41,7 +41,7 @@ TEST_P(GetLegalMovesTest, getLegalMovesTest) {
 	TestParams* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenGame);
 	vector<Move> moves;
-	MovesGenerator::calculateLegalMoves(*game, moves);
+	MovesGenerator::generateLegalMoves(*game, moves);
 
 	EXPECT_EQ(moves.size(), params->expectedPossibleMoves);
 }

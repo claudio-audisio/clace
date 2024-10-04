@@ -4,6 +4,7 @@
 
 //using namespace std;
 
+typedef unsigned char Side;
 typedef unsigned char Position;
 typedef unsigned char RawboardIndex;
 typedef unsigned long long Rawboard;

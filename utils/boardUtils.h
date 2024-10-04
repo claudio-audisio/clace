@@ -11,7 +11,7 @@ using namespace std;
 class BoardUtils {
 public:
 
-    static Rawboard posInd(const Position position) {
+	inline static Rawboard posInd(const Position position) {
         return 1LL << position;
     }
 
@@ -54,12 +54,16 @@ public:
         return board;
     }
 
-    static bool isUnderCheck(const Rawboard board, const Position position) {
+	inline static bool isUnderCheck(const Rawboard board, const Position position) {
         return (board & posInd(position)) != 0;
     }
 
-    static int positionsCount(Rawboard board) {
+	inline static int positionsCount(Rawboard board) {
         return popcount(board);
     }
+
+	inline static Side opposite(const Side side) {
+		return (side + SIDE_GAP) % (SIDE_GAP * 2);
+	}
 
 };

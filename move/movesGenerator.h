@@ -12,9 +12,9 @@ using namespace std;
 class MovesGenerator {
 public:
 
-	static void calculateLegalMoves(Game& game, vector<Move>& moves) {
-		const bool white = game.isWhiteToMove();
-		Rawboard sources = game.getRawBoard(white);
+	static void generateLegalMoves(Game& game, vector<Move>& moves) {
+		const Side side = game.getSideToMove();
+		Rawboard sources = game.getRawBoard(side);
 
 		/*if (MoveHelper::toString(game.getLastMove()) == "c4-f7") {
 			int stop = 1;
@@ -34,7 +34,7 @@ public:
 
 			while (destinations) {
                 const Position destination = Utils::getFirstPos(destinations);
-				Move move = MoveHelper::getMove(position, destination, white);
+				Move move = MoveHelper::getMove(position, destination, side);
 				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), game.isComputerToMove());
 
                 /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
@@ -46,8 +46,8 @@ public:
                 }*/
 
 				if (MoveHelper::isPawnPromotion(move)) {
-					for (Piece promotion : PieceHelper::getPromotionTypes(white)) {
-						Move promotionMove = MoveHelper::getMove(position, destination, white);
+					for (Piece promotion : PieceHelper::getPromotionTypes(side)) {
+						Move promotionMove = MoveHelper::getMove(position, destination, side);
 						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), game.isComputerToMove());
 						MoveHelper::setPromotion(promotionMove, promotion);
 						

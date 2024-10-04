@@ -28,19 +28,19 @@ private:
 		~MoveInfo();
 
 		Board board;
-		bool whiteToMove;
+		Side sideToMove;
 		CastlingInfo castlingInfo;
 		Position enPassantPosition;
-		int fullMoves;
-		int halfMoveClock;
+		unsigned int fullMoves;
+		unsigned int halfMoveClock;
 		Position whiteKingPosition;
 		Position blackKingPosition;
-		char* whitePieces;
-		char* blackPieces;
+		Piece* whitePieces;
+		Piece* blackPieces;
 
 		void setBoard(const Board& board);
-		void setWhitePieces(char* whitePieces);
-		void setBlackPieces(char* blackPieces);
+		void setWhitePieces(Piece* whitePieces);
+		void setBlackPieces(Piece* blackPieces);
 	};
 
 	deque<MoveInfo*> boards;

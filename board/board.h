@@ -17,9 +17,12 @@ public:
     ~Board();
 
     void reset();
-    Rawboard WHITE() const;
-    Rawboard BLACK() const;
+	Rawboard BOARD(Side side) const;
+	Rawboard OPPOSITE(Side side) const;
+    /*Rawboard WHITE() const;
+    Rawboard BLACK() const;*/
     void setBoard(Piece boardIndex, Rawboard pieceBoard);
+	void update();
     bool isEmpty(Position position) const;
     bool isWhite(Position position) const;
     bool isBlack(Position position) const;
@@ -27,31 +30,34 @@ public:
     bool isKnight(Position position) const;
     bool isBishop(Position position) const;
     bool isRook(Position position) const;
-    bool isRook(Position position, bool white) const;
+    bool isRook(Position position, Side side) const;
     bool isQueen(Position position) const;
     bool isKing(Position position) const;
+	Position getWhiteKingPosition() const;
+	Position getBlackKingPosition() const;
     Piece getPiece(Position position) const;
     Piece setPiece(Position position, Piece piece);
     Piece move(Position source, Position destination, Piece piece);
     void set(const Board& board);
-    bool isUnderCheck(Position position, bool white) const;
-    Rawboard getWhiteAttacks() const;
-    Rawboard getBlackAttacks() const;
-    Rawboard getKingAttacks(bool white) const;
-    Rawboard getKingMoves(bool white, CastlingInfo castlingInfo) const;
-    Rawboard getQueenAttacks(bool white) const;
-    Rawboard getRookAttacks(bool white) const;
-    Rawboard getBishopAttacks(bool white) const;
-    Rawboard getKnightAttacks(bool white) const;
-    Rawboard getPawnMoves(bool white, Position enPassantPos) const;
-    Rawboard getPawnMoves(Position position, bool white, Position enPassantPos) const;
-    Rawboard getPawnAttacks(bool white) const;
-    Rawboard getPawnAttacks(Position position, bool white) const;
-    Rawboard getKnightMoves(Position position, bool white) const;
-    Rawboard getBishopMoves(Position position, bool white) const;
-    Rawboard getRookMoves(Position position, bool white) const;
-    Rawboard getQueenMoves(Position position, bool white) const;
-    Rawboard getKingMoves(Position position, bool white, CastlingInfo castlingInfo) const;
+    bool isUnderCheck(Position position, Side side) const;
+	Rawboard getAttacks(Side side) const;
+    /*Rawboard getWhiteAttacks() const;
+    Rawboard getBlackAttacks() const;*/
+    Rawboard getKingAttacks(Side side) const;
+    Rawboard getKingMoves(Side side, CastlingInfo castlingInfo) const;
+    Rawboard getQueenAttacks(Side side) const;
+    Rawboard getRookAttacks(Side side) const;
+    Rawboard getBishopAttacks(Side side) const;
+    Rawboard getKnightAttacks(Side side) const;
+    Rawboard getPawnMoves(Side side, Position enPassantPos) const;
+    Rawboard getPawnMoves(Position position, Side side, Position enPassantPos) const;
+    Rawboard getPawnAttacks(Side side) const;
+    Rawboard getPawnAttacks(Position position, Side side) const;
+    Rawboard getKnightMoves(Position position, Side side) const;
+    Rawboard getBishopMoves(Position position, Side side) const;
+    Rawboard getRookMoves(Position position, Side side) const;
+    Rawboard getQueenMoves(Position position, Side side) const;
+    Rawboard getKingMoves(Position position, Side side, CastlingInfo castlingInfo) const;
     Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
 
     inline static Rawboard posInd(const Position position) {
@@ -179,15 +185,16 @@ public:
     Rawboard pieceBoards[SIZE];
     Piece piecePositions[64];
     Rawboard& EMPTY = pieceBoards[EMPTY_IND];
+	Rawboard sideBoards[2];
 
 private:
-    static Rawboard getPawnEnPassant(Rawboard position, bool white, Position enPassantPos) ;
-    Rawboard getKingAttacks(Position position, bool white) const;
-    Rawboard getKingCastling(bool white, CastlingInfo castlingInfo) const;
-    Rawboard getKingCastling(Position position, bool white, CastlingInfo castlingInfo) const;
-    Rawboard rookAttack(Position position, bool white) const;
-    Rawboard bishopAttack(Position position, bool white) const;
-    Rawboard queenAttacks(Position position, bool white) const;
+    static Rawboard getPawnEnPassant(Rawboard position, Side side, Position enPassantPos) ;
+    Rawboard getKingAttacks(Position position, Side side) const;
+    Rawboard getKingCastling(Side side, CastlingInfo castlingInfo) const;
+    Rawboard getKingCastling(Position position, Side side, CastlingInfo castlingInfo) const;
+    Rawboard rookAttack(Position position, Side side) const;
+    Rawboard bishopAttack(Position position, Side side) const;
+    Rawboard queenAttacks(Position position, Side side) const;
 
     // Mask for right shift that add ones
     inline static Rawboard RIGHT_SHIFT_MSK(const unsigned int len) {

@@ -10,7 +10,7 @@ Rollback::~Rollback() {
 void Rollback::save(const Game& game) {
 	MoveInfo* moveInfo = new MoveInfo();
 	moveInfo->setBoard(game.getBoard());
-	moveInfo->whiteToMove = game.isWhiteToMove();
+	moveInfo->sideToMove = game.getSideToMove();
 	moveInfo->castlingInfo = game.getCastlingInfo();
 	moveInfo->enPassantPosition = game.getEnPassantPosition();
 	moveInfo->fullMoves = game.getFullMoves();
@@ -29,7 +29,7 @@ void Rollback::rollback(Game& game) {
 
 	MoveInfo* moveInfo = boards.front();
 	game.setBoard(moveInfo->board);
-	game.setWhiteToMove(moveInfo->whiteToMove);
+	game.setSideToMove(moveInfo->sideToMove);
 	game.setCastlingInfo(moveInfo->castlingInfo);
 	game.setEnPassantPosition(moveInfo->enPassantPosition);
 	game.setFullMoves(moveInfo->fullMoves);
@@ -67,8 +67,8 @@ void Rollback::reset() {
 }
 
 Rollback::MoveInfo::MoveInfo() {
-	whitePieces = new char[7];
-	blackPieces = new char[7];
+	whitePieces = new Piece[7];
+	blackPieces = new Piece[7];
 }
 
 Rollback::MoveInfo::~MoveInfo() {
@@ -79,13 +79,13 @@ void Rollback::MoveInfo::setBoard(const Board& board) {
 	this->board.set(board);
 }
 
-void Rollback::MoveInfo::setWhitePieces(char* whitePieces) {
+void Rollback::MoveInfo::setWhitePieces(Piece* whitePieces) {
 	for (RawboardIndex i = 0; i < 7; i++) {
 		this->whitePieces[i] = whitePieces[i];
 	}
 }
 
-void Rollback::MoveInfo::setBlackPieces(char* blackPieces) {
+void Rollback::MoveInfo::setBlackPieces(Piece* blackPieces) {
 	for (RawboardIndex i = 0; i < 7; i++) {
 		this->blackPieces[i] = blackPieces[i];
 	}

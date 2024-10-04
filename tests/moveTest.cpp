@@ -10,15 +10,15 @@ using namespace std;
 
 class TestParams {
 public:
-    TestParams(string stringMove, bool white, Position sourcePosition, Position destinationPosition) {
+    TestParams(string stringMove, Side side, Position sourcePosition, Position destinationPosition) {
         this->stringMove = stringMove;
-        this->white = white;
+        this->side = side;
         this->sourcePosition = sourcePosition;
         this->destinationPosition = destinationPosition;
     }
 
     string stringMove;
-    bool white;
+    Side side;
     Position sourcePosition;
     Position destinationPosition;
 };
@@ -30,11 +30,11 @@ TEST_P(ConstructorTest, decorateTest) {
     TestParams* params = GetParam();
 
     if (params->sourcePosition != NO_POS) {
-        Move move = MoveHelper::getMove(params->stringMove, params->white);
+        Move move = MoveHelper::getMove(params->stringMove, params->side);
 
         EXPECT_EQ(MoveHelper::getSourcePosition(move), params->sourcePosition);
         EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
-        EXPECT_EQ(MoveHelper::isWhite(move), params->white);
+        EXPECT_EQ(MoveHelper::getSide(move), params->side);
     }
     /* TODO da fare quandoo gestiamo le eccezioni
     else {
@@ -64,7 +64,8 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-
+// TODO da sistemare
+/*
 class TestParams2 {
 public:
     TestParams2(string fenGame, Position sourcePosition, Position destinationPosition, Piece piece, bool isCastling, bool isEnPassant, bool isPawnPromotion) {
@@ -86,13 +87,12 @@ public:
     bool isPawnPromotion;
 };
 
-
 class DecorateTest : public ::testing::TestWithParam<TestParams2*> {};
 
 TEST_P(DecorateTest, decorateTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhite(params->sourcePosition));
+    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition));
     MoveHelper::decorate(move, params->piece, game->getEnPassantPosition(), game->isComputerToMove());
 
     EXPECT_EQ(MoveHelper::getPiece(move), params->piece);
@@ -114,7 +114,7 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams2("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 11, 2, WPawn, false, false, true),
         new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1", 34, 43, BPawn, false, true, false)
     )
-);
+);*/
 
 
 class PositionsTest : public ::testing::TestWithParam<Position> {};

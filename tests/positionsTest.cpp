@@ -275,16 +275,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 class TestParams3 {
 public:
-    TestParams3(Position position, Position excludePosition, bool white, bool expectedResult) {
+    TestParams3(Position position, Position excludePosition, Side side, bool expectedResult) {
         this->position = position;
         this->excludePosition = excludePosition;
-        this->white = white;
+        this->side = side;
         this->expectedResult = expectedResult;
     }
 
     Position position;
     Position excludePosition;
-    bool white;
+    Side side;
     bool expectedResult;
 };
 
@@ -293,7 +293,7 @@ class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {};
 TEST_P(IsOnXRayTest, isOnXRayTest) {
     TestParams3* params = GetParam();
     Game* game = FEN::fenToNewGame("3bqr2/8/8/7B/7Q/7R/8/8 w - - 0 1");
-    game->setWhiteToMove(params->white);
+    game->setSideToMove(params->side);
 
     EXPECT_EQ(Positions::isOnXRay(*game, params->position, params->excludePosition), params->expectedResult);
 }
@@ -302,22 +302,22 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsOnXRayTest,
     ::testing::Values(
-        new TestParams3(24, 3, true, false),
-        new TestParams3(25, 3, true, true),
-        new TestParams3(26, 3, true, false),
-        new TestParams3(27, 3, true, false),
-        new TestParams3(28, 3, true, true),
-        new TestParams3(29, 3, true, true),
-        new TestParams3(30, 3, true, false),
-        new TestParams3(31, 3, true, true),
-        new TestParams3(4, 31, false, false),
-        new TestParams3(12, 31, false, true),
-        new TestParams3(20, 31, false, false),
-        new TestParams3(28, 31, false, false),
-        new TestParams3(36, 31, false, true),
-        new TestParams3(44, 31, false, true),
-        new TestParams3(52, 31, false, false),
-        new TestParams3(60, 31, false, true)
+        new TestParams3(24, 3, WHITE, false),
+        new TestParams3(25, 3, WHITE, true),
+        new TestParams3(26, 3, WHITE, false),
+        new TestParams3(27, 3, WHITE, false),
+        new TestParams3(28, 3, WHITE, true),
+        new TestParams3(29, 3, WHITE, true),
+        new TestParams3(30, 3, WHITE, false),
+        new TestParams3(31, 3, WHITE, true),
+        new TestParams3(4, 31, BLACK, false),
+        new TestParams3(12, 31, BLACK, true),
+        new TestParams3(20, 31, BLACK, false),
+        new TestParams3(28, 31, BLACK, false),
+        new TestParams3(36, 31, BLACK, true),
+        new TestParams3(44, 31, BLACK, true),
+        new TestParams3(52, 31, BLACK, false),
+        new TestParams3(60, 31, BLACK, true)
     )
 );
 

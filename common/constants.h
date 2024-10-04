@@ -10,6 +10,9 @@
 using namespace std;
 
 
+#define WHITE 0
+#define BLACK (WHITE + SIDE_GAP)
+
 #define NO_POS 64
 #define KING_WT 200.0
 #define QUEEN_WT 9.0
@@ -45,7 +48,8 @@ using namespace std;
 #define MAIN_ANTI_DIAG 0x0102040810204080LL
 #define MAX_MOVES 218
 
-static const vector<string> PIECE_TO_FEN = {"", "P", "N", "B", "R", "Q", "K", "p", "n", "b", "r", "q", "k"};
+//static const vector<string> PIECE_TO_FEN = {"", "P", "N", "B", "R", "Q", "K", "p", "n", "b", "r", "q", "k"};
+static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
 static const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQueen}, {'R', WRook}, {'N', WKnight}, {'B', WBishop}, {'P', WPawn}, {'k', BKing}, {'q', BQueen}, {'r', BRook}, {'n', BKnight}, {'b', BBishop}, {'p', BPawn}};
 static const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
 

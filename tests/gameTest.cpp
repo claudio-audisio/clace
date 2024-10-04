@@ -105,12 +105,12 @@ TEST(GameTest, isWhiteTest) {
 	game.setPiece(0, WPawn);
 	game.setPiece(1, BPawn);
 
-	GTEST_ASSERT_TRUE(game.isWhite(0));
-	GTEST_ASSERT_FALSE(game.isWhite(1));
+	GTEST_ASSERT_TRUE(game.getSide(0) == WHITE);
+	GTEST_ASSERT_TRUE(game.getSide(1) == BLACK);
 }
 
 
-class TestParams {
+/*class TestParams {
 public:
 	TestParams(Position position, bool checkWhite, bool expectedWhite) {
 		this->position = position;
@@ -144,7 +144,7 @@ INSTANTIATE_TEST_SUITE_P(
 		new TestParams(2, true, false),
 		new TestParams(2, false, false)
 	)
-);
+);*/
 
 
 class TestParams2 {
@@ -173,11 +173,11 @@ class ApplyMoveTest : public ::testing::TestWithParam<TestParams2*> {};
 TEST_P(ApplyMoveTest, applyMoveTest) {
 	TestParams2* testParams = GetParam();
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
-	const bool white = game->isWhite(testParams->sourcePos);
-	game->setWhiteToMove(white);
-	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, game->isWhite(testParams->sourcePos));
+	Side side = game->getSide(testParams->sourcePos);
+	game->setSideToMove(side);
+	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, side);
 	MoveHelper::decorate(move, game->getPiece(testParams->sourcePos), game->getEnPassantPosition(), game->isComputerToMove());
-	MoveHelper::setPromotion(move, white ? WQueen : BQueen);
+	MoveHelper::setPromotion(move, side == WHITE ? WQueen : BQueen);
 	const MoveResult moveResult = game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
 
@@ -231,7 +231,7 @@ TEST_P(VerifyChecksTest, verifyChecksTest) {
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
 	
 	if (!testParams->lastMove.empty()) {
-		game->setLastMove(MoveHelper::getMove(testParams->lastMove, false));
+		game->setLastMove(MoveHelper::getMove(testParams->lastMove, BLACK));
 	}
 
 	game->verifyChecks();
@@ -255,8 +255,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 
 TEST(GameTest, verifyChecksWithEnPassantTest) {
-	Game* game = FEN::fenToNewGame("8/8/8/b7/8/1p6/8/4K3 w - - 0 1");
-	Move move = MoveHelper::getMove(24, 41, true);
+	Game* game = FEN::fenToNewGame("k7/8/8/b7/8/1p6/8/4K3 w - - 0 1");
+	Move move = MoveHelper::getMove(35, 41, BLACK);
 	MoveHelper::decorate(move, BPawn, 41, true);
 	MoveHelper::setCaptured(move, true);
 	game->setLastMove(move);
@@ -277,7 +277,7 @@ TEST_P(CheckEndGameTest, checkEndGameTest) {
 	Game* game = FEN::fenToNewGame(fenBoard);
 	vector<Move> moves;
 	game->verifyChecks();
-	MovesGenerator::calculateLegalMoves(*game, moves);
+	MovesGenerator::generateLegalMoves(*game, moves);
 
 	EXPECT_EQ(game->checkEndGame(moves.empty()), expectedEndGame);
 }
@@ -316,10 +316,10 @@ TEST_P(CheckControlTest, checkControlTest) {
 	TestParams4* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenBoard);
 	game->setKingPositions();
-	game->setWhiteToMove(!game->isWhite(params->kingPosition));
-	Position sourcePosition = params->isCastling ? (game->isWhite(params->kingPosition) ? 60 : 4) : 0;
-
-	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, game->isWhite(params->kingPosition));
+	Side side = game->getSide(params->kingPosition);
+	game->setSideToMove(BoardUtils::opposite(side));
+	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
+	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side);
 	MoveHelper::decorate(move, game->getPiece(params->kingPosition), game->getEnPassantPosition(), game->isComputerToMove());
 
 	EXPECT_EQ(game->checkControl(move), params->expectedResult);
@@ -356,7 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(GameTest, duplicateTest) {
 	const string fenBoard = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25";
 	Game* game = FEN::fenToNewGame(fenBoard);
-	game->setLastMove(MoveHelper::getMove("b7-a6", false));
+	game->setLastMove(MoveHelper::getMove("b7-a6", BLACK));
 	game->verifyChecks();
 
 	Game* newGame = game->duplicate();

@@ -3,7 +3,7 @@
 #include "../perft/perft.h"
 #include "../utils/positions.h"
 
-#define DEPTH 3
+#define DEPTH 6
 
 class PerftTest : public testing::Test {
 protected:

@@ -35,7 +35,7 @@ public:
 	EndGameType checkEndGame(bool noMoves);
 	EndGameType checkFiftyMoveRule();
 	bool checkFiveFoldRepetitions();
-	bool isUnderCheck(Position position, bool white);
+	//bool isUnderCheck(Position position, bool white);
 	bool checkControl(const Move& move);
 	void setKingPositions();
 	void updateKingPosition(const Move& move);
@@ -43,19 +43,19 @@ public:
 	void completeCastlingMove(const Move& move);
 	Piece completeEnPassant(const Move& move);
 	void completePawnPromotion(const Move& move);
-	bool processCapture(Piece piece, bool white);
+	bool processCapture(Piece piece, Side side);
 	void changeTurn();
 	Piece getPiece(Position position) const;
 	Piece setPiece(Position position, Piece piece);
 	Piece setEmptyPiece(Position position);
-	bool checkColor(Position position) const;
+	/*bool checkColor(Position position) const;
 	bool checkColor(Position position, bool white) const;
-	bool checkColor(const Move& move) const;
-	bool isWhite(Position position) const;
+	bool checkColor(const Move& move) const;*/
+	Side getSide(Position position) const;
 	bool isEmpty(Position position) const;
 	bool isPawn(Position position) const;
 	bool isRook(Position position) const;
-	bool isRook(Position position, bool white) const;
+	bool isRook(Position position, Side side) const;
 	bool isKing(Position position) const;
 	bool isWhiteKingCastling() const;
 	bool isWhiteQueenCastling() const;
@@ -72,7 +72,7 @@ public:
 	void resetPlayersPieces();
 	void incrementPlayerPieces(Piece piece);
 	Game* duplicate();
-    Rawboard getRawBoard(bool white) const;
+    Rawboard getRawBoard(Side side) const;
     string printMovesHistory();
     string printCastlingInfo() const;
 
@@ -82,6 +82,10 @@ public:
 
 	const Board& getBoard() const {
 		return board;
+	}
+
+	void update() {
+		board.update();
 	}
 
 	void setWhiteKingPosition(Position position) {
@@ -100,8 +104,16 @@ public:
 		return blackKingPosition;
 	}
 
+	Side getSideToMove() const {
+		return sideToMove;
+	}
+
 	bool isWhiteToMove() const {
-		return whiteToMove;
+		return sideToMove == WHITE;
+	}
+
+	Side getOppositeSide() const {
+		return BLACK - sideToMove;
 	}
 
 	CastlingInfo getCastlingInfo() const {
@@ -120,8 +132,8 @@ public:
 		return fullMoves;
 	}
 
-	void setWhiteToMove(const bool white) {
-		whiteToMove = white;
+	void setSideToMove(const Side side) {
+		sideToMove = side;
 	}
 
 	void setCastlingInfo(const CastlingInfo info) {
@@ -132,11 +144,11 @@ public:
 		enPassantPosition = position;
 	}
 
-	void setHalfMoveClock(const int halfMove) {
+	void setHalfMoveClock(const unsigned int halfMove) {
 		halfMoveClock = halfMove;
 	}
 
-	void setFullMoves(const int moves) {
+	void setFullMoves(const unsigned int moves) {
 		fullMoves = moves;
 	}
 		
@@ -180,7 +192,7 @@ private:
 	CastlingInfo castlingInfo;
 	CheckStatus checkStatus;
 	Move lastMove = 0;
-	bool whiteToMove;
+	Side sideToMove;
 	Position whiteKingPosition;
 	Position blackKingPosition;
 	Position enPassantPosition = NO_POS;
