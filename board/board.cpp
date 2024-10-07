@@ -20,9 +20,6 @@ void Board::reset() {
     for (Piece& piece : piecePositions) {
         piece = Empty;
     }
-
-	/*sideBoards[WHITE] = 0;
-	sideBoards[BLACK] = 0;*/
 }
 
 Rawboard Board::BOARD(const Side side) const {
@@ -130,11 +127,11 @@ bool Board::isKing(const Position position) const {
 }
 
 Position Board::getWhiteKingPosition() const {
-	return Utils::getFirstPos(pieceBoards[WKing]);
+	return FIRST_POS(pieceBoards[WKing]);
 }
 
 Position Board::getBlackKingPosition() const {
-	return Utils::getFirstPos(pieceBoards[BKing]);
+	return FIRST_POS(pieceBoards[BKing]);
 }
 
 Piece Board::getPiece(const Position position) const {
@@ -177,14 +174,6 @@ Rawboard Board::getAttacks(const Side side) const {
 	return getPawnAttacks(side) | getKnightAttacks(side) | getBishopAttacks(side) | getRookAttacks(side) | getQueenAttacks(side) | getKingAttacks(side);
 }
 
-/*Rawboard Board::getWhiteAttacks() const {
-    return getPawnAttacks(true) | getKnightAttacks(true) | getBishopAttacks(true) | getRookAttacks(true) | getQueenAttacks(true) | getKingAttacks(true);
-}
-
-Rawboard Board::getBlackAttacks() const {
-    return getPawnAttacks(false) | getKnightAttacks(false) | getBishopAttacks(false) | getRookAttacks(false) | getQueenAttacks(false) | getKingAttacks(false);
-}*/
-
 Rawboard Board::getKingAttacks(const Side side) const {
     Rawboard board = pieceBoards[WKing + side];
     Rawboard attacks = eastOne(board) | westOne(board);
@@ -201,11 +190,14 @@ Rawboard Board::getKingMoves(const Side side, const CastlingInfo castlingInfo) c
 Rawboard Board::getQueenAttacks(const Side side) const {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WQueen + side];
+	const Rawboard oppositeBoard = OPPOSITE(side);
+	//const Rawboard occupied = ~EMPTY;
+	//const Rawboard notSide = ~BOARD(side);
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
-        attacks |= getQueenMoves(position, side);      // OLD
-        //attacks |= queenAttacks(position, side);
+        const Position position = FIRST_POS(board);
+        attacks |= getQueenMoves(position, oppositeBoard);      // OLD
+        //attacks |= queenAttacks(position, occupied, notSide);
         board &= (board - 1);
     }
 
@@ -215,11 +207,14 @@ Rawboard Board::getQueenAttacks(const Side side) const {
 Rawboard Board::getRookAttacks(const Side side) const {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WRook + side];
+	const Rawboard oppositeBoard = OPPOSITE(side);
+	//const Rawboard occupied = ~EMPTY;
+	//const Rawboard notSide = ~BOARD(side);
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
-        attacks |= getRookMoves(position, side);       // OLD
-        //attacks |= rookAttack(position, side);
+        const Position position = FIRST_POS(board);
+        attacks |= getRookMoves(position, oppositeBoard);       // OLD
+        //attacks |= rookAttack(position, occupied, notSide);
         board &= (board - 1);
     }
 
@@ -229,11 +224,14 @@ Rawboard Board::getRookAttacks(const Side side) const {
 Rawboard Board::getBishopAttacks(const Side side) const {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WBishop + side];
+	const Rawboard oppositeBoard = OPPOSITE(side);
+	//const Rawboard occupied = ~EMPTY;
+	//const Rawboard notSide = ~BOARD(side);
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
-        attacks |= getBishopMoves(position, side);       // OLD
-        //attacks |= bishopAttack(position, side);
+        const Position position = FIRST_POS(board);
+        attacks |= getBishopMoves(position, oppositeBoard);       // OLD
+        //attacks |= bishopAttack(position, occupied, notSide);
         board &= (board - 1);
     }
 
@@ -254,7 +252,7 @@ Rawboard Board::getPawnMoves(const Side side, const Position enPassantPos) const
     Rawboard board = pieceBoards[WPawn + side];
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
+        const Position position = FIRST_POS(board);
         attacks |= getPawnMoves(position, side, enPassantPos);
         board &= (board - 1);
     }
@@ -265,10 +263,9 @@ Rawboard Board::getPawnMoves(const Side side, const Position enPassantPos) const
 Rawboard Board::getPawnAttacks(const Side side) const {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WPawn + side];
-    //board = board >> 8;
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
+        const Position position = FIRST_POS(board);
         attacks |= getPawnAttacks(position, side);       // OLD
         board &= (board - 1);
     }
@@ -331,9 +328,8 @@ Rawboard Board::getKnightMoves(const Position position, const Side side) const {
         (EMPTY | OPPOSITE(side));
 }
 
-Rawboard Board::getBishopMoves(const Position position, const Side side) const {
+Rawboard Board::getBishopMoves(const Position position, Rawboard oppositeBoard) const {
     const Rawboard posIndex = posInd(position);
-    const Rawboard oppositeBoard = OPPOSITE(side);
 
     return slidingAttack(noEastOne, posIndex, oppositeBoard) |
         slidingAttack(soEastOne, posIndex, oppositeBoard) |
@@ -341,9 +337,8 @@ Rawboard Board::getBishopMoves(const Position position, const Side side) const {
         slidingAttack(noWestOne, posIndex, oppositeBoard);
 }
 
-Rawboard Board::getRookMoves(const Position position, const Side side) const {
-    const Rawboard posIndex = posInd(position);
-    const Rawboard oppositeBoard = OPPOSITE(side);
+Rawboard Board::getRookMoves(const Position position, const Rawboard oppositeBoard) const {
+	const Rawboard posIndex = posInd(position);
 
     return slidingAttack(northOne, posIndex, oppositeBoard) |
         slidingAttack(eastOne, posIndex, oppositeBoard) |
@@ -351,8 +346,17 @@ Rawboard Board::getRookMoves(const Position position, const Side side) const {
         slidingAttack(westOne, posIndex, oppositeBoard);
 }
 
-Rawboard Board::getQueenMoves(const Position position, const Side side) const {
-    return getBishopMoves(position, side) | getRookMoves(position, side);
+Rawboard Board::getQueenMoves(const Position position, const Rawboard oppositeBoard) const {
+	const Rawboard posIndex = posInd(position);
+
+	return slidingAttack(noEastOne, posIndex, oppositeBoard) |
+		slidingAttack(soEastOne, posIndex, oppositeBoard) |
+		slidingAttack(soWestOne, posIndex, oppositeBoard) |
+		slidingAttack(noWestOne, posIndex, oppositeBoard) |
+		slidingAttack(northOne, posIndex, oppositeBoard) |
+		slidingAttack(eastOne, posIndex, oppositeBoard) |
+		slidingAttack(southOne, posIndex, oppositeBoard) |
+		slidingAttack(westOne, posIndex, oppositeBoard);
 }
 
 Rawboard Board::getKingMoves(const Position position, const Side side, const CastlingInfo castlingInfo) const {
@@ -368,7 +372,7 @@ Rawboard Board::getKingAttacks(const Position position, const Side side) const {
 
 Rawboard Board::getKingCastling(const Side side, const CastlingInfo castlingInfo) const {
     const Rawboard board = pieceBoards[WKing + side];
-    const Position position = Utils::getFirstPos(board);
+    const Position position = FIRST_POS(board);
     return getKingCastling(position, side, castlingInfo);
 }
 
@@ -416,18 +420,15 @@ Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard pos
 }
 
 // sliding piece
-Rawboard Board::rookAttack(const Position position, const Side side) const {
-    const Rawboard occupied = ~EMPTY;
-    const Rawboard notSide = ~BOARD(side);
+Rawboard Board::rookAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
     return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position)) & notSide;
 }
 
-Rawboard Board::bishopAttack(const Position position, const Side side) const {
-    const Rawboard occupied = ~EMPTY;
-    const Rawboard notSide = ~BOARD(side);;
+Rawboard Board::bishopAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
     return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 }
 
-Rawboard Board::queenAttacks(const Position position, const Side side) const {
-    return rookAttack(position, side) | bishopAttack(position, side);
+Rawboard Board::queenAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
+	return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position) |
+			noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 }

@@ -10,6 +10,14 @@
 
 using namespace std;
 
+// NOTE La slidingAttack va molto bene quando abbiamo una scacchiera densa, perche' e' iterativo e si ferma all'ostacolo
+// Il RayAttacks fa sempre gli stessi calcoli, quindi in ambienti spogli va molto meglio
+// Scacchiera densa: Ray e' 1/3 piu' lento di Sliding
+// Scacchiera spoglia: Sliding e' 4/5 piu' lento di Ray
+// TODO test aggiuntivi con scacchiere casuali (a diminuire di numero di pezzi)
+
+
+
 
 TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	GTEST_SKIP();
@@ -101,42 +109,61 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int i = 1; i < 10000000; ++i) {
-		gameInitial->getBoard().getQueenAttacks(WHITE);
-		gameInitial->getBoard().getQueenAttacks(BLACK);
+	for (int i = 1; i < 100000000; ++i) {
+		//gameInitial->getBoard().getQueenAttacks(WHITE);
+		//gameInitial->getBoard().getQueenAttacks(BLACK);
 		gamePerft2->getBoard().getQueenAttacks(WHITE);
 		gamePerft2->getBoard().getQueenAttacks(BLACK);
 		gamePerft3->getBoard().getQueenAttacks(WHITE);
 		gamePerft3->getBoard().getQueenAttacks(BLACK);
 		gamePerft4->getBoard().getQueenAttacks(WHITE);
 		gamePerft4->getBoard().getQueenAttacks(BLACK);
-		gamePerft5->getBoard().getQueenAttacks(WHITE);
-		gamePerft5->getBoard().getQueenAttacks(BLACK);
+		/*gamePerft5->getBoard().getQueenAttacks(WHITE);
+		gamePerft5->getBoard().getQueenAttacks(BLACK);*/
 		gamePerft6->getBoard().getQueenAttacks(WHITE);
 		gamePerft6->getBoard().getQueenAttacks(BLACK);
 	}
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 1450
-	// 1900     (attacks)
+	// 1200
+	// 1636     (attacks)
+
+	// 990
+	// 10300
 }
 
 TEST(BoardPerformanceTest, stuffTest) {
     GTEST_SKIP();
-    Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-    Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
+    //Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
+    /*Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
     Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
     Game* boardPerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
     Game* boardPerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);
+    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);*/
+	Game* game = FEN::fenToNewGame("3k4/8/8/8/1Q6/8/8/4K3 w - - 0 1");
 
     auto begin = chrono::steady_clock::now();
 
-    for (int i = 1; i < 1000000000; ++i) {
-        boardInitial->getBoard().getRookAttacks(WHITE);
+    for (int i = 1; i < 100000000; ++i) {
+		/*const Rawboard posIndex = BoardUtils::posInd(33);
+		const Rawboard oppositeBoard = game->getBoard().OPPOSITE(WHITE);
+		Rawboard attack = game->getBoard().slidingAttack(Board::soWestOne, posIndex, oppositeBoard);*/
+		//BoardUtils::printBoard(attack);
+
+		/*const Rawboard occupied = ~game->getBoard().EMPTY;
+		const Rawboard notSide = ~game->getBoard().BOARD(WHITE);
+		Rawboard attack = Board::soWestAttack(occupied, 33)  & notSide;*/
+		//BoardUtils::printBoard(attack);
+
+		game->getBoard().getQueenAttacks(WHITE);
     }
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
+	// sliding	4900
+	// blocker	1250
+
+	// queen sliding	3056	1080
+	// queen blocker	2138	1289
 }

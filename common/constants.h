@@ -10,6 +10,9 @@
 using namespace std;
 
 
+#define FIRST_POS(x) (__builtin_ctzll(x))
+#define FIRST_POS_REVERSE(x) (63 - __builtin_clzll(x))
+
 #define WHITE 0
 #define BLACK (WHITE + SIDE_GAP)
 

@@ -24,7 +24,7 @@ TEST(BoardTest, allBoardsTest) {
 
 TEST(BoardTest, isEmptyTest) {
 	Board board;
-	for (Position i = 0; i < 63; ++i) {
+	for (Position i = 0; i < 64; ++i) {
 		GTEST_ASSERT_TRUE(board.isEmpty(i));
 	}
 	board.setPiece(5, WPawn);
@@ -265,6 +265,8 @@ TEST_P(GetKingAttacksTest, getKingAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKingAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -287,6 +289,8 @@ TEST_P(GetKingMovesTest, getKingMovesTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKingMoves(params->side, game->getCastlingInfo()), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -317,6 +321,8 @@ TEST_P(GetQueenAttacksTest, getQueenAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getQueenAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -339,6 +345,8 @@ TEST_P(GetRookAttacksTest, getRookAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getRookAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -361,6 +369,8 @@ TEST_P(GetBishopAttacksTest, getBishopAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getBishopAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -383,6 +393,8 @@ TEST_P(GetKnightAttacksTest, getKnightAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKnightAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -405,6 +417,8 @@ TEST_P(GetPawnMovesTest, getPawnMovesTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnMoves(params->side, game->getEnPassantPosition()), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -450,6 +464,8 @@ TEST_P(GetSinglePawnMovesTest, getSinglePawnMovesTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnMoves(params->position, params->side, game->getEnPassantPosition()), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -470,6 +486,8 @@ TEST_P(GetPawnAttacksTest, getPawnAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnAttacks(params->side), *params->expectedPositions));
+	delete params;
+	delete game;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -546,40 +564,43 @@ TEST(BoardTest, getKnightPositionsTest) {
 
 TEST(BoardTest, getBishopPositionsTest) {
     Board board;
-    EXPECT_EQ(board.getBishopMoves(0, BLACK), 0x8040201008040200LL);
-    EXPECT_EQ(board.getBishopMoves(7, BLACK), 0x102040810204000LL);
-    EXPECT_EQ(board.getBishopMoves(63, BLACK), 0x40201008040201LL);
-    EXPECT_EQ(board.getBishopMoves(56, BLACK), 0x2040810204080LL);
-    EXPECT_EQ(board.getBishopMoves(54, BLACK), 0xa000a01008040201LL);
+	const Rawboard opposite = board.OPPOSITE(BLACK);
+    EXPECT_EQ(board.getBishopMoves(0, opposite), 0x8040201008040200LL);
+    EXPECT_EQ(board.getBishopMoves(7, opposite), 0x102040810204000LL);
+    EXPECT_EQ(board.getBishopMoves(63, opposite), 0x40201008040201LL);
+    EXPECT_EQ(board.getBishopMoves(56, opposite), 0x2040810204080LL);
+    EXPECT_EQ(board.getBishopMoves(54, opposite), 0xa000a01008040201LL);
     board.setPiece(27, BPawn);
-    EXPECT_EQ(board.getBishopMoves(54, WHITE), 0xa000a01008000000LL);
-    EXPECT_EQ(board.getBishopMoves(54, BLACK), 0xa000a01000000000LL);
+    EXPECT_EQ(board.getBishopMoves(54, board.OPPOSITE(WHITE)), 0xa000a01008000000LL);
+    EXPECT_EQ(board.getBishopMoves(54, board.OPPOSITE(BLACK)), 0xa000a01000000000LL);
 
 }
 
 TEST(BoardTest, getRookPositionsTest) {
     Board board;
-    EXPECT_EQ(board.getRookMoves(0, BLACK), 0x1010101010101feLL);
-    EXPECT_EQ(board.getRookMoves(7, BLACK), 0x808080808080807fLL);
-    EXPECT_EQ(board.getRookMoves(63, BLACK), 0x7f80808080808080LL);
-    EXPECT_EQ(board.getRookMoves(56, BLACK), 0xfe01010101010101LL);
-    EXPECT_EQ(board.getRookMoves(54, BLACK), 0x40bf404040404040LL);
+	const Rawboard opposite = board.OPPOSITE(BLACK);
+    EXPECT_EQ(board.getRookMoves(0, opposite), 0x1010101010101feLL);
+    EXPECT_EQ(board.getRookMoves(7, opposite), 0x808080808080807fLL);
+    EXPECT_EQ(board.getRookMoves(63, opposite), 0x7f80808080808080LL);
+    EXPECT_EQ(board.getRookMoves(56, opposite), 0xfe01010101010101LL);
+    EXPECT_EQ(board.getRookMoves(54, opposite), 0x40bf404040404040LL);
     board.setPiece(30, BPawn);
-    EXPECT_EQ(board.getRookMoves(54, WHITE), 0x40bf404040000000LL);
-    EXPECT_EQ(board.getRookMoves(54, BLACK), 0x40bf404000000000LL);
+    EXPECT_EQ(board.getRookMoves(54, board.OPPOSITE(WHITE)), 0x40bf404040000000LL);
+    EXPECT_EQ(board.getRookMoves(54, board.OPPOSITE(BLACK)), 0x40bf404000000000LL);
 
 }
 
 TEST(BoardTest, getQueenPositionsTest) {
     Board board;
-    EXPECT_EQ(board.getQueenMoves(0, BLACK), 0x81412111090503feLL);
-    EXPECT_EQ(board.getQueenMoves(7, BLACK), 0x8182848890a0c07fLL);
-    EXPECT_EQ(board.getQueenMoves(63, BLACK), 0x7fc0a09088848281LL);
-    EXPECT_EQ(board.getQueenMoves(56, BLACK), 0xfe03050911214181LL);
-    EXPECT_EQ(board.getQueenMoves(54, BLACK), 0xe0bfe05048444241LL);
+	const Rawboard opposite = board.OPPOSITE(BLACK);
+    EXPECT_EQ(board.getQueenMoves(0, opposite), 0x81412111090503feLL);
+    EXPECT_EQ(board.getQueenMoves(7, opposite), 0x8182848890a0c07fLL);
+    EXPECT_EQ(board.getQueenMoves(63, opposite), 0x7fc0a09088848281LL);
+    EXPECT_EQ(board.getQueenMoves(56, opposite), 0xfe03050911214181LL);
+    EXPECT_EQ(board.getQueenMoves(54, opposite), 0xe0bfe05048444241LL);
     board.setPiece(51, BPawn);
-    EXPECT_EQ(board.getQueenMoves(54, WHITE), 0xe0b8e05048444241LL);
-    EXPECT_EQ(board.getQueenMoves(54, BLACK), 0xe0b0e05048444241LL);
+    EXPECT_EQ(board.getQueenMoves(54, board.OPPOSITE(WHITE)), 0xe0b8e05048444241LL);
+    EXPECT_EQ(board.getQueenMoves(54, board.OPPOSITE(BLACK)), 0xe0b0e05048444241LL);
 }
 
 TEST(BoardTest, getKingPositionTest) {
@@ -688,6 +709,8 @@ TEST(BoardTest, attackTest1) {
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49, 56));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33, 32));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 8, 17, 26));
+
+	delete game;
 }
 
 TEST(BoardTest, attackTest2) {
@@ -702,6 +725,8 @@ TEST(BoardTest, attackTest2) {
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 17, 26));
+
+	delete game;
 }
 
 TEST(BoardTest,  attackTest3) {
@@ -716,6 +741,8 @@ TEST(BoardTest,  attackTest3) {
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 17, 26));
+
+	delete game;
 }
 
 TEST(BoardTest, attackTest4) {
@@ -730,4 +757,6 @@ TEST(BoardTest, attackTest4) {
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34));
     GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 26));
+
+	delete game;
 }

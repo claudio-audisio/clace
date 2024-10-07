@@ -21,7 +21,7 @@ public:
 		}*/
 
 		while (sources) {
-            const Position position = Utils::getFirstPos(sources);
+            const Position position = FIRST_POS(sources);
 			
 			if (game.getCheckStatus().isDoubleCheck() && !game.isKing(position)) {
 				sources &= (sources - 1);
@@ -29,11 +29,12 @@ public:
 			}
 
             const Piece piece = game.getPiece(position);
-			Rawboard destinations = Positions::getDestinationPositions(game, position, piece);
+			const Rawboard opposite = game.getBoard().OPPOSITE(side);
+			Rawboard destinations = Positions::getDestinationPositions(game, position, piece, opposite);
             unsigned int count = 0;
 
 			while (destinations) {
-                const Position destination = Utils::getFirstPos(destinations);
+                const Position destination = FIRST_POS(destinations);
 				Move move = MoveHelper::getMove(position, destination, side);
 				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), game.isComputerToMove());
 

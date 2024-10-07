@@ -54,9 +54,9 @@ public:
     Rawboard getPawnAttacks(Side side) const;
     Rawboard getPawnAttacks(Position position, Side side) const;
     Rawboard getKnightMoves(Position position, Side side) const;
-    Rawboard getBishopMoves(Position position, Side side) const;
-    Rawboard getRookMoves(Position position, Side side) const;
-    Rawboard getQueenMoves(Position position, Side side) const;
+    Rawboard getBishopMoves(Position position, Rawboard oppositeBoard) const;
+    Rawboard getRookMoves(Position position, Rawboard oppositeBoard) const;
+    Rawboard getQueenMoves(Position position, Rawboard oppositeBoard) const;
     Rawboard getKingMoves(Position position, Side side, CastlingInfo castlingInfo) const;
     Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
 
@@ -192,9 +192,9 @@ private:
     Rawboard getKingAttacks(Position position, Side side) const;
     Rawboard getKingCastling(Side side, CastlingInfo castlingInfo) const;
     Rawboard getKingCastling(Position position, Side side, CastlingInfo castlingInfo) const;
-    Rawboard rookAttack(Position position, Side side) const;
-    Rawboard bishopAttack(Position position, Side side) const;
-    Rawboard queenAttacks(Position position, Side side) const;
+    static Rawboard rookAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+    static Rawboard bishopAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+    static Rawboard queenAttacks(Position position, Rawboard occupied, Rawboard notSide);
 
     // Mask for right shift that add ones
     inline static Rawboard RIGHT_SHIFT_MSK(const unsigned int len) {
@@ -239,7 +239,7 @@ private:
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
         if (blocker) {
-            const Position firstBlockPos = Utils::getFirstPos(blocker);
+			const Position firstBlockPos = FIRST_POS(blocker);
             attacks ^= direction(firstBlockPos);
         }
         return attacks;
@@ -249,7 +249,7 @@ private:
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
         if (blocker) {
-            const Position firstBlockPos = Utils::getFirstPosRevers(blocker);
+            const Position firstBlockPos = FIRST_POS_REVERSE(blocker);
             attacks ^= direction(firstBlockPos);
         }
         return attacks;
