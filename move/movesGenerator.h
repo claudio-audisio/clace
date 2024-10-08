@@ -13,7 +13,21 @@ class MovesGenerator {
 public:
 
 	static void generateLegalMoves(Game& game, vector<Move>& moves) {
+		generatePseudoLegalMoves(game, moves);
+		auto it = moves.begin();
+
+		while (it != moves.end()) {
+			if (!isValid(game, *it)) {
+				it = moves.erase(it);
+			} else {
+				++it;
+			}
+		}
+	}
+
+	static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
 		const Side side = game.getSideToMove();
+		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
 		Rawboard sources = game.getRawBoard(side);
 
 		/*if (MoveHelper::toString(game.getLastMove()) == "c4-f7") {
@@ -21,22 +35,21 @@ public:
 		}*/
 
 		while (sources) {
-            const Position position = FIRST_POS(sources);
+            const Position position = Utils::getFirstPos(sources);
 			
-			if (game.getCheckStatus().isDoubleCheck() && !game.isKing(position)) {
+			if (game.getCheckStatus().isDoubleCheck() && !game.getBoard().isKing(position)) {
 				sources &= (sources - 1);
 				continue;
 			}
 
-            const Piece piece = game.getPiece(position);
-			const Rawboard opposite = game.getBoard().OPPOSITE(side);
-			Rawboard destinations = Positions::getDestinationPositions(game, position, piece, opposite);
+            const Piece piece = game.getBoard().getPiece(position);
+			Rawboard destinations = Positions::getDestinationPositions(game, position, piece);
             unsigned int count = 0;
 
 			while (destinations) {
-                const Position destination = FIRST_POS(destinations);
+                const Position destination = Utils::getFirstPos(destinations);
 				Move move = MoveHelper::getMove(position, destination, side);
-				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), game.isComputerToMove());
+				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), isComputerToMove);
 
                 /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
                     int stop = 1;
@@ -49,42 +62,25 @@ public:
 				if (MoveHelper::isPawnPromotion(move)) {
 					for (Piece promotion : PieceHelper::getPromotionTypes(side)) {
 						Move promotionMove = MoveHelper::getMove(position, destination, side);
-						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), game.isComputerToMove());
+						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), isComputerToMove);
 						MoveHelper::setPromotion(promotionMove, promotion);
-						
-						if (isValid(game, promotionMove)) {
-                            moves.push_back(promotionMove);
-						}/* else {
-                            int notValid = 1;
-                        }*/
+						moves.push_back(promotionMove);
 					}
 				}
-				else if (isValid(game, move)) {
-                    /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
-                        cout << game.printMovesHistory() << ", " << MoveHelper::toString(move) << " - " << game.printCastlingInfo() << endl;
-                    }*/
+				else {
 					moves.push_back(move);
-				}/* else {
-                    int notValid = 1;
-                }*/
+				}
 
 				destinations &= (destinations - 1);
 			}
 
 			sources &= (sources - 1);
 		}
-
-        // TODO
-        // Dovrei tenere una cache con le mosse gia' calcolate a partire da una data scacchiere utilizzando anche enPassant e Castling
-        // Se viene fatta una mossa non reversibile allora posso svuotare la cache
-        // Come chiave potrei utilizzare una sorta di FEN ristretto
 	}
 
 	static bool isValid(Game& game, Move& move) {
-		//game.lightSave();
 		game.simulateMove(move);
 		const bool checkControl = game.checkControl(move);
-		//game.lightRollback();
         game.undoSimulateMove(move);
 
 		return checkControl;

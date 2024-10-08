@@ -27,16 +27,15 @@ public:
 		Rawboard positions = game.getBoard().BOARD(side);
 
 		while(positions) {
-			const Position position = FIRST_POS(positions);
-			const Piece piece = game.getPiece(position);
-			const Rawboard oppositeBoard = game.getBoard().OPPOSITE(side);
+			const Position position = Utils::getFirstPos(positions);
+			const Piece piece = game.getBoard().getPiece(position);
 
 			if (PieceHelper::isPawn(piece)) {
 				const Rawboard pawnAttacks = game.getBoard().getPawnAttacks(position, side);
 				game.getCheckStatus().updateAllCheckPositions(pawnAttacks);
 				game.getCheckStatus().addCheckPosition(position, pawnAttacks);
 			} else if (PieceHelper::isRook(piece)) {
-				const Rawboard rookAttacks = game.getBoard().getRookMoves(position, oppositeBoard);
+				const Rawboard rookAttacks = game.getBoard().getRookMoves(position, side);
 				game.getCheckStatus().updateAllCheckPositions(rookAttacks);
 				game.getCheckStatus().addCheckPosition(position, rookAttacks);
 				game.getCheckStatus().addXRayPosition(position, rookAttacks);
@@ -45,12 +44,12 @@ public:
 				game.getCheckStatus().updateAllCheckPositions(knightAttacks);
 				game.getCheckStatus().addCheckPosition(position, knightAttacks);
 			} else if (PieceHelper::isBishop(piece)) {
-				const Rawboard bishopAttacks = game.getBoard().getBishopMoves(position, oppositeBoard);
+				const Rawboard bishopAttacks = game.getBoard().getBishopMoves(position, side);
 				game.getCheckStatus().updateAllCheckPositions(bishopAttacks);
 				game.getCheckStatus().addCheckPosition(position, bishopAttacks);
 				game.getCheckStatus().addXRayPosition(position, bishopAttacks);
 			} else if (PieceHelper::isQueen(piece)) {
-				const Rawboard queenAttacks = game.getBoard().getQueenMoves(position, oppositeBoard);
+				const Rawboard queenAttacks = game.getBoard().getQueenMoves(position, side);
 				game.getCheckStatus().updateAllCheckPositions(queenAttacks);
 				game.getCheckStatus().addCheckPosition(position, queenAttacks);
 				game.getCheckStatus().addXRayPosition(position, queenAttacks);
@@ -79,33 +78,33 @@ public:
 		return 0;
     }
 
-    static Rawboard getDestinationPositions(const Game& game, const Position position, const Rawboard opposite) {
-        return getDestinationPositions(game, position, game.getPiece(position), opposite);
+    static Rawboard getDestinationPositions(Game& game, const Position position) {
+        return getDestinationPositions(game, position, game.getBoard().getPiece(position));
     }
     
-    static Rawboard getDestinationPositions(const Game& game, const Position position, const Piece piece, const Rawboard opposite) {
+    static Rawboard getDestinationPositions(Game& game, const Position position, const Piece piece) {
         switch (piece) {
             case WPawn: return game.getBoard().getPawnMoves(position, WHITE, game.getEnPassantPosition());
             case BPawn: return game.getBoard().getPawnMoves(position, BLACK, game.getEnPassantPosition());
-            case WRook: return game.getBoard().getRookMoves(position, opposite);
-            case BRook: return game.getBoard().getRookMoves(position, opposite);
+            case WRook: return game.getBoard().getRookMoves(position, WHITE);
+            case BRook: return game.getBoard().getRookMoves(position, BLACK);
             case WKnight: return game.getBoard().getKnightMoves(position, WHITE);
             case BKnight: return game.getBoard().getKnightMoves(position, BLACK);
-            case WBishop: return game.getBoard().getBishopMoves(position, opposite);
-            case BBishop: return game.getBoard().getBishopMoves(position, opposite);
-            case WQueen: return game.getBoard().getQueenMoves(position, opposite);
-            case BQueen: return game.getBoard().getQueenMoves(position, opposite);
+            case WBishop: return game.getBoard().getBishopMoves(position, WHITE);
+            case BBishop: return game.getBoard().getBishopMoves(position, BLACK);
+            case WQueen: return game.getBoard().getQueenMoves(position, WHITE);
+            case BQueen: return game.getBoard().getQueenMoves(position, BLACK);
             case WKing: return game.getBoard().getKingMoves(position, WHITE, game.getCastlingInfo());
             case BKing: return game.getBoard().getKingMoves(position, BLACK, game.getCastlingInfo());
             default: return 0;
         };
     }
 
-    static unordered_set<Position>* getPiecePositions(const Game& game, const unordered_set<Piece>& pieces) {
+    static unordered_set<Position>* getPiecePositions(Game& game, const unordered_set<Piece>& pieces) {
         unordered_set<Position>* positions = new unordered_set<Position>();
 
         for (Position i = 0; i < 64; i++) {
-            if (pieces.find(game.getPiece(i)) != pieces.end()) {
+            if (pieces.find(game.getBoard().getPiece(i)) != pieces.end()) {
                 positions->insert(i);
             }
         }
@@ -163,15 +162,13 @@ public:
         return abs(getRow(firstPosition) - getRow(secondPosition)) == abs(getColumn(firstPosition) - getColumn(secondPosition));
     }
 
-    static bool isOnXRay(const Game& game, const Position sourcePosition, const Position excludePosition) {
+    static bool isOnXRay(Game& game, const Position sourcePosition, const Position excludePosition) {
         unordered_set<Position>* piecePositions = getPiecePositions(game, PieceHelper::getXRayTypes(game.getOppositeSide()));
         piecePositions->erase(excludePosition);
-
         Rawboard xRayPositions = 0;
-		const Rawboard opposite = game.getBoard().OPPOSITE(game.getOppositeSide());
 
         for (Position position : *piecePositions) {
-            xRayPositions |= getDestinationPositions(game, position, opposite);
+            xRayPositions |= getDestinationPositions(game, position);
         }
 
         return BoardUtils::isUnderCheck(xRayPositions, sourcePosition);

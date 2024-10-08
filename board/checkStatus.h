@@ -12,14 +12,14 @@ public:
 	CheckStatus();
 	~CheckStatus();
 
-    void updateAllCheckPositions(const Rawboard newPositions);
-    void addCheckPosition(const Position position, const Rawboard newPositions);
-    void addXRayPosition(const Position position, const Rawboard newPositions);
-    void updateStatus(const Position kingPosition, const Move move);
+    void updateAllCheckPositions(Rawboard newPositions);
+    void addCheckPosition(Position position, Rawboard newPositions);
+    void addXRayPosition(Position position, Rawboard newPositions);
+    void updateStatus(Position kingPosition, Move move);
     void reset();
     void set(const CheckStatus& checkStatus);
 
-    const Rawboard getAllCheckPositions() const {
+    Rawboard getAllCheckPositions() const {
         return allCheckPositions;
     }
 
@@ -31,19 +31,19 @@ public:
         return xRayPositions;
     }
 
-    const bool isCheck() const {
+    bool isCheck() const {
         return check;
     }
 
-    const bool isDoubleCheck() const {
+    bool isDoubleCheck() const {
         return doubleCheck;
     }
 
-    const bool isDiscoveryCheck() const {
+    bool isDiscoveryCheck() const {
         return discoveryCheck;
     }
 
-    const bool isCheckmate() const {
+    bool isCheckmate() const {
         return checkmate;
     }
 

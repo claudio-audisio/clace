@@ -4,7 +4,9 @@
 #include <unordered_set>
 #include <string>
 #include <cstring>
+#include <assert.h>
 
+#include "../common/constants.h"
 #include "../board/piece.h"
 
 using namespace std;
@@ -18,11 +20,27 @@ public:
 	inline static const unordered_set<Piece> BLACK_XRAY_PIECES = unordered_set<Piece>{ BRook, BBishop, BQueen };
 
 	static bool isWhite(const Piece piece) {
-		return piece % 2;
+		return piece > Empty && piece % 2;
 	}
 
 	static bool isBlack(const Piece piece) {
-		return piece != Empty && !isWhite(piece);
+		return piece > Empty && (piece % 2 == 0);
+	}
+
+	static Side getSide(const Piece piece) {
+		if (piece > 0) {
+			return piece % 2 ? WHITE : BLACK;
+		}
+
+		assert(false);
+	}
+
+	static Side getOppositeSide(const Piece piece) {
+		if (piece > 0) {
+			return piece % 2 ? BLACK : WHITE;
+		}
+
+		assert(false);
 	}
 
 	static bool isEmpty(const Piece piece) {

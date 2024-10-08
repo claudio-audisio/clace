@@ -64,7 +64,7 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
         game->save();
         game->applyMove(move);
         const unsLL newNodes = runBulkPerft(currentDepth - 1);
-		/*if (currentDepth == 3) {
+		/*if (currentDepth == 2) {
 			cout << ++counter << "\t" << MoveHelper::toString(move) << "\t" << newNodes << endl;
 		}*/
         nodes += newNodes;

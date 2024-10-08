@@ -17,7 +17,7 @@ public:
         cache.reserve(size);
     }
 
-    void add(const Game& game, const vector<Move>& moves) {
+    void add(Game& game, const vector<Move>& moves) {
         add(FEN::gameToFENKey(game), moves);
     }
 
@@ -25,7 +25,7 @@ public:
         cache.insert(make_pair(game, moves));
     }
 
-    bool get(const Game& game, vector<Move>& moves) {
+    bool get(Game& game, vector<Move>& moves) {
         return get(FEN::gameToFENKey(game), moves);
     }
 

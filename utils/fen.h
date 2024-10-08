@@ -37,7 +37,7 @@ public:
         delete tokens;
     }
 
-    static string gameToFEN(const Game& game) {
+    static string gameToFEN(Game& game) {
         string fenBoard;
         fenBoard.append(chessBoardToFEN(game.getBoard()));
         fenBoard.append(string(1, SEPARATOR));
@@ -54,7 +54,7 @@ public:
     }
 
     // TODO scrivere test per FENKey
-    static string gameToFENKey(const Game& game) {
+    static string gameToFENKey(Game& game) {
         string fenKey;
         fenKey.append(chessBoardToFENKey(game.getBoard()));
         fenKey.append(game.isWhiteToMove() ? "w" : "b");
@@ -63,7 +63,7 @@ public:
         return fenKey;
     }
 
-    static Game* mirrorGame(const Game& game) {
+    static Game* mirrorGame(Game& game) {
         return fenToNewGame(mirrorFenGame(gameToFEN(game)));
     }
 
@@ -106,12 +106,12 @@ private:
 
             if (c > 48 && c < 58) {
                 for (int j = 0; j < (c - 48); j++) {
-                    game.setEmptyPiece(start++);
+                    game.getBoard().setEmpty(start++);
                 }
             }
             else {
                 const Piece piece = FEN_TO_PIECE.at(c);
-                game.setPiece(start++, piece);
+                game.getBoard().setPiece(start++, piece);
                 game.incrementPlayerPieces(piece);
             }
         }

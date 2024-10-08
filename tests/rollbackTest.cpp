@@ -16,7 +16,8 @@ TEST(RollbackTest, rollbackTest1) {
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	Move move = MoveHelper::getMove(48, 32, true);
+	Move move = MoveHelper::getMove(48, 32, WHITE);
+	MoveHelper::decorate(move, WPawn);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 1);
@@ -35,21 +36,24 @@ TEST(RollbackTest, rollbackInfo2Test) {
 	Rollback* rollback = new Rollback();
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
-	Move move = MoveHelper::getMove(57, 40, true);
+	Move move = MoveHelper::getMove(57, 40, WHITE);
+	MoveHelper::decorate(move, WKnight);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 1);
 
 	game.applyMove(move);
 
-	move = MoveHelper::getMove(40, 57, true);
+	move = MoveHelper::getMove(40, 57, WHITE);
+	MoveHelper::decorate(move, WKnight);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 2);
 
 	game.applyMove(move);
 
-	move = MoveHelper::getMove(57, 40, true);
+	move = MoveHelper::getMove(57, 40, WHITE);
+	MoveHelper::decorate(move, WKnight);
 	rollback->save(game);
 
 	EXPECT_EQ(rollback->getRollbackSize(), 3);

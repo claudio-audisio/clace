@@ -14,7 +14,7 @@ public:
 	Rollback();
 	~Rollback();
 
-	void save(const Game& game);
+	void save(Game& game);
 	void rollback(Game& game);
 	/*void lightSave(const Game& game);
 	void lightRollback(Game& game);*/

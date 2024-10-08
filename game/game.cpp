@@ -32,12 +32,8 @@ void Game::initPlayers(Player* white, Player* black) {
 	blackPlayer = black;
 }
 
-Piece Game::rawMove(const Position source, const Position destination, const Piece piece) {
-	return board.move(source, destination, piece);
-}
-
 MoveResult Game::finalizeMove(Move& move) {
-	Piece captured = rawMove(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
+	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
 	updateKingPosition(move);
     CastlingHelper::update(castlingInfo, move);
 	updateEnPassantInfo(move);
@@ -62,9 +58,7 @@ MoveResult Game::finalizeMove(Move& move) {
         processCapture(captured, MoveHelper::getSide(move));
     }
 
-	//board.update();
-
-	if (captured == Empty && !MoveHelper::isPawnPromotion(move) && !isPawn(MoveHelper::getDestinationPosition(move))) {
+	if (captured == Empty && !MoveHelper::isPawnPromotion(move) && !board.isPawn(MoveHelper::getDestinationPosition(move))) {
 		halfMoveClock++;
 	}
 	else {
@@ -94,7 +88,7 @@ void Game::applyMoves(list<Move>& moves) {
 }
 
 void Game::simulateMove(Move& move) {
-	Piece captured = rawMove(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
+	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
 	updateKingPosition(move);
 
     if (MoveHelper::isPawnPromotion(move)) {
@@ -111,12 +105,11 @@ void Game::simulateMove(Move& move) {
     }
 
     MoveHelper::setCaptured(move, captured);
-	//board.update();
 }
 
 void Game::undoSimulateMove(Move& move) {
 	board.setPiece(MoveHelper::getSourcePosition(move), MoveHelper::getPiece(move));
-	board.setPiece(MoveHelper::getDestinationPosition(move), Empty);
+	board.setEmpty(MoveHelper::getDestinationPosition(move));
     const Piece captured = MoveHelper::getCaptured(move);
 
     if (captured != Empty) {
@@ -133,7 +126,6 @@ void Game::undoSimulateMove(Move& move) {
 
     // Undo Pawn promotion is not needed because undoing original move we have already moved a Pawn
     undoKingPosition(move);
-	//board.update();
 }
 
 void Game::undoKingPosition(Move& move) {
@@ -149,17 +141,17 @@ void Game::undoKingPosition(Move& move) {
 
 void Game::undoCastlingMove(Move& move) {
     switch (MoveHelper::getDestinationPosition(move)) {
-        case 2: rawMove(3, 0, BRook); break;
-        case 6: rawMove(5, 7, BRook); break;
-        case 58: rawMove(59, 56, WRook); break;
-        case 62: rawMove(61, 63, WRook); break;
+        case 2: board.move(3, 0, BRook); break;
+        case 6: board.move(5, 7, BRook); break;
+        case 58: board.move(59, 56, WRook); break;
+        case 62: board.move(61, 63, WRook); break;
         default: break;
     }
 }
 
 void Game::undoEnPassant(Move& move) {
     const Position destination = MoveHelper::getDestinationPosition(move) + (MoveHelper::isWhite(move) ? 8 : -8);
-    setPiece(destination, MoveHelper::isWhite(move) ? BPawn : WPawn);
+    board.setPiece(destination, MoveHelper::isWhite(move) ? BPawn : WPawn);
 }
 
 void Game::verifyChecks() {
@@ -185,10 +177,6 @@ bool Game::checkFiveFoldRepetitions() {
 	// TODO
 	return false;
 }
-
-/*bool Game::isUnderCheck(const Position position, const bool white) {
-	return board.isUnderCheck(position, white);
-}*/
 
 bool Game::checkControl(const Move& move) {
 	const Side side = MoveHelper::getSide(move);
@@ -250,17 +238,17 @@ void Game::updateEnPassantInfo(const Move& move) {
 
 void Game::completeCastlingMove(const Move& move) {
 	switch (MoveHelper::getDestinationPosition(move)) {
-		case 2: rawMove(0, 3, BRook); break;
-		case 6: rawMove(7, 5, BRook); break;
-		case 58: rawMove(56, 59, WRook); break;
-		case 62: rawMove(63, 61, WRook); break;
+		case 2: board.move(0, 3, BRook); break;
+		case 6: board.move(7, 5, BRook); break;
+		case 58: board.move(56, 59, WRook); break;
+		case 62: board.move(63, 61, WRook); break;
 		default: break;
 	}
 }
 
 Piece Game::completeEnPassant(const Move& move) {
 	const Position destination = MoveHelper::getDestinationPosition(move) + (MoveHelper::isWhite(move) ? 8 : -8);
-	return setEmptyPiece(destination);
+	return board.setEmpty(destination);
 }
 
 void Game::completePawnPromotion(const Move& move) {
@@ -271,7 +259,7 @@ void Game::completePawnPromotion(const Move& move) {
 	}
 
 	//System.out.print("Pawn promotion --> " + MoveHelper::getPieceTypeForPawnPromotion().name());
-	setPiece(MoveHelper::getDestinationPosition(move), promotionPiece);
+	board.setPiece(MoveHelper::getDestinationPosition(move), promotionPiece);
 }
 
 bool Game::processCapture(const Piece piece, const Side side) {
@@ -294,18 +282,6 @@ void Game::changeTurn() {
 	sideToMove = BoardUtils::opposite(sideToMove);
 }
 
-Piece Game::getPiece(const Position position) const {
-	return board.getPiece(position);
-}
-
-Piece Game::setPiece(const Position position, const Piece piece) {
-	return board.setPiece(position, piece);
-}
-
-Piece Game::setEmptyPiece(const Position position) {
-	return setPiece(position, Empty);
-}
-
 Side Game::getSide(Position position) const {
 	if (board.isEmpty(position)) {
 		assert(false);
@@ -318,61 +294,16 @@ Side Game::getSide(Position position) const {
 	return BLACK;
 }
 
-bool Game::isEmpty(const Position position) const {
-	return board.isEmpty(position);
-}
-
-bool Game::isPawn(const Position position) const {
-	return board.isPawn(position);
-}
-
-bool Game::isRook(const Position position) const {
-	return board.isRook(position);
-}
-
-bool Game::isRook(const Position position, const Side side) const {
-	return board.isRook(position, side);
-}
-
-bool Game::isKing(const Position position) const {
-	return board.isKing(position);
-}
-
-bool Game::isWhiteKingCastling() const {
-	return CastlingHelper::isWhiteKingCastling(castlingInfo);
-}
-
-bool Game::isWhiteQueenCastling() const {
-	return CastlingHelper::isWhiteQueenCastling(castlingInfo);
-}
-
-bool Game::isBlackKingCastling() const {
-	return CastlingHelper::isBlackKingCastling(castlingInfo);
-}
-
-bool Game::isBlackQueenCastling() const {
-	return CastlingHelper::isBlackQueenCastling(castlingInfo);
-}
-
 void Game::save() {
 	rollback.save(*this);
 }
-
-/*void Game::lightSave() {
-	rollback.lightSave(*this);
-}*/
 
 void Game::rollbackLastMove() {
 	checkStatus.reset();
 	movesHistory.pop_front();
 	lastMove = movesHistory.empty() ? 0 : movesHistory.front();
 	rollback.rollback(*this);
-	//board.update();
 }
-
-/*void Game::lightRollback() {
-	rollback.lightRollback(*this);
-}*/
 
 /*
 public Evaluation evaluate(Move move) {
@@ -443,12 +374,6 @@ Game* Game::duplicate() {
 	newGame->setPlayerPieces(*this);
 	return newGame;
 }
-
-/*
-Rawboard Game::getRawBoard() {
-	return getRawBoard(isWhiteToMove());
-}
-*/
 
 Rawboard Game::getRawBoard(const Side side) const {
 	return board.BOARD(side);

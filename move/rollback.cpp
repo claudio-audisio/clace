@@ -7,7 +7,7 @@ Rollback::Rollback() {
 Rollback::~Rollback() {
 }
 
-void Rollback::save(const Game& game) {
+void Rollback::save(Game& game) {
 	MoveInfo* moveInfo = new MoveInfo();
 	moveInfo->setBoard(game.getBoard());
 	moveInfo->sideToMove = game.getSideToMove();

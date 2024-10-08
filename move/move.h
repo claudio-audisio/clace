@@ -39,6 +39,10 @@ public:
 		return move;
 	}
 
+	static void decorate(Move& move, const Piece piece) {
+		decorate(move, piece, NO_POS, true);
+	}
+
 	static void decorate(Move& move, const Piece piece, const Position enPassantPosition, const bool isComputerToMove) {
 		setPiece(move, piece);
 		const bool white = PieceHelper::isWhite(piece);

@@ -22,7 +22,6 @@ public:
 	void initFromFEN(const string& fenPosition);
 	void initPlayers();
 	void initPlayers(Player* white, Player* black);
-	Piece rawMove(Position source, Position destination, Piece piece);
 	MoveResult finalizeMove(Move& move);
 	MoveResult applyMove(Move& move);
 	void applyMoves(list<Move>& moves);
@@ -35,7 +34,6 @@ public:
 	EndGameType checkEndGame(bool noMoves);
 	EndGameType checkFiftyMoveRule();
 	bool checkFiveFoldRepetitions();
-	//bool isUnderCheck(Position position, bool white);
 	bool checkControl(const Move& move);
 	void setKingPositions();
 	void updateKingPosition(const Move& move);
@@ -45,26 +43,9 @@ public:
 	void completePawnPromotion(const Move& move);
 	bool processCapture(Piece piece, Side side);
 	void changeTurn();
-	Piece getPiece(Position position) const;
-	Piece setPiece(Position position, Piece piece);
-	Piece setEmptyPiece(Position position);
-	/*bool checkColor(Position position) const;
-	bool checkColor(Position position, bool white) const;
-	bool checkColor(const Move& move) const;*/
 	Side getSide(Position position) const;
-	bool isEmpty(Position position) const;
-	bool isPawn(Position position) const;
-	bool isRook(Position position) const;
-	bool isRook(Position position, Side side) const;
-	bool isKing(Position position) const;
-	bool isWhiteKingCastling() const;
-	bool isWhiteQueenCastling() const;
-	bool isBlackKingCastling() const;
-	bool isBlackQueenCastling() const;
 	void save();
-	//void lightSave();
 	void rollbackLastMove();
-	//void lightRollback();
 	Player* getCurrentPlayer() const;
 	bool isComputerToMove() const;
 	void setLastMove(const Move& move);
@@ -80,12 +61,8 @@ public:
 		this->board.set(b);
 	}
 
-	const Board& getBoard() const {
+	Board& getBoard() {
 		return board;
-	}
-
-	void update() {
-		board.update();
 	}
 
 	void setWhiteKingPosition(Position position) {

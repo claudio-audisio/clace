@@ -29,7 +29,7 @@ TEST(BoardTest, isEmptyTest) {
 	}
 	board.setPiece(5, WPawn);
 	GTEST_ASSERT_FALSE(board.isEmpty(5));
-	board.setPiece(5, Empty);
+	board.setEmpty(5);
 	GTEST_ASSERT_TRUE(board.isEmpty(5));
 }
 
@@ -320,7 +320,7 @@ class GetQueenAttacksTest : public ::testing::TestWithParam<TestParams*> {};
 TEST_P(GetQueenAttacksTest, getQueenAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getQueenAttacks(params->side), *params->expectedPositions));
+	GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getQueenAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -564,43 +564,40 @@ TEST(BoardTest, getKnightPositionsTest) {
 
 TEST(BoardTest, getBishopPositionsTest) {
     Board board;
-	const Rawboard opposite = board.OPPOSITE(BLACK);
-    EXPECT_EQ(board.getBishopMoves(0, opposite), 0x8040201008040200LL);
-    EXPECT_EQ(board.getBishopMoves(7, opposite), 0x102040810204000LL);
-    EXPECT_EQ(board.getBishopMoves(63, opposite), 0x40201008040201LL);
-    EXPECT_EQ(board.getBishopMoves(56, opposite), 0x2040810204080LL);
-    EXPECT_EQ(board.getBishopMoves(54, opposite), 0xa000a01008040201LL);
+    EXPECT_EQ(board.getBishopMoves(0, BLACK), 0x8040201008040200LL);
+    EXPECT_EQ(board.getBishopMoves(7, BLACK), 0x102040810204000LL);
+    EXPECT_EQ(board.getBishopMoves(63, BLACK), 0x40201008040201LL);
+    EXPECT_EQ(board.getBishopMoves(56, BLACK), 0x2040810204080LL);
+    EXPECT_EQ(board.getBishopMoves(54, BLACK), 0xa000a01008040201LL);
     board.setPiece(27, BPawn);
-    EXPECT_EQ(board.getBishopMoves(54, board.OPPOSITE(WHITE)), 0xa000a01008000000LL);
-    EXPECT_EQ(board.getBishopMoves(54, board.OPPOSITE(BLACK)), 0xa000a01000000000LL);
+    EXPECT_EQ(board.getBishopMoves(54, WHITE), 0xa000a01008000000LL);
+    EXPECT_EQ(board.getBishopMoves(54, BLACK), 0xa000a01000000000LL);
 
 }
 
 TEST(BoardTest, getRookPositionsTest) {
     Board board;
-	const Rawboard opposite = board.OPPOSITE(BLACK);
-    EXPECT_EQ(board.getRookMoves(0, opposite), 0x1010101010101feLL);
-    EXPECT_EQ(board.getRookMoves(7, opposite), 0x808080808080807fLL);
-    EXPECT_EQ(board.getRookMoves(63, opposite), 0x7f80808080808080LL);
-    EXPECT_EQ(board.getRookMoves(56, opposite), 0xfe01010101010101LL);
-    EXPECT_EQ(board.getRookMoves(54, opposite), 0x40bf404040404040LL);
+    EXPECT_EQ(board.getRookMoves(0, BLACK), 0x1010101010101feLL);
+    EXPECT_EQ(board.getRookMoves(7, BLACK), 0x808080808080807fLL);
+    EXPECT_EQ(board.getRookMoves(63, BLACK), 0x7f80808080808080LL);
+    EXPECT_EQ(board.getRookMoves(56, BLACK), 0xfe01010101010101LL);
+    EXPECT_EQ(board.getRookMoves(54, BLACK), 0x40bf404040404040LL);
     board.setPiece(30, BPawn);
-    EXPECT_EQ(board.getRookMoves(54, board.OPPOSITE(WHITE)), 0x40bf404040000000LL);
-    EXPECT_EQ(board.getRookMoves(54, board.OPPOSITE(BLACK)), 0x40bf404000000000LL);
+    EXPECT_EQ(board.getRookMoves(54, WHITE), 0x40bf404040000000LL);
+    EXPECT_EQ(board.getRookMoves(54, BLACK), 0x40bf404000000000LL);
 
 }
 
 TEST(BoardTest, getQueenPositionsTest) {
     Board board;
-	const Rawboard opposite = board.OPPOSITE(BLACK);
-    EXPECT_EQ(board.getQueenMoves(0, opposite), 0x81412111090503feLL);
-    EXPECT_EQ(board.getQueenMoves(7, opposite), 0x8182848890a0c07fLL);
-    EXPECT_EQ(board.getQueenMoves(63, opposite), 0x7fc0a09088848281LL);
-    EXPECT_EQ(board.getQueenMoves(56, opposite), 0xfe03050911214181LL);
-    EXPECT_EQ(board.getQueenMoves(54, opposite), 0xe0bfe05048444241LL);
+    EXPECT_EQ(board.getQueenMoves(0, BLACK), 0x81412111090503feLL);
+    EXPECT_EQ(board.getQueenMoves(7, BLACK), 0x8182848890a0c07fLL);
+    EXPECT_EQ(board.getQueenMoves(63, BLACK), 0x7fc0a09088848281LL);
+    EXPECT_EQ(board.getQueenMoves(56, BLACK), 0xfe03050911214181LL);
+    EXPECT_EQ(board.getQueenMoves(54, BLACK), 0xe0bfe05048444241LL);
     board.setPiece(51, BPawn);
-    EXPECT_EQ(board.getQueenMoves(54, board.OPPOSITE(WHITE)), 0xe0b8e05048444241LL);
-    EXPECT_EQ(board.getQueenMoves(54, board.OPPOSITE(BLACK)), 0xe0b0e05048444241LL);
+    EXPECT_EQ(board.getQueenMoves(54, WHITE), 0xe0b8e05048444241LL);
+    EXPECT_EQ(board.getQueenMoves(54, BLACK), 0xe0b0e05048444241LL);
 }
 
 TEST(BoardTest, getKingPositionTest) {

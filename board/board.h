@@ -17,12 +17,12 @@ public:
     ~Board();
 
     void reset();
+	void resetOpposite();
+	void resetOpposite(Side side);
 	Rawboard BOARD(Side side) const;
 	Rawboard OPPOSITE(Side side) const;
-    /*Rawboard WHITE() const;
-    Rawboard BLACK() const;*/
+	Rawboard getOpposite(Side side);
     void setBoard(Piece boardIndex, Rawboard pieceBoard);
-	void update();
     bool isEmpty(Position position) const;
     bool isWhite(Position position) const;
     bool isBlack(Position position) const;
@@ -37,27 +37,41 @@ public:
 	Position getBlackKingPosition() const;
     Piece getPiece(Position position) const;
     Piece setPiece(Position position, Piece piece);
+	Piece setEmpty(Position position);
     Piece move(Position source, Position destination, Piece piece);
     void set(const Board& board);
-    bool isUnderCheck(Position position, Side side) const;
-	Rawboard getAttacks(Side side) const;
-    /*Rawboard getWhiteAttacks() const;
-    Rawboard getBlackAttacks() const;*/
-    Rawboard getKingAttacks(Side side) const;
-    Rawboard getKingMoves(Side side, CastlingInfo castlingInfo) const;
-    Rawboard getQueenAttacks(Side side) const;
-    Rawboard getRookAttacks(Side side) const;
-    Rawboard getBishopAttacks(Side side) const;
-    Rawboard getKnightAttacks(Side side) const;
-    Rawboard getPawnMoves(Side side, Position enPassantPos) const;
-    Rawboard getPawnMoves(Position position, Side side, Position enPassantPos) const;
-    Rawboard getPawnAttacks(Side side) const;
-    Rawboard getPawnAttacks(Position position, Side side) const;
-    Rawboard getKnightMoves(Position position, Side side) const;
-    Rawboard getBishopMoves(Position position, Rawboard oppositeBoard) const;
-    Rawboard getRookMoves(Position position, Rawboard oppositeBoard) const;
-    Rawboard getQueenMoves(Position position, Rawboard oppositeBoard) const;
-    Rawboard getKingMoves(Position position, Side side, CastlingInfo castlingInfo) const;
+    bool isUnderCheck(Position position, Side side);
+
+	Rawboard getAttacks(Side side);
+
+	Rawboard getQueenAttacks(Side side);
+	Rawboard getQueenMoves(Position position, Side side);
+	static Rawboard queenAttacks(Position position, Rawboard occupied, Rawboard notSide);
+
+	Rawboard getRookAttacks(Side side);
+	Rawboard getRookMoves(Position position, Side side);
+	static Rawboard rookAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+
+	Rawboard getBishopAttacks(Side side);
+	Rawboard getBishopMoves(Position position, Side side);
+	static Rawboard bishopAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+
+	Rawboard getKnightAttacks(Side side);
+	Rawboard getKnightMoves(Position position, Side side);
+
+	Rawboard getPawnMoves(Side side, Position enPassantPos);
+    Rawboard getPawnMoves(Position position, Side side, Position enPassantPos);
+    Rawboard getPawnAttacks(Side side);
+    Rawboard getPawnAttacks(Position position, Side side);
+	static Rawboard getPawnEnPassant(Rawboard position, Side side, Position enPassantPos) ;
+
+	Rawboard getKingMoves(Side side, CastlingInfo castlingInfo);
+    Rawboard getKingMoves(Position position, Side side, CastlingInfo castlingInfo);
+	Rawboard getKingAttacks(Side side);
+	Rawboard getKingAttacks(Position position, Side side);
+	Rawboard getKingCastling(Side side, CastlingInfo castlingInfo) const;
+	Rawboard getKingCastling(Position position, Side side, CastlingInfo castlingInfo) const;
+
     Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
 
     inline static Rawboard posInd(const Position position) {
@@ -185,17 +199,10 @@ public:
     Rawboard pieceBoards[SIZE];
     Piece piecePositions[64];
     Rawboard& EMPTY = pieceBoards[EMPTY_IND];
-	Rawboard sideBoards[2];
+	Rawboard opposite[2];
+	bool oppositeReady[2];
 
 private:
-    static Rawboard getPawnEnPassant(Rawboard position, Side side, Position enPassantPos) ;
-    Rawboard getKingAttacks(Position position, Side side) const;
-    Rawboard getKingCastling(Side side, CastlingInfo castlingInfo) const;
-    Rawboard getKingCastling(Position position, Side side, CastlingInfo castlingInfo) const;
-    static Rawboard rookAttack(Position position, Rawboard occupied, Rawboard notSide) ;
-    static Rawboard bishopAttack(Position position, Rawboard occupied, Rawboard notSide) ;
-    static Rawboard queenAttacks(Position position, Rawboard occupied, Rawboard notSide);
-
     // Mask for right shift that add ones
     inline static Rawboard RIGHT_SHIFT_MSK(const unsigned int len) {
         return len > 0 ? ~(0xffffffffffffffffLL << (64 - len)) : 0xffffffffffffffffLL;
@@ -234,25 +241,44 @@ private:
         return (start << 15) & NOT_H_COL;
     }
 
-    // ray attacks
-    inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-        Rawboard attacks = direction(position);
-        const Rawboard blocker = attacks & occupied;
-        if (blocker) {
-			const Position firstBlockPos = FIRST_POS(blocker);
-            attacks ^= direction(firstBlockPos);
-        }
-        return attacks;
-    }
+	// TODO per usare i ray attacks devo preclcolarmi le linee di attacco di ogni posizione per ogni pezzo
+	// Vedi https://www.chessprogramming.org/On_an_empty_Board#RayAttacks
 
-    inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+	// TODO Ragionando per ogni pezzo dovrei precalcolare le posizioni di attacco e di mossa per tutti i pezzi
+
+    // ray attacks
+    /*inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
         if (blocker) {
-            const Position firstBlockPos = FIRST_POS_REVERSE(blocker);
+			const Position firstBlockPos = Utils::getFirstPos(blocker);
             attacks ^= direction(firstBlockPos);
         }
         return attacks;
-    }
+    }*/
+
+	inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+		const Rawboard attacks = direction(position);
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		return attacks ^ direction(firstBlockPos);
+	}
+
+    /*inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+        Rawboard attacks = direction(position);
+        const Rawboard blocker = attacks & occupied;
+        if (blocker) {
+            const Position firstBlockPos = Utils::getFirstPosReverse(blocker);
+            attacks ^= direction(firstBlockPos);
+        }
+        return attacks;
+    }*/
+
+	inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+		const Rawboard attacks = direction(position);
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
+		return attacks ^ direction(firstBlockPos);
+	}
 
 };

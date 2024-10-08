@@ -3,6 +3,7 @@
 #include "../utils/fen.h"
 #include "../game/game.h"
 #include "../common/constants.h"
+#include "../utils/castlingHelper.h"
 
 using namespace std;
 
@@ -14,21 +15,21 @@ TEST(fenTest, fenToGameTest) {
 
 	FEN::fenToGame(fenPositions, game);
 
-	EXPECT_EQ(game.getPiece(0), BRook);
-	EXPECT_EQ(game.getPiece(1), Empty);
+	EXPECT_EQ(game.getBoard().getPiece(0), BRook);
+	EXPECT_EQ(game.getBoard().getPiece(1), Empty);
 	//...
-	EXPECT_EQ(game.getPiece(62), WKing);
-	EXPECT_EQ(game.getPiece(63), Empty);
+	EXPECT_EQ(game.getBoard().getPiece(62), WKing);
+	EXPECT_EQ(game.getBoard().getPiece(63), Empty);
 
 	EXPECT_EQ(game.getWhiteKingPosition(), 62);
 	EXPECT_EQ(game.getBlackKingPosition(), 4);
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 
-	GTEST_ASSERT_TRUE(game.isBlackKingCastling());
-	GTEST_ASSERT_TRUE(game.isBlackQueenCastling());
-	GTEST_ASSERT_FALSE(game.isWhiteKingCastling());
-	GTEST_ASSERT_FALSE(game.isWhiteQueenCastling());
+	GTEST_ASSERT_TRUE(CastlingHelper::isBlackKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(CastlingHelper::isBlackQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_FALSE(CastlingHelper::isWhiteKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_FALSE(CastlingHelper::isWhiteQueenCastling(game.getCastlingInfo()));
 
 	EXPECT_EQ(game.getEnPassantPosition(), NO_POS);
 
