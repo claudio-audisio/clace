@@ -4,6 +4,7 @@
 
 Board::Board() {
     reset();
+	initRayAttacks();
 }
 
 Board::~Board() {
@@ -22,6 +23,19 @@ void Board::reset() {
     }
 
 	resetOpposite();
+}
+
+void Board::initRayAttacks() {
+	for (int position = 0; position < 64; position++) {
+		rayAttacks[North][position] = northRay(position);
+		rayAttacks[NoEast][position] = noEastRay(position);
+		rayAttacks[East][position] = eastRay(position);
+		rayAttacks[SoEast][position] = soEastRay(position);
+		rayAttacks[South][position] = southRay(position);
+		rayAttacks[SoWest][position] = soWestRay(position);
+		rayAttacks[West][position] = westRay(position);
+		rayAttacks[NoWest][position] = noWestRay(position);
+	}
 }
 
 void Board::resetOpposite() {
@@ -52,19 +66,19 @@ Rawboard Board::OPPOSITE(const Side side) const {
 		   pieceBoards[BRook - side];
 }
 
-Rawboard Board::getOpposite(const Side side) {
+/*Rawboard Board::getOpposite(const Side side) {
 	if (!oppositeReady[side]) {
 		opposite[side] = OPPOSITE(side);
 		oppositeReady[side] = true;
 	}
 
 	return opposite[side];
-}
+}*/
 
 // TODO Use for performance testing of other methods
-/*Rawboard Board::getOpposite(const Side side) {
+Rawboard Board::getOpposite(const Side side) {
 	return OPPOSITE(side);
-}*/
+}
 
 void Board::setBoard(const Piece boardIndex, const Rawboard pieceBoard) {
     // TODO gestire piecePositions
@@ -221,13 +235,13 @@ Rawboard Board::getQueenAttacks(const Side side) {
 Rawboard Board::getRookAttacks(const Side side) {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WRook + side];
-	//const Rawboard occupied = ~EMPTY;
-	//const Rawboard notSide = ~BOARD(side);
+	const Rawboard occupied = ~EMPTY;
+	const Rawboard notSide = ~BOARD(side);
 
     while (board) {
         const Position position = Utils::getFirstPos(board);
-        attacks |= getRookMoves(position, side);       // OLD
-        //attacks |= rookAttack(position, occupied, notSide);
+        //attacks |= getRookMoves(position, side);       // OLD
+        attacks |= rookAttack(position, occupied, notSide);
         board &= (board - 1);
     }
 
@@ -237,13 +251,13 @@ Rawboard Board::getRookAttacks(const Side side) {
 Rawboard Board::getBishopAttacks(const Side side) {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WBishop + side];
-	//const Rawboard occupied = ~EMPTY;
-	//const Rawboard notSide = ~BOARD(side);
+	const Rawboard occupied = ~EMPTY;
+	const Rawboard notSide = ~BOARD(side);
 
     while (board) {
         const Position position = Utils::getFirstPos(board);
-        attacks |= getBishopMoves(position, side);       // OLD
-        //attacks |= bishopAttack(position, occupied, notSide);
+        //attacks |= getBishopMoves(position, side);       // OLD
+        attacks |= bishopAttack(position, occupied, notSide);
         board &= (board - 1);
     }
 

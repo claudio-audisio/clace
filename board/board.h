@@ -16,6 +16,7 @@ public:
     Board();
     ~Board();
 
+	void initRayAttacks();
     void reset();
 	void resetOpposite();
 	void resetOpposite(Side side);
@@ -46,15 +47,15 @@ public:
 
 	Rawboard getQueenAttacks(Side side);
 	Rawboard getQueenMoves(Position position, Side side);
-	static Rawboard queenAttacks(Position position, Rawboard occupied, Rawboard notSide);
+	Rawboard queenAttacks(Position position, Rawboard occupied, Rawboard notSide);
 
 	Rawboard getRookAttacks(Side side);
 	Rawboard getRookMoves(Position position, Side side);
-	static Rawboard rookAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+	Rawboard rookAttack(Position position, Rawboard occupied, Rawboard notSide) ;
 
 	Rawboard getBishopAttacks(Side side);
 	Rawboard getBishopMoves(Position position, Side side);
-	static Rawboard bishopAttack(Position position, Rawboard occupied, Rawboard notSide) ;
+	Rawboard bishopAttack(Position position, Rawboard occupied, Rawboard notSide) ;
 
 	Rawboard getKnightAttacks(Side side);
 	Rawboard getKnightMoves(Position position, Side side);
@@ -164,36 +165,36 @@ public:
         return antiDiagonalMask(position) & ((((Rawboard)1) << position) - 1);
     }
 
-    inline static Rawboard noWestAttack(const Rawboard occupied, const Position position) {
-        return getPositiveRayAttacks(occupied, noWestRay, position);
+    inline Rawboard noWestAttack(const Rawboard occupied, const Position position) {
+        return getPositiveRayAttacks_NEW(occupied, NoWest, position);
     }
 
-    inline static Rawboard northAttack(const Rawboard occupied, const Position position) {
-        return getPositiveRayAttacks(occupied, northRay, position);
+    inline Rawboard northAttack(const Rawboard occupied, const Position position) {
+        return getPositiveRayAttacks_NEW(occupied, North, position);
     }
 
-    inline static Rawboard noEastAttack(const Rawboard occupied, const Position position) {
-        return getPositiveRayAttacks(occupied, noEastRay, position);
+    inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
+        return getPositiveRayAttacks_NEW(occupied, NoEast, position);
     }
 
-    inline static Rawboard eastAttack(const Rawboard occupied, const Position position) {
-        return getNegativeRayAttacks(occupied, eastRay, position);
+    inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
+        return getNegativeRayAttacks_NEW(occupied, East, position);
     }
 
-    inline static Rawboard soEastAttack(const Rawboard occupied, const Position position) {
-        return getNegativeRayAttacks(occupied, soEastRay, position);
+    inline Rawboard soEastAttack(const Rawboard occupied, const Position position) {
+        return getNegativeRayAttacks_NEW(occupied, SoEast, position);
     }
 
-    inline static Rawboard southAttack(const Rawboard occupied, const Position position) {
-        return getNegativeRayAttacks(occupied, southRay, position);
+    inline Rawboard southAttack(const Rawboard occupied, const Position position) {
+        return getNegativeRayAttacks_NEW(occupied, South, position);
     }
 
-    inline static Rawboard soWestAttack(const Rawboard occupied, const Position position) {
-        return getNegativeRayAttacks(occupied, soWestRay, position);
+    inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
+        return getNegativeRayAttacks_NEW(occupied, SoWest, position);
     }
 
-    inline static Rawboard westAttack(const Rawboard occupied, const Position position) {
-        return getPositiveRayAttacks(occupied, westRay, position);
+    inline Rawboard westAttack(const Rawboard occupied, const Position position) {
+        return getPositiveRayAttacks_NEW(occupied, West, position);
     }
 
     Rawboard pieceBoards[SIZE];
@@ -201,6 +202,7 @@ public:
     Rawboard& EMPTY = pieceBoards[EMPTY_IND];
 	Rawboard opposite[2];
 	bool oppositeReady[2];
+	Rawboard rayAttacks[8][64];
 
 private:
     // Mask for right shift that add ones
@@ -264,6 +266,13 @@ private:
 		return attacks ^ direction(firstBlockPos);
 	}
 
+	inline Rawboard getNegativeRayAttacks_NEW(const Rawboard occupied, const unsigned char direction, const Position position) {
+		const Rawboard attacks = rayAttacks[direction][position];
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		return attacks ^ rayAttacks[direction][firstBlockPos];
+	}
+
     /*inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
         Rawboard attacks = direction(position);
         const Rawboard blocker = attacks & occupied;
@@ -279,6 +288,13 @@ private:
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
 		return attacks ^ direction(firstBlockPos);
+	}
+
+	inline Rawboard getPositiveRayAttacks_NEW(const Rawboard occupied, const unsigned char direction, const Position position) {
+		const Rawboard attacks = rayAttacks[direction][position];
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
+		return attacks ^ rayAttacks[direction][firstBlockPos];
 	}
 
 };

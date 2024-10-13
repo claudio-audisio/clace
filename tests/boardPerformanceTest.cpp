@@ -97,7 +97,7 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 // TODO test aggiuntivi con scacchiere casuali (a diminuire di numero di pezzi)
 
 TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -107,62 +107,34 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int i = 1; i < 100000000; ++i) {
-		/*gameInitial->getBoard().getQueenAttacks(WHITE);
-		gameInitial->getBoard().getQueenAttacks(BLACK);*/
+	for (int i = 1; i < 50000000; ++i) {
+		gameInitial->getBoard().getQueenAttacks(WHITE);
+		gameInitial->getBoard().getQueenAttacks(BLACK);
 		gamePerft2->getBoard().getQueenAttacks(WHITE);
 		gamePerft2->getBoard().getQueenAttacks(BLACK);
-		/*gamePerft3->getBoard().getQueenAttacks(WHITE);
+		gamePerft3->getBoard().getQueenAttacks(WHITE);
 		gamePerft3->getBoard().getQueenAttacks(BLACK);
-		/*gamePerft4->getBoard().getQueenAttacks(WHITE);
+		gamePerft4->getBoard().getQueenAttacks(WHITE);
 		gamePerft4->getBoard().getQueenAttacks(BLACK);
 		gamePerft5->getBoard().getQueenAttacks(WHITE);
 		gamePerft5->getBoard().getQueenAttacks(BLACK);
-		/*gamePerft6->getBoard().getQueenAttacks(WHITE);
-		gamePerft6->getBoard().getQueenAttacks(BLACK);*/
+		gamePerft6->getBoard().getQueenAttacks(WHITE);
+		gamePerft6->getBoard().getQueenAttacks(BLACK);
 	}
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 2500
-	// 4200     (attacks)
+	// 5937
+	// 5941     (attacks)
 }
 
 TEST(BoardPerformanceTest, stuffTest) {
     //GTEST_SKIP();
-    //Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-    /*Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
-    Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
-    Game* boardPerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
-    Game* boardPerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-    Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);*/
-	Game* game = FEN::fenToNewGame("3k4/8/8/8/1Q6/8/8/4K3 w - - 0 1");
 
-    /*auto begin = chrono::steady_clock::now();
-
-    for (int i = 1; i < 100000000; ++i) {
-		*//*const Rawboard posIndex = BoardUtils::posInd(33);
-		const Rawboard oppositeBoard = game->getBoard().OPPOSITE(WHITE);
-		Rawboard attack = game->getBoard().slidingAttack(Board::soWestOne, posIndex, oppositeBoard);*//*
-		//BoardUtils::printBoard(attack);
-
-		*//*const Rawboard occupied = ~game->getBoard().EMPTY;
-		const Rawboard notSide = ~game->getBoard().BOARD(WHITE);
-		Rawboard attack = Board::soWestAttack(occupied, 33)  & notSide;*//*
-		//BoardUtils::printBoard(attack);
-
-		game->getBoard().getQueenAttacks(WHITE);
-    }
-
-    cout << "time: " << Utils::getElapsedMillis(begin) << endl;*/
-
-	// sliding	4900
-	// blocker	1250
-
-	// queen sliding	3056	1080
-	// queen blocker	2138	1289
-
-
-
+	for (int pos = 0; pos < 64; pos++) {
+		BoardUtils::printBoard(Board::eastRay(pos));
+	}
 
 }
+
+
