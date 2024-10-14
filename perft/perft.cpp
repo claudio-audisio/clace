@@ -39,7 +39,7 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
 #ifdef USE_CACHE
 	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
-        MovesGenerator::calculateLegalMoves(*game, moves);
+        MovesGenerator::generateLegalMoves(*game, moves);
         cache->add(fenKey, moves);
         generatorUsage++;
     } else {
@@ -91,7 +91,7 @@ void Perft::runPerft(const unsigned int currentDepth) {
 #ifdef USE_CACHE
 	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
-        MovesGenerator::calculateLegalMoves(*game, moves);
+        MovesGenerator::generateLegalMoves(*game, moves);
         cache->add(fenKey, moves);
         generatorUsage++;
     } else {

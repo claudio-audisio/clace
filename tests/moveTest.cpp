@@ -8,6 +8,16 @@
 using namespace std;
 
 
+class BoardPerformanceTest : public testing::Test {
+protected:
+	BoardPerformanceTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~BoardPerformanceTest() {
+
+	}
+};
+
 class TestParams {
 public:
     TestParams(string stringMove, Side side, Position sourcePosition, Position destinationPosition) {

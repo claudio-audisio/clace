@@ -7,6 +7,10 @@
 
 class PerftTest : public testing::Test {
 protected:
+	PerftTest() {
+		BoardUtils::initRayAttacks();
+	}
+
     void checkBulkPerftResult(const unsLL nodes, const unsigned int depth, const unsigned int currentDepth, const Result& result) {
         if (currentDepth == depth) {
             EXPECT_EQ(result.getNodes(currentDepth - 1), nodes);
@@ -29,7 +33,7 @@ protected:
 };
 
 TEST_F(PerftTest, initialPositionBulkPerft) {
-    //GTEST_SKIP();
+    ////GTEST_SKIP();
     Perft* perft = new Perft(Positions::INITIAL_FEN_POSITION, DEPTH);
     Result* result = perft->runBulk();
 

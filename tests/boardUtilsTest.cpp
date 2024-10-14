@@ -6,6 +6,7 @@
 
 using namespace std;
 
+
 template <typename... SetOfPosition>
 bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
 	for (Position positionToCheck : {positions...}) {
@@ -23,7 +24,17 @@ bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
 	return true;
 }
 
-TEST(BoardUtilsTest, boardToListTest) {
+class BoardUtilsTest : public testing::Test {
+protected:
+	BoardUtilsTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~BoardUtilsTest() {
+
+	}
+};
+
+TEST_F(BoardUtilsTest, boardToListTest) {
 	Board board;
 	board.setPiece(2, WPawn);
 	board.setPiece(8, BPawn);
@@ -36,7 +47,7 @@ TEST(BoardUtilsTest, boardToListTest) {
 	GTEST_ASSERT_TRUE(containsAll(positions, 2, 8, 42, 58, 63));
 }
 
-TEST(BoardUtilsTest, positionsCountTest) {
+TEST_F(BoardUtilsTest, positionsCountTest) {
 	Board board;
 	EXPECT_EQ(BoardUtils::positionsCount(~board.EMPTY), 0);
 	board.setPiece(2, WPawn);

@@ -9,8 +9,17 @@
 
 using namespace std;
 
+class RollbackTest : public testing::Test {
+protected:
+	RollbackTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~RollbackTest() {
 
-TEST(RollbackTest, rollbackTest1) {
+	}
+};
+
+TEST_F(RollbackTest, rollbackTest1) {
 	Game game;
 	game.init();
 	Rollback* rollback = new Rollback();
@@ -30,7 +39,7 @@ TEST(RollbackTest, rollbackTest1) {
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
-TEST(RollbackTest, rollbackInfo2Test) {
+TEST_F(RollbackTest, rollbackInfo2Test) {
 	Game game;
 	game.init();
 	Rollback* rollback = new Rollback();
@@ -73,7 +82,7 @@ TEST(RollbackTest, rollbackInfo2Test) {
 }
 
 
-TEST(RollbackTest, rollbackInfoFailureTest) {
+TEST_F(RollbackTest, rollbackInfoFailureTest) {
 	GTEST_SKIP();
 	Game game;
 	game.init();
@@ -103,7 +112,7 @@ TEST(RollbackTest, rollbackInfoFailureTest) {
 	*/
 }
 
-TEST(RollbackTest, performanceTest) {
+TEST_F(RollbackTest, performanceTest) {
 	GTEST_SKIP();
 	list<long long> saveTimes;
 	list<long long> rollbackTimes;

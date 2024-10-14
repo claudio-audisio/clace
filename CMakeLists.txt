@@ -28,7 +28,8 @@ add_executable (clace
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
   "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
-		move/movesCache.h)
+		"move/movesCache.h" "common/bitwise.h"
+		utils/BoardUtils.cpp)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -38,7 +39,8 @@ add_library(claceLib
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
 	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp")
+  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp" "common/bitwise.h"
+		utils/BoardUtils.cpp)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")

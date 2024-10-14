@@ -53,7 +53,6 @@ public:
 	void resetPlayersPieces();
 	void incrementPlayerPieces(Piece piece);
 	Game* duplicate();
-    Rawboard getRawBoard(Side side) const;
     string printMovesHistory();
     string printCastlingInfo() const;
 

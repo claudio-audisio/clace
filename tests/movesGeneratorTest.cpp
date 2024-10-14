@@ -8,6 +8,17 @@
 
 using namespace std;
 
+
+class BoardPerformanceTest : public testing::Test {
+protected:
+	BoardPerformanceTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~BoardPerformanceTest() {
+
+	}
+};
+
 /* TODO da mettere a posto
 TEST(MovesGeneratorTest, calculateLegalMoves) {
 	Game* game = FEN::fenToNewGame("r7/8/8/8/8/1n6/1PPPPPPP/K7 w - - 0 1");
@@ -35,7 +46,12 @@ public:
 };
 
 
-class GetLegalMovesTest : public ::testing::TestWithParam<TestParams*> {};
+class GetLegalMovesTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetLegalMovesTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetLegalMovesTest, getLegalMovesTest) {
 	TestParams* params = GetParam();

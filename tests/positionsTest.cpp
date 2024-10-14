@@ -288,7 +288,12 @@ public:
     bool expectedResult;
 };
 
-class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {};
+class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {
+protected:
+	IsOnXRayTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(IsOnXRayTest, isOnXRayTest) {
     TestParams3* params = GetParam();

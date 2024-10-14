@@ -7,6 +7,7 @@
 
 
 Game::Game() {
+	BoardUtils::initRayAttacks();
 }
 
 Game::~Game() {
@@ -373,10 +374,6 @@ Game* Game::duplicate() {
 	newGame->getCheckStatus().set(checkStatus);
 	newGame->setPlayerPieces(*this);
 	return newGame;
-}
-
-Rawboard Game::getRawBoard(const Side side) const {
-	return board.BOARD(side);
 }
 
 string Game::printMovesHistory() {

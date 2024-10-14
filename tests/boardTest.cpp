@@ -7,7 +7,17 @@
 using namespace std;
 
 
-TEST(BoardTest, ConstructorTest) {
+class BoardTest : public testing::Test {
+protected:
+	BoardTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~BoardTest() {
+
+	}
+};
+
+TEST_F(BoardTest, ConstructorTest) {
 	Board board;
 	EXPECT_EQ(board .pieceBoards[0], 0xffffffffffffffff);
 	for (RawboardIndex i = 1; i < 13; i++) {
@@ -15,14 +25,14 @@ TEST(BoardTest, ConstructorTest) {
 	}
 }
 
-TEST(BoardTest, allBoardsTest) {
+TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-    Board board = game->getBoard();
+    Board& board = game->getBoard();
     EXPECT_EQ(~board.EMPTY, board.BOARD(WHITE) | board.BOARD(BLACK));
     delete game;
 }
 
-TEST(BoardTest, isEmptyTest) {
+TEST_F(BoardTest, isEmptyTest) {
 	Board board;
 	for (Position i = 0; i < 64; ++i) {
 		GTEST_ASSERT_TRUE(board.isEmpty(i));
@@ -33,7 +43,7 @@ TEST(BoardTest, isEmptyTest) {
 	GTEST_ASSERT_TRUE(board.isEmpty(5));
 }
 
-TEST(BoardTest, isWhiteTest) {
+TEST_F(BoardTest, isWhiteTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isWhite(i));
@@ -49,7 +59,7 @@ TEST(BoardTest, isWhiteTest) {
     GTEST_ASSERT_TRUE(board.isWhite(63));
 }
 
-TEST(BoardTest, isBlackTest) {
+TEST_F(BoardTest, isBlackTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isBlack(i));
@@ -65,7 +75,7 @@ TEST(BoardTest, isBlackTest) {
     GTEST_ASSERT_FALSE(board.isBlack(63));
 }
 
-TEST(BoardTest, isPawnTest) {
+TEST_F(BoardTest, isPawnTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isPawn(i));
@@ -78,7 +88,7 @@ TEST(BoardTest, isPawnTest) {
     GTEST_ASSERT_FALSE(board.isPawn(0));
 }
 
-TEST(BoardTest, isKnightTest) {
+TEST_F(BoardTest, isKnightTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isKnight(i));
@@ -91,7 +101,7 @@ TEST(BoardTest, isKnightTest) {
     GTEST_ASSERT_FALSE(board.isKnight(7));
 }
 
-TEST(BoardTest, isBishopTest) {
+TEST_F(BoardTest, isBishopTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isBishop(i));
@@ -104,7 +114,7 @@ TEST(BoardTest, isBishopTest) {
     GTEST_ASSERT_FALSE(board.isBishop(0));
 }
 
-TEST(BoardTest, isRookTest) {
+TEST_F(BoardTest, isRookTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isRook(i));
@@ -117,7 +127,7 @@ TEST(BoardTest, isRookTest) {
     GTEST_ASSERT_FALSE(board.isRook(0));
 }
 
-TEST(BoardTest, isQueenTest) {
+TEST_F(BoardTest, isQueenTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isQueen(i));
@@ -130,7 +140,7 @@ TEST(BoardTest, isQueenTest) {
     GTEST_ASSERT_FALSE(board.isQueen(0));
 }
 
-TEST(BoardTest, isKingTest) {
+TEST_F(BoardTest, isKingTest) {
     Board board;
     for (Position i = 0; i < 63; ++i) {
         GTEST_ASSERT_FALSE(board.isKing(i));
@@ -143,7 +153,7 @@ TEST(BoardTest, isKingTest) {
     GTEST_ASSERT_FALSE(board.isKing(0));
 }
 
-TEST(BoardTest, getPieceTest) {
+TEST_F(BoardTest, getPieceTest) {
     GTEST_SKIP_("fix Board::setBoard");
     Board board;
     for (Position i = 0; i < 63; ++i) {
@@ -158,7 +168,7 @@ TEST(BoardTest, getPieceTest) {
     EXPECT_EQ(board.getPiece(63), WRook);
 }
 
-TEST(BoardTest, setPieceTest) {
+TEST_F(BoardTest, setPieceTest) {
     Board board;
     Piece oldPiece = board.setPiece(4, BKing);
     EXPECT_EQ(oldPiece, Empty);
@@ -175,7 +185,7 @@ TEST(BoardTest, setPieceTest) {
     GTEST_ASSERT_TRUE(board.isQueen(4));
 }
 
-TEST(BoardTest, moveTest) {
+TEST_F(BoardTest, moveTest) {
     Board board;
     board.setPiece(4, BKing);
     Piece oldPiece = board.move(4, 12, BKing);
@@ -192,7 +202,7 @@ TEST(BoardTest, moveTest) {
     EXPECT_EQ(board.getPiece(12), WPawn);
 }
 
-TEST(BoardTest, setTest) {
+TEST_F(BoardTest, setTest) {
     Board board;
     Board newboard;
     newboard.setPiece(63, WPawn);
@@ -204,7 +214,7 @@ TEST(BoardTest, setTest) {
     GTEST_ASSERT_TRUE(board.isPawn(63));
 }
 
-TEST(BoardTest, isUnderCheckTest) {
+TEST_F(BoardTest, isUnderCheckTest) {
     Board board;
     board.setPiece(18, WQueen);
 
@@ -315,7 +325,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetQueenAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetQueenAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetQueenAttacksTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetQueenAttacksTest, getQueenAttacksTest) {
     TestParams* params = GetParam();
@@ -339,7 +354,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetRookAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetRookAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetRookAttacksTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetRookAttacksTest, getRookAttacksTest) {
     TestParams* params = GetParam();
@@ -363,7 +383,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetBishopAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetBishopAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetBishopAttacksTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetBishopAttacksTest, getBishopAttacksTest) {
     TestParams* params = GetParam();
@@ -387,7 +412,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetKnightAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetKnightAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetKnightAttacksTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetKnightAttacksTest, getKnightAttacksTest) {
     TestParams* params = GetParam();
@@ -411,7 +441,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetPawnMovesTest : public ::testing::TestWithParam<TestParams*> {};
+class GetPawnMovesTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetPawnMovesTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetPawnMovesTest, getPawnMovesTest) {
     TestParams* params = GetParam();
@@ -458,7 +493,12 @@ public:
 };
 
 
-class GetSinglePawnMovesTest : public ::testing::TestWithParam<TestParams2*> {};
+class GetSinglePawnMovesTest : public ::testing::TestWithParam<TestParams2*> {
+protected:
+	GetSinglePawnMovesTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetSinglePawnMovesTest, getSinglePawnMovesTest) {
     TestParams2* params = GetParam();
@@ -480,7 +520,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetPawnAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetPawnAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+	GetPawnAttacksTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(GetPawnAttacksTest, getPawnAttacksTest) {
     TestParams* params = GetParam();
@@ -506,7 +551,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-TEST(BoardTest, getPawnMovesTest) {
+TEST_F(BoardTest, getPawnMovesTest) {
     Board board;
     board.setPiece(49, WPawn);
     board.setPiece(40, BPawn);
@@ -550,7 +595,7 @@ TEST(BoardTest, getPawnMovesTest) {
     EXPECT_EQ(board.getPawnMoves(33, BLACK, 40), 0x30000000000LL);
 }
 
-TEST(BoardTest, getKnightPositionsTest) {
+TEST_F(BoardTest, getKnightPositionsTest) {
     Board board;
     EXPECT_EQ(board.getKnightMoves(0, BLACK), 0x20400LL);
     EXPECT_EQ(board.getKnightMoves(7, BLACK), 0x402000LL);
@@ -562,7 +607,7 @@ TEST(BoardTest, getKnightPositionsTest) {
     EXPECT_EQ(board.getKnightMoves(45, BLACK), 0x5008008850000000LL);
 }
 
-TEST(BoardTest, getBishopPositionsTest) {
+TEST_F(BoardTest, getBishopPositionsTest) {
     Board board;
     EXPECT_EQ(board.getBishopMoves(0, BLACK), 0x8040201008040200LL);
     EXPECT_EQ(board.getBishopMoves(7, BLACK), 0x102040810204000LL);
@@ -575,7 +620,7 @@ TEST(BoardTest, getBishopPositionsTest) {
 
 }
 
-TEST(BoardTest, getRookPositionsTest) {
+TEST_F(BoardTest, getRookPositionsTest) {
     Board board;
     EXPECT_EQ(board.getRookMoves(0, BLACK), 0x1010101010101feLL);
     EXPECT_EQ(board.getRookMoves(7, BLACK), 0x808080808080807fLL);
@@ -588,7 +633,7 @@ TEST(BoardTest, getRookPositionsTest) {
 
 }
 
-TEST(BoardTest, getQueenPositionsTest) {
+TEST_F(BoardTest, getQueenPositionsTest) {
     Board board;
     EXPECT_EQ(board.getQueenMoves(0, BLACK), 0x81412111090503feLL);
     EXPECT_EQ(board.getQueenMoves(7, BLACK), 0x8182848890a0c07fLL);
@@ -600,7 +645,7 @@ TEST(BoardTest, getQueenPositionsTest) {
     EXPECT_EQ(board.getQueenMoves(54, BLACK), 0xe0b0e05048444241LL);
 }
 
-TEST(BoardTest, getKingPositionTest) {
+TEST_F(BoardTest, getKingPositionTest) {
     Board board;
     EXPECT_EQ(board.getKingMoves(0, BLACK, (CastlingInfo)0b1111), 0x302LL);
     EXPECT_EQ(board.getKingMoves(7, BLACK, (CastlingInfo)0b1111), 0xc040LL);
@@ -620,7 +665,7 @@ TEST(BoardTest, getKingPositionTest) {
     EXPECT_EQ(board.getKingMoves(60, WHITE, (CastlingInfo)0b0011), 0x2838000000000000LL);
 }
 
-TEST(BoardTest, slidingAttackTest) {
+TEST_F(BoardTest, slidingAttackTest) {
     Board board;
     Rawboard posInd = Board::posInd(36);
     EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x8040200000000000LL);
@@ -632,7 +677,8 @@ TEST(BoardTest, slidingAttackTest) {
     GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.BOARD(WHITE)), 29));
 }
 
-TEST(BoardTest, masksTest) {
+// TODO move to BitwiseTest
+/*TEST_F(BoardTest, masksTest) {
     Board board;
     GTEST_ASSERT_TRUE(checkBoard(Board::lineMask(0), 0, 1, 2, 3, 4, 5, 6, 7));
     GTEST_ASSERT_TRUE(checkBoard(Board::columnMask(0), 0, 8, 16, 24, 32, 40, 48, 56));
@@ -655,7 +701,7 @@ TEST(BoardTest, masksTest) {
     GTEST_ASSERT_TRUE(checkBoard(board.antiDiagonalMask(63), 63));
 }
 
-TEST(BoardTest, raysTest) {
+TEST_F(BoardTest, raysTest) {
     Board board;
     GTEST_ASSERT_TRUE(checkBoardNoPos(board.northRay(0)));
     GTEST_ASSERT_TRUE(checkBoardNoPos(board.noEastRay(0)));
@@ -692,9 +738,9 @@ TEST(BoardTest, raysTest) {
     GTEST_ASSERT_TRUE(checkBoardNoPos(board.soWestRay(63)));
     GTEST_ASSERT_TRUE(checkBoard(board.westRay(63), 56, 57, 58, 59, 60, 61, 62));
     GTEST_ASSERT_TRUE(checkBoard(board.noWestRay(63), 0, 9, 18, 27, 36, 45, 54));
-}
+}*/
 
-TEST(BoardTest, attackTest1) {
+TEST_F(BoardTest, attackTest1) {
     Game* game = FEN::fenToNewGame("4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1");
     Rawboard occupied = ~game->getBoard().EMPTY;
 
@@ -710,7 +756,7 @@ TEST(BoardTest, attackTest1) {
 	delete game;
 }
 
-TEST(BoardTest, attackTest2) {
+TEST_F(BoardTest, attackTest2) {
     Game* game = FEN::fenToNewGame("4k3/8/1P1p1p2/8/1p1Q1P2/8/1P1P1p2/4K3 w - - 0 1");
     Rawboard occupied = ~game->getBoard().EMPTY;
 
@@ -726,7 +772,7 @@ TEST(BoardTest, attackTest2) {
 	delete game;
 }
 
-TEST(BoardTest,  attackTest3) {
+TEST_F(BoardTest,  attackTest3) {
     Game* game = FEN::fenToNewGame("4k3/p2P2P1/1P1p1p2/8/Pp1Q1Pp1/8/1P1P1p2/p2pK1P1 w - - 0 1");
     Rawboard occupied = ~game->getBoard().EMPTY;
 
@@ -742,7 +788,7 @@ TEST(BoardTest,  attackTest3) {
 	delete game;
 }
 
-TEST(BoardTest, attackTest4) {
+TEST_F(BoardTest, attackTest4) {
     Game* game = FEN::fenToNewGame("4k3/p2P2P1/8/2Ppp3/P1pQP1p1/2PPp3/8/p2pK1P1 w - - 0 1");
     Rawboard occupied = ~game->getBoard().EMPTY;
 

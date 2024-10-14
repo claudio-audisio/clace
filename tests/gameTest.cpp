@@ -9,7 +9,17 @@
 using namespace std;
 
 
-TEST(GameTest, ConstructorTest) {
+class GameTest : public testing::Test {
+protected:
+	GameTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~GameTest() {
+
+	}
+};
+
+TEST_F(GameTest, ConstructorTest) {
 	Game game;
 
 	for (Position i = 0; i < 64; i++) {
@@ -17,7 +27,7 @@ TEST(GameTest, ConstructorTest) {
 	}
 }
 
-TEST(GameTest, initTest) {
+TEST_F(GameTest, initTest) {
 	Game game;
 	game.init();
 
@@ -36,7 +46,7 @@ TEST(GameTest, initTest) {
 	EXPECT_EQ(FEN::gameToFEN(game), Positions::INITIAL_FEN_POSITION);
 }
 
-TEST(GameTest, setKingPositionsTest) {
+TEST_F(GameTest, setKingPositionsTest) {
 	Game game;
 	game.getBoard().setPiece(17, WKing);
 	game.getBoard().setPiece(42, BKing);
@@ -47,7 +57,7 @@ TEST(GameTest, setKingPositionsTest) {
 }
 
 
-TEST(GameTest, setPieceTest) {
+TEST_F(GameTest, setPieceTest) {
 	Game game;
 	Piece piece = game.getBoard().setPiece(0, WPawn);
 
@@ -58,7 +68,7 @@ TEST(GameTest, setPieceTest) {
 	EXPECT_EQ(piece, WPawn);
 }
 
-TEST(GameTest, setEmptyTest) {
+TEST_F(GameTest, setEmptyTest) {
 	Game game;
 	game.getBoard().setPiece(17, WPawn);
 	game.getBoard().setEmpty(17);
@@ -90,7 +100,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-TEST(GameTest, isWhiteTest) {
+TEST_F(GameTest, isWhiteTest) {
 	Game game;
 	game.getBoard().setPiece(0, WPawn);
 	game.getBoard().setPiece(1, BPawn);
@@ -244,7 +254,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-TEST(GameTest, verifyChecksWithEnPassantTest) {
+TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 	Game* game = FEN::fenToNewGame("k7/8/8/b7/8/1p6/8/4K3 w - - 0 1");
 	Move move = MoveHelper::getMove(35, 41, BLACK);
 	MoveHelper::decorate(move, BPawn, 41, true);
@@ -259,7 +269,12 @@ TEST(GameTest, verifyChecksWithEnPassantTest) {
 }
 
 
-class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameType>> {};
+class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameType>> {
+protected:
+	CheckEndGameTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(CheckEndGameTest, checkEndGameTest) {
 	string fenBoard = get<0>(GetParam());
@@ -300,7 +315,12 @@ public:
 	bool expectedResult;
 };
 
-class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {};
+class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {
+protected:
+	CheckControlTest() {
+		BoardUtils::initRayAttacks();
+	}
+};
 
 TEST_P(CheckControlTest, checkControlTest) {
 	TestParams4* params = GetParam();
@@ -343,7 +363,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-TEST(GameTest, duplicateTest) {
+TEST_F(GameTest, duplicateTest) {
 	const string fenBoard = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25";
 	Game* game = FEN::fenToNewGame(fenBoard);
 	game->setLastMove(MoveHelper::getMove("b7-a6", BLACK));

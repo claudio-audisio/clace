@@ -78,27 +78,33 @@ public:
 		return 0;
     }
 
-    static Rawboard getDestinationPositions(Game& game, const Position position) {
-        return getDestinationPositions(game, position, game.getBoard().getPiece(position));
-    }
-    
-    static Rawboard getDestinationPositions(Game& game, const Position position, const Piece piece) {
-        switch (piece) {
-            case WPawn: return game.getBoard().getPawnMoves(position, WHITE, game.getEnPassantPosition());
-            case BPawn: return game.getBoard().getPawnMoves(position, BLACK, game.getEnPassantPosition());
-            case WRook: return game.getBoard().getRookMoves(position, WHITE);
-            case BRook: return game.getBoard().getRookMoves(position, BLACK);
-            case WKnight: return game.getBoard().getKnightMoves(position, WHITE);
-            case BKnight: return game.getBoard().getKnightMoves(position, BLACK);
-            case WBishop: return game.getBoard().getBishopMoves(position, WHITE);
-            case BBishop: return game.getBoard().getBishopMoves(position, BLACK);
-            case WQueen: return game.getBoard().getQueenMoves(position, WHITE);
-            case BQueen: return game.getBoard().getQueenMoves(position, BLACK);
-            case WKing: return game.getBoard().getKingMoves(position, WHITE, game.getCastlingInfo());
-            case BKing: return game.getBoard().getKingMoves(position, BLACK, game.getCastlingInfo());
-            default: return 0;
-        };
-    }
+	/*static Rawboard getDestinationPositions(Game& game, const Position position) {
+		return getDestinationPositions(game, position, game.getBoard().getPiece(position));
+	}
+
+	static Rawboard getDestinationPositions(Game& game, const Position position, const Piece piece) {
+		switch (piece) {
+			case WPawn: return game.getBoard().getPawnMoves(position, WHITE, game.getEnPassantPosition());
+			case BPawn: return game.getBoard().getPawnMoves(position, BLACK, game.getEnPassantPosition());
+				*//*case WRook: return game.getBoard().getRookMoves(position, WHITE);
+				case BRook: return game.getBoard().getRookMoves(position, BLACK);*//*
+			case WRook: return game.getBoard().rookAttack(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(WHITE));
+			case BRook: return game.getBoard().rookAttack(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(BLACK));
+			case WKnight: return game.getBoard().getKnightMoves(position, WHITE);
+			case BKnight: return game.getBoard().getKnightMoves(position, BLACK);
+				*//*case WBishop: return game.getBoard().getBishopMoves(position, WHITE);
+				case BBishop: return game.getBoard().getBishopMoves(position, BLACK);*//*
+			case WBishop: return game.getBoard().bishopAttack(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(WHITE));
+			case BBishop: return game.getBoard().bishopAttack(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(BLACK));
+				*//*case WQueen: return game.getBoard().getQueenMoves(position, WHITE);
+				case BQueen: return game.getBoard().getQueenMoves(position, BLACK);*//*
+			case WQueen: return game.getBoard().queenAttacks(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(WHITE));
+			case BQueen: return game.getBoard().queenAttacks(position, ~game.getBoard().EMPTY, ~game.getBoard().BOARD(BLACK));
+			case WKing: return game.getBoard().getKingMoves(position, WHITE, game.getCastlingInfo());
+			case BKing: return game.getBoard().getKingMoves(position, BLACK, game.getCastlingInfo());
+			default: return 0;
+		};
+	}*/
 
     static unordered_set<Position>* getPiecePositions(Game& game, const unordered_set<Piece>& pieces) {
         unordered_set<Position>* positions = new unordered_set<Position>();
@@ -168,7 +174,7 @@ public:
         Rawboard xRayPositions = 0;
 
         for (Position position : *piecePositions) {
-            xRayPositions |= getDestinationPositions(game, position);
+            xRayPositions |= game.getBoard().getDestinationPositions(position, game.getEnPassantPosition(), game.getCastlingInfo());
         }
 
         return BoardUtils::isUnderCheck(xRayPositions, sourcePosition);

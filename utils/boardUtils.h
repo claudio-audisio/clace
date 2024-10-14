@@ -6,7 +6,6 @@
 #include "../clace.h"
 //#include "../common/boardDef.h"
 
-using namespace std;
 
 class BoardUtils {
 public:
@@ -65,5 +64,7 @@ public:
 	inline static Side opposite(const Side side) {
 		return (side + SIDE_GAP) % (SIDE_GAP * 2);
 	}
+
+	static void initRayAttacks();
 
 };

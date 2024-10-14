@@ -11,7 +11,17 @@
 using namespace std;
 
 
-TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
+class BoardPerformanceTest : public testing::Test {
+protected:
+	BoardPerformanceTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~BoardPerformanceTest() {
+
+	}
+};
+
+TEST_F(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	GTEST_SKIP();
 	vector<Move> moves;
     moves.reserve(5000);
@@ -58,7 +68,7 @@ TEST(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	// 2250     (attacks)
 }
 
-TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
+TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
 	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
@@ -96,8 +106,8 @@ TEST(BoardPerformanceTest, getAttacksPerformanceTest) {
 // Scacchiera spoglia: Sliding e' 4/5 piu' lento di Ray
 // TODO test aggiuntivi con scacchiere casuali (a diminuire di numero di pezzi)
 
-TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
-	//GTEST_SKIP();
+TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
+	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
@@ -128,11 +138,11 @@ TEST(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	// 5941     (attacks)
 }
 
-TEST(BoardPerformanceTest, stuffTest) {
-    //GTEST_SKIP();
+TEST_F(BoardPerformanceTest, stuffTest) {
+    GTEST_SKIP();
 
 	for (int pos = 0; pos < 64; pos++) {
-		BoardUtils::printBoard(Board::eastRay(pos));
+		//BoardUtils::printBoard(eastRay(pos));
 	}
 
 }

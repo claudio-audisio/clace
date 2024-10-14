@@ -8,8 +8,17 @@
 using namespace std;
 
 
+class fenTest : public testing::Test {
+protected:
+	fenTest() {
+		BoardUtils::initRayAttacks();
+	}
+	~fenTest() {
 
-TEST(fenTest, fenToGameTest) {
+	}
+};
+
+TEST_F(fenTest, fenToGameTest) {
 	const string fenPositions = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";	// position 4 of https://www.chessprogramming.org/Perft_Results
 	Game game;
 

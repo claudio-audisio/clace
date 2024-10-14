@@ -12,7 +12,7 @@ using namespace std;
 class MovesGenerator {
 public:
 
-	static void generateLegalMoves(Game& game, vector<Move>& moves) {
+	/*static void generateLegalMoves(Game& game, vector<Move>& moves) {
 		generatePseudoLegalMoves(game, moves);
 		auto it = moves.begin();
 
@@ -23,12 +23,13 @@ public:
 				++it;
 			}
 		}
-	}
+	}*/
 
-	static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
+	static void generateLegalMoves(Game& game, vector<Move>& moves) {
+	//static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
 		const Side side = game.getSideToMove();
 		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
-		Rawboard sources = game.getRawBoard(side);
+		Rawboard sources = game.getBoard().BOARD(side);
 
 		/*if (MoveHelper::toString(game.getLastMove()) == "c4-f7") {
 			int stop = 1;
@@ -43,7 +44,7 @@ public:
 			}
 
             const Piece piece = game.getBoard().getPiece(position);
-			Rawboard destinations = Positions::getDestinationPositions(game, position, piece);
+			Rawboard destinations = game.getBoard().getDestinationPositions(position, piece, game.getEnPassantPosition(), game.getCastlingInfo());
             unsigned int count = 0;
 
 			while (destinations) {
@@ -64,11 +65,16 @@ public:
 						Move promotionMove = MoveHelper::getMove(position, destination, side);
 						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), isComputerToMove);
 						MoveHelper::setPromotion(promotionMove, promotion);
-						moves.push_back(promotionMove);
+
+						if (isValid(game, promotionMove)) {
+							moves.push_back(promotionMove);
+						}
 					}
 				}
 				else {
-					moves.push_back(move);
+					if (isValid(game, move)) {
+						moves.push_back(move);
+					}
 				}
 
 				destinations &= (destinations - 1);

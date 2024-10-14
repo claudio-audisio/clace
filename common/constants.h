@@ -59,5 +59,3 @@ using namespace std;
 static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
 static const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQueen}, {'R', WRook}, {'N', WKnight}, {'B', WBishop}, {'P', WPawn}, {'k', BKing}, {'q', BQueen}, {'r', BRook}, {'n', BKnight}, {'b', BBishop}, {'p', BPawn}};
 static const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
-
-
