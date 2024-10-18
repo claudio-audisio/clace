@@ -28,7 +28,7 @@ public:
 	void simulateMove(Move& move);
     void undoSimulateMove(Move& move);
     void undoKingPosition(Move& move);
-    void undoCastlingMove(Move& move);
+    //void undoCastlingMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
 	EndGameType checkEndGame(bool noMoves);
@@ -38,7 +38,7 @@ public:
 	void setKingPositions();
 	void updateKingPosition(const Move& move);
 	void updateEnPassantInfo(const Move& move);
-	void completeCastlingMove(const Move& move);
+	//void completeCastlingMove(const Move& move);
 	Piece completeEnPassant(const Move& move);
 	void completePawnPromotion(const Move& move);
 	bool processCapture(Piece piece, Side side);
@@ -64,6 +64,10 @@ public:
 		return board;
 	}
 
+	Board getCopyBoard() {
+		return board;
+	}
+
 	void setWhiteKingPosition(Position position) {
 		whiteKingPosition = position;
 	}
@@ -72,11 +76,11 @@ public:
 		blackKingPosition = position;
 	}
 
-	Piece getWhiteKingPosition() const {
+	Position getWhiteKingPosition() const {
 		return whiteKingPosition;
 	}
 
-	Piece getBlackKingPosition() const {
+	Position getBlackKingPosition() const {
 		return blackKingPosition;
 	}
 
@@ -90,10 +94,6 @@ public:
 
 	Side getOppositeSide() const {
 		return BLACK - sideToMove;
-	}
-
-	CastlingInfo getCastlingInfo() const {
-		return castlingInfo;
 	}
 
 	Position getEnPassantPosition() const {
@@ -110,10 +110,6 @@ public:
 
 	void setSideToMove(const Side side) {
 		sideToMove = side;
-	}
-
-	void setCastlingInfo(const CastlingInfo info) {
-		castlingInfo = info;
 	}
 
 	void setEnPassantPosition(const Position position) {
@@ -160,12 +156,19 @@ public:
         nextMoves.clear();
     }
 
+	void setCastlingInfo(const CastlingInfo castlingInfo) {
+		board.castlingInfo = castlingInfo;
+	}
+
+	CastlingInfo getCastlingInfo() const {
+		return board.castlingInfo;
+	}
+
 private:
 	Board board;
     vector<Move> nextMoves;
 	deque<Move> movesHistory;	// TODO renderla thread safe
 	Rollback rollback;
-	CastlingInfo castlingInfo;
 	CheckStatus checkStatus;
 	Move lastMove = 0;
 	Side sideToMove;

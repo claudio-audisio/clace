@@ -11,7 +11,7 @@ using namespace std;
 class BoardPerformanceTest : public testing::Test {
 protected:
 	BoardPerformanceTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~BoardPerformanceTest() {
 
@@ -74,9 +74,8 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-// TODO da sistemare
-/*
-class TestParams2 {
+
+/*class TestParams2 {
 public:
     TestParams2(string fenGame, Position sourcePosition, Position destinationPosition, Piece piece, bool isCastling, bool isEnPassant, bool isPawnPromotion) {
         this->fenGame = fenGame;
@@ -116,7 +115,7 @@ INSTANTIATE_TEST_SUITE_P(
     MoveTest,
     DecorateTest,
     ::testing::Values(
-        new TestParams2(Positions::INITIAL_FEN_POSITION, 8, 16, BPawn, false, false, false),
+        new TestParams2(INITIAL_FEN_POSITION, 8, 16, BPawn, false, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 6, BKing, true, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 2, BKing, true, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 62, WKing, true, false, false),

@@ -7,7 +7,6 @@
 #include "utils/boardUtils.h"
 #include "board/board.h"
 #include "perft/perft.h"
-#include "utils/positions.h"
 
 using namespace std;
 
@@ -73,11 +72,11 @@ void managePerft() {
 
 string getFenPerft(const unsigned int index) {
     switch (index) {
-        default: return Positions::INITIAL_FEN_POSITION;
-        case 2: return Positions::PERFT_FEN_POSITION_2;
-        case 3: return Positions::PERFT_FEN_POSITION_3;
-        case 4: return Positions::PERFT_FEN_POSITION_4;
-        case 5: return Positions::PERFT_FEN_POSITION_5;
-        case 6: return Positions::PERFT_FEN_POSITION_6;
+        default: return INITIAL_FEN_POSITION;
+        case 2: return PERFT_FEN_POSITION_2;
+        case 3: return PERFT_FEN_POSITION_3;
+        case 4: return PERFT_FEN_POSITION_4;
+        case 5: return PERFT_FEN_POSITION_5;
+        case 6: return PERFT_FEN_POSITION_6;
     }
 }

@@ -7,6 +7,7 @@
 #include "../utils/positions.h"
 #include "../utils/utils.h"
 #include "../move/movesGenerator.h"
+#include "../move/move.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 class BoardPerformanceTest : public testing::Test {
 protected:
 	BoardPerformanceTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~BoardPerformanceTest() {
 
@@ -25,12 +26,12 @@ TEST_F(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	GTEST_SKIP();
 	vector<Move> moves;
     moves.reserve(5000);
-	Game* boardInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-	Game* boardPerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
-	Game* boardPerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
-	Game* boardPerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
-	Game* boardPerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-	Game* boardPerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);
+	Game* boardInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* boardPerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* boardPerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* boardPerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* boardPerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* boardPerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -64,18 +65,17 @@ TEST_F(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 1800
-	// 2250     (attacks)
+	// 1300
 }
 
 TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
 	GTEST_SKIP();
-	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
-	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
-	Game* gamePerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
-	Game* gamePerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-	Game* gamePerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -96,24 +96,17 @@ TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
 
-	// 5050
-	// 6950     (attacks)
+	// 1020
 }
-
-// NOTE La slidingAttack va molto bene quando abbiamo una scacchiera densa, perche' e' iterativo e si ferma all'ostacolo
-// Il RayAttacks fa sempre gli stessi calcoli, quindi in ambienti spogli va molto meglio
-// Scacchiera densa: Ray e' 1/3 piu' lento di Sliding
-// Scacchiera spoglia: Sliding e' 4/5 piu' lento di Ray
-// TODO test aggiuntivi con scacchiere casuali (a diminuire di numero di pezzi)
 
 TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	GTEST_SKIP();
-	Game* gameInitial = FEN::fenToNewGame(Positions::INITIAL_FEN_POSITION);
-	Game* gamePerft2 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
-	Game* gamePerft3 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_3);
-	Game* gamePerft4 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_4);
-	Game* gamePerft5 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_5);
-	Game* gamePerft6 = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_6);
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -138,13 +131,84 @@ TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	// 5941     (attacks)
 }
 
-TEST_F(BoardPerformanceTest, stuffTest) {
+TEST_F(BoardPerformanceTest, castlingPerformanceTest) {
     GTEST_SKIP();
 
-	for (int pos = 0; pos < 64; pos++) {
-		//BoardUtils::printBoard(eastRay(pos));
+	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
+	Move BQCastlingMove = MoveHelper::getMove(4, 2, BLACK);
+	MoveHelper::decorate(BQCastlingMove, BKing);
+	Move BKCastlingMove = MoveHelper::getMove(4, 6, BLACK);
+	MoveHelper::decorate(BKCastlingMove, BKing);
+	Move WQCastlingMove = MoveHelper::getMove(60, 58, WHITE);
+	MoveHelper::decorate(WQCastlingMove, WKing);
+	Move WKCastlingMove = MoveHelper::getMove(60, 62, WHITE);
+	MoveHelper::decorate(WKCastlingMove, WKing);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (int count = 0; count < 100000000; count++) {
+		game->simulateMove(BQCastlingMove);
+		game->undoSimulateMove(BQCastlingMove);
+		game->simulateMove(BKCastlingMove);
+		game->undoSimulateMove(BKCastlingMove);
+		game->simulateMove(WQCastlingMove);
+		game->undoSimulateMove(WQCastlingMove);
+		game->simulateMove(WKCastlingMove);
+		game->undoSimulateMove(WKCastlingMove);
 	}
 
+	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
+
+	// 6600
+	// 4354
+	// 3000
+}
+
+TEST_F(BoardPerformanceTest, castlingMaskPerformanceTest) {
+	GTEST_SKIP();
+
+	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
+	vector<Move>* moves = new vector<Move>(MAX_MOVES);
+	moves->clear();
+	MovesGenerator::generateLegalMoves(*game, *moves);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (long count = 0; count < 10000000; count++) {
+		for (Move move : *moves) {
+			game->getBoard().castlingInfo = 0b1111;
+			game->getBoard().updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
+		}
+	}
+
+	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
+
+	// 3265 (debug)
+	// 2635 (debug)
+}
+
+TEST_F(BoardPerformanceTest, stuffTest) {
+	GTEST_SKIP();
+	Position source = 4;
+	Position destination = 2;
+
+	Move move = MoveHelper::getMove(source, destination, WHITE);
+	MoveHelper::decorate(move, BKing);
+
+	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
+	Board board = game->getCopyBoard();
+
+	game->simulateMove(move);
+	game->undoSimulateMove(move);
+
+	/*BoardUtils::printBoard(game->getBoard().BOARD(WHITE));
+	BoardUtils::printBoard(game->getBoard().BOARD(BLACK));
+	BoardUtils::printBoard(game->getBoard().EMPTY);*/
+
+	cout << (int)game->getWhiteKingPosition() << endl;
+	cout << (int)game->getBlackKingPosition() << endl;
+
+	GTEST_ASSERT_TRUE(game->getBoard().equals(board));
 }
 
 

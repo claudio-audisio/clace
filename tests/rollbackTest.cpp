@@ -6,13 +6,14 @@
 #include "../game/game.h"
 #include "../utils/fen.h"
 #include "../utils/utils.h"
+#include "../move/move.h"
 
 using namespace std;
 
 class RollbackTest : public testing::Test {
 protected:
 	RollbackTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~RollbackTest() {
 
@@ -116,7 +117,7 @@ TEST_F(RollbackTest, performanceTest) {
 	GTEST_SKIP();
 	list<long long> saveTimes;
 	list<long long> rollbackTimes;
-	Game* game = FEN::fenToNewGame(Positions::PERFT_FEN_POSITION_2);
+	Game* game = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	game->verifyChecks();
 
 	for (int i = 0; i < 10000; ++i) {

@@ -1,13 +1,12 @@
 #include <cassert>
 
 #include "game.h"
-#include "../utils/pieceHelper.h"
-#include "../utils/castlingHelper.h"
 #include "../utils/fen.h"
+#include "../move/move.h"
 
 
 Game::Game() {
-	BoardUtils::initRayAttacks();
+	BoardUtils::initAttacks();
 }
 
 Game::~Game() {
@@ -15,7 +14,7 @@ Game::~Game() {
 
 void Game::init() {
 	initPlayers();
-	initFromFEN(Positions::INITIAL_FEN_POSITION);	
+	initFromFEN(INITIAL_FEN_POSITION);
 }
 
 void Game::initFromFEN(const string& fenPosition) {
@@ -34,9 +33,9 @@ void Game::initPlayers(Player* white, Player* black) {
 }
 
 MoveResult Game::finalizeMove(Move& move) {
-	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
+	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move), MoveHelper::isCastling(move));
 	updateKingPosition(move);
-    CastlingHelper::update(castlingInfo, move);
+	board.updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
 	updateEnPassantInfo(move);
 
     if (MoveHelper::isPawnPromotion(move)) {
@@ -45,10 +44,10 @@ MoveResult Game::finalizeMove(Move& move) {
     }
 
     if (captured == Empty) {
-        if (MoveHelper::isCastling(move)) {
-            completeCastlingMove(move);
+        /*if (MoveHelper::isCastling(move)) {
+            board.completeCastlingMove(MoveHelper::getDestinationPosition(move));
         }
-        else if (MoveHelper::isEnPassant(move)) {
+        else*/ if (MoveHelper::isEnPassant(move)) {
             captured = completeEnPassant(move);
             // TODO rimuovere pawn avversario
         }
@@ -89,7 +88,7 @@ void Game::applyMoves(list<Move>& moves) {
 }
 
 void Game::simulateMove(Move& move) {
-	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move));
+	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move), MoveHelper::isCastling(move));
 	updateKingPosition(move);
 
     if (MoveHelper::isPawnPromotion(move)) {
@@ -97,10 +96,10 @@ void Game::simulateMove(Move& move) {
     }
 
     if (captured == Empty) {
-        if (MoveHelper::isCastling(move)) {
-            completeCastlingMove(move);
+        /*if (MoveHelper::isCastling(move)) {
+            board.completeCastlingMove(MoveHelper::getDestinationPosition(move));
         }
-        else if (MoveHelper::isEnPassant(move)) {
+        else*/ if (MoveHelper::isEnPassant(move)) {
             captured = completeEnPassant(move);
         }
     }
@@ -109,21 +108,21 @@ void Game::simulateMove(Move& move) {
 }
 
 void Game::undoSimulateMove(Move& move) {
-	board.setPiece(MoveHelper::getSourcePosition(move), MoveHelper::getPiece(move));
-	board.setEmpty(MoveHelper::getDestinationPosition(move));
-    const Piece captured = MoveHelper::getCaptured(move);
+	if (MoveHelper::isCastling(move)) {
+		board.undoCastlingMove(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
+	} else {
+		board.setPiece(MoveHelper::getSourcePosition(move), MoveHelper::getPiece(move));
+		board.setEmpty(MoveHelper::getDestinationPosition(move));
+		const Piece captured = MoveHelper::getCaptured(move);
 
-    if (captured != Empty) {
-        if (MoveHelper::isEnPassant(move)) {
-            undoEnPassant(move);
-        } else {
-            board.setPiece(MoveHelper::getDestinationPosition(move), captured);
-        }
-    } else {
-        if (MoveHelper::isCastling(move)) {
-            undoCastlingMove(move);
-        }
-    }
+		if (captured != Empty) {
+			if (MoveHelper::isEnPassant(move)) {
+				undoEnPassant(move);
+			} else {
+				board.setPiece(MoveHelper::getDestinationPosition(move), captured);
+			}
+		}
+	}
 
     // Undo Pawn promotion is not needed because undoing original move we have already moved a Pawn
     undoKingPosition(move);
@@ -140,7 +139,7 @@ void Game::undoKingPosition(Move& move) {
     }
 }
 
-void Game::undoCastlingMove(Move& move) {
+/*void Game::undoCastlingMove(Move& move) {
     switch (MoveHelper::getDestinationPosition(move)) {
         case 2: board.move(3, 0, BRook); break;
         case 6: board.move(5, 7, BRook); break;
@@ -148,7 +147,7 @@ void Game::undoCastlingMove(Move& move) {
         case 62: board.move(61, 63, WRook); break;
         default: break;
     }
-}
+}*/
 
 void Game::undoEnPassant(Move& move) {
     const Position destination = MoveHelper::getDestinationPosition(move) + (MoveHelper::isWhite(move) ? 8 : -8);
@@ -237,7 +236,7 @@ void Game::updateEnPassantInfo(const Move& move) {
 	}
 }
 
-void Game::completeCastlingMove(const Move& move) {
+/*void Game::completeCastlingMove(const Move& move) {
 	switch (MoveHelper::getDestinationPosition(move)) {
 		case 2: board.move(0, 3, BRook); break;
 		case 6: board.move(7, 5, BRook); break;
@@ -245,7 +244,7 @@ void Game::completeCastlingMove(const Move& move) {
 		case 62: board.move(63, 61, WRook); break;
 		default: break;
 	}
-}
+}*/
 
 Piece Game::completeEnPassant(const Move& move) {
 	const Position destination = MoveHelper::getDestinationPosition(move) + (MoveHelper::isWhite(move) ? 8 : -8);
@@ -363,7 +362,7 @@ Game* Game::duplicate() {
 	Game* newGame = new Game();
 	newGame->init();
 	newGame->setBoard(board);
-	newGame->setCastlingInfo(castlingInfo);
+	newGame->setCastlingInfo(board.castlingInfo);
 	newGame->setSideToMove(sideToMove);
 	newGame->setWhiteKingPosition(whiteKingPosition);
 	newGame->setBlackKingPosition(blackKingPosition);
@@ -385,5 +384,5 @@ string Game::printMovesHistory() {
 }
 
 string Game::printCastlingInfo() const {
-    return FEN::castlingInfoToFEN(castlingInfo);
+    return FEN::castlingInfoToFEN(board.castlingInfo);
 }

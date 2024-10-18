@@ -31,7 +31,7 @@ public:
 		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
 		Rawboard sources = game.getBoard().BOARD(side);
 
-		/*if (MoveHelper::toString(game.getLastMove()) == "c4-f7") {
+		/*if (MoveHelper::toString(game.getLastMove()) == "e2-b5") {
 			int stop = 1;
 		}*/
 
@@ -44,7 +44,7 @@ public:
 			}
 
             const Piece piece = game.getBoard().getPiece(position);
-			Rawboard destinations = game.getBoard().getDestinationPositions(position, piece, game.getEnPassantPosition(), game.getCastlingInfo());
+			Rawboard destinations = game.getBoard().getDestinationPositions(position, piece, game.getEnPassantPosition());
             unsigned int count = 0;
 
 			while (destinations) {

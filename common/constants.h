@@ -4,31 +4,21 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <array>
 
 #include "../board/piece.h"
+#include "types.h"
 
 using namespace std;
 
 
 #define WHITE 0
 #define BLACK (WHITE + SIDE_GAP)
-
 #define NO_POS 64
-#define KING_WT 200.0
-#define QUEEN_WT 9.0
-#define ROOK_WT 5.0
-#define BISHOP_WT 3.5
-#define KNIGHT_WT 3.0
-#define PAWN_WT 1.0
-//#define PAWN_WT 1.0	TODO peso per doubled, blocked and isolated pawns
-#define WIN_VALUE (SHRT_MAX / 2.0)
-#define LOSS_VALUE (-WIN_VALUE)
-#define DRAW_VALUE 0
-#define EVAL_WIN_VALUE (9 * QUEEN_WT + 2 * ROOK_WT + 2 * BISHOP_WT + 2 * KNIGHT_WT)
-#define EVAL_LOSS_VALUE (-EVAL_WIN_VALUE)
-
 #define SIZE 13
-#define EMPTY_IND 0    // This is related to Piece.Empty value
+#define MAX_MOVES 218
+
+// masks
 #define EMPTY_BOARD 0xffffffffffffffffLL
 #define NOT_A_COL 0xfefefefefefefefeLL
 #define NOT_AB_COL 0xfcfcfcfcfcfcfcfcLL
@@ -46,7 +36,8 @@ using namespace std;
 #define ROW_4 0x000000ff00000000LL
 #define MAIN_DIAG 0x8040201008040201LL
 #define MAIN_ANTI_DIAG 0x0102040810204080LL
-#define MAX_MOVES 218
+
+// rays
 #define North 0
 #define NoEast 1
 #define East 2
@@ -56,6 +47,61 @@ using namespace std;
 #define West 6
 #define NoWest 7
 
+// castling
+#define BQCastling	6
+#define BKCastling	10
+#define WQCastling	118
+#define WKCastling	122
+#define BC_King	0x10
+#define WC_King	0x1000000000000000
+#define BQC_King 0x4
+#define BQC_RookRem 0xfffffffffffffffe
+#define BQC_RookAdd 0x8
+#define BQC_EmptyRem 0xfffffffffffffff3
+#define BQC_EmptyAdd 0x11
+#define BKC_King 0x40
+#define BKC_RookRem 0xffffffffffffff7f
+#define BKC_RookAdd 0x20
+#define BKC_EmptyRem 0xffffffffffffff9f
+#define BKC_EmptyAdd 0x90
+#define WQC_King 0x400000000000000
+#define WQC_RookRem 0xfeffffffffffffff
+#define WQC_RookAdd 0x800000000000000
+#define WQC_EmptyRem 0xf3ffffffffffffff
+#define WQC_EmptyAdd 0x1100000000000000
+#define WKC_King 0x4000000000000000
+#define WKC_RookRem 0x7fffffffffffffff
+#define WKC_RookAdd 0x2000000000000000
+#define WKC_EmptyRem 0x9fffffffffffffff
+#define WKC_EmptyAdd 0x9000000000000000
+static const CastlingInfo CASTLING_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+
+// fen
 static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
 static const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQueen}, {'R', WRook}, {'N', WKnight}, {'B', WBishop}, {'P', WPawn}, {'k', BKing}, {'q', BQueen}, {'r', BRook}, {'n', BKnight}, {'b', BBishop}, {'p', BPawn}};
 static const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
+
+// positions
+static const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+static const string INITIAL_FEN_POSITION_SHORT = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+static const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
+static const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+static const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
+static const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
+static const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
+static const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
+
+// evaluation wights
+#define KING_WT 200.0
+#define QUEEN_WT 9.0
+#define ROOK_WT 5.0
+#define BISHOP_WT 3.5
+#define KNIGHT_WT 3.0
+#define PAWN_WT 1.0
+//#define PAWN_WT 1.0	TODO peso per doubled, blocked and isolated pawns
+#define WIN_VALUE (SHRT_MAX / 2.0)
+#define LOSS_VALUE (-WIN_VALUE)
+#define DRAW_VALUE 0
+#define EVAL_WIN_VALUE (9 * QUEEN_WT + 2 * ROOK_WT + 2 * BISHOP_WT + 2 * KNIGHT_WT)
+#define EVAL_LOSS_VALUE (-EVAL_WIN_VALUE)

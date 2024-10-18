@@ -2,7 +2,6 @@
 #include <string>
 
 #include "../game/game.h"
-#include "../utils/castlingHelper.h"
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
 
@@ -12,7 +11,7 @@ using namespace std;
 class GameTest : public testing::Test {
 protected:
 	GameTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~GameTest() {
 
@@ -38,12 +37,12 @@ TEST_F(GameTest, initTest) {
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 	EXPECT_EQ(game.getEnPassantPosition(), NO_POS);
 	EXPECT_EQ(game.getLastMove(), 0);
-	GTEST_ASSERT_TRUE(CastlingHelper::isWhiteQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(CastlingHelper::isWhiteKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(CastlingHelper::isBlackQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(CastlingHelper::isBlackKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.getCastlingInfo()));
 	GTEST_ASSERT_TRUE(game.getMovesHistory().empty());
-	EXPECT_EQ(FEN::gameToFEN(game), Positions::INITIAL_FEN_POSITION);
+	EXPECT_EQ(FEN::gameToFEN(game), INITIAL_FEN_POSITION);
 }
 
 TEST_F(GameTest, setKingPositionsTest) {
@@ -193,12 +192,12 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	ApplyMoveTest,
 	::testing::Values(
-		new TestParams2(Positions::INITIAL_FEN_POSITION, 48, 40, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2-a3"),
-		new TestParams2(Positions::INITIAL_FEN_POSITION, 48, 32, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2-a4"),
-		new TestParams2(Positions::CASTLING_FEN_POSITION, 4, 2, "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-c8"),
-		new TestParams2(Positions::CASTLING_FEN_POSITION, 4, 6, "r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-g8"),
-		new TestParams2(Positions::CASTLING_FEN_POSITION, 60, 58, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1", false, false, "e1-c1"),
-		new TestParams2(Positions::CASTLING_FEN_POSITION, 60, 62, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1-g1"),
+		new TestParams2(INITIAL_FEN_POSITION, 48, 40, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2-a3"),
+		new TestParams2(INITIAL_FEN_POSITION, 48, 32, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2-a4"),
+		new TestParams2(CASTLING_FEN_POSITION, 4, 2, "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-c8"),
+		new TestParams2(CASTLING_FEN_POSITION, 4, 6, "r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-g8"),
+		new TestParams2(CASTLING_FEN_POSITION, 60, 58, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1", false, false, "e1-c1"),
+		new TestParams2(CASTLING_FEN_POSITION, 60, 62, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1-g1"),
 		new TestParams2("8/8/8/8/Pp6/8/8/8 b - a3 0 1", 33, 40, "8/8/8/8/8/p7/8/8 w - - 0 2", true, false, "b4-a3"),
 		new TestParams2("8/P7/8/8/8/8/8/8 w - - 0 1", 8, 0, "Q7/8/8/8/8/8/8/8 b - - 0 1", false, true, "a7-a8"),
 		new TestParams2("1b6/P7/8/8/8/8/8/8 w - - 0 1", 8, 1, "1Q6/8/8/8/8/8/8/8 b - - 0 1", true, true, "a7-b8"),
@@ -245,7 +244,7 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	VerifyChecksTest,
 	::testing::Values(
-		new TestParams3(Positions::INITIAL_FEN_POSITION, "", false, false, false),
+		new TestParams3(INITIAL_FEN_POSITION, "", false, false, false),
 		new TestParams3("8/8/8/8/8/8/r7/1r5K w - - 0 1", "b3-b1", true, false, false),
 		new TestParams3("8/8/8/8/8/4n3/r7/1r5K w - - 0 1", "d1-e3", true, true, false),
 		new TestParams3("b7/8/8/8/8/8/r7/1r5K w - - 0 1", "b7-b1", true, false, true),
@@ -272,7 +271,7 @@ TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameType>> {
 protected:
 	CheckEndGameTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 };
 
@@ -291,7 +290,7 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	CheckEndGameTest,
 	::testing::Values(
-		make_tuple(Positions::INITIAL_FEN_POSITION, EndGameType::NONE),
+		make_tuple(INITIAL_FEN_POSITION, EndGameType::NONE),
 		make_tuple("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25", EndGameType::FIFTY_MOVE_RULE),
 		make_tuple("8/8/8/8/8/8/R7/R6k b - - 50 25", EndGameType::CHECKMATE),
 		make_tuple("8/8/8/8/8/8/r7/r6K/ w - - 50 25", EndGameType::CHECKMATE),
@@ -318,7 +317,7 @@ public:
 class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {
 protected:
 	CheckControlTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 };
 
@@ -339,8 +338,8 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	CheckControlTest,
 	::testing::Values(
-		new TestParams4(Positions::INITIAL_FEN_POSITION, false, 4, true),
-		new TestParams4(Positions::INITIAL_FEN_POSITION, false, 60, true),
+		new TestParams4(INITIAL_FEN_POSITION, false, 4, true),
+		new TestParams4(INITIAL_FEN_POSITION, false, 60, true),
 		new TestParams4("k7/8/8/8/8/8/8/R6Q b - - 0 1", false, 0, false),
 		new TestParams4("q6r/8/8/8/8/8/8/7K w - - 0 1", false, 63, false),
 		new TestParams4("2kr3r/8/8/8/8/8/8/1R6 b - - 0 1", true, 2, true),
@@ -425,7 +424,7 @@ INSTANTIATE_TEST_SUITE_P(
         GameTest,
         SimulateAndUndoMoveTest,
         ::testing::Values(
-                new TestParams5(Positions::INITIAL_FEN_POSITION, 52, 36),                                   // normal move
+                new TestParams5(INITIAL_FEN_POSITION, 52, 36),                                   // normal move
                 new TestParams5("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 0 23", 32, 41),  // en passant
                 new TestParams5("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", 60, 58),                                // white castling
                 new TestParams5("4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", 60, 62),                                // white castling

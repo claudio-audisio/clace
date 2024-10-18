@@ -27,7 +27,7 @@ bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
 class BoardUtilsTest : public testing::Test {
 protected:
 	BoardUtilsTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~BoardUtilsTest() {
 

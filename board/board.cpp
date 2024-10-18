@@ -1,6 +1,5 @@
 #include "board.h"
 #include "../utils/boardUtils.h"
-#include "../utils/castlingHelper.h"
 
 Board::Board() {
     reset();
@@ -15,13 +14,31 @@ void Board::reset() {
         pieceBoards[i] = 0;
     }
 
-    pieceBoards[EMPTY_IND] = EMPTY_BOARD;
+    pieceBoards[Empty] = EMPTY_BOARD;
 
     for (Piece& piece : piecePositions) {
         piece = Empty;
     }
 
+	castlingInfo = 0;
+
 	//resetCalculated();
+}
+
+bool Board::equals(const Board& board) {
+	for (RawboardIndex i = 1; i < SIZE; ++i) {
+		if (pieceBoards[i] != board.pieceBoards[i]) {
+			return false;
+		}
+	}
+
+	for (Position i = 0; i < 64; i++) {
+		if (piecePositions[i] != board.piecePositions[i]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -105,27 +122,6 @@ bool Board::isUnderCheck(const Position position, const Side side) {
     return BoardUtils::isUnderCheck(getAttacks(BLACK - side), position);
 }
 
-Rawboard Board::getKingAttacks(const Side side) {
-    Rawboard board = pieceBoards[WKing + side];
-    Rawboard attacks = eastOne(board) | westOne(board);
-    board |= attacks;
-    attacks |= northOne(board) | southOne(board);
-    return attacks & (EMPTY | OPPOSITE(side));
-}
-
-Rawboard Board::getKingMoves(const Side side, const CastlingInfo castlingInfo) {
-    return getKingAttacks(side) | getKingCastling(side, castlingInfo);
-}
-
-Rawboard Board::getKnightAttacks(const Side side) {
-    Rawboard board = pieceBoards[WKnight + side];
-    return (noNoEa(board) | noEaEa(board) |
-        soEaEa(board) | soSoEa(board) |
-        soSoWe(board) | soWeWe(board) |
-        noWeWe(board) | noNoWe(board)) &
-        (EMPTY | OPPOSITE(side));
-}
-
 Rawboard Board::getPawnMoves(const Side side, const Position enPassantPos) {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WPawn + side];
@@ -198,79 +194,36 @@ Rawboard Board::getPawnEnPassant(const Rawboard position, const Side side, const
     return 0;
 }
 
-Rawboard Board::getKnightMoves(const Position position, const Side side) {
-    const Rawboard posIndex = posInd(position);
-    return (noNoEa(posIndex) | noEaEa(posIndex) |
-        soEaEa(posIndex) | soSoEa(posIndex) |
-        soSoWe(posIndex) | soWeWe(posIndex) |
-        noWeWe(posIndex) | noNoWe(posIndex)) &
-        (EMPTY | OPPOSITE(side));
+Rawboard Board::getKingMoves(const Side side) {
+	return getKingAttacks(side) | getKingCastling(side);
 }
 
-Rawboard Board::getBishopMoves(const Position position, const Side side) {
-    const Rawboard posIndex = posInd(position);
-
-    return slidingAttack(noEastOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(soEastOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(soWestOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(noWestOne, posIndex, OPPOSITE(side));
+Rawboard Board::getKingMoves(const Position position, const Side side) {
+    return kingAttack(position, OPPOSITE(side)) | getKingCastling(position, side);
 }
 
-Rawboard Board::getRookMoves(const Position position, const Side side) {
-	const Rawboard posIndex = posInd(position);
-
-    return slidingAttack(northOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(eastOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(southOne, posIndex, OPPOSITE(side)) |
-        slidingAttack(westOne, posIndex, OPPOSITE(side));
-}
-
-Rawboard Board::getQueenMoves(const Position position, const Side side) {
-	const Rawboard posIndex = posInd(position);
-
-	return slidingAttack(noEastOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(soEastOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(soWestOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(noWestOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(northOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(eastOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(southOne, posIndex, OPPOSITE(side)) |
-		slidingAttack(westOne, posIndex, OPPOSITE(side));
-}
-
-Rawboard Board::getKingMoves(const Position position, const Side side, const CastlingInfo castlingInfo) {
-    return getKingAttacks(position, side) | getKingCastling(position, side, castlingInfo);
-}
-
-Rawboard Board::getKingAttacks(const Position position, const Side side) {
-    const Rawboard posIndex = posInd(position);
-    return (northOne(posIndex) | noEastOne(posIndex) | eastOne(posIndex) | soEastOne(posIndex) |
-        southOne(posIndex) | soWestOne(posIndex) | westOne(posIndex) | noWestOne(posIndex))
-        & (EMPTY | OPPOSITE(side));
-}
-
-Rawboard Board::getKingCastling(const Side side, const CastlingInfo castlingInfo) const {
+Rawboard Board::getKingCastling(const Side side) const {
     const Rawboard board = pieceBoards[WKing + side];
     const Position position = Utils::getFirstPos(board);
-    return getKingCastling(position, side, castlingInfo);
+    return getKingCastling(position, side);
 }
 
-Rawboard Board::getKingCastling(const Position position, const Side side, const CastlingInfo castlingInfo) const {
+Rawboard Board::getKingCastling(const Position position, const Side side) const {
     Rawboard positions = 0L;
 
     if (position == 4 && side) {
-        if (CastlingHelper::isBlackKingCastling(castlingInfo) && isEmpty(5)) {
+        if ((castlingInfo & 0b0010) && isEmpty(5)) {
             positions |= posInd(6) & EMPTY;
         }
-        if (CastlingHelper::isBlackQueenCastling(castlingInfo) && isEmpty(3) && isEmpty(1)) {
+        if ((castlingInfo & 0b0001) && isEmpty(3) && isEmpty(1)) {
             positions |= posInd(2) & EMPTY;
         }
     }
     else if (position == 60 && !side) {
-        if (CastlingHelper::isWhiteKingCastling(castlingInfo) && isEmpty(61)) {
+        if ((castlingInfo & 0b1000) && isEmpty(61)) {
             positions |= posInd(62) & EMPTY;
         }
-        if (CastlingHelper::isWhiteQueenCastling(castlingInfo) && isEmpty(59) && isEmpty(57)) {
+        if ((castlingInfo & 0b0100) && isEmpty(59) && isEmpty(57)) {
             positions |= posInd(58) & EMPTY;
         }
     }
@@ -278,7 +231,8 @@ Rawboard Board::getKingCastling(const Position position, const Side side, const 
     return positions;
 }
 
-Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard oppositeBoard) const {
+
+/*Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard oppositeBoard) const {
     Rawboard positions = 0;
     Rawboard newPos = position;
 
@@ -296,4 +250,4 @@ Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard pos
     }
 
     return positions;
-}
+}*/

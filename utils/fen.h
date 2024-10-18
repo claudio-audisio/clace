@@ -6,7 +6,6 @@
 
 #include "../clace.h"
 #include "../game/game.h"
-#include "../utils/castlingHelper.h"
 #include "../utils/positions.h"
 #include "../utils/pieceHelper.h"
 
@@ -119,13 +118,13 @@ private:
     }
 
 static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
-        CastlingInfo castlingInfo = CastlingHelper::reset();
+        CastlingInfo castlingInfo = 0;
 
         if (strcmp(fenCastlingInfo.c_str(), "-") != 0) {
-            CastlingHelper::setBlackKing(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
-            CastlingHelper::setBlackQueen(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
-            CastlingHelper::setWhiteKing(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
-            CastlingHelper::setWhiteQueen(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
+            setBKCastling(castlingInfo, fenCastlingInfo.find_first_of('k') != string::npos);
+            setBQCastling(castlingInfo, fenCastlingInfo.find_first_of('q') != string::npos);
+            setWKCastling(castlingInfo, fenCastlingInfo.find_first_of('K') != string::npos);
+            setWQCastling(castlingInfo, fenCastlingInfo.find_first_of('Q') != string::npos);
         }
 
         return castlingInfo;
@@ -208,26 +207,25 @@ public:
         }
 
         string fen;
-        if (CastlingHelper::isWhiteKingCastling(castlingInfo)) {
+        if (isWhiteKingCastling(castlingInfo)) {
             fen.append("K");
         }
 
-        if (CastlingHelper::isWhiteQueenCastling(castlingInfo)) {
+        if (isWhiteQueenCastling(castlingInfo)) {
             fen.append("Q");
         }
 
-        if (CastlingHelper::isBlackKingCastling(castlingInfo)) {
+        if (isBlackKingCastling(castlingInfo)) {
             fen.append("k");
         }
 
-        if (CastlingHelper::isBlackQueenCastling(castlingInfo)) {
+        if (isBlackQueenCastling(castlingInfo)) {
             fen.append("q");
         }
 
         return fen;
     }
 
-private:
     static string enPassantToFEN(const Position position) {
         if (position == NO_POS) {
             return "-";
@@ -299,5 +297,57 @@ private:
 
         return result;
     }
+
+	static void setBKCastling(CastlingInfo& castlingInfo, const bool info) {
+		if (info) {
+			castlingInfo |= 0b0010;
+		}
+		else {
+			castlingInfo &= 0b1101;
+		}
+	}
+
+	static void setBQCastling(CastlingInfo& castlingInfo, const bool info) {
+		if (info) {
+			castlingInfo |= 0b0001;
+		}
+		else {
+			castlingInfo &= 0b1110;
+		}
+	}
+
+	static void setWKCastling(CastlingInfo& castlingInfo, const bool info) {
+		if (info) {
+			castlingInfo |= 0b1000;
+		}
+		else {
+			castlingInfo &= 0b0111;
+		}
+	}
+
+	static void setWQCastling(CastlingInfo& castlingInfo, const bool info) {
+		if (info) {
+			castlingInfo |= 0b0100;
+		}
+		else {
+			castlingInfo &= 0b1011;
+		}
+	}
+
+	static bool isWhiteKingCastling(const CastlingInfo castlingInfo) {
+		return (castlingInfo & 0b1000) > 0;
+	}
+
+	static bool isWhiteQueenCastling(const CastlingInfo castlingInfo) {
+		return (castlingInfo & 0b0100) > 0;
+	}
+
+	static bool isBlackKingCastling(const CastlingInfo castlingInfo) {
+		return (castlingInfo & 0b0010) > 0;
+	}
+
+	static bool isBlackQueenCastling(const CastlingInfo castlingInfo) {
+		return (castlingInfo & 0b0001) > 0;
+	}
 
 };

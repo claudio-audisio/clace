@@ -65,6 +65,6 @@ public:
 		return (side + SIDE_GAP) % (SIDE_GAP * 2);
 	}
 
-	static void initRayAttacks();
+	static void initAttacks();
 
 };

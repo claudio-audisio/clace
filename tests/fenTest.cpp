@@ -3,7 +3,6 @@
 #include "../utils/fen.h"
 #include "../game/game.h"
 #include "../common/constants.h"
-#include "../utils/castlingHelper.h"
 
 using namespace std;
 
@@ -11,7 +10,7 @@ using namespace std;
 class fenTest : public testing::Test {
 protected:
 	fenTest() {
-		BoardUtils::initRayAttacks();
+		BoardUtils::initAttacks();
 	}
 	~fenTest() {
 
@@ -19,10 +18,8 @@ protected:
 };
 
 TEST_F(fenTest, fenToGameTest) {
-	const string fenPositions = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";	// position 4 of https://www.chessprogramming.org/Perft_Results
 	Game game;
-
-	FEN::fenToGame(fenPositions, game);
+	FEN::fenToGame(PERFT_FEN_POSITION_4, game);
 
 	EXPECT_EQ(game.getBoard().getPiece(0), BRook);
 	EXPECT_EQ(game.getBoard().getPiece(1), Empty);
@@ -35,10 +32,10 @@ TEST_F(fenTest, fenToGameTest) {
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 
-	GTEST_ASSERT_TRUE(CastlingHelper::isBlackKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(CastlingHelper::isBlackQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_FALSE(CastlingHelper::isWhiteKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_FALSE(CastlingHelper::isWhiteQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
 
 	EXPECT_EQ(game.getEnPassantPosition(), NO_POS);
 
@@ -62,12 +59,12 @@ INSTANTIATE_TEST_SUITE_P(
 	fenTest,
 	FenToGameToFenTest,
 	::testing::Values(
-		Positions::INITIAL_FEN_POSITION,
+		INITIAL_FEN_POSITION,
 		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
 		"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2",
 		"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2",
 		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
-		Positions::PERFT_FEN_POSITION_3,
+		PERFT_FEN_POSITION_3,
 		"r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
 		"r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1",
 		"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
