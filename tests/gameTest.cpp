@@ -22,7 +22,7 @@ TEST_F(GameTest, ConstructorTest) {
 	Game game;
 
 	for (Position i = 0; i < 64; i++) {
-		GTEST_ASSERT_TRUE(game.getBoard().isEmpty(i));
+		GTEST_ASSERT_TRUE(game.board.isEmpty(i));
 	}
 }
 
@@ -35,7 +35,7 @@ TEST_F(GameTest, initTest) {
 	EXPECT_EQ(game.getBlackKingPosition(), 4);
 	EXPECT_EQ(game.getWhiteKingPosition(), 60);
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
-	EXPECT_EQ(game.getEnPassantPosition(), NO_POS);
+	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
 	EXPECT_EQ(game.getLastMove(), 0);
 	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
 	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
@@ -47,8 +47,8 @@ TEST_F(GameTest, initTest) {
 
 TEST_F(GameTest, setKingPositionsTest) {
 	Game game;
-	game.getBoard().setPiece(17, WKing);
-	game.getBoard().setPiece(42, BKing);
+	game.board.setPiece(17, WKing);
+	game.board.setPiece(42, BKing);
 	game.setKingPositions();
 
 	EXPECT_EQ(game.getWhiteKingPosition(), 17);
@@ -58,21 +58,21 @@ TEST_F(GameTest, setKingPositionsTest) {
 
 TEST_F(GameTest, setPieceTest) {
 	Game game;
-	Piece piece = game.getBoard().setPiece(0, WPawn);
+	Piece piece = game.board.setPiece(0, WPawn);
 
 	EXPECT_EQ(piece, Empty);
 
-	piece = game.getBoard().setPiece(0, BPawn);
+	piece = game.board.setPiece(0, BPawn);
 
 	EXPECT_EQ(piece, WPawn);
 }
 
 TEST_F(GameTest, setEmptyTest) {
 	Game game;
-	game.getBoard().setPiece(17, WPawn);
-	game.getBoard().setEmpty(17);
+	game.board.setPiece(17, WPawn);
+	game.board.setEmpty(17);
 
-	EXPECT_EQ(game.getBoard().getPiece(17), Empty);
+	EXPECT_EQ(game.board.getPiece(17), Empty);
 }
 
 
@@ -101,8 +101,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(GameTest, isWhiteTest) {
 	Game game;
-	game.getBoard().setPiece(0, WPawn);
-	game.getBoard().setPiece(1, BPawn);
+	game.board.setPiece(0, WPawn);
+	game.board.setPiece(1, BPawn);
 
 	GTEST_ASSERT_TRUE(game.getSide(0) == WHITE);
 	GTEST_ASSERT_TRUE(game.getSide(1) == BLACK);
@@ -127,8 +127,8 @@ class CheckWhiteTest : public ::testing::TestWithParam<TestParams*> {};
 TEST_P(CheckWhiteTest, checkWhiteTest) {
 	TestParams* params = GetParam();
 	Game game;
-	game.getBoard().setPiece(0, WPawn);
-	game.getBoard().setPiece(1, BPawn);
+	game.board.setPiece(0, WPawn);
+	game.board.setPiece(1, BPawn);
 	EXPECT_EQ(game.checkColor(params->position, params->checkWhite), params->expectedWhite);
 }
 
@@ -175,7 +175,7 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	Side side = game->getSide(testParams->sourcePos);
 	game->setSideToMove(side);
 	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, side);
-	MoveHelper::decorate(move, game->getBoard().getPiece(testParams->sourcePos), game->getEnPassantPosition(), game->isComputerToMove());
+	MoveHelper::decorate(move, game->board.getPiece(testParams->sourcePos), game->board.enPassantPosition, game->isComputerToMove());
 	MoveHelper::setPromotion(move, side == WHITE ? WQueen : BQueen);
 	const MoveResult moveResult = game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
@@ -329,7 +329,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	game->setSideToMove(BoardUtils::opposite(side));
 	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
 	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side);
-	MoveHelper::decorate(move, game->getBoard().getPiece(params->kingPosition), game->getEnPassantPosition(), game->isComputerToMove());
+	MoveHelper::decorate(move, game->board.getPiece(params->kingPosition), game->board.enPassantPosition, game->isComputerToMove());
 
 	EXPECT_EQ(game->checkControl(move), params->expectedResult);
 }
@@ -403,20 +403,20 @@ TEST_P(SimulateAndUndoMoveTest, checkControlTest) {
     TestParams5* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenBoard);
     Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhiteToMove());
-    MoveHelper::decorate(move, game->getBoard().getPiece(params->sourcePosition), game->getEnPassantPosition(), game->isWhiteToMove());
+    MoveHelper::decorate(move, game->board.getPiece(params->sourcePosition), game->board.enPassantPosition, game->isWhiteToMove());
     Board board;
-    board.set(game->getBoard());
+    board.set(game->board);
     game->simulateMove(move);
     game->undoSimulateMove(move);
 
     EXPECT_EQ(params->fenBoard, FEN::gameToFEN(*game));
 
     for (int i = 0; i < SIZE; ++i) {
-        EXPECT_EQ(board.pieceBoards[i], game->getBoard().pieceBoards[i]);
+        EXPECT_EQ(board.pieceBoards[i], game->board.pieceBoards[i]);
     }
 
     for (int i = 0; i < 64; ++i) {
-        EXPECT_EQ(board.piecePositions[i], game->getBoard().piecePositions[i]);
+        EXPECT_EQ(board.piecePositions[i], game->board.piecePositions[i]);
     }
 }
 

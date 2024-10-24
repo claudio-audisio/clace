@@ -229,10 +229,10 @@ void Game::updateEnPassantInfo(const Move& move) {
 	if (PieceHelper::isPawn(MoveHelper::getPiece(move)) &&
 		Positions::isSecondRow(MoveHelper::getSourcePosition(move), MoveHelper::isWhite(move)) &&
 		Positions::isFourthRow(MoveHelper::getDestinationPosition(move), MoveHelper::isWhite(move))) {
-		enPassantPosition = MoveHelper::getSourcePosition(move) + (MoveHelper::isWhite(move) ? -8 : 8);
+		board.enPassantPosition = MoveHelper::getSourcePosition(move) + (MoveHelper::isWhite(move) ? -8 : 8);
 	}
 	else {
-		enPassantPosition = NO_POS;
+		board.enPassantPosition = NO_POS;
 	}
 }
 
@@ -366,7 +366,7 @@ Game* Game::duplicate() {
 	newGame->setSideToMove(sideToMove);
 	newGame->setWhiteKingPosition(whiteKingPosition);
 	newGame->setBlackKingPosition(blackKingPosition);
-	newGame->setEnPassantPosition(enPassantPosition);
+	newGame->board.enPassantPosition = board.enPassantPosition;
 	newGame->setFullMoves(fullMoves);
 	newGame->setHalfMoveClock(halfMoveClock);
 	Utils::dequeAddAll(movesHistory, newGame->movesHistory);

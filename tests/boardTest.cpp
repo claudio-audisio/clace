@@ -27,7 +27,7 @@ TEST_F(BoardTest, ConstructorTest) {
 
 TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
-    Board& board = game->getBoard();
+    Board& board = game->board;
     EXPECT_EQ(~board.EMPTY, board.BOARD(WHITE) | board.BOARD(BLACK));
     delete game;
 }
@@ -274,7 +274,7 @@ class GetKingAttacksTest : public ::testing::TestWithParam<TestParams*> {};
 TEST_P(GetKingAttacksTest, getKingAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKingAttacks(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getKingAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -298,7 +298,7 @@ class GetKingMovesTest : public ::testing::TestWithParam<TestParams*> {};
 TEST_P(GetKingMovesTest, getKingMovesTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKingMoves(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getKingMoves(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -335,7 +335,7 @@ protected:
 TEST_P(GetQueenAttacksTest, getQueenAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-	GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getQueenAttacks(params->side), *params->expectedPositions));
+	GTEST_ASSERT_TRUE(checkBoard(game->board.getQueenAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -364,7 +364,7 @@ protected:
 TEST_P(GetRookAttacksTest, getRookAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getRookAttacks(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getRookAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -393,7 +393,7 @@ protected:
 TEST_P(GetBishopAttacksTest, getBishopAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getBishopAttacks(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getBishopAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -422,7 +422,7 @@ protected:
 TEST_P(GetKnightAttacksTest, getKnightAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getKnightAttacks(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getKnightAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -451,7 +451,7 @@ protected:
 TEST_P(GetPawnMovesTest, getPawnMovesTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnMoves(params->side, game->getEnPassantPosition()), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getPawnMoves(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -503,7 +503,7 @@ protected:
 TEST_P(GetSinglePawnMovesTest, getSinglePawnMovesTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnMoves(params->position, params->side, game->getEnPassantPosition()), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getPawnMoves(params->position, params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -530,7 +530,7 @@ protected:
 TEST_P(GetPawnAttacksTest, getPawnAttacksTest) {
     TestParams* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().getPawnAttacks(params->side), *params->expectedPositions));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.getPawnAttacks(params->side), *params->expectedPositions));
 	delete params;
 	delete game;
 }
@@ -556,43 +556,51 @@ TEST_F(BoardTest, getPawnMovesTest) {
     board.setPiece(49, WPawn);
     board.setPiece(40, BPawn);
     board.setPiece(42, BPawn);
-    GTEST_ASSERT_TRUE(checkBoard(board.getPawnMoves(49, WHITE, 0), 40, 41, 42, 33));
-    EXPECT_EQ(board.getPawnMoves(49, WHITE, 0), 0x70200000000LL);
+    GTEST_ASSERT_TRUE(checkBoard(board.getPawnMoves(49, WHITE), 40, 41, 42, 33));
+    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x70200000000LL);
     board.setPiece(33, BPawn);   // disable double push
-    EXPECT_EQ(board.getPawnMoves(49, WHITE, 0), 0x70000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x70000000000LL);
     board.setPiece(41, BPawn);
-    EXPECT_EQ(board.getPawnMoves(49, WHITE, 0), 0x50000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x50000000000LL);
     board.setPiece(40, WPawn);
-    EXPECT_EQ(board.getPawnMoves(49, WHITE, 0), 0x40000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x40000000000LL);
 
     board.setPiece(9, BPawn);
     board.setPiece(16, WPawn);
     board.setPiece(18, WPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK, 0), 0x2070000LL);
+    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x2070000LL);
     board.setPiece(25, WPawn);   // disable double push
-    EXPECT_EQ(board.getPawnMoves(9, BLACK, 0), 0x70000LL);
+    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x70000LL);
     board.setPiece(17, WPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK, 0), 0x50000LL);
+    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x50000LL);
     board.setPiece(16, BPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK, 0), 0x40000LL);
+    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x40000LL);
 
     board.setPiece(0, WPawn);
-    EXPECT_EQ(board.getPawnMoves(0, WHITE, 0), 0x0LL);
+    EXPECT_EQ(board.getPawnMoves(0, WHITE), 0x0LL);
     board.setPiece(63, BPawn);
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.getPawnMoves(63, BLACK, 0)));
-    EXPECT_EQ(board.getPawnMoves(63, BLACK, 0), 0x0LL);
+    GTEST_ASSERT_TRUE(checkBoardNoPos(board.getPawnMoves(63, BLACK)));
+    EXPECT_EQ(board.getPawnMoves(63, BLACK), 0x0LL);
 
     board.reset();
 
     // EnPassant
-    EXPECT_EQ(board.getPawnMoves(24, WHITE, 18), 0x10000LL);
-    EXPECT_EQ(board.getPawnMoves(24, WHITE, 17), 0x30000LL);
-    EXPECT_EQ(board.getPawnMoves(25, WHITE, 18), 0x60000LL);
-    EXPECT_EQ(board.getPawnMoves(25, WHITE, 16), 0x30000LL);
-    EXPECT_EQ(board.getPawnMoves(32, BLACK, 42), 0x10000000000LL);
-    EXPECT_EQ(board.getPawnMoves(32, BLACK, 41), 0x30000000000LL);
-    EXPECT_EQ(board.getPawnMoves(33, BLACK, 42), 0x60000000000LL);
-    EXPECT_EQ(board.getPawnMoves(33, BLACK, 40), 0x30000000000LL);
+	board.enPassantPosition = 18;
+    EXPECT_EQ(board.getPawnMoves(24, WHITE), 0x10000LL);
+	board.enPassantPosition = 17;
+    EXPECT_EQ(board.getPawnMoves(24, WHITE), 0x30000LL);
+	board.enPassantPosition = 18;
+    EXPECT_EQ(board.getPawnMoves(25, WHITE), 0x60000LL);
+	board.enPassantPosition = 16;
+    EXPECT_EQ(board.getPawnMoves(25, WHITE), 0x30000LL);
+	board.enPassantPosition = 42;
+    EXPECT_EQ(board.getPawnMoves(32, BLACK), 0x10000000000LL);
+	board.enPassantPosition = 41;
+    EXPECT_EQ(board.getPawnMoves(32, BLACK), 0x30000000000LL);
+	board.enPassantPosition = 42;
+    EXPECT_EQ(board.getPawnMoves(33, BLACK), 0x60000000000LL);
+	board.enPassantPosition = 40;
+    EXPECT_EQ(board.getPawnMoves(33, BLACK), 0x30000000000LL);
 }
 
 /*TEST_F(BoardTest, getKnightPositionsTest) {
@@ -749,64 +757,64 @@ TEST_F(BoardTest, raysTest) {
 
 TEST_F(BoardTest, attackTest1) {
     Game* game = FEN::fenToNewGame("4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1");
-    Rawboard occupied = ~game->getBoard().EMPTY;
+    Rawboard occupied = ~game->board.EMPTY;
 
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().northAttack(occupied, 35), 3, 11, 19, 27));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noEastAttack(occupied, 35), 7, 14, 21, 28));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().eastAttack(occupied, 35), 36, 37, 38, 39));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soEastAttack(occupied, 35), 44, 53, 62));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().southAttack(occupied, 35), 43, 51, 59));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49, 56));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33, 32));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 8, 17, 26));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.northAttack(occupied, 35), 3, 11, 19, 27));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noEastAttack(occupied, 35), 7, 14, 21, 28));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.eastAttack(occupied, 35), 36, 37, 38, 39));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soEastAttack(occupied, 35), 44, 53, 62));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.southAttack(occupied, 35), 43, 51, 59));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soWestAttack(occupied, 35), 42, 49, 56));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.westAttack(occupied, 35), 34, 33, 32));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noWestAttack(occupied, 35), 8, 17, 26));
 
 	delete game;
 }
 
 TEST_F(BoardTest, attackTest2) {
     Game* game = FEN::fenToNewGame("4k3/8/1P1p1p2/8/1p1Q1P2/8/1P1P1p2/4K3 w - - 0 1");
-    Rawboard occupied = ~game->getBoard().EMPTY;
+    Rawboard occupied = ~game->board.EMPTY;
 
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().northAttack(occupied, 35), 19, 27));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noEastAttack(occupied, 35), 21, 28));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().eastAttack(occupied, 35), 36, 37));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soEastAttack(occupied, 35), 44, 53));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().southAttack(occupied, 35), 43, 51));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 17, 26));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.northAttack(occupied, 35), 19, 27));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noEastAttack(occupied, 35), 21, 28));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.eastAttack(occupied, 35), 36, 37));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soEastAttack(occupied, 35), 44, 53));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.southAttack(occupied, 35), 43, 51));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soWestAttack(occupied, 35), 42, 49));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.westAttack(occupied, 35), 34, 33));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noWestAttack(occupied, 35), 17, 26));
 
 	delete game;
 }
 
 TEST_F(BoardTest,  attackTest3) {
     Game* game = FEN::fenToNewGame("4k3/p2P2P1/1P1p1p2/8/Pp1Q1Pp1/8/1P1P1p2/p2pK1P1 w - - 0 1");
-    Rawboard occupied = ~game->getBoard().EMPTY;
+    Rawboard occupied = ~game->board.EMPTY;
 
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().northAttack(occupied, 35), 19, 27));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noEastAttack(occupied, 35), 21, 28));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().eastAttack(occupied, 35), 36, 37));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soEastAttack(occupied, 35), 44, 53));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().southAttack(occupied, 35), 43, 51));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42, 49));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34, 33));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 17, 26));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.northAttack(occupied, 35), 19, 27));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noEastAttack(occupied, 35), 21, 28));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.eastAttack(occupied, 35), 36, 37));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soEastAttack(occupied, 35), 44, 53));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.southAttack(occupied, 35), 43, 51));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soWestAttack(occupied, 35), 42, 49));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.westAttack(occupied, 35), 34, 33));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noWestAttack(occupied, 35), 17, 26));
 
 	delete game;
 }
 
 TEST_F(BoardTest, attackTest4) {
     Game* game = FEN::fenToNewGame("4k3/p2P2P1/8/2Ppp3/P1pQP1p1/2PPp3/8/p2pK1P1 w - - 0 1");
-    Rawboard occupied = ~game->getBoard().EMPTY;
+    Rawboard occupied = ~game->board.EMPTY;
 
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().northAttack(occupied, 35), 27));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noEastAttack(occupied, 35), 28));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().eastAttack(occupied, 35), 36));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soEastAttack(occupied, 35), 44));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().southAttack(occupied, 35), 43));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().soWestAttack(occupied, 35), 42));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().westAttack(occupied, 35), 34));
-    GTEST_ASSERT_TRUE(checkBoard(game->getBoard().noWestAttack(occupied, 35), 26));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.northAttack(occupied, 35), 27));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noEastAttack(occupied, 35), 28));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.eastAttack(occupied, 35), 36));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soEastAttack(occupied, 35), 44));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.southAttack(occupied, 35), 43));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.soWestAttack(occupied, 35), 42));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.westAttack(occupied, 35), 34));
+    GTEST_ASSERT_TRUE(checkBoard(game->board.noWestAttack(occupied, 35), 26));
 
 	delete game;
 }

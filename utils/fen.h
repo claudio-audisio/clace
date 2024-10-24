@@ -30,7 +30,7 @@ public:
         game.setKingPositions();
         game.setSideToMove((tokens->at(1) == "w" || tokens->at(1) == "W") ? WHITE : BLACK);
         game.setCastlingInfo(fenToCastlingInfo(tokens->at(2)));
-        game.setEnPassantPosition(fenToEnPassantPosition(tokens->at(3)));
+        game.board.enPassantPosition =fenToEnPassantPosition(tokens->at(3));
         game.setHalfMoveClock(stoi(tokens->at(4)));
         game.setFullMoves(stoi(tokens->at(5)));
         delete tokens;
@@ -38,13 +38,13 @@ public:
 
     static string gameToFEN(Game& game) {
         string fenBoard;
-        fenBoard.append(chessBoardToFEN(game.getBoard()));
+        fenBoard.append(chessBoardToFEN(game.board));
         fenBoard.append(string(1, SEPARATOR));
         fenBoard.append(game.isWhiteToMove() ? "w" : "b");
         fenBoard.append(string(1, SEPARATOR));
         fenBoard.append(castlingInfoToFEN(game.getCastlingInfo()));
         fenBoard.append(string(1, SEPARATOR));
-        fenBoard.append(enPassantToFEN(game.getEnPassantPosition()));
+        fenBoard.append(enPassantToFEN(game.board.enPassantPosition));
         fenBoard.append(string(1, SEPARATOR));
         fenBoard.append(to_string(game.getHalfMoveClock()));
         fenBoard.append(string(1, SEPARATOR));
@@ -55,10 +55,10 @@ public:
     // TODO scrivere test per FENKey
     static string gameToFENKey(Game& game) {
         string fenKey;
-        fenKey.append(chessBoardToFENKey(game.getBoard()));
+        fenKey.append(chessBoardToFENKey(game.board));
         fenKey.append(game.isWhiteToMove() ? "w" : "b");
         fenKey.append(castlingInfoToFEN(game.getCastlingInfo()));
-        fenKey.append(enPassantToFEN(game.getEnPassantPosition()));
+        fenKey.append(enPassantToFEN(game.board.enPassantPosition));
         return fenKey;
     }
 
@@ -105,12 +105,12 @@ private:
 
             if (c > 48 && c < 58) {
                 for (int j = 0; j < (c - 48); j++) {
-                    game.getBoard().setEmpty(start++);
+                    game.board.setEmpty(start++);
                 }
             }
             else {
                 const Piece piece = FEN_TO_PIECE.at(c);
-                game.getBoard().setPiece(start++, piece);
+                game.board.setPiece(start++, piece);
                 game.incrementPlayerPieces(piece);
             }
         }

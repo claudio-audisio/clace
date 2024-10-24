@@ -21,11 +21,11 @@ TEST_F(fenTest, fenToGameTest) {
 	Game game;
 	FEN::fenToGame(PERFT_FEN_POSITION_4, game);
 
-	EXPECT_EQ(game.getBoard().getPiece(0), BRook);
-	EXPECT_EQ(game.getBoard().getPiece(1), Empty);
+	EXPECT_EQ(game.board.getPiece(0), BRook);
+	EXPECT_EQ(game.board.getPiece(1), Empty);
 	//...
-	EXPECT_EQ(game.getBoard().getPiece(62), WKing);
-	EXPECT_EQ(game.getBoard().getPiece(63), Empty);
+	EXPECT_EQ(game.board.getPiece(62), WKing);
+	EXPECT_EQ(game.board.getPiece(63), Empty);
 
 	EXPECT_EQ(game.getWhiteKingPosition(), 62);
 	EXPECT_EQ(game.getBlackKingPosition(), 4);
@@ -37,7 +37,7 @@ TEST_F(fenTest, fenToGameTest) {
 	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
 	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
 
-	EXPECT_EQ(game.getEnPassantPosition(), NO_POS);
+	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
 
 	EXPECT_EQ(game.getHalfMoveClock(), 0);
 	EXPECT_EQ(game.getFullMoves(), 1);

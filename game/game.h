@@ -60,10 +60,7 @@ public:
 		this->board.set(b);
 	}
 
-	Board& getBoard() {
-		return board;
-	}
-
+	// Only for testing
 	Board getCopyBoard() {
 		return board;
 	}
@@ -96,10 +93,6 @@ public:
 		return BLACK - sideToMove;
 	}
 
-	Position getEnPassantPosition() const {
-		return enPassantPosition;
-	}
-
 	unsigned int getHalfMoveClock() const {
 		return halfMoveClock;
 	}
@@ -110,10 +103,6 @@ public:
 
 	void setSideToMove(const Side side) {
 		sideToMove = side;
-	}
-
-	void setEnPassantPosition(const Position position) {
-		enPassantPosition = position;
 	}
 
 	void setHalfMoveClock(const unsigned int halfMove) {
@@ -164,7 +153,6 @@ public:
 		return board.castlingInfo;
 	}
 
-private:
 	Board board;
     vector<Move> nextMoves;
 	deque<Move> movesHistory;	// TODO renderla thread safe
@@ -174,7 +162,6 @@ private:
 	Side sideToMove;
 	Position whiteKingPosition;
 	Position blackKingPosition;
-	Position enPassantPosition = NO_POS;
 	unsigned int fullMoves;
 	unsigned int halfMoveClock;
 	Player* whitePlayer = nullptr;

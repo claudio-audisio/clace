@@ -22,6 +22,8 @@ void Board::reset() {
 
 	castlingInfo = 0;
 
+	//destFunctions[WPawn] = &getPawnMoves();
+
 	//resetCalculated();
 }
 
@@ -122,13 +124,13 @@ bool Board::isUnderCheck(const Position position, const Side side) {
     return BoardUtils::isUnderCheck(getAttacks(BLACK - side), position);
 }
 
-Rawboard Board::getPawnMoves(const Side side, const Position enPassantPos) {
+Rawboard Board::getPawnMoves(const Side side) {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WPawn + side];
 
     while (board) {
         const Position position = Utils::getFirstPos(board);
-        attacks |= getPawnMoves(position, side, enPassantPos);
+        attacks |= getPawnMoves(position, side);
         board &= (board - 1);
     }
 
@@ -159,26 +161,26 @@ Rawboard Board::getPawnAttacks(const Position position, const Side side) {
 	}
 }
 
-Rawboard Board::getPawnMoves(const Position position, const Side side, const Position enPassantPos) {
+Rawboard Board::getPawnMoves(const Position position, const Side side) {
     const Rawboard posIndex = posInd(position);
 
     if (!side) {
         const Rawboard onePush = northOne(posIndex) & EMPTY;
         return onePush | (northOne(onePush) & EMPTY & ROW_4) |
             ((noWestOne(posIndex) | noEastOne(posIndex)) & OPPOSITE(side)) |
-            getPawnEnPassant(posIndex, side, enPassantPos);
+            getPawnEnPassant(posIndex, side);
     }
     else {
         const Rawboard onePush = southOne(posIndex) & EMPTY;
         return onePush | (southOne(onePush) & EMPTY & ROW_5) |
             ((soWestOne(posIndex) | soEastOne(posIndex)) & OPPOSITE(side)) |
-            getPawnEnPassant(posIndex, side, enPassantPos);
+            getPawnEnPassant(posIndex, side);
     }
 }
 
-Rawboard Board::getPawnEnPassant(const Rawboard position, const Side side, const Position enPassantPos) {
-    if (enPassantPos != NO_POS) {
-        const Rawboard passantPos = posInd(enPassantPos);
+Rawboard Board::getPawnEnPassant(const Rawboard position, const Side side) {
+    if (enPassantPosition != NO_POS) {
+        const Rawboard passantPos = posInd(enPassantPosition);
         if (!side && (position & ROW_5) != 0) {
             if (passantPos == noEastOne(position) || passantPos == noWestOne(position)) {
                 return passantPos;

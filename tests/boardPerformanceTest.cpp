@@ -80,18 +80,18 @@ TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 10000000; ++i) {
-		gameInitial->getBoard().getAttacks(WHITE);
-		gameInitial->getBoard().getAttacks(BLACK);
-		gamePerft2->getBoard().getAttacks(WHITE);
-		gamePerft2->getBoard().getAttacks(BLACK);
-		gamePerft3->getBoard().getAttacks(WHITE);
-		gamePerft3->getBoard().getAttacks(BLACK);
-		gamePerft4->getBoard().getAttacks(WHITE);
-		gamePerft4->getBoard().getAttacks(BLACK);
-		gamePerft5->getBoard().getAttacks(WHITE);
-		gamePerft5->getBoard().getAttacks(BLACK);
-		gamePerft6->getBoard().getAttacks(WHITE);
-		gamePerft6->getBoard().getAttacks(BLACK);
+		gameInitial->board.getAttacks(WHITE);
+		gameInitial->board.getAttacks(BLACK);
+		gamePerft2->board.getAttacks(WHITE);
+		gamePerft2->board.getAttacks(BLACK);
+		gamePerft3->board.getAttacks(WHITE);
+		gamePerft3->board.getAttacks(BLACK);
+		gamePerft4->board.getAttacks(WHITE);
+		gamePerft4->board.getAttacks(BLACK);
+		gamePerft5->board.getAttacks(WHITE);
+		gamePerft5->board.getAttacks(BLACK);
+		gamePerft6->board.getAttacks(WHITE);
+		gamePerft6->board.getAttacks(BLACK);
 	}
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
@@ -111,18 +111,18 @@ TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 50000000; ++i) {
-		gameInitial->getBoard().getQueenAttacks(WHITE);
-		gameInitial->getBoard().getQueenAttacks(BLACK);
-		gamePerft2->getBoard().getQueenAttacks(WHITE);
-		gamePerft2->getBoard().getQueenAttacks(BLACK);
-		gamePerft3->getBoard().getQueenAttacks(WHITE);
-		gamePerft3->getBoard().getQueenAttacks(BLACK);
-		gamePerft4->getBoard().getQueenAttacks(WHITE);
-		gamePerft4->getBoard().getQueenAttacks(BLACK);
-		gamePerft5->getBoard().getQueenAttacks(WHITE);
-		gamePerft5->getBoard().getQueenAttacks(BLACK);
-		gamePerft6->getBoard().getQueenAttacks(WHITE);
-		gamePerft6->getBoard().getQueenAttacks(BLACK);
+		gameInitial->board.getQueenAttacks(WHITE);
+		gameInitial->board.getQueenAttacks(BLACK);
+		gamePerft2->board.getQueenAttacks(WHITE);
+		gamePerft2->board.getQueenAttacks(BLACK);
+		gamePerft3->board.getQueenAttacks(WHITE);
+		gamePerft3->board.getQueenAttacks(BLACK);
+		gamePerft4->board.getQueenAttacks(WHITE);
+		gamePerft4->board.getQueenAttacks(BLACK);
+		gamePerft5->board.getQueenAttacks(WHITE);
+		gamePerft5->board.getQueenAttacks(BLACK);
+		gamePerft6->board.getQueenAttacks(WHITE);
+		gamePerft6->board.getQueenAttacks(BLACK);
 	}
 
     cout << "time: " << Utils::getElapsedMillis(begin) << endl;
@@ -176,8 +176,8 @@ TEST_F(BoardPerformanceTest, castlingMaskPerformanceTest) {
 
 	for (long count = 0; count < 10000000; count++) {
 		for (Move move : *moves) {
-			game->getBoard().castlingInfo = 0b1111;
-			game->getBoard().updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
+			game->board.castlingInfo = 0b1111;
+			game->board.updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
 		}
 	}
 
@@ -201,14 +201,14 @@ TEST_F(BoardPerformanceTest, stuffTest) {
 	game->simulateMove(move);
 	game->undoSimulateMove(move);
 
-	/*BoardUtils::printBoard(game->getBoard().BOARD(WHITE));
-	BoardUtils::printBoard(game->getBoard().BOARD(BLACK));
-	BoardUtils::printBoard(game->getBoard().EMPTY);*/
+	/*BoardUtils::printBoard(game->board.BOARD(WHITE));
+	BoardUtils::printBoard(game->board.BOARD(BLACK));
+	BoardUtils::printBoard(game->board.EMPTY);*/
 
 	cout << (int)game->getWhiteKingPosition() << endl;
 	cout << (int)game->getBlackKingPosition() << endl;
 
-	GTEST_ASSERT_TRUE(game->getBoard().equals(board));
+	GTEST_ASSERT_TRUE(game->board.equals(board));
 }
 
 

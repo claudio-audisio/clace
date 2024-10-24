@@ -20,19 +20,25 @@ public:
 		return value;
 	}
 
-	static string readString() {
+	/*static string readString() {
 		string value;
 		cout << "> ";
 		getline(cin, value);
+		return value;
+	}*/
+
+	static string readString() {
+		string value;
+		cout << "> ";
+		cin >> value;
 		return value;
 	}
 
 	static unsigned int menu() {
 		cout << endl;
-        cout << "_____________________________________________" << endl;
-		cout << "Please choose type of game" << endl;
 		cout << "\t1. game" << endl;
 		cout << "\t2. perft" << endl;
+		cout << "\t3. print boards" << endl;
 		cout << "\t0. <-- exit" << endl;
 		return readInt();
 	}

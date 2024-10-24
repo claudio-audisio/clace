@@ -25,6 +25,9 @@ public:
 	Piece piecePositions[64];
 	Rawboard& EMPTY = pieceBoards[Empty];
 	CastlingInfo castlingInfo;
+	Position enPassantPosition = NO_POS;
+
+	//unordered_map<Piece, Rawboard(*)()> destFunctions;
 
 	/*Rawboard opposite[2];
 	bool oppositeReady[2];
@@ -269,15 +272,15 @@ public:
 		castlingInfo &= CASTLING_MASK[destination];
 	}
 
-	Rawboard getDestinationPositions(const Position position, const Position enPassantPosition) {
-		return getDestinationPositions(position, piecePositions[position], enPassantPosition);
+	Rawboard getDestinationPositions(const Position position) {
+		return getDestinationPositions(position, piecePositions[position]);
 	}
 
-	Rawboard getDestinationPositions(const Position position, const Piece piece, const Position enPassantPosition) {
-		// TODO questo si puo' ottimizzare con una mappa statica pezzo -> funzione
+	Rawboard getDestinationPositions(const Position position, const Piece piece) {
+		// TODO questo si puo' ottimizzare con una mappa statica pezzo -> funzione (prima spostare en passant dentro board)
 		switch (piece) {
-			case WPawn: return getPawnMoves(position, WHITE, enPassantPosition);
-			case BPawn: return getPawnMoves(position, BLACK, enPassantPosition);
+			case WPawn: return getPawnMoves(position, WHITE);
+			case BPawn: return getPawnMoves(position, BLACK);
 			case WRook: return rookAttack(position, ~EMPTY, ~BOARD(WHITE));
 			case BRook: return rookAttack(position, ~EMPTY, ~BOARD(BLACK));
 			case WKnight: return knightAttack(position, OPPOSITE(WHITE));
@@ -390,11 +393,11 @@ public:
 
 	bool isUnderCheck(Position position, Side side);
 
-	Rawboard getPawnMoves(Side side, Position enPassantPos);
-    Rawboard getPawnMoves(Position position, Side side, Position enPassantPos);
+	Rawboard getPawnMoves(Side side);
+    Rawboard getPawnMoves(Position position, Side side);
     Rawboard getPawnAttacks(Side side);
     Rawboard getPawnAttacks(Position position, Side side);
-	static Rawboard getPawnEnPassant(Rawboard position, Side side, Position enPassantPos) ;
+	Rawboard getPawnEnPassant(Rawboard position, Side side) ;
 
 	Rawboard getKingMoves(Side side);
     Rawboard getKingMoves(Position position, Side side);

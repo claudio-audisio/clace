@@ -13,16 +13,16 @@ using namespace std;
 void manageGame();
 void managePerft();
 string getFenPerft(unsigned int index);
+void printBoards();
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	if (argc == 0) {
 		// uci mode
 		// TODO
 	} else if (strcmp(argv[1], "console") == 0) {
 		// console mode
-        locale::global(locale(""));
-        cout.imbue(locale(""));
+        //locale::global(locale(""));
+        //cout.imbue(locale(""));
 		bool exit = false;
         UI::clearScreen();
         UI::printLogo();
@@ -31,13 +31,10 @@ int main(int argc, char* argv[])
 			switch (UI::menu()) {
 				case 1: manageGame(); break;
 				case 2: managePerft(); break;
+				case 3: printBoards(); break;
 				default: exit = true; break;
 			}
 		}
-	} else {
-		const Rawboard board = stoull((argv[1]));
-		BoardUtils::printBoard(board);
-		cout << BoardUtils::positionsCount(board) << endl;
 	}
 	
 	return 0;
@@ -45,6 +42,21 @@ int main(int argc, char* argv[])
 
 void manageGame() {
 	// TODO
+}
+
+void printBoards() {
+	string stringBoard;
+	do {
+		stringBoard = UI::readString();
+		const Rawboard board = stoull(stringBoard);
+
+		if (!board) {
+			break;
+		}
+
+		BoardUtils::printBoard(board);
+		cout << BoardUtils::positionsCount(board) << endl;
+	} while (true);
 }
 
 void managePerft() {

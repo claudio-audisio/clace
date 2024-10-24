@@ -9,10 +9,10 @@ Rollback::~Rollback() {
 
 void Rollback::save(Game& game) {
 	MoveInfo* moveInfo = new MoveInfo();
-	moveInfo->setBoard(game.getBoard());
+	moveInfo->setBoard(game.board);
 	moveInfo->sideToMove = game.getSideToMove();
 	moveInfo->castlingInfo = game.getCastlingInfo();
-	moveInfo->enPassantPosition = game.getEnPassantPosition();
+	moveInfo->enPassantPosition = game.board.enPassantPosition;
 	moveInfo->fullMoves = game.getFullMoves();
 	moveInfo->halfMoveClock = game.getHalfMoveClock();
 	moveInfo->whiteKingPosition = game.getWhiteKingPosition();
@@ -31,7 +31,7 @@ void Rollback::rollback(Game& game) {
 	game.setBoard(moveInfo->board);
 	game.setSideToMove(moveInfo->sideToMove);
 	game.setCastlingInfo(moveInfo->castlingInfo);
-	game.setEnPassantPosition(moveInfo->enPassantPosition);
+	game.board.enPassantPosition = moveInfo->enPassantPosition;
 	game.setFullMoves(moveInfo->fullMoves);
 	game.setHalfMoveClock(moveInfo->halfMoveClock);
 	game.setWhiteKingPosition(moveInfo->whiteKingPosition);

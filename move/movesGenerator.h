@@ -29,7 +29,7 @@ public:
 	//static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
 		const Side side = game.getSideToMove();
 		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
-		Rawboard sources = game.getBoard().BOARD(side);
+		Rawboard sources = game.board.BOARD(side);
 
 		/*if (MoveHelper::toString(game.getLastMove()) == "e2-b5") {
 			int stop = 1;
@@ -38,19 +38,19 @@ public:
 		while (sources) {
             const Position position = Utils::getFirstPos(sources);
 			
-			if (game.getCheckStatus().isDoubleCheck() && !game.getBoard().isKing(position)) {
+			if (game.getCheckStatus().isDoubleCheck() && !game.board.isKing(position)) {
 				sources &= (sources - 1);
 				continue;
 			}
 
-            const Piece piece = game.getBoard().getPiece(position);
-			Rawboard destinations = game.getBoard().getDestinationPositions(position, piece, game.getEnPassantPosition());
+            const Piece piece = game.board.getPiece(position);
+			Rawboard destinations = game.board.getDestinationPositions(position, piece);
             unsigned int count = 0;
 
 			while (destinations) {
                 const Position destination = Utils::getFirstPos(destinations);
 				Move move = MoveHelper::getMove(position, destination, side);
-				MoveHelper::decorate(move, piece, game.getEnPassantPosition(), isComputerToMove);
+				MoveHelper::decorate(move, piece, game.board.enPassantPosition, isComputerToMove);
 
                 /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
                     int stop = 1;
@@ -63,7 +63,7 @@ public:
 				if (MoveHelper::isPawnPromotion(move)) {
 					for (Piece promotion : PieceHelper::getPromotionTypes(side)) {
 						Move promotionMove = MoveHelper::getMove(position, destination, side);
-						MoveHelper::decorate(promotionMove, piece, game.getEnPassantPosition(), isComputerToMove);
+						MoveHelper::decorate(promotionMove, piece, game.board.enPassantPosition, isComputerToMove);
 						MoveHelper::setPromotion(promotionMove, promotion);
 
 						if (isValid(game, promotionMove)) {
