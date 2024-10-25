@@ -163,29 +163,42 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class IsEightRowTest : public ::testing::TestWithParam<TestParams*> {};
+class TestParams12 {
+public:
+	TestParams12(Position position, Side side, bool expectedResult) {
+		this->position = position;
+		this->side = side;
+		this->expectedResult = expectedResult;
+	}
+
+	Position position;
+	Side side;
+	bool expectedResult;
+};
+
+class IsEightRowTest : public ::testing::TestWithParam<TestParams12*> {};
 
 TEST_P(IsEightRowTest, isEightRowTest) {
-    TestParams* params = GetParam();
-    EXPECT_EQ(Positions::isEighthRow(params->position, params->white), params->expectedResult);
+	TestParams12* params = GetParam();
+    EXPECT_EQ(Positions::isEighthRow(params->position, params->side), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsEightRowTest,
     ::testing::Values(
-        new TestParams(0, true, true),
-        new TestParams(0, false, false),
-        new TestParams(7, true, true),
-        new TestParams(7, false, false),
-        new TestParams(8, true, false),
-        new TestParams(8, false, false),
-        new TestParams(55, true, false),
-        new TestParams(55, false, false),
-        new TestParams(56, true, false),
-        new TestParams(56, false, true),
-        new TestParams(63, true, false),
-        new TestParams(63, false, true)
+        new TestParams12(0, WHITE, true),
+        new TestParams12(0, BLACK, false),
+        new TestParams12(7, WHITE, true),
+        new TestParams12(7, BLACK, false),
+        new TestParams12(8, WHITE, false),
+        new TestParams12(8, BLACK, false),
+        new TestParams12(55, WHITE, false),
+        new TestParams12(55, BLACK, false),
+        new TestParams12(56, WHITE, false),
+        new TestParams12(56, BLACK, true),
+        new TestParams12(63, WHITE, false),
+        new TestParams12(63, BLACK, true)
     )
 );
 

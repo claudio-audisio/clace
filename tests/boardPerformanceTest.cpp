@@ -135,14 +135,10 @@ TEST_F(BoardPerformanceTest, castlingPerformanceTest) {
     GTEST_SKIP();
 
 	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
-	Move BQCastlingMove = MoveHelper::getMove(4, 2, BLACK);
-	MoveHelper::decorate(BQCastlingMove, BKing);
-	Move BKCastlingMove = MoveHelper::getMove(4, 6, BLACK);
-	MoveHelper::decorate(BKCastlingMove, BKing);
-	Move WQCastlingMove = MoveHelper::getMove(60, 58, WHITE);
-	MoveHelper::decorate(WQCastlingMove, WKing);
-	Move WKCastlingMove = MoveHelper::getMove(60, 62, WHITE);
-	MoveHelper::decorate(WKCastlingMove, WKing);
+	Move BQCastlingMove = MoveHelper::getMove(4, 2, BLACK, BKing);
+	Move BKCastlingMove = MoveHelper::getMove(4, 6, BLACK, BKing);
+	Move WQCastlingMove = MoveHelper::getMove(60, 58, WHITE, WKing);
+	Move WKCastlingMove = MoveHelper::getMove(60, 62, WHITE, WKing);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -192,8 +188,7 @@ TEST_F(BoardPerformanceTest, stuffTest) {
 	Position source = 4;
 	Position destination = 2;
 
-	Move move = MoveHelper::getMove(source, destination, WHITE);
-	MoveHelper::decorate(move, BKing);
+	Move move = MoveHelper::getMove(source, destination, WHITE, BKing);
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
 	Board board = game->getCopyBoard();

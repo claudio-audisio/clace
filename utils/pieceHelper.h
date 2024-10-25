@@ -19,15 +19,15 @@ public:
 	inline static const unordered_set<Piece> WHITE_XRAY_PIECES = unordered_set<Piece>{ WRook, WBishop, WQueen };
 	inline static const unordered_set<Piece> BLACK_XRAY_PIECES = unordered_set<Piece>{ BRook, BBishop, BQueen };
 
-	static bool isWhite(const Piece piece) {
+	inline static bool isWhite(const Piece piece) {
 		return piece > Empty && piece % 2;
 	}
 
-	static bool isBlack(const Piece piece) {
+	inline static bool isBlack(const Piece piece) {
 		return piece > Empty && (piece % 2 == 0);
 	}
 
-	static Side getSide(const Piece piece) {
+	inline static Side getSide(const Piece piece) {
 		if (piece > 0) {
 			return piece % 2 ? WHITE : BLACK;
 		}
@@ -35,7 +35,7 @@ public:
 		assert(false);
 	}
 
-	static Side getOppositeSide(const Piece piece) {
+	inline static Side getOppositeSide(const Piece piece) {
 		if (piece > 0) {
 			return piece % 2 ? BLACK : WHITE;
 		}
@@ -43,47 +43,47 @@ public:
 		assert(false);
 	}
 
-	static bool isEmpty(const Piece piece) {
+	inline static bool isEmpty(const Piece piece) {
 		return piece == Empty;
 	}
 
-	static bool isPawn(const Piece piece) {
+	inline static bool isPawn(const Piece piece) {
 		return piece == WPawn || piece == BPawn;
 	}
-	
-	static bool isRook(const Piece piece) {
+
+	inline static bool isRook(const Piece piece) {
 		return piece == WRook || piece == BRook;
 	}
 
-	static bool isKnight(const Piece piece) {
+	inline static bool isKnight(const Piece piece) {
 		return piece == WKnight || piece == BKnight;
 	}
 
-	static bool isBishop(const Piece piece) {
+	inline static bool isBishop(const Piece piece) {
 		return piece == WBishop || piece == BBishop;
 	}
 
-	static bool isQueen(const Piece piece) {
+	inline static bool isQueen(const Piece piece) {
 		return piece == WQueen || piece == BQueen;
 	}
-	
-	static bool isKing(const Piece piece) {
+
+	inline static bool isKing(const Piece piece) {
 		return piece == WKing || piece == BKing;
 	}
 
-	static bool isOpponent(const Piece piece, const bool white) {
+	inline static bool isOpponent(const Piece piece, const bool white) {
 		return !isEmpty(piece) && isWhite(piece) != white;
 	}
 
-	static bool isEmptyOrOpponent(const Piece piece, const bool white) {
+	inline static bool isEmptyOrOpponent(const Piece piece, const bool white) {
 		return isEmpty(piece) || isOpponent(piece, white);
 	}
 
-	static const list<Piece>& getPromotionTypes(const Side side) {
+	inline static const list<Piece>& getPromotionTypes(const Side side) {
 		return side ? BLACK_PROMOTION_PIECES : WHITE_PROMOTION_PIECES;
 	}
 
-	static const unordered_set<Piece>& getXRayTypes(const Side side) {
+	inline static const unordered_set<Piece>& getXRayTypes(const Side side) {
 		return side ? BLACK_XRAY_PIECES : WHITE_XRAY_PIECES;
 	}
 

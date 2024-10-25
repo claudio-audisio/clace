@@ -117,8 +117,9 @@ public:
         return white ? getRow(position) == 3 : getRow(position) == 4;
     }
     
-    static bool isEighthRow(const Position position, const bool white) {
-        return white ? getRow(position) == 0 : getRow(position) == 7;
+    static bool isEighthRow(const Position position, const Side side) {
+		const Position row = getRow(position) + side;
+        return row == 0 || row == 7 + SIDE_GAP;
     }
     
     static bool areOnSameRowOrColumn(const Position firstPosition, const Position secondPosition) {

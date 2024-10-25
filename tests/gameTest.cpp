@@ -174,8 +174,7 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
 	Side side = game->getSide(testParams->sourcePos);
 	game->sideToMove = side;
-	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, side);
-	MoveHelper::decorate(move, game->board.getPiece(testParams->sourcePos), game->board.enPassantPosition, game->isComputerToMove());
+	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, side, game->board.getPiece(testParams->sourcePos), game->board.enPassantPosition, game->isComputerToMove());
 	MoveHelper::setPromotion(move, side == WHITE ? WQueen : BQueen);
 	const MoveResult moveResult = game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
@@ -255,8 +254,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 	Game* game = FEN::fenToNewGame("k7/8/8/b7/8/1p6/8/4K3 w - - 0 1");
-	Move move = MoveHelper::getMove(35, 41, BLACK);
-	MoveHelper::decorate(move, BPawn, 41, true);
+	Move move = MoveHelper::getMove(35, 41, BLACK, BPawn, 41, true);
 	MoveHelper::setCaptured(move, true);
 	game->setLastMove(move);
 
@@ -328,8 +326,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	Side side = game->getSide(params->kingPosition);
 	game->sideToMove = BoardUtils::opposite(side);
 	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
-	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side);
-	MoveHelper::decorate(move, game->board.getPiece(params->kingPosition), game->board.enPassantPosition, game->isComputerToMove());
+	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side, game->board.getPiece(params->kingPosition), game->board.enPassantPosition, game->isComputerToMove());
 
 	EXPECT_EQ(game->checkControl(move), params->expectedResult);
 }
@@ -402,8 +399,7 @@ class SimulateAndUndoMoveTest : public ::testing::TestWithParam<TestParams5*> {}
 TEST_P(SimulateAndUndoMoveTest, checkControlTest) {
     TestParams5* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenBoard);
-    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhiteToMove());
-    MoveHelper::decorate(move, game->board.getPiece(params->sourcePosition), game->board.enPassantPosition, game->isWhiteToMove());
+    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->isWhiteToMove(), game->board.getPiece(params->sourcePosition), game->board.enPassantPosition, game->isWhiteToMove());
     Board board;
     board.set(game->board);
     game->simulateMove(move);

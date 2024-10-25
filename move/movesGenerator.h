@@ -48,8 +48,7 @@ public:
 
 			while (destinations) {
                 const Position destination = Utils::getFirstPos(destinations);
-				Move move = MoveHelper::getMove(position, destination, game.sideToMove);
-				MoveHelper::decorate(move, piece, game.board.enPassantPosition, isComputerToMove);
+				Move move = MoveHelper::getMove(position, destination, game.sideToMove, piece, game.board.enPassantPosition, isComputerToMove);
 
                 /*if (MoveHelper::isCastling(move) && game.movesHistory.size() == 2) {
                     int stop = 1;
@@ -61,8 +60,7 @@ public:
 
 				if (MoveHelper::isPawnPromotion(move)) {
 					for (Piece promotion : PieceHelper::getPromotionTypes(game.sideToMove)) {
-						Move promotionMove = MoveHelper::getMove(position, destination, game.sideToMove);
-						MoveHelper::decorate(promotionMove, piece, game.board.enPassantPosition, isComputerToMove);
+						Move promotionMove = move;
 						MoveHelper::setPromotion(promotionMove, promotion);
 
 						if (isValid(game, promotionMove)) {

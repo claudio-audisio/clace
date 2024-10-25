@@ -39,97 +39,100 @@ public:
 		return move;
 	}
 
-	static void decorate(Move& move, const Piece piece) {
-		decorate(move, piece, NO_POS, true);
-	}
-
-	static void decorate(Move& move, const Piece piece, const Position enPassantPosition, const bool isComputerToMove) {
+	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side, const Piece piece, const Position enPassantPosition, const bool isComputerToMove) {
+		Move move = 0;
+		setSourcePosition(move, sourcePosition);
+		setDestinationPosition(move, destinationPosition);
+		setSide(move, side);
 		setPiece(move, piece);
-		const bool white = PieceHelper::isWhite(piece);
-		const Position destinationPosition = getDestinationPosition(move);
 
 		if (PieceHelper::isKing(piece)) {
 			// castling
-			const Position sourcePosition = getSourcePosition(move);
-			setCastling(move, (!white && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-				(white && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
+			setCastling(move,
+						(side == BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+							  (side == WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 		} else if (PieceHelper::isPawn(piece)) {
 			// En passant
 			setEnPassant(move, enPassantPosition == destinationPosition);
 			// Pawn promotion
-			setPawnPromotion(move, Positions::isEighthRow(destinationPosition, white));
+			setPawnPromotion(move, Positions::isEighthRow(destinationPosition, side));
 		}
 
 		setComputer(move, isComputerToMove);
+		return move;
+	}
+
+	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side, const Piece piece) {
+		return getMove(sourcePosition, destinationPosition, side, piece, NO_POS, true);
 	}
 
 	static string toString(const Move& move) {
 		return Positions::indexToCoords(getSourcePosition(move)) + "-" + Positions::indexToCoords(getDestinationPosition(move));
 	}
 
-	static void setSourcePosition(Move& move, const Position sourcePosition) {
+	inline static void setSourcePosition(Move& move, const Position sourcePosition) {
 		move &= ~SOURCE_POS_MASK;
 		move |= sourcePosition;
 	}
 
-	static Position getSourcePosition(const Move move) {
+	inline static Position getSourcePosition(const Move move) {
 		return move & SOURCE_POS_MASK;
 	}
 
-	static void setDestinationPosition(Move& move, const Position destinationPosition) {
+	inline static void setDestinationPosition(Move& move, const Position destinationPosition) {
 		move &= ~DEST_POS_MASK;
 		move |= (Move)destinationPosition << 8;
 }
 
-	static Position getDestinationPosition(const Move move) {
+	inline static Position getDestinationPosition(const Move move) {
 		return static_cast<Position>((move & DEST_POS_MASK) >> 8);
 	}
 
-	static void setPiece(Move& move, const Piece piece) {
+	inline static void setPiece(Move& move, const Piece piece) {
 		move &= ~PIECE_MASK;
 		move |= (Move)piece << 16;
 	}
 
-	static Piece getPiece(const Move move) {
+	inline static Piece getPiece(const Move move) {
 		return static_cast<Piece>((move & PIECE_MASK) >> 16);
 	}
 
-	static void setPromotion(Move& move, const Piece promotion) {
+	inline static void setPromotion(Move& move, const Piece promotion) {
 		move &= ~PROMOTION_MASK;
 		move |= (Move)promotion << 24;
 	}
 
-	static Piece getPromotion(const Move move) {
+	inline static Piece getPromotion(const Move move) {
 		return static_cast<Piece>((move & PROMOTION_MASK) >> 24);
 	}
 
-    static void setCaptured(Move& move, const Piece captured) {
+	inline static void setCaptured(Move& move, const Piece captured) {
         move &= ~CAPTURED_MASK;
         move |= (Move)captured << 32;
     }
 
-    static Piece getCaptured(const Move move) {
+	inline static Piece getCaptured(const Move move) {
         return static_cast<Piece>((move & CAPTURED_MASK) >> 32);
     }
 
-    static bool isCaptured(const Move move) {
+	inline static bool isCaptured(const Move move) {
         return getCaptured(move) != Empty;
     }
 
-	static void setSide(Move& move, const Side side) {
+	inline static void setSide(Move& move, const Side side) {
 		move &= ~SIDE_MASK;
 		move |= (Move)side << 40;
 	}
 
-	static Side getSide(const Move move) {
+	inline static Side getSide(const Move move) {
 		return static_cast<Side>((move & SIDE_MASK) >> 40);
 	}
 
-	static bool isWhite(const Move move) {
+	inline static bool isWhite(const Move move) {
 		return getSide(move) == WHITE;
 	}
 
-	static void setCastling(Move& move, const bool castling) {
+	inline static void setCastling(Move& move, const bool castling) {
 		if (castling) {
 			move |= CASTLING_MASK;
 		}
@@ -138,11 +141,11 @@ public:
 		}
 	}
 
-	static bool isCastling(const Move move) {
+	inline static bool isCastling(const Move move) {
 		return (move & CASTLING_MASK) >> 41;
 	}
 
-	static void setEnPassant(Move& move, const bool enPassant) {
+	inline static void setEnPassant(Move& move, const bool enPassant) {
 		if (enPassant) {
 			move |= EN_PASSANT_MASK;
 		}
@@ -151,11 +154,11 @@ public:
 		}
 	}
 
-	static bool isEnPassant(const Move move) {
+	inline static bool isEnPassant(const Move move) {
 		return (move & EN_PASSANT_MASK) >> 42;
 	}
 
-	static void setPawnPromotion(Move& move, const bool pawnPromotion) {
+	inline static void setPawnPromotion(Move& move, const bool pawnPromotion) {
 		if (pawnPromotion) {
 			move |= PAWN_PROM_MASK;
 		}
@@ -164,11 +167,11 @@ public:
 		}
 	}
 
-	static bool isPawnPromotion(const Move move) {
+	inline static bool isPawnPromotion(const Move move) {
 		return (move & PAWN_PROM_MASK) >> 43;
 	}
 
-	static void setComputer(Move& move, const bool computer) {
+	inline static void setComputer(Move& move, const bool computer) {
 		if (computer) {
 			move |= COMPUTER_MASK;
 		}
@@ -177,7 +180,7 @@ public:
 		}
 	}
 
-	static bool isComputer(const Move move) {
+	inline static bool isComputer(const Move move) {
 		return (move & COMPUTER_MASK) >> 44;
 	}
 
@@ -190,7 +193,7 @@ public:
         return moveResult;
     }
 
-    static void setCapturedMR(MoveResult& moveResult, const bool captured) {
+	inline static void setCapturedMR(MoveResult& moveResult, const bool captured) {
         if (captured) {
             moveResult |= MR_CAPTURED_MASK;
         }
@@ -199,11 +202,11 @@ public:
         }
     }
 
-    static bool isCapturedMR(const MoveResult moveResult) {
+	inline static bool isCapturedMR(const MoveResult moveResult) {
         return (moveResult & MR_CAPTURED_MASK);
     }
 
-    static void setPromotedMR(MoveResult& moveResult, const bool promoted) {
+	inline static void setPromotedMR(MoveResult& moveResult, const bool promoted) {
         if (promoted) {
             moveResult |= MR_PROMOTED_MASK;
         }
@@ -212,11 +215,11 @@ public:
         }
     }
 
-    static bool isPromotedMR(const MoveResult moveResult) {
+	inline static bool isPromotedMR(const MoveResult moveResult) {
         return (moveResult & MR_PROMOTED_MASK);
     }
 
-    static void setEnPassantMR(MoveResult& moveResult, const bool enPassant) {
+	inline static void setEnPassantMR(MoveResult& moveResult, const bool enPassant) {
         if (enPassant) {
             moveResult |= MR_PASSANT_MASK;
         }
@@ -225,11 +228,11 @@ public:
         }
     }
 
-    static bool isEnPassantMR(const MoveResult moveResult) {
+	inline static bool isEnPassantMR(const MoveResult moveResult) {
         return (moveResult & MR_PASSANT_MASK);
     }
 
-    static void setCastlingMR(MoveResult& moveResult, const bool castling) {
+	inline static void setCastlingMR(MoveResult& moveResult, const bool castling) {
         if (castling) {
             moveResult |= MR_CASTLING_MASK;
         }
@@ -238,7 +241,7 @@ public:
         }
     }
 
-    static bool isCastlingMR(const MoveResult moveResult) {
+	inline static bool isCastlingMR(const MoveResult moveResult) {
         return (moveResult & MR_CASTLING_MASK);
     }
 

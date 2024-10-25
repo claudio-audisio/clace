@@ -101,8 +101,7 @@ class DecorateTest : public ::testing::TestWithParam<TestParams2*> {};
 TEST_P(DecorateTest, decorateTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition));
-    MoveHelper::decorate(move, params->piece, game->board.enPassantPosition, game->isComputerToMove());
+    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition), params->piece, game->board.enPassantPosition, game->isComputerToMove());
 
     EXPECT_EQ(MoveHelper::getPiece(move), params->piece);
     EXPECT_EQ(MoveHelper::isCastling(move), params->isCastling);
