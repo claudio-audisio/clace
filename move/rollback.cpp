@@ -2,13 +2,25 @@
 #include "../game/game.h"
 
 Rollback::Rollback() {
+	boards.reserve(size);
+	for (int i = 0; i < size; i++) {
+		boards[i] = new MoveInfo();
+	}
 }
 
 Rollback::~Rollback() {
+	for (int i = 0; i < size; i++) {
+		delete boards[i];
+	}
 }
 
 void Rollback::save(Game& game) {
-	MoveInfo* moveInfo = new MoveInfo();
+	if (index == size) {
+		boards[index] = new MoveInfo();
+		size++;
+	}
+
+	MoveInfo* moveInfo = boards[index++];
 	moveInfo->setBoard(game.board);
 	moveInfo->sideToMove = game.sideToMove;
 	moveInfo->castlingInfo = game.board.castlingInfo;
@@ -19,15 +31,14 @@ void Rollback::save(Game& game) {
 	moveInfo->blackKingPosition = game.blackKingPosition;
 	moveInfo->setWhitePieces(game.whitePlayer->pieces);
 	moveInfo->setBlackPieces(game.blackPlayer->pieces);
-	boards.push_front(moveInfo);
 }
 
 void Rollback::rollback(Game& game) {
-	if (boards.empty()) {
+	if (index == 0) {
 		// TODO tirare eccezione
 	}
 
-	MoveInfo* moveInfo = boards.front();
+	MoveInfo* moveInfo = boards[--index];
 	game.board.set(moveInfo->board);
 	game.sideToMove = moveInfo->sideToMove;
 	game.board.castlingInfo = moveInfo->castlingInfo;
@@ -38,32 +49,14 @@ void Rollback::rollback(Game& game) {
 	game.blackKingPosition = moveInfo->blackKingPosition;
 	game.whitePlayer->setPieces(moveInfo->whitePieces);
 	game.blackPlayer->setPieces(moveInfo->blackPieces);
-	boards.pop_front();
-    delete moveInfo;
 }
-
-/*void Rollback::lightSave(const Game& game) {
-	lightBoard.setBoard(game.getBoard());
-	lightBoard.whiteKingPosition = game.getWhiteKingPosition();
-	lightBoard.blackKingPosition = game.getBlackKingPosition();
-}
-
-void Rollback::lightRollback(Game& game) {
-	game.setBoard(lightBoard.board);
-	game.setWhiteKingPosition(lightBoard.whiteKingPosition);
-	game.setBlackKingPosition(lightBoard.blackKingPosition);
-}*/
 
 unsigned int Rollback::getRollbackSize() const {
-	return boards.size();
+	return index;
 }
 
 void Rollback::reset() {
-	while (!boards.empty()) {
-		MoveInfo* board = boards.front();
-		delete board;
-		boards.pop_front();
-	}
+	index = 0;
 }
 
 Rollback::MoveInfo::MoveInfo() {

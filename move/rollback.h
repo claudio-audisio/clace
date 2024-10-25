@@ -14,10 +14,10 @@ public:
 	Rollback();
 	~Rollback();
 
+	unsigned int index = 0;
+	unsigned int size = 5;
 	void save(Game& game);
 	void rollback(Game& game);
-	/*void lightSave(const Game& game);
-	void lightRollback(Game& game);*/
 	unsigned int getRollbackSize() const;
 	void reset();
 
@@ -43,7 +43,5 @@ private:
 		void setBlackPieces(Piece* blackPieces);
 	};
 
-	deque<MoveInfo*> boards;
-	//MoveInfo lightBoard;
-
+	vector<MoveInfo*> boards;
 };
