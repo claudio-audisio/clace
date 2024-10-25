@@ -31,15 +31,15 @@ void Result::incrementNodes(unsLL qty, const unsigned int currentDepth) {
 void Result::incrementCounters(const CheckStatus& checkStatus, const unsigned int currentDepth) {
 	nodes[currentDepth]++;
 
-	if (checkStatus.isCheck()) {
+	if (checkStatus.check) {
 		checks[currentDepth]++;
 	}
 
-	if (checkStatus.isDiscoveryCheck()) {
+	if (checkStatus.discoveryCheck) {
 		discoveryChecks[currentDepth]++;
 	}
 
-	if (checkStatus.isDoubleCheck()) {
+	if (checkStatus.doubleCheck) {
 		doubleChecks[currentDepth]++;
 	}
 }

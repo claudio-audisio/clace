@@ -10,15 +10,15 @@ Rollback::~Rollback() {
 void Rollback::save(Game& game) {
 	MoveInfo* moveInfo = new MoveInfo();
 	moveInfo->setBoard(game.board);
-	moveInfo->sideToMove = game.getSideToMove();
-	moveInfo->castlingInfo = game.getCastlingInfo();
+	moveInfo->sideToMove = game.sideToMove;
+	moveInfo->castlingInfo = game.board.castlingInfo;
 	moveInfo->enPassantPosition = game.board.enPassantPosition;
-	moveInfo->fullMoves = game.getFullMoves();
-	moveInfo->halfMoveClock = game.getHalfMoveClock();
-	moveInfo->whiteKingPosition = game.getWhiteKingPosition();
-	moveInfo->blackKingPosition = game.getBlackKingPosition();
-	moveInfo->setWhitePieces(game.getWhitePlayer()->getPieces());
-	moveInfo->setBlackPieces(game.getBlackPlayer()->getPieces());
+	moveInfo->fullMoves = game.fullMoves;
+	moveInfo->halfMoveClock = game.halfMoveClock;
+	moveInfo->whiteKingPosition = game.whiteKingPosition;
+	moveInfo->blackKingPosition = game.blackKingPosition;
+	moveInfo->setWhitePieces(game.whitePlayer->pieces);
+	moveInfo->setBlackPieces(game.blackPlayer->pieces);
 	boards.push_front(moveInfo);
 }
 
@@ -28,16 +28,16 @@ void Rollback::rollback(Game& game) {
 	}
 
 	MoveInfo* moveInfo = boards.front();
-	game.setBoard(moveInfo->board);
-	game.setSideToMove(moveInfo->sideToMove);
-	game.setCastlingInfo(moveInfo->castlingInfo);
+	game.board.set(moveInfo->board);
+	game.sideToMove = moveInfo->sideToMove;
+	game.board.castlingInfo = moveInfo->castlingInfo;
 	game.board.enPassantPosition = moveInfo->enPassantPosition;
-	game.setFullMoves(moveInfo->fullMoves);
-	game.setHalfMoveClock(moveInfo->halfMoveClock);
-	game.setWhiteKingPosition(moveInfo->whiteKingPosition);
-	game.setBlackKingPosition(moveInfo->blackKingPosition);
-	game.getWhitePlayer()->setPieces(moveInfo->whitePieces);
-	game.getBlackPlayer()->setPieces(moveInfo->blackPieces);
+	game.fullMoves = moveInfo->fullMoves;
+	game.halfMoveClock = moveInfo->halfMoveClock;
+	game.whiteKingPosition = moveInfo->whiteKingPosition;
+	game.blackKingPosition = moveInfo->blackKingPosition;
+	game.whitePlayer->setPieces(moveInfo->whitePieces);
+	game.blackPlayer->setPieces(moveInfo->blackPieces);
 	boards.pop_front();
     delete moveInfo;
 }

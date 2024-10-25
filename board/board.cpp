@@ -22,8 +22,6 @@ void Board::reset() {
 
 	castlingInfo = 0;
 
-	//destFunctions[WPawn] = &getPawnMoves();
-
 	//resetCalculated();
 }
 
@@ -42,66 +40,6 @@ bool Board::equals(const Board& board) {
 
 	return true;
 }
-
-
-
-/*void Board::resetCalculated() {
-	resetCalculated(WHITE);
-	resetCalculated(BLACK);
-}
-
-void Board::resetCalculated(Side side) {
-	opposite[side] = 0;
-	oppositeReady[side] = false;
-	notSide[side] = 0;
-	notSideReady[side] = false;
-}*/
-
-/*Rawboard Board::BOARD(const Side side) const {
-	return pieceBoards[WPawn + side] |
-		   pieceBoards[WBishop + side] |
-		   pieceBoards[WQueen + side] |
-		   pieceBoards[WKnight + side] |
-		   pieceBoards[WKing + side] |
-		   pieceBoards[WRook + side];
-}
-
-Rawboard Board::OPPOSITE(const Side side) const {
-	return pieceBoards[BPawn - side] |
-		   pieceBoards[BBishop - side] |
-		   pieceBoards[BQueen - side] |
-		   pieceBoards[BKnight - side] |
-		   pieceBoards[BKing - side] |
-		   pieceBoards[BRook - side];
-}*/
-
-/*Rawboard Board::getOpposite(const Side side) {
-	if (!oppositeReady[side]) {
-		opposite[side] = OPPOSITE(side);
-		oppositeReady[side] = true;
-	}
-
-	return opposite[side];
-}*/
-
-// TODO Use for performance testing of other methods
-/*Rawboard Board::getOpposite(const Side side) {
-	return OPPOSITE(side);
-}*/
-
-/*Rawboard Board::getNotSide(const Side side) {
-	if (!notSideReady[side]) {
-		notSide[side] = ~BOARD(side);
-		notSideReady[side] = true;
-	}
-
-	return notSide[side];
-}*/
-
-// TODO Use for performance testing of other methods
-/*Rawboard Board::getNotSide(const Side side) {
-	return ~BOARD(side);
-}*/
 
 void Board::setBoard(const Piece boardIndex, const Rawboard pieceBoard) {
     // TODO gestire piecePositions
@@ -154,10 +92,10 @@ Rawboard Board::getPawnAttacks(const Position position, const Side side) {
 	const Rawboard posIndex = posInd(position);
 
 	if (!side) {
-		return (noWestOne(posIndex) | noEastOne(posIndex)) & (EMPTY | OPPOSITE(side));
+		return (noWestOne(posIndex) | noEastOne(posIndex)) & (EMPTY | OPP_PIECES(side));
 	}
 	else {
-		return (soWestOne(posIndex) | soEastOne(posIndex)) & (EMPTY | OPPOSITE(side));
+		return (soWestOne(posIndex) | soEastOne(posIndex)) & (EMPTY | OPP_PIECES(side));
 	}
 }
 
@@ -167,17 +105,19 @@ Rawboard Board::getPawnMoves(const Position position, const Side side) {
     if (!side) {
         const Rawboard onePush = northOne(posIndex) & EMPTY;
         return onePush | (northOne(onePush) & EMPTY & ROW_4) |
-            ((noWestOne(posIndex) | noEastOne(posIndex)) & OPPOSITE(side)) |
-            getPawnEnPassant(posIndex, side);
+			   ((noWestOne(posIndex) | noEastOne(posIndex)) & OPP_PIECES(side)) |
+			   getPawnEnPassant(posIndex, side);
     }
     else {
         const Rawboard onePush = southOne(posIndex) & EMPTY;
         return onePush | (southOne(onePush) & EMPTY & ROW_5) |
-            ((soWestOne(posIndex) | soEastOne(posIndex)) & OPPOSITE(side)) |
-            getPawnEnPassant(posIndex, side);
+			   ((soWestOne(posIndex) | soEastOne(posIndex)) & OPP_PIECES(side)) |
+			   getPawnEnPassant(posIndex, side);
     }
 }
 
+// TODO qui sto controllando per ogni pedone se posso fare en passant,
+// quando data la posizione enpassant ci sono solo due posizioni che possono usufruire di quella mossa
 Rawboard Board::getPawnEnPassant(const Rawboard position, const Side side) {
     if (enPassantPosition != NO_POS) {
         const Rawboard passantPos = posInd(enPassantPosition);
@@ -201,7 +141,7 @@ Rawboard Board::getKingMoves(const Side side) {
 }
 
 Rawboard Board::getKingMoves(const Position position, const Side side) {
-    return kingAttack(position, OPPOSITE(side)) | getKingCastling(position, side);
+    return kingAttack(position, OPP_PIECES(side)) | getKingCastling(position, side);
 }
 
 Rawboard Board::getKingCastling(const Side side) const {

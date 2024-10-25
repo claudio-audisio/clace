@@ -26,15 +26,21 @@ public:
 	Rawboard& EMPTY = pieceBoards[Empty];
 	CastlingInfo castlingInfo;
 	Position enPassantPosition = NO_POS;
+	/*Rawboard _OPP_PIECES[2];
+	Rawboard _PIECES[2];*/
 
-	//unordered_map<Piece, Rawboard(*)()> destFunctions;
+	inline Rawboard PIECES(const Side side) {
+		/*if (!_PIECES[side]) {
+			_PIECES[side] = pieceBoards[WPawn + side] |
+				   pieceBoards[WBishop + side] |
+				   pieceBoards[WQueen + side] |
+				   pieceBoards[WKnight + side] |
+				   pieceBoards[WKing + side] |
+				   pieceBoards[WRook + side];
+		}
 
-	/*Rawboard opposite[2];
-	bool oppositeReady[2];
-	Rawboard notSide[2];
-	bool notSideReady[2];*/
+		return _PIECES[side];*/
 
-	inline Rawboard BOARD(const Side side) const {
 		return pieceBoards[WPawn + side] |
 			   pieceBoards[WBishop + side] |
 			   pieceBoards[WQueen + side] |
@@ -43,7 +49,18 @@ public:
 			   pieceBoards[WRook + side];
 	}
 
-	inline Rawboard OPPOSITE(const Side side) const {
+	inline Rawboard OPP_PIECES(const Side side) {
+		/*if (!_OPP_PIECES[side]) {
+			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
+					pieceBoards[BBishop - side] |
+					pieceBoards[BQueen - side] |
+					pieceBoards[BKnight - side] |
+					pieceBoards[BKing - side] |
+					pieceBoards[BRook - side];
+		}
+
+		return _OPP_PIECES[side];*/
+
 		return pieceBoards[BPawn - side] |
 			   pieceBoards[BBishop - side] |
 			   pieceBoards[BQueen - side] |
@@ -52,16 +69,18 @@ public:
 			   pieceBoards[BRook - side];
 	}
 
+	/*void resetCalculated() {
+		resetCalculated(WHITE);
+		resetCalculated(BLACK);
+	}
+
+	void resetCalculated(Side side) {
+		_PIECES[side] = 0;
+		_OPP_PIECES[side] = 0;
+	}*/
+
     void reset();
 	bool equals(const Board& board);
-
-	/*void resetCalculated();
-	void resetCalculated(Side side);*/
-	/*Rawboard BOARD(Side side) const;
-	Rawboard OPPOSITE(Side side) const;*/
-	/*Rawboard getOpposite(Side side);
-	Rawboard getNotSide(Side side);*/
-
 	void setBoard(Piece boardIndex, Rawboard pieceBoard);
 	void set(const Board& board);
 
@@ -128,6 +147,7 @@ public:
 		pieceBoards[oldPiece] &= ~posIndex;
 		pieceBoards[piece] |= posIndex;
 		piecePositions[position] = piece;
+		//resetCalculated();
 		return oldPiece;
 	}
 
@@ -151,120 +171,13 @@ public:
 	inline Piece move(const Position source, const Position destination, Piece piece, const bool isCastling) {
 		if (isCastling) {
 			castlingMove(source, destination);
+			//resetCalculated();
 			return Empty;
 		}
 
 		const Piece oldPiece = setPiece(destination, piece);
 		setEmpty(source, piece);
 		return oldPiece;
-	}
-
-	inline void castlingMove(const Position source, const Position destination) {
-		switch (source + destination) {
-			case BQCastling: {
-				pieceBoards[BKing] = BQC_King;
-				pieceBoards[BRook] &= BQC_RookRem;
-				pieceBoards[BRook] |= BQC_RookAdd;
-				pieceBoards[Empty] &= BQC_EmptyRem;
-				pieceBoards[Empty] |= BQC_EmptyAdd;
-				piecePositions[0] = Empty;
-				piecePositions[2] = BKing;
-				piecePositions[3] = BRook;
-				piecePositions[4] = Empty;
-				break;
-			}
-			case BKCastling: {
-				pieceBoards[BKing] = BKC_King;
-				pieceBoards[BRook] &= BKC_RookRem;
-				pieceBoards[BRook] |= BKC_RookAdd;
-				pieceBoards[Empty] &= BKC_EmptyRem;
-				pieceBoards[Empty] |= BKC_EmptyAdd;
-				piecePositions[4] = Empty;
-				piecePositions[6] = BKing;
-				piecePositions[5] = BRook;
-				piecePositions[7] = Empty;
-				break;
-			}
-			case WQCastling: {
-				pieceBoards[WKing] = WQC_King;
-				pieceBoards[WRook] &= WQC_RookRem;
-				pieceBoards[WRook] |= WQC_RookAdd;
-				pieceBoards[Empty] &= WQC_EmptyRem;
-				pieceBoards[Empty] |= WQC_EmptyAdd;
-				piecePositions[56] = Empty;
-				piecePositions[58] = WKing;
-				piecePositions[59] = WRook;
-				piecePositions[60] = Empty;
-				break;
-			}
-			case WKCastling: {
-				pieceBoards[WKing] = WKC_King;
-				pieceBoards[WRook] &= WKC_RookRem;
-				pieceBoards[WRook] |= WKC_RookAdd;
-				pieceBoards[Empty] &= WKC_EmptyRem;
-				pieceBoards[Empty] |= WKC_EmptyAdd;
-				piecePositions[60] = Empty;
-				piecePositions[62] = WKing;
-				piecePositions[61] = WRook;
-				piecePositions[63] = Empty;
-				break;
-			}
-			default: assert(false);
-		}
-	}
-
-	inline void undoCastlingMove(const Position source, const Position destination) {
-		switch (source + destination) {
-			case BQCastling: {
-				pieceBoards[BKing] = BC_King;
-				pieceBoards[BRook] |= ~BQC_RookRem;
-				pieceBoards[BRook] &= ~BQC_RookAdd;
-				pieceBoards[Empty] |= ~BQC_EmptyRem;
-				pieceBoards[Empty] &= ~BQC_EmptyAdd;
-				piecePositions[2] = Empty;
-				piecePositions[4] = BKing;
-				piecePositions[0] = BRook;
-				piecePositions[3] = Empty;
-				break;
-			}
-			case BKCastling: {
-				pieceBoards[BKing] = BC_King;
-				pieceBoards[BRook] |= ~BKC_RookRem;
-				pieceBoards[BRook] &= ~BKC_RookAdd;
-				pieceBoards[Empty] |= ~BKC_EmptyRem;
-				pieceBoards[Empty] &= ~BKC_EmptyAdd;
-				piecePositions[5] = Empty;
-				piecePositions[7] = BRook;
-				piecePositions[4] = BKing;
-				piecePositions[6] = Empty;
-				break;
-			}
-			case WQCastling: {
-				pieceBoards[WKing] = WC_King;
-				pieceBoards[WRook] |= ~WQC_RookRem;
-				pieceBoards[WRook] &= ~WQC_RookAdd;
-				pieceBoards[Empty] |= ~WQC_EmptyRem;
-				pieceBoards[Empty] &= ~WQC_EmptyAdd;
-				piecePositions[58] = Empty;
-				piecePositions[60] = WKing;
-				piecePositions[56] = WRook;
-				piecePositions[59] = Empty;
-				break;
-			}
-			case WKCastling: {
-				pieceBoards[WKing] = WC_King;
-				pieceBoards[WRook] |= ~WKC_RookRem;
-				pieceBoards[WRook] &= ~WKC_RookAdd;
-				pieceBoards[Empty] |= ~WKC_EmptyRem;
-				pieceBoards[Empty] &= ~WKC_EmptyAdd;
-				piecePositions[61] = Empty;
-				piecePositions[63] = WRook;
-				piecePositions[60] = WKing;
-				piecePositions[62] = Empty;
-				break;
-			}
-			default: assert(false);
-		}
 	}
 
 	void updateCastlingInfo(const Position source, const Position destination) {
@@ -277,18 +190,17 @@ public:
 	}
 
 	Rawboard getDestinationPositions(const Position position, const Piece piece) {
-		// TODO questo si puo' ottimizzare con una mappa statica pezzo -> funzione (prima spostare en passant dentro board)
 		switch (piece) {
 			case WPawn: return getPawnMoves(position, WHITE);
 			case BPawn: return getPawnMoves(position, BLACK);
-			case WRook: return rookAttack(position, ~EMPTY, ~BOARD(WHITE));
-			case BRook: return rookAttack(position, ~EMPTY, ~BOARD(BLACK));
-			case WKnight: return knightAttack(position, OPPOSITE(WHITE));
-			case BKnight: return knightAttack(position, OPPOSITE(BLACK));
-			case WBishop: return bishopAttack(position, ~EMPTY, ~BOARD(WHITE));
-			case BBishop: return bishopAttack(position, ~EMPTY, ~BOARD(BLACK));
-			case WQueen: return queenAttacks(position, ~EMPTY, ~BOARD(WHITE));
-			case BQueen: return queenAttacks(position, ~EMPTY, ~BOARD(BLACK));
+			case WRook: return rookAttack(position, ~EMPTY, ~PIECES(WHITE));
+			case BRook: return rookAttack(position, ~EMPTY, ~PIECES(BLACK));
+			case WKnight: return knightAttack(position, OPP_PIECES(WHITE));
+			case BKnight: return knightAttack(position, OPP_PIECES(BLACK));
+			case WBishop: return bishopAttack(position, ~EMPTY, ~PIECES(WHITE));
+			case BBishop: return bishopAttack(position, ~EMPTY, ~PIECES(BLACK));
+			case WQueen: return queenAttacks(position, ~EMPTY, ~PIECES(WHITE));
+			case BQueen: return queenAttacks(position, ~EMPTY, ~PIECES(BLACK));
 			case WKing: return getKingMoves(position, WHITE);
 			case BKing: return getKingMoves(position, BLACK);
 			default: return 0;
@@ -309,7 +221,7 @@ public:
 			board &= (board - 1);
 		}
 
-		return attacks & (EMPTY | OPPOSITE(side));
+		return attacks & (EMPTY | OPP_PIECES(side));
 	}
 
 	inline Rawboard kingAttack(const Position position, const Rawboard opposite) {
@@ -326,7 +238,7 @@ public:
 			board &= (board - 1);
 		}
 
-		return attacks & (EMPTY | OPPOSITE(side));
+		return attacks & (EMPTY | OPP_PIECES(side));
 	}
 
 	inline Rawboard knightAttack(const Position position, const Rawboard opposite) {
@@ -337,7 +249,7 @@ public:
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WQueen + side];
 		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~BOARD(side);
+		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
 			const Position position = Utils::getFirstPos(board);
@@ -357,7 +269,7 @@ public:
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WRook + side];
 		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~BOARD(side);
+		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
 			const Position position = Utils::getFirstPos(board);
@@ -376,7 +288,7 @@ public:
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WBishop + side];
 		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~BOARD(side);
+		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
 			const Position position = Utils::getFirstPos(board);
@@ -503,6 +415,114 @@ public:
 
 	inline static Rawboard noWestOne(const Rawboard start) {
 		return (start >> 9) & NOT_H_COL & SH_9DX_MSK;
+	}
+
+	inline void castlingMove(const Position source, const Position destination) {
+		switch (source + destination) {
+			case BQCastling: {
+				pieceBoards[BKing] = BQC_King;
+				pieceBoards[BRook] &= BQC_RookRem;
+				pieceBoards[BRook] |= BQC_RookAdd;
+				pieceBoards[Empty] &= BQC_EmptyRem;
+				pieceBoards[Empty] |= BQC_EmptyAdd;
+				piecePositions[0] = Empty;
+				piecePositions[2] = BKing;
+				piecePositions[3] = BRook;
+				piecePositions[4] = Empty;
+				break;
+			}
+			case BKCastling: {
+				pieceBoards[BKing] = BKC_King;
+				pieceBoards[BRook] &= BKC_RookRem;
+				pieceBoards[BRook] |= BKC_RookAdd;
+				pieceBoards[Empty] &= BKC_EmptyRem;
+				pieceBoards[Empty] |= BKC_EmptyAdd;
+				piecePositions[4] = Empty;
+				piecePositions[6] = BKing;
+				piecePositions[5] = BRook;
+				piecePositions[7] = Empty;
+				break;
+			}
+			case WQCastling: {
+				pieceBoards[WKing] = WQC_King;
+				pieceBoards[WRook] &= WQC_RookRem;
+				pieceBoards[WRook] |= WQC_RookAdd;
+				pieceBoards[Empty] &= WQC_EmptyRem;
+				pieceBoards[Empty] |= WQC_EmptyAdd;
+				piecePositions[56] = Empty;
+				piecePositions[58] = WKing;
+				piecePositions[59] = WRook;
+				piecePositions[60] = Empty;
+				break;
+			}
+			case WKCastling: {
+				pieceBoards[WKing] = WKC_King;
+				pieceBoards[WRook] &= WKC_RookRem;
+				pieceBoards[WRook] |= WKC_RookAdd;
+				pieceBoards[Empty] &= WKC_EmptyRem;
+				pieceBoards[Empty] |= WKC_EmptyAdd;
+				piecePositions[60] = Empty;
+				piecePositions[62] = WKing;
+				piecePositions[61] = WRook;
+				piecePositions[63] = Empty;
+				break;
+			}
+			default: assert(false);
+		}
+	}
+
+	inline void undoCastlingMove(const Position source, const Position destination) {
+		switch (source + destination) {
+			case BQCastling: {
+				pieceBoards[BKing] = BC_King;
+				pieceBoards[BRook] |= ~BQC_RookRem;
+				pieceBoards[BRook] &= ~BQC_RookAdd;
+				pieceBoards[Empty] |= ~BQC_EmptyRem;
+				pieceBoards[Empty] &= ~BQC_EmptyAdd;
+				piecePositions[2] = Empty;
+				piecePositions[4] = BKing;
+				piecePositions[0] = BRook;
+				piecePositions[3] = Empty;
+				break;
+			}
+			case BKCastling: {
+				pieceBoards[BKing] = BC_King;
+				pieceBoards[BRook] |= ~BKC_RookRem;
+				pieceBoards[BRook] &= ~BKC_RookAdd;
+				pieceBoards[Empty] |= ~BKC_EmptyRem;
+				pieceBoards[Empty] &= ~BKC_EmptyAdd;
+				piecePositions[5] = Empty;
+				piecePositions[7] = BRook;
+				piecePositions[4] = BKing;
+				piecePositions[6] = Empty;
+				break;
+			}
+			case WQCastling: {
+				pieceBoards[WKing] = WC_King;
+				pieceBoards[WRook] |= ~WQC_RookRem;
+				pieceBoards[WRook] &= ~WQC_RookAdd;
+				pieceBoards[Empty] |= ~WQC_EmptyRem;
+				pieceBoards[Empty] &= ~WQC_EmptyAdd;
+				piecePositions[58] = Empty;
+				piecePositions[60] = WKing;
+				piecePositions[56] = WRook;
+				piecePositions[59] = Empty;
+				break;
+			}
+			case WKCastling: {
+				pieceBoards[WKing] = WC_King;
+				pieceBoards[WRook] |= ~WKC_RookRem;
+				pieceBoards[WRook] &= ~WKC_RookAdd;
+				pieceBoards[Empty] |= ~WKC_EmptyRem;
+				pieceBoards[Empty] &= ~WKC_EmptyAdd;
+				piecePositions[61] = Empty;
+				piecePositions[63] = WRook;
+				piecePositions[60] = WKing;
+				piecePositions[62] = Empty;
+				break;
+			}
+			default: assert(false);
+		}
 	}
 
 };

@@ -27,18 +27,17 @@ public:
 
 	static void generateLegalMoves(Game& game, vector<Move>& moves) {
 	//static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
-		const Side side = game.getSideToMove();
 		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
-		Rawboard sources = game.board.BOARD(side);
+		Rawboard sources = game.board.PIECES(game.sideToMove);
 
-		/*if (MoveHelper::toString(game.getLastMove()) == "e2-b5") {
+		/*if (MoveHelper::toString(game.lastMove) == "e2-b5") {
 			int stop = 1;
 		}*/
 
 		while (sources) {
             const Position position = Utils::getFirstPos(sources);
 			
-			if (game.getCheckStatus().isDoubleCheck() && !game.board.isKing(position)) {
+			if (game.checkStatus.doubleCheck && !game.board.isKing(position)) {
 				sources &= (sources - 1);
 				continue;
 			}
@@ -49,20 +48,20 @@ public:
 
 			while (destinations) {
                 const Position destination = Utils::getFirstPos(destinations);
-				Move move = MoveHelper::getMove(position, destination, side);
+				Move move = MoveHelper::getMove(position, destination, game.sideToMove);
 				MoveHelper::decorate(move, piece, game.board.enPassantPosition, isComputerToMove);
 
-                /*if (MoveHelper::isCastling(move) && game.getMovesHistory().size() == 2) {
+                /*if (MoveHelper::isCastling(move) && game.movesHistory.size() == 2) {
                     int stop = 1;
                 }*/
 
-                /*if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.getLastMove()) == "e5-d7") {
+                /*if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.lastMove) == "e5-d7") {
                     int stop = 1;
                 }*/
 
 				if (MoveHelper::isPawnPromotion(move)) {
-					for (Piece promotion : PieceHelper::getPromotionTypes(side)) {
-						Move promotionMove = MoveHelper::getMove(position, destination, side);
+					for (Piece promotion : PieceHelper::getPromotionTypes(game.sideToMove)) {
+						Move promotionMove = MoveHelper::getMove(position, destination, game.sideToMove);
 						MoveHelper::decorate(promotionMove, piece, game.board.enPassantPosition, isComputerToMove);
 						MoveHelper::setPromotion(promotionMove, promotion);
 

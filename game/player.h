@@ -28,19 +28,6 @@ public:
 	void stopMoveTime();
 	string getMoveTime();
 
-	bool isComputer() const {
-		return computer;
-	}
-
-	Piece* getPieces() const {
-		return pieces;
-	}
-
-	unsLL getGameTime() const {
-		return gameTime;
-	}
-
-private:
 	string name;
 	bool white;
 	bool computer;

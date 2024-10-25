@@ -298,7 +298,7 @@ protected:
 TEST_P(IsOnXRayTest, isOnXRayTest) {
     TestParams3* params = GetParam();
     Game* game = FEN::fenToNewGame("3bqr2/8/8/7B/7Q/7R/8/8 w - - 0 1");
-    game->setSideToMove(params->side);
+    game->sideToMove = params->side;
 
     EXPECT_EQ(Positions::isOnXRay(*game, params->position, params->excludePosition), params->expectedResult);
 }

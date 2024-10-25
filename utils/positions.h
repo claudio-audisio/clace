@@ -13,7 +13,7 @@ class Positions {
 public:
 
     static void calculateCheckPositions(Game& game, Side side) {
-		Rawboard positions = game.board.BOARD(side);
+		Rawboard positions = game.board.PIECES(side);
 
 		while(positions) {
 			const Position position = Utils::getFirstPos(positions);
@@ -21,31 +21,31 @@ public:
 
 			if (PieceHelper::isPawn(piece)) {
 				const Rawboard attacks = game.board.getPawnAttacks(position, side);
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
 			} else if (PieceHelper::isRook(piece)) {
-				const Rawboard attacks = game.board.rookAttack(position, ~game.board.EMPTY, ~game.board.BOARD(side));
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
-				game.getCheckStatus().addXRayPosition(position, attacks);
+				const Rawboard attacks = game.board.rookAttack(position, ~game.board.EMPTY, ~game.board.PIECES(side));
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
+				game.checkStatus.addXRayPosition(position, attacks);
 			} else if (PieceHelper::isKnight(piece)) {
-				const Rawboard attacks = game.board.knightAttack(position, game.board.OPPOSITE(side));
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
+				const Rawboard attacks = game.board.knightAttack(position, game.board.OPP_PIECES(side));
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
 			} else if (PieceHelper::isBishop(piece)) {
-				const Rawboard attacks = game.board.bishopAttack(position, ~game.board.EMPTY, ~game.board.BOARD(side));
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
-				game.getCheckStatus().addXRayPosition(position, attacks);
+				const Rawboard attacks = game.board.bishopAttack(position, ~game.board.EMPTY, ~game.board.PIECES(side));
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
+				game.checkStatus.addXRayPosition(position, attacks);
 			} else if (PieceHelper::isQueen(piece)) {
-				const Rawboard attacks = game.board.queenAttacks(position, ~game.board.EMPTY, ~game.board.BOARD(side));
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
-				game.getCheckStatus().addXRayPosition(position, attacks);
+				const Rawboard attacks = game.board.queenAttacks(position, ~game.board.EMPTY, ~game.board.PIECES(side));
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
+				game.checkStatus.addXRayPosition(position, attacks);
 			} else if (PieceHelper::isKing(piece)) {
 				const Rawboard attacks = game.board.getKingMoves(position, side);
-				game.getCheckStatus().updateAllCheckPositions(attacks);
-				game.getCheckStatus().addCheckPosition(position, attacks);
+				game.checkStatus.updateAllCheckPositions(attacks);
+				game.checkStatus.addCheckPosition(position, attacks);
 			}
 
 			positions &= (positions - 1);

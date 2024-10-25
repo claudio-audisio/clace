@@ -202,11 +202,11 @@ TEST_F(BoardPerformanceTest, stuffTest) {
 	game->undoSimulateMove(move);
 
 	/*BoardUtils::printBoard(game->board.BOARD(WHITE));
-	BoardUtils::printBoard(game->board.BOARD(BLACK));
+	BoardUtils::printBoard(game->board.PIECES(BLACK));
 	BoardUtils::printBoard(game->board.EMPTY);*/
 
-	cout << (int)game->getWhiteKingPosition() << endl;
-	cout << (int)game->getBlackKingPosition() << endl;
+	cout << (int)game->whiteKingPosition << endl;
+	cout << (int)game->blackKingPosition << endl;
 
 	GTEST_ASSERT_TRUE(game->board.equals(board));
 }

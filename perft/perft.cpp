@@ -101,7 +101,7 @@ void Perft::runPerft(const unsigned int currentDepth) {
 	MovesGenerator::generateLegalMoves(*game, moves);
 #endif
 
-    if (game->getCheckStatus().isCheck() && moves.empty()) {
+    if (game->checkStatus.check && moves.empty()) {
         result->incrementCheckmates((depth - currentDepth) - 1);
         return;
     }
@@ -115,7 +115,7 @@ void Perft::runPerft(const unsigned int currentDepth) {
         const MoveResult moveResult = game->applyMove(move);
         result->incrementCounters(moveResult, depth - currentDepth);
         game->verifyChecks();
-        result->incrementCounters(game->getCheckStatus(), depth - currentDepth);
+        result->incrementCounters(game->checkStatus, depth - currentDepth);
         //cout << game->printMovesHistory() << " done " << endl;
         runPerft(currentDepth - 1);
 		/*if (currentDepth == 3) {

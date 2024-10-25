@@ -30,18 +30,18 @@ TEST_F(GameTest, initTest) {
 	Game game;
 	game.init();
 
-	EXPECT_EQ(game.getFullMoves(), 1);
-	EXPECT_EQ(game.getHalfMoveClock(), 0);
-	EXPECT_EQ(game.getBlackKingPosition(), 4);
-	EXPECT_EQ(game.getWhiteKingPosition(), 60);
+	EXPECT_EQ(game.fullMoves, 1);
+	EXPECT_EQ(game.halfMoveClock, 0);
+	EXPECT_EQ(game.blackKingPosition, 4);
+	EXPECT_EQ(game.whiteKingPosition, 60);
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
-	EXPECT_EQ(game.getLastMove(), 0);
-	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(game.getMovesHistory().empty());
+	EXPECT_EQ(game.lastMove, 0);
+	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(game.movesHistory.empty());
 	EXPECT_EQ(FEN::gameToFEN(game), INITIAL_FEN_POSITION);
 }
 
@@ -51,8 +51,8 @@ TEST_F(GameTest, setKingPositionsTest) {
 	game.board.setPiece(42, BKing);
 	game.setKingPositions();
 
-	EXPECT_EQ(game.getWhiteKingPosition(), 17);
-	EXPECT_EQ(game.getBlackKingPosition(), 42);
+	EXPECT_EQ(game.whiteKingPosition, 17);
+	EXPECT_EQ(game.blackKingPosition, 42);
 }
 
 
@@ -82,7 +82,7 @@ TEST_P(CheckFiftyMoveRuleTest, checkFiftyMoveRuleTest) {
 	Game game;
 	unsigned int halfMoveClock = get<0>(GetParam());
 	EndGameType expectedEndGame = get<1>(GetParam());
-	game.setHalfMoveClock(halfMoveClock);
+	game.halfMoveClock = halfMoveClock;
 
 	EXPECT_EQ(game.checkFiftyMoveRule(), expectedEndGame);
 }
@@ -173,7 +173,7 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	TestParams2* testParams = GetParam();
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
 	Side side = game->getSide(testParams->sourcePos);
-	game->setSideToMove(side);
+	game->sideToMove = side;
 	Move move = MoveHelper::getMove(testParams->sourcePos, testParams->destinationPos, side);
 	MoveHelper::decorate(move, game->board.getPiece(testParams->sourcePos), game->board.enPassantPosition, game->isComputerToMove());
 	MoveHelper::setPromotion(move, side == WHITE ? WQueen : BQueen);
@@ -183,9 +183,9 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	EXPECT_EQ(fenBoardAfterMove, testParams->expectedFenBoardAfterMove);
 	EXPECT_EQ(MoveHelper::isCapturedMR(moveResult), testParams->expectedCaptured);
 	EXPECT_EQ(MoveHelper::isPromotedMR(moveResult), testParams->expectedPromotion);
-	EXPECT_EQ(MoveHelper::toString(game->getLastMove()), testParams->expectedLastMove);
-	EXPECT_EQ(game->getMovesHistory().size(), 1);
-	EXPECT_EQ(MoveHelper::toString(game->getMovesHistory().front()), testParams->expectedLastMove);
+	EXPECT_EQ(MoveHelper::toString(game->lastMove), testParams->expectedLastMove);
+	EXPECT_EQ(game->movesHistory.size(), 1);
+	EXPECT_EQ(MoveHelper::toString(game->movesHistory.front()), testParams->expectedLastMove);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -235,9 +235,9 @@ TEST_P(VerifyChecksTest, verifyChecksTest) {
 
 	game->verifyChecks();
 
-	EXPECT_EQ(game->getCheckStatus().isCheck(), testParams->check);
-	EXPECT_EQ(game->getCheckStatus().isDiscoveryCheck(), testParams->discoveryCheck);
-	EXPECT_EQ(game->getCheckStatus().isDoubleCheck(), testParams->doubleCheck);
+	EXPECT_EQ(game->checkStatus.check, testParams->check);
+	EXPECT_EQ(game->checkStatus.discoveryCheck, testParams->discoveryCheck);
+	EXPECT_EQ(game->checkStatus.doubleCheck, testParams->doubleCheck);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -262,9 +262,9 @@ TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 
 	game->verifyChecks();
 
-	GTEST_ASSERT_TRUE(game->getCheckStatus().isCheck());
-	GTEST_ASSERT_TRUE(game->getCheckStatus().isDiscoveryCheck());
-	GTEST_ASSERT_FALSE(game->getCheckStatus().isDoubleCheck());
+	GTEST_ASSERT_TRUE(game->checkStatus.check);
+	GTEST_ASSERT_TRUE(game->checkStatus.discoveryCheck);
+	GTEST_ASSERT_FALSE(game->checkStatus.doubleCheck);
 }
 
 
@@ -326,7 +326,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	Game* game = FEN::fenToNewGame(params->fenBoard);
 	game->setKingPositions();
 	Side side = game->getSide(params->kingPosition);
-	game->setSideToMove(BoardUtils::opposite(side));
+	game->sideToMove = BoardUtils::opposite(side);
 	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
 	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side);
 	MoveHelper::decorate(move, game->board.getPiece(params->kingPosition), game->board.enPassantPosition, game->isComputerToMove());
@@ -371,16 +371,16 @@ TEST_F(GameTest, duplicateTest) {
 	Game* newGame = game->duplicate();
 
 	EXPECT_EQ(FEN::gameToFEN(*newGame), fenBoard);
-	EXPECT_EQ(newGame->getMovesHistory().size(), 1);
-	GTEST_ASSERT_FALSE(MoveHelper::isWhite(newGame->getMovesHistory().front()));
-	EXPECT_EQ(MoveHelper::toString(newGame->getMovesHistory().front()), "b7-a6");
-	EXPECT_EQ(BoardUtils::positionsCount(newGame->getCheckStatus().getAllCheckPositions()), 25);
-	EXPECT_EQ(newGame->getCheckStatus().getCheckPositions().size(), 16);
-	EXPECT_EQ(newGame->getCheckStatus().getXRayPositions().size(), 5);
-	GTEST_ASSERT_FALSE(newGame->getCheckStatus().isCheck());
-	GTEST_ASSERT_FALSE(newGame->getCheckStatus().isDiscoveryCheck());
-	GTEST_ASSERT_FALSE(newGame->getCheckStatus().isDoubleCheck());
-	GTEST_ASSERT_FALSE(newGame->getCheckStatus().isCheckmate());
+	EXPECT_EQ(newGame->movesHistory.size(), 1);
+	GTEST_ASSERT_FALSE(MoveHelper::isWhite(newGame->movesHistory.front()));
+	EXPECT_EQ(MoveHelper::toString(newGame->movesHistory.front()), "b7-a6");
+	EXPECT_EQ(BoardUtils::positionsCount(newGame->checkStatus.allCheckPositions), 25);
+	EXPECT_EQ(newGame->checkStatus.checkPositions.size(), 16);
+	EXPECT_EQ(newGame->checkStatus.xRayPositions.size(), 5);
+	GTEST_ASSERT_FALSE(newGame->checkStatus.check);
+	GTEST_ASSERT_FALSE(newGame->checkStatus.discoveryCheck);
+	GTEST_ASSERT_FALSE(newGame->checkStatus.doubleCheck);
+	GTEST_ASSERT_FALSE(newGame->checkStatus.checkmate);
 }
 
 

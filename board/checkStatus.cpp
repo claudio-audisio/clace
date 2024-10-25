@@ -78,11 +78,11 @@ void CheckStatus::reset() {
 
 void CheckStatus::set(const CheckStatus& checkStatus) {
     reset();
-    check = checkStatus.isCheck();
-    discoveryCheck = checkStatus.isDiscoveryCheck();
-    doubleCheck = checkStatus.isDoubleCheck();
-    checkmate = checkStatus.isCheckmate();
-    allCheckPositions = checkStatus.getAllCheckPositions();
-    checkPositions = checkStatus.getCheckPositions();
-    xRayPositions = checkStatus.getXRayPositions();
+    check = checkStatus.check;
+    discoveryCheck = checkStatus.discoveryCheck;
+    doubleCheck = checkStatus.doubleCheck;
+    checkmate = checkStatus.checkmate;
+    allCheckPositions = checkStatus.allCheckPositions;
+    checkPositions = checkStatus.checkPositions;
+    xRayPositions = checkStatus.xRayPositions;
 }

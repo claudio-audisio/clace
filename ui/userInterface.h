@@ -164,8 +164,8 @@ public:
 
 		printWriter.println("  evaluation: " + String.format("%.2f", board.evaluateAsWhite()));
 
-		if (board.getLastMove() != null) {
-			printWriter.println("  last move: " + board.getLastMove() + " (" + (board.getLastMove().isWhite() ? board.getWhitePlayer().getName() : board.getBlackPlayer().getName()) + ")");
+		if (board.lastMove != null) {
+			printWriter.println("  last move: " + board.lastMove + " (" + (board.lastMove.isWhite() ? board.getWhitePlayer().getName() : board.getBlackPlayer().getName()) + ")");
 		}
 
 		printWriter.println("  fen: " + FENConverter.boardToFEN(board));

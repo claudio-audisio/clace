@@ -56,101 +56,17 @@ public:
     string printMovesHistory();
     string printCastlingInfo() const;
 
-	void setBoard(const Board& b) {
-		this->board.set(b);
-	}
-
 	// Only for testing
 	Board getCopyBoard() {
 		return board;
 	}
 
-	void setWhiteKingPosition(Position position) {
-		whiteKingPosition = position;
-	}
-
-	void setBlackKingPosition(Position position) {
-		blackKingPosition = position;
-	}
-
-	Position getWhiteKingPosition() const {
-		return whiteKingPosition;
-	}
-
-	Position getBlackKingPosition() const {
-		return blackKingPosition;
-	}
-
-	Side getSideToMove() const {
-		return sideToMove;
-	}
-
-	bool isWhiteToMove() const {
+	inline bool isWhiteToMove() const {
 		return sideToMove == WHITE;
 	}
 
-	Side getOppositeSide() const {
+	inline Side getOppositeSide() const {
 		return BLACK - sideToMove;
-	}
-
-	unsigned int getHalfMoveClock() const {
-		return halfMoveClock;
-	}
-
-	unsigned int getFullMoves() const {
-		return fullMoves;
-	}
-
-	void setSideToMove(const Side side) {
-		sideToMove = side;
-	}
-
-	void setHalfMoveClock(const unsigned int halfMove) {
-		halfMoveClock = halfMove;
-	}
-
-	void setFullMoves(const unsigned int moves) {
-		fullMoves = moves;
-	}
-		
-	CheckStatus& getCheckStatus() {
-		return checkStatus;
-	}
-
-	Player* getWhitePlayer() const {
-		return whitePlayer;
-	}
-
-	Player* getBlackPlayer() const {
-		return blackPlayer;
-	}
-
-	Move getLastMove() const {
-		return lastMove;
-	}
-
-	deque<Move>& getMovesHistory() {
-		return movesHistory;
-	}
-
-    void addNextMove(const Move move) {
-        nextMoves.push_back(move);
-    }
-
-    vector<Move>& getNextMoves() {
-        return nextMoves;
-    }
-
-    void clearNextMoves() {
-        nextMoves.clear();
-    }
-
-	void setCastlingInfo(const CastlingInfo castlingInfo) {
-		board.castlingInfo = castlingInfo;
-	}
-
-	CastlingInfo getCastlingInfo() const {
-		return board.castlingInfo;
 	}
 
 	Board board;

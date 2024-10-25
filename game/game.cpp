@@ -163,7 +163,7 @@ void Game::verifyChecks() {
 
 EndGameType Game::checkEndGame(const bool noMoves) {
 	if (noMoves) {
-		return checkStatus.isCheck() ? EndGameType::CHECKMATE : EndGameType::STALEMATE;
+		return checkStatus.check ? EndGameType::CHECKMATE : EndGameType::STALEMATE;
 	}
 
 	return checkFiftyMoveRule();
@@ -311,8 +311,8 @@ public Evaluation evaluate(Move move) {
 }
 
 public double evaluateAsWhite() {
-	if (getLastMove() != null) {
-		return evaluate(getLastMove()).getValue() * (isWhiteToMove() ? -1 : 1);
+	if (lastMove != null) {
+		return evaluate(lastMove).getValue() * (isWhiteToMove() ? -1 : 1);
 	}
 
 	return 0;
@@ -329,7 +329,7 @@ bool Game::isComputerToMove() const {
 		return false;
 	}
 	
-	return player->isComputer();
+	return player->computer;
 }
 
 void Game::setLastMove(const Move& move) {
@@ -338,8 +338,8 @@ void Game::setLastMove(const Move& move) {
 }
 
 void Game::setPlayerPieces(const Game& game) {
-	whitePlayer->setPieces(game.getWhitePlayer()->getPieces());
-	blackPlayer->setPieces(game.getBlackPlayer()->getPieces());
+	whitePlayer->setPieces(game.whitePlayer->pieces);
+	blackPlayer->setPieces(game.blackPlayer->pieces);
 }
 
 void Game::resetPlayersPieces() {
@@ -361,16 +361,16 @@ void Game::incrementPlayerPieces(const Piece piece) {
 Game* Game::duplicate() {
 	Game* newGame = new Game();
 	newGame->init();
-	newGame->setBoard(board);
-	newGame->setCastlingInfo(board.castlingInfo);
-	newGame->setSideToMove(sideToMove);
-	newGame->setWhiteKingPosition(whiteKingPosition);
-	newGame->setBlackKingPosition(blackKingPosition);
+	newGame->board.set(board);
+	newGame->board.castlingInfo = board.castlingInfo;
+	newGame->sideToMove = sideToMove;
+	newGame->whiteKingPosition = whiteKingPosition;
+	newGame->blackKingPosition = blackKingPosition;
 	newGame->board.enPassantPosition = board.enPassantPosition;
-	newGame->setFullMoves(fullMoves);
-	newGame->setHalfMoveClock(halfMoveClock);
+	newGame->fullMoves = fullMoves;
+	newGame->halfMoveClock = halfMoveClock;
 	Utils::dequeAddAll(movesHistory, newGame->movesHistory);
-	newGame->getCheckStatus().set(checkStatus);
+	newGame->checkStatus.set(checkStatus);
 	newGame->setPlayerPieces(*this);
 	return newGame;
 }

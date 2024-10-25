@@ -19,35 +19,6 @@ public:
     void reset();
     void set(const CheckStatus& checkStatus);
 
-    Rawboard getAllCheckPositions() const {
-        return allCheckPositions;
-    }
-
-    const unordered_map<Position, Rawboard>& getCheckPositions() const {
-        return checkPositions;
-    }
-
-    const unordered_map<Position, Rawboard>& getXRayPositions() const {
-        return xRayPositions;
-    }
-
-    bool isCheck() const {
-        return check;
-    }
-
-    bool isDoubleCheck() const {
-        return doubleCheck;
-    }
-
-    bool isDiscoveryCheck() const {
-        return discoveryCheck;
-    }
-
-    bool isCheckmate() const {
-        return checkmate;
-    }
-
-private:
     Rawboard allCheckPositions;                          // all positions under check
     unordered_map<Position, Rawboard> checkPositions;    // positions under check by piece position
     unordered_map<Position, Rawboard> xRayPositions;     // xray positions under check by piece position
@@ -58,5 +29,4 @@ private:
 
     bool isDiscoveryCheck(Position kingPosition, const Move& lastMove) const;
     void adjustChecks();
-
 };

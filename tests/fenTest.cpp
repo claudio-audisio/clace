@@ -27,20 +27,20 @@ TEST_F(fenTest, fenToGameTest) {
 	EXPECT_EQ(game.board.getPiece(62), WKing);
 	EXPECT_EQ(game.board.getPiece(63), Empty);
 
-	EXPECT_EQ(game.getWhiteKingPosition(), 62);
-	EXPECT_EQ(game.getBlackKingPosition(), 4);
+	EXPECT_EQ(game.whiteKingPosition, 62);
+	EXPECT_EQ(game.blackKingPosition, 4);
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 
-	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.getCastlingInfo()));
-	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.getCastlingInfo()));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board.castlingInfo));
+	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.board.castlingInfo));
+	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.board.castlingInfo));
 
 	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
 
-	EXPECT_EQ(game.getHalfMoveClock(), 0);
-	EXPECT_EQ(game.getFullMoves(), 1);
+	EXPECT_EQ(game.halfMoveClock, 0);
+	EXPECT_EQ(game.fullMoves, 1);
 }
 
 class FenToGameToFenTest : public ::testing::TestWithParam<string> {};

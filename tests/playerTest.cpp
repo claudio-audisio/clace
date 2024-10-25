@@ -11,79 +11,79 @@ using namespace std;
 TEST(PlayerTest, onCapturedWhiteTest) {
 	Player* player = new Player(true);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 2);
-	EXPECT_EQ(player->getPieces()[WPawn], 8);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 2);
+	EXPECT_EQ(player->pieces[WPawn], 8);
 	GTEST_ASSERT_TRUE(player->getCapturedList().empty());
 
 	player->onCaptured(WPawn);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 2);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 2);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "P ");
 
 	player->onCaptured(WKnight);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "N P ");
 
 	player->onCaptured(WBishop);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "B N P ");
 
 	player->onCaptured(WRook);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "R B N P ");
 
 	player->onCaptured(WQueen);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "Q R B N P ");
 
 	player->onCaptured(WKing);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 0);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 0);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "K Q R B N P ");
 
 	player->onCaptured(WPawn);
@@ -118,92 +118,92 @@ TEST(PlayerTest, onCapturedWhiteTest) {
 	player->onCaptured(WBishop);
 	player->onCaptured(WKnight);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 0);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 0);
-	EXPECT_EQ(player->getPieces()[WBishop], 0);
-	EXPECT_EQ(player->getPieces()[WKnight], 0);
-	EXPECT_EQ(player->getPieces()[WPawn], 0);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 0);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 0);
+	EXPECT_EQ(player->pieces[WBishop], 0);
+	EXPECT_EQ(player->pieces[WKnight], 0);
+	EXPECT_EQ(player->pieces[WPawn], 0);
 	EXPECT_EQ(player->getCapturedList(), "K Q R R B B N N P P P P P P P P ");
 }
 
 TEST(PlayerTest, onCapturedBlackTest) {
 	Player* player = new Player(false);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 2);
-	EXPECT_EQ(player->getPieces()[WPawn], 8);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 2);
+	EXPECT_EQ(player->pieces[WPawn], 8);
 	GTEST_ASSERT_TRUE(player->getCapturedList().empty());
 
 	player->onCaptured(BPawn);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 2);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 2);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "p ");
 
 	player->onCaptured(BKnight);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 2);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 2);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "n p ");
 
 	player->onCaptured(BBishop);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 2);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 2);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "b n p ");
 
 	player->onCaptured(BRook);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 1);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 1);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "r b n p ");
 
 	player->onCaptured(BQueen);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 1);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 1);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "q r b n p ");
 
 	player->onCaptured(BKing);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 0);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 1);
-	EXPECT_EQ(player->getPieces()[WBishop], 1);
-	EXPECT_EQ(player->getPieces()[WKnight], 1);
-	EXPECT_EQ(player->getPieces()[WPawn], 7);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 0);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 1);
+	EXPECT_EQ(player->pieces[WBishop], 1);
+	EXPECT_EQ(player->pieces[WKnight], 1);
+	EXPECT_EQ(player->pieces[WPawn], 7);
 	EXPECT_EQ(player->getCapturedList(), "k q r b n p ");
 
 	player->onCaptured(BPawn);
@@ -238,13 +238,13 @@ TEST(PlayerTest, onCapturedBlackTest) {
 	player->onCaptured(BBishop);
 	player->onCaptured(BKnight);
 
-	EXPECT_EQ(player->getPieces()[Empty], 0);
-	EXPECT_EQ(player->getPieces()[WKing], 0);
-	EXPECT_EQ(player->getPieces()[WQueen], 0);
-	EXPECT_EQ(player->getPieces()[WRook], 0);
-	EXPECT_EQ(player->getPieces()[WBishop], 0);
-	EXPECT_EQ(player->getPieces()[WKnight], 0);
-	EXPECT_EQ(player->getPieces()[WPawn], 0);
+	EXPECT_EQ(player->pieces[Empty], 0);
+	EXPECT_EQ(player->pieces[WKing], 0);
+	EXPECT_EQ(player->pieces[WQueen], 0);
+	EXPECT_EQ(player->pieces[WRook], 0);
+	EXPECT_EQ(player->pieces[WBishop], 0);
+	EXPECT_EQ(player->pieces[WKnight], 0);
+	EXPECT_EQ(player->pieces[WPawn], 0);
 	EXPECT_EQ(player->getCapturedList(), "k q r r b b n n p p p p p p p p ");
 }
 
@@ -254,6 +254,6 @@ TEST(PlayerTest, moveTimeTest) {
 	this_thread::sleep_for(chrono::milliseconds(100));
 	player->stopMoveTime();
 
-	EXPECT_LT(player->getGameTime(), 150);
-	EXPECT_GT(player->getGameTime(), 50);
+	EXPECT_LT(player->gameTime, 150);
+	EXPECT_GT(player->gameTime, 50);
 }

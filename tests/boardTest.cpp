@@ -28,7 +28,7 @@ TEST_F(BoardTest, ConstructorTest) {
 TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
-    EXPECT_EQ(~board.EMPTY, board.BOARD(WHITE) | board.BOARD(BLACK));
+    EXPECT_EQ(~board.EMPTY, board.PIECES(WHITE) | board.PIECES(BLACK));
     delete game;
 }
 
@@ -689,7 +689,7 @@ TEST_F(BoardTest, getKingPositionTest) {
     board.setPiece(54, BPawn);
     EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x200000000000LL);
     board.setPiece(29, WPawn);
-    GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.BOARD(WHITE)), 29));
+    GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.PIECES(WHITE)), 29));
 }*/
 
 // TODO move to BitwiseTest
