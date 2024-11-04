@@ -13,12 +13,18 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
     this->pool = new VectorPool<Move>(depth + 1, MAX_MOVES);
+#ifdef USE_CACHE
     this->cache = new MovesCache(0);
+#endif
 }
 
 Perft::~Perft() {
+	delete this->game;
     delete this->result;
     delete this->pool;
+#ifdef USE_CACHE
+	delete this->cache;
+#endif
 }
 
 Result* Perft::runBulk() {

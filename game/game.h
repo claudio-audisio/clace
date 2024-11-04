@@ -70,7 +70,6 @@ public:
 	}
 
 	Board board;
-    vector<Move> nextMoves;
 	deque<Move> movesHistory;	// TODO renderla thread safe
 	Rollback rollback;
 	CheckStatus checkStatus;

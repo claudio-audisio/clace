@@ -26,11 +26,11 @@ public:
 	Rawboard& EMPTY = pieceBoards[Empty];
 	CastlingInfo castlingInfo;
 	Position enPassantPosition = NO_POS;
-	/*Rawboard _OPP_PIECES[2];
-	Rawboard _PIECES[2];*/
+	Rawboard _OPP_PIECES[2];
+	Rawboard _PIECES[2];
 
 	inline Rawboard PIECES(const Side side) {
-		/*if (!_PIECES[side]) {
+		if (!_PIECES[side]) {
 			_PIECES[side] = pieceBoards[WPawn + side] |
 				   pieceBoards[WBishop + side] |
 				   pieceBoards[WQueen + side] |
@@ -39,18 +39,19 @@ public:
 				   pieceBoards[WRook + side];
 		}
 
-		return _PIECES[side];*/
+		return _PIECES[side];
 
-		return pieceBoards[WPawn + side] |
+		// Usare per test di performance sui metodi della board
+		/*return pieceBoards[WPawn + side] |
 			   pieceBoards[WBishop + side] |
 			   pieceBoards[WQueen + side] |
 			   pieceBoards[WKnight + side] |
 			   pieceBoards[WKing + side] |
-			   pieceBoards[WRook + side];
+			   pieceBoards[WRook + side];*/
 	}
 
 	inline Rawboard OPP_PIECES(const Side side) {
-		/*if (!_OPP_PIECES[side]) {
+		if (!_OPP_PIECES[side]) {
 			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
 					pieceBoards[BBishop - side] |
 					pieceBoards[BQueen - side] |
@@ -59,17 +60,18 @@ public:
 					pieceBoards[BRook - side];
 		}
 
-		return _OPP_PIECES[side];*/
+		return _OPP_PIECES[side];
 
-		return pieceBoards[BPawn - side] |
+		// Usare per test di performance sui metodi della board
+		/*return pieceBoards[BPawn - side] |
 			   pieceBoards[BBishop - side] |
 			   pieceBoards[BQueen - side] |
 			   pieceBoards[BKnight - side] |
 			   pieceBoards[BKing - side] |
-			   pieceBoards[BRook - side];
+			   pieceBoards[BRook - side];*/
 	}
 
-	/*void resetCalculated() {
+	void resetCalculated() {
 		resetCalculated(WHITE);
 		resetCalculated(BLACK);
 	}
@@ -77,7 +79,7 @@ public:
 	void resetCalculated(Side side) {
 		_PIECES[side] = 0;
 		_OPP_PIECES[side] = 0;
-	}*/
+	}
 
     void reset();
 	bool equals(const Board& board);
@@ -138,16 +140,11 @@ public:
 
 	inline Piece setPiece(const Position position, const Piece piece) {
 		const Piece oldPiece = getPiece(position);
-		/*if (oldPiece > 0) { // not empty
-			resetCalculated();
-		} else {
-			resetCalculated(PieceHelper::getOppositeSide(piece));
-		}*/
 		const Rawboard posIndex = posInd(position);
 		pieceBoards[oldPiece] &= ~posIndex;
 		pieceBoards[piece] |= posIndex;
 		piecePositions[position] = piece;
-		//resetCalculated();
+		resetCalculated();
 		return oldPiece;
 	}
 
@@ -171,7 +168,7 @@ public:
 	inline Piece move(const Position source, const Position destination, Piece piece, const bool isCastling) {
 		if (isCastling) {
 			castlingMove(source, destination);
-			//resetCalculated();
+			resetCalculated();
 			return Empty;
 		}
 

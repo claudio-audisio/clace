@@ -10,6 +10,8 @@ Game::Game() {
 }
 
 Game::~Game() {
+	delete whitePlayer;
+	delete blackPlayer;
 }
 
 void Game::init() {

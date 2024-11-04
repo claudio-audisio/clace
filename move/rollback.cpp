@@ -60,12 +60,13 @@ void Rollback::reset() {
 }
 
 Rollback::MoveInfo::MoveInfo() {
-	whitePieces = new Piece[7];
-	blackPieces = new Piece[7];
+	whitePieces = new Piece[SIZE];
+	blackPieces = new Piece[SIZE];
 }
 
 Rollback::MoveInfo::~MoveInfo() {
-	// TODO un po' di delete di vattori
+	delete[] whitePieces;
+	delete[] blackPieces;
 }
 
 void Rollback::MoveInfo::setBoard(const Board& board) {
@@ -73,13 +74,13 @@ void Rollback::MoveInfo::setBoard(const Board& board) {
 }
 
 void Rollback::MoveInfo::setWhitePieces(Piece* whitePieces) {
-	for (RawboardIndex i = 0; i < 7; i++) {
+	for (RawboardIndex i = 0; i < SIZE; i++) {
 		this->whitePieces[i] = whitePieces[i];
 	}
 }
 
 void Rollback::MoveInfo::setBlackPieces(Piece* blackPieces) {
-	for (RawboardIndex i = 0; i < 7; i++) {
+	for (RawboardIndex i = 0; i < SIZE; i++) {
 		this->blackPieces[i] = blackPieces[i];
 	}
 }

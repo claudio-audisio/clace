@@ -17,6 +17,8 @@ public:
         cache.reserve(size);
     }
 
+	~MovesCache() = default;
+
     void add(Game& game, const vector<Move>& moves) {
         add(FEN::gameToFENKey(game), moves);
     }

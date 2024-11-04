@@ -34,7 +34,7 @@ public:
 	IEngine* engine = nullptr;
 	unsLL gameTime = 0;
 	chrono::time_point<chrono::steady_clock> currentMoveTime;
-	Piece* pieces = new Piece[7];
+	Piece pieces[SIZE];
 
 	void initPieces();
 		

@@ -47,7 +47,7 @@ void Player::initPieces() {
 }
 
 void Player::setPieces(Piece* pieces) {
-	for (unsigned int i = 0; i < 7; i++) {
+	for (unsigned int i = 0; i < SIZE; i++) {
 		this->pieces[i] = pieces[i];
 	}
 }

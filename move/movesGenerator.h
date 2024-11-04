@@ -12,7 +12,7 @@ using namespace std;
 class MovesGenerator {
 public:
 
-	/*static void generateLegalMoves(Game& game, vector<Move>& moves) {
+	static void generateLegalMoves(Game& game, vector<Move>& moves) {
 		generatePseudoLegalMoves(game, moves);
 		auto it = moves.begin();
 
@@ -23,10 +23,10 @@ public:
 				++it;
 			}
 		}
-	}*/
+	}
 
-	static void generateLegalMoves(Game& game, vector<Move>& moves) {
-	//static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
+	//static void generateLegalMoves(Game& game, vector<Move>& moves) {
+	static void generatePseudoLegalMoves(Game& game, vector<Move>& moves) {
 		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
 		Rawboard sources = game.board.PIECES(game.sideToMove);
 
@@ -63,15 +63,15 @@ public:
 						Move promotionMove = move;
 						MoveHelper::setPromotion(promotionMove, promotion);
 
-						if (isValid(game, promotionMove)) {
+						//if (isValid(game, promotionMove)) {
 							moves.push_back(promotionMove);
-						}
+						//}
 					}
 				}
 				else {
-					if (isValid(game, move)) {
+					//if (isValid(game, move)) {
 						moves.push_back(move);
-					}
+					//}
 				}
 
 				destinations &= (destinations - 1);

@@ -22,7 +22,7 @@ void Board::reset() {
 
 	castlingInfo = 0;
 
-	//resetCalculated();
+	resetCalculated();
 }
 
 bool Board::equals(const Board& board) {
@@ -55,7 +55,7 @@ void Board::set(const Board& board) {
         piecePositions[i] = board.piecePositions[i];
     }
 
-	//resetCalculated();
+	resetCalculated();
 }
 
 bool Board::isUnderCheck(const Position position, const Side side) {
@@ -76,16 +76,14 @@ Rawboard Board::getPawnMoves(const Side side) {
 }
 
 Rawboard Board::getPawnAttacks(const Side side) {
-    Rawboard attacks = 0;
-    Rawboard board = pieceBoards[WPawn + side];
+	Rawboard board = pieceBoards[WPawn + side];
 
-    while (board) {
-        const Position position = Utils::getFirstPos(board);
-        attacks |= getPawnAttacks(position, side);       // OLD
-        board &= (board - 1);
-    }
-
-    return attacks;
+	if (!side) {
+		return (noWestOne(board) | noEastOne(board)) & (EMPTY | OPP_PIECES(side));
+	}
+	else {
+		return (soWestOne(board) | soEastOne(board)) & (EMPTY | OPP_PIECES(side));
+	}
 }
 
 Rawboard Board::getPawnAttacks(const Position position, const Side side) {

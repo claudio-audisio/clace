@@ -110,7 +110,7 @@ TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int i = 1; i < 50000000; ++i) {
+	for (long i = 1; i < 5000000; ++i) {
 		gameInitial->board.getQueenAttacks(WHITE);
 		gameInitial->board.getQueenAttacks(BLACK);
 		gamePerft2->board.getQueenAttacks(WHITE);
@@ -129,6 +129,37 @@ TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 
 	// 5937
 	// 5941     (attacks)
+}
+
+TEST_F(BoardPerformanceTest, getKnightAttacksPerformanceTest) {
+	GTEST_SKIP();
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (long i = 1; i < 50000000; ++i) {
+		gameInitial->board.getKnightAttacks(WHITE);
+		gameInitial->board.getKnightAttacks(BLACK);
+		gamePerft2->board.getKnightAttacks(WHITE);
+		gamePerft2->board.getKnightAttacks(BLACK);
+		gamePerft3->board.getKnightAttacks(WHITE);
+		gamePerft3->board.getKnightAttacks(BLACK);
+		gamePerft4->board.getKnightAttacks(WHITE);
+		gamePerft4->board.getKnightAttacks(BLACK);
+		gamePerft5->board.getKnightAttacks(WHITE);
+		gamePerft5->board.getKnightAttacks(BLACK);
+		gamePerft6->board.getKnightAttacks(WHITE);
+		gamePerft6->board.getKnightAttacks(BLACK);
+	}
+
+	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
+
+	// 5800 - 6000
 }
 
 TEST_F(BoardPerformanceTest, castlingPerformanceTest) {
