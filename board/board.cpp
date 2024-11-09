@@ -5,9 +5,7 @@ Board::Board() {
     reset();
 }
 
-Board::~Board() {
-    // TODO delete boards
-}
+Board::~Board() = default;
 
 void Board::reset() {
     for (RawboardIndex i = 1; i < SIZE; ++i) {
@@ -21,6 +19,7 @@ void Board::reset() {
     }
 
 	castlingInfo = 0;
+	enPassantPosition = NO_POS;
 
 	resetCalculated();
 }
@@ -41,11 +40,6 @@ bool Board::equals(const Board& board) {
 	return true;
 }
 
-void Board::setBoard(const Piece boardIndex, const Rawboard pieceBoard) {
-    // TODO gestire piecePositions
-    pieceBoards[boardIndex] = pieceBoard;
-}
-
 void Board::set(const Board& board) {
     for (RawboardIndex i = 0; i < SIZE; ++i) {
         pieceBoards[i] = board.pieceBoards[i];
@@ -54,6 +48,9 @@ void Board::set(const Board& board) {
     for (int i = 0; i < 64; i++) {
         piecePositions[i] = board.piecePositions[i];
     }
+
+	castlingInfo = board.castlingInfo;
+	enPassantPosition = board.enPassantPosition;
 
 	resetCalculated();
 }
@@ -104,27 +101,26 @@ Rawboard Board::getPawnMoves(const Position position, const Side side) {
         const Rawboard onePush = northOne(posIndex) & EMPTY;
         return onePush | (northOne(onePush) & EMPTY & ROW_4) |
 			   ((noWestOne(posIndex) | noEastOne(posIndex)) & OPP_PIECES(side)) |
-			   getPawnEnPassant(posIndex, side);
+				getEnPassantMove(posIndex, side);
     }
     else {
         const Rawboard onePush = southOne(posIndex) & EMPTY;
         return onePush | (southOne(onePush) & EMPTY & ROW_5) |
 			   ((soWestOne(posIndex) | soEastOne(posIndex)) & OPP_PIECES(side)) |
-			   getPawnEnPassant(posIndex, side);
+				getEnPassantMove(posIndex, side);
     }
 }
 
-// TODO qui sto controllando per ogni pedone se posso fare en passant,
-// quando data la posizione enpassant ci sono solo due posizioni che possono usufruire di quella mossa
-Rawboard Board::getPawnEnPassant(const Rawboard position, const Side side) {
+Rawboard Board::getEnPassantMove(const Rawboard position, const Side side) {
     if (enPassantPosition != NO_POS) {
-        const Rawboard passantPos = posInd(enPassantPosition);
         if (!side && (position & ROW_5) != 0) {
+			const Rawboard passantPos = posInd(enPassantPosition);
             if (passantPos == noEastOne(position) || passantPos == noWestOne(position)) {
                 return passantPos;
             }
         }
         else if (side && (position & ROW_4) != 0) {
+			const Rawboard passantPos = posInd(enPassantPosition);
             if (passantPos == soEastOne(position) || passantPos == soWestOne(position)) {
                 return passantPos;
             }

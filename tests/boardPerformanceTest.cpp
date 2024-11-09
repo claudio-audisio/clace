@@ -231,9 +231,6 @@ TEST_F(BoardPerformanceTest, stuffTest) {
 	BoardUtils::printBoard(game->board.PIECES(BLACK));
 	BoardUtils::printBoard(game->board.EMPTY);*/
 
-	cout << (int)game->whiteKingPosition << endl;
-	cout << (int)game->blackKingPosition << endl;
-
 	GTEST_ASSERT_TRUE(game->board.equals(board));
 }
 

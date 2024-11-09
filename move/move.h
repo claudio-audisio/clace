@@ -22,12 +22,10 @@ public:
 	// bool computer;					51
 
 	static Move getMove(const string& move, const Side side) {
-		// TODO tirare un'eccezione
-	/*
-	if (move.length() != 5) {
-		throw new RuntimeException("move malformed");
-	}
-	*/
+		if (move.length() != 5) {
+			throw runtime_error("move malformed");
+		}
+
 		return getMove(Positions::coordsToIndex(move.substr(0, 2)), Positions::coordsToIndex(move.substr(3, 5)), side);
 	}
 

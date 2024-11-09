@@ -17,13 +17,9 @@ public:
 	~Player();
 
 	void init(const string& name, bool computer, bool white, IEngine* engine);
-	void setPieces(Piece* pieces);
-	void resetPieces();
-	void incrementPieces(Piece piece);
 	string getNameAndColor();
-	void onCaptured(Piece piece);
-	string getCapturedList();
-	string& addToCapturedList(string& capturedList, unsigned int times, Piece piece);
+	/*string getCapturedList();
+	string& addToCapturedList(string& capturedList, unsigned int times, Piece piece);*/
 	void startMoveTime();
 	void stopMoveTime();
 	string getMoveTime();
@@ -34,8 +30,5 @@ public:
 	IEngine* engine = nullptr;
 	unsLL gameTime = 0;
 	chrono::time_point<chrono::steady_clock> currentMoveTime;
-	Piece pieces[SIZE];
 
-	void initPieces();
-		
 };

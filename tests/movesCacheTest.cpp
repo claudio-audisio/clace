@@ -5,7 +5,7 @@
 using namespace std;
 
 
-TEST(MovesCacheTest, test) {
+TEST(movesCacheTest, test) {
     MovesCache cache(10);
     vector<Move> moves;
     moves.push_back(0);

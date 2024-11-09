@@ -27,8 +27,8 @@ TEST_F(fenTest, fenToGameTest) {
 	EXPECT_EQ(game.board.getPiece(62), WKing);
 	EXPECT_EQ(game.board.getPiece(63), Empty);
 
-	EXPECT_EQ(game.whiteKingPosition, 62);
-	EXPECT_EQ(game.blackKingPosition, 4);
+	EXPECT_EQ(game.board.getKingPosition(WHITE), 62);
+	EXPECT_EQ(game.board.getKingPosition(BLACK), 4);
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 

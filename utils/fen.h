@@ -17,7 +17,6 @@ public:
     static Game* fenToNewGame(const string& fenPosition) {
         Game* game = new Game();
         game->initPlayers();
-        game->resetPlayersPieces();
 
         fenToGame(fenPosition, *game);
 
@@ -27,7 +26,6 @@ public:
     static void fenToGame(const string& fenPosition, Game& game) {
         vector<string>* tokens = tokenize(fenPosition, SEPARATOR, 6);
         fenToChessBoard(tokens->at(0), game);
-        game.setKingPositions();
         game.sideToMove = (tokens->at(1) == "w" || tokens->at(1) == "W") ? WHITE : BLACK;
         game.board.castlingInfo = fenToCastlingInfo(tokens->at(2));
         game.board.enPassantPosition =fenToEnPassantPosition(tokens->at(3));
@@ -87,8 +85,6 @@ public:
 private:
     static const char SEPARATOR = ' ';
 
-
-
     static void fenToChessBoard(const string& fenChessBoard, Game& game) {
         vector<string>* tokens = tokenize(fenChessBoard, '/', 8);
 
@@ -111,10 +107,8 @@ private:
             else {
                 const Piece piece = FEN_TO_PIECE.at(c);
                 game.board.setPiece(start++, piece);
-                game.incrementPlayerPieces(piece);
             }
         }
-		//game.update();
     }
 
 static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
@@ -292,8 +286,8 @@ public:
         }
 
         if (result->size() != expectedSize) {
-            // TODO tirare eccezione
-        }
+			throw runtime_error("error tokenizing fen");
+		}
 
         return result;
     }

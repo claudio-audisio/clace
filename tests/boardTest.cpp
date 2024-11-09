@@ -2,7 +2,7 @@
 
 #include "../board/board.h"
 #include "../utils/fen.h"
-#include "../utils/boardUtils.h"
+#include "testUtils.h"
 
 using namespace std;
 
@@ -19,16 +19,20 @@ protected:
 
 TEST_F(BoardTest, ConstructorTest) {
 	Board board;
-	EXPECT_EQ(board .pieceBoards[0], 0xffffffffffffffff);
-	for (RawboardIndex i = 1; i < 13; i++) {
-		EXPECT_EQ(board.pieceBoards[i], 0);
+	EXPECT_EQ(board.pieceBoards[0], 0xffffffffffffffff);
+	for (RawboardIndex i = 1; i < SIZE; i++) {
+		EXPECT_EQ(board.pieceBoards[i], Empty);
 	}
+	EXPECT_EQ(board.castlingInfo, 0);
+	EXPECT_EQ(board.enPassantPosition, NO_POS);
 }
 
 TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
     EXPECT_EQ(~board.EMPTY, board.PIECES(WHITE) | board.PIECES(BLACK));
+	EXPECT_EQ(~board.PIECES(WHITE), board.EMPTY | board.OPP_PIECES(WHITE));
+	EXPECT_EQ(~board.PIECES(BLACK), board.EMPTY | board.OPP_PIECES(BLACK));
     delete game;
 }
 
@@ -154,15 +158,13 @@ TEST_F(BoardTest, isKingTest) {
 }
 
 TEST_F(BoardTest, getPieceTest) {
-    GTEST_SKIP_("fix Board::setBoard");
     Board board;
     for (Position i = 0; i < 63; ++i) {
         EXPECT_EQ(board.getPiece(i), Empty);
     }
-    board.setBoard(Empty, 0x7Ffffffffffffffc);
-    board.setBoard(WPawn, 0x1);
-    board.setBoard(BPawn, 0x2);
-    board.setBoard(WRook, 0x8000000000000000);
+	board.setPiece(0, WPawn);
+	board.setPiece(1, BPawn);
+	board.setPiece(63, WRook);
     EXPECT_EQ(board.getPiece(0), WPawn);
     EXPECT_EQ(board.getPiece(1), BPawn);
     EXPECT_EQ(board.getPiece(63), WRook);
@@ -172,18 +174,29 @@ TEST_F(BoardTest, setPieceTest) {
     Board board;
     Piece oldPiece = board.setPiece(4, BKing);
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_FALSE(board.isEmpty(4));
-    GTEST_ASSERT_FALSE(board.isWhite(4));
-    GTEST_ASSERT_TRUE(board.isBlack(4));
-    GTEST_ASSERT_TRUE(board.isKing(4));
+	EXPECT_EQ(board.piecePositions[4], BKing);
+	EXPECT_EQ(board.pieceBoards[BKing], 0x10);
+	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFEF);
     oldPiece = board.setPiece(4, WQueen);
     EXPECT_EQ(oldPiece, BKing);
-    GTEST_ASSERT_FALSE(board.isEmpty(4));
-    GTEST_ASSERT_TRUE(board.isWhite(4));
-    GTEST_ASSERT_FALSE(board.isBlack(4));
-    GTEST_ASSERT_FALSE(board.isKing(4));
-    GTEST_ASSERT_TRUE(board.isQueen(4));
+	EXPECT_EQ(board.piecePositions[4], WQueen);
+	EXPECT_EQ(board.pieceBoards[WQueen], 0x10);
+	EXPECT_EQ(board.pieceBoards[BKing], 0);
+	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFEF);
 }
+
+TEST_F(BoardTest, setEmptyTest) {
+	Board board;
+	Piece oldPiece = board.setPiece(4, BKing);
+	EXPECT_EQ(oldPiece, Empty);
+	oldPiece = board.setEmpty(4);
+	EXPECT_EQ(oldPiece, BKing);
+	EXPECT_EQ(board.piecePositions[4], Empty);
+	EXPECT_EQ(board.pieceBoards[BKing], 0);
+	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFFF);
+}
+
+// TODO aggiungere i test mancanti
 
 TEST_F(BoardTest, moveTest) {
     Board board;
@@ -223,37 +236,6 @@ TEST_F(BoardTest, isUnderCheckTest) {
     GTEST_ASSERT_FALSE(board.isUnderCheck(34, WHITE));
     GTEST_ASSERT_TRUE(board.isUnderCheck(34, BLACK));
 }
-
-
-template <typename... SetOfPosition>
-static bool checkBoard(Rawboard board, SetOfPosition... expectedPositions) {
-    Rawboard bitPositions = 0;
-
-    for (Position position : {expectedPositions...}) {
-        if (position != NO_POS) {
-            bitPositions |= Board::posInd(position);
-        }
-    }
-
-    return board == bitPositions;
-}
-
-static bool checkBoard(Rawboard board, list<Position> expectedPositions) {
-    Rawboard bitPositions = 0;
-
-    for (Position position : expectedPositions) {
-        if (position != NO_POS) {
-            bitPositions |= Board::posInd(position);
-        }
-    }
-
-    return board == bitPositions;
-}
-
-static bool checkBoardNoPos(Rawboard board) {
-    return checkBoard(board, NO_POS);
-}
-
 
 class TestParams {
 public:
@@ -690,69 +672,6 @@ TEST_F(BoardTest, getKingPositionTest) {
     EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x200000000000LL);
     board.setPiece(29, WPawn);
     GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.PIECES(WHITE)), 29));
-}*/
-
-// TODO move to BitwiseTest
-/*TEST_F(BoardTest, masksTest) {
-    Board board;
-    GTEST_ASSERT_TRUE(checkBoard(Board::lineMask(0), 0, 1, 2, 3, 4, 5, 6, 7));
-    GTEST_ASSERT_TRUE(checkBoard(Board::columnMask(0), 0, 8, 16, 24, 32, 40, 48, 56));
-    GTEST_ASSERT_TRUE(checkBoard(board.diagonalMask(0), 0, 9, 18, 27, 36, 45, 54, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.antiDiagonalMask(0), 0));
-
-    GTEST_ASSERT_TRUE(checkBoard(Board::lineMask(7), 0, 1, 2, 3, 4, 5, 6, 7));
-    GTEST_ASSERT_TRUE(checkBoard(Board::columnMask(7), 7, 15, 23, 31, 39, 47, 55, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.diagonalMask(7), 7));
-    GTEST_ASSERT_TRUE(checkBoard(board.antiDiagonalMask(7), 7, 14, 21, 28, 35, 42, 49, 56));
-
-    GTEST_ASSERT_TRUE(checkBoard(Board::lineMask(56), 56, 57, 58, 59, 60, 61, 62, 63));
-    GTEST_ASSERT_TRUE(checkBoard(Board::columnMask(56), 0, 8, 16, 24, 32, 40, 48, 56));
-    GTEST_ASSERT_TRUE(checkBoard(board.diagonalMask(56), 56));
-    GTEST_ASSERT_TRUE(checkBoard(board.antiDiagonalMask(56), 7, 14, 21, 28, 35, 42, 49, 56));
-
-    GTEST_ASSERT_TRUE(checkBoard(Board::lineMask(63), 56, 57, 58, 59, 60, 61, 62, 63));
-    GTEST_ASSERT_TRUE(checkBoard(Board::columnMask(63), 7, 15, 23, 31, 39, 47, 55, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.diagonalMask(63), 0, 9, 18, 27, 36, 45, 54, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.antiDiagonalMask(63), 63));
-}
-
-TEST_F(BoardTest, raysTest) {
-    Board board;
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.northRay(0)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noEastRay(0)));
-    GTEST_ASSERT_TRUE(checkBoard(board.eastRay(0), 1, 2, 3, 4, 5, 6, 7));
-    GTEST_ASSERT_TRUE(checkBoard(board.soEastRay(0), 9, 18, 27, 36, 45, 54, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.southRay(0), 8, 16, 24, 32, 40, 48, 56));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soWestRay(0)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.westRay(0)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noWestRay(0)));
-
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.northRay(7)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noEastRay(7)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.eastRay(7)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soEastRay(7)));
-    GTEST_ASSERT_TRUE(checkBoard(board.southRay(7), 15, 23, 31, 39, 47, 55, 63));
-    GTEST_ASSERT_TRUE(checkBoard(board.soWestRay(7), 14, 21, 28, 35, 42, 49, 56));
-    GTEST_ASSERT_TRUE(checkBoard(board.westRay(7), 0, 1, 2, 3, 4, 5, 6));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noWestRay(7)));
-
-    GTEST_ASSERT_TRUE(checkBoard(board.northRay(56), 0, 8, 16, 24, 32, 40, 48));
-    GTEST_ASSERT_TRUE(checkBoard(board.noEastRay(56), 7, 14, 21, 28, 35, 42, 49));
-    GTEST_ASSERT_TRUE(checkBoard(board.eastRay(56), 57, 58, 59, 60, 61, 62, 63));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soEastRay(56)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.southRay(56)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soWestRay(56)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.westRay(56)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noWestRay(56)));
-
-    GTEST_ASSERT_TRUE(checkBoard(board.northRay(63), 7, 15, 23, 31, 39, 47, 55));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.noEastRay(63)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.eastRay(63)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soEastRay(63)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.southRay(63)));
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.soWestRay(63)));
-    GTEST_ASSERT_TRUE(checkBoard(board.westRay(63), 56, 57, 58, 59, 60, 61, 62));
-    GTEST_ASSERT_TRUE(checkBoard(board.noWestRay(63), 0, 9, 18, 27, 36, 45, 54));
 }*/
 
 TEST_F(BoardTest, attackTest1) {

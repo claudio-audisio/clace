@@ -33,57 +33,13 @@ void Player::init(const string& name, const bool computer, const bool white, IEn
 	this->computer = computer;
 	this->white = white;
 	this->engine = engine;
-	initPieces();
 }
-
-void Player::initPieces() {
-	pieces[Empty] = 0;
-	pieces[WKing] = 1;
-	pieces[WQueen] = 1;
-	pieces[WRook] = 2;
-	pieces[WBishop] = 2;
-	pieces[WKnight] = 2;
-	pieces[WPawn] = 8;
-}
-
-void Player::setPieces(Piece* pieces) {
-	for (unsigned int i = 0; i < SIZE; i++) {
-		this->pieces[i] = pieces[i];
-	}
-}
-
-void Player::resetPieces() {
-	pieces[Empty] = 0;
-	pieces[WKing] = 0;
-	pieces[WQueen] = 0;
-	pieces[WRook] = 0;
-	pieces[WBishop] = 0;
-	pieces[WKnight] = 0;
-	pieces[WPawn] = 0;
-}
-
-void Player::incrementPieces(const Piece piece) {
-	if (PieceHelper::isBlack(piece)) {
-		pieces[piece - 6]++;
-	}
-	else {
-		pieces[piece]++;
-	}
-}
-
 
 string Player::getNameAndColor() {
 	return name + (white ? " (white)" : " (black)");
 }
 
-void Player::onCaptured(const Piece piece) {
-	if (PieceHelper::isBlack(piece)) {
-		pieces[piece - SIDE_GAP]--;
-	}
-	else {
-		pieces[piece]--;
-	}
-}
+/*
 
 
 string Player::getCapturedList() {
@@ -123,7 +79,7 @@ string& Player::addToCapturedList(string& capturedList, unsigned int times, Piec
 	}
 
 	return capturedList;
-}
+}*/
 
 void Player::startMoveTime() {
 	currentMoveTime = chrono::steady_clock::now();

@@ -25,7 +25,7 @@ public:
 	Piece piecePositions[64];
 	Rawboard& EMPTY = pieceBoards[Empty];
 	CastlingInfo castlingInfo;
-	Position enPassantPosition = NO_POS;
+	Position enPassantPosition;
 	Rawboard _OPP_PIECES[2];
 	Rawboard _PIECES[2];
 
@@ -83,7 +83,6 @@ public:
 
     void reset();
 	bool equals(const Board& board);
-	void setBoard(Piece boardIndex, Rawboard pieceBoard);
 	void set(const Board& board);
 
 	inline bool isEmpty(const Position position) const {
@@ -182,6 +181,10 @@ public:
 		castlingInfo &= CASTLING_MASK[destination];
 	}
 
+	inline Position getKingPosition(const Side side) {
+		return Utils::getFirstPos(pieceBoards[WKing + side]);
+	}
+
 	Rawboard getDestinationPositions(const Position position) {
 		return getDestinationPositions(position, piecePositions[position]);
 	}
@@ -209,16 +212,8 @@ public:
 	}
 
 	inline Rawboard getKingAttacks(const Side side) {
-		Rawboard attacks = 0;
-		Rawboard board = pieceBoards[WKing + side];
-
-		while (board) {
-			const Position position = Utils::getFirstPos(board);
-			attacks |= kingAttacks[position];
-			board &= (board - 1);
-		}
-
-		return attacks & (EMPTY | OPP_PIECES(side));
+		const Position position = Utils::getFirstPos(pieceBoards[WKing + side]);
+		return kingAttacks[position] & (EMPTY | OPP_PIECES(side));
 	}
 
 	inline Rawboard kingAttack(const Position position, const Rawboard opposite) {
@@ -306,7 +301,7 @@ public:
     Rawboard getPawnMoves(Position position, Side side);
     Rawboard getPawnAttacks(Side side);
     Rawboard getPawnAttacks(Position position, Side side);
-	Rawboard getPawnEnPassant(Rawboard position, Side side) ;
+	Rawboard getEnPassantMove(const Rawboard position, Side side) ;
 
 	Rawboard getKingMoves(Side side);
     Rawboard getKingMoves(Position position, Side side);

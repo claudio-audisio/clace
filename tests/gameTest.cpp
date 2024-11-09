@@ -32,8 +32,8 @@ TEST_F(GameTest, initTest) {
 
 	EXPECT_EQ(game.fullMoves, 1);
 	EXPECT_EQ(game.halfMoveClock, 0);
-	EXPECT_EQ(game.blackKingPosition, 4);
-	EXPECT_EQ(game.whiteKingPosition, 60);
+	EXPECT_EQ(game.board.getKingPosition(BLACK), 4);
+	EXPECT_EQ(game.board.getKingPosition(WHITE), 60);
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
 	EXPECT_EQ(game.lastMove, 0);
@@ -44,17 +44,6 @@ TEST_F(GameTest, initTest) {
 	GTEST_ASSERT_TRUE(game.movesHistory.empty());
 	EXPECT_EQ(FEN::gameToFEN(game), INITIAL_FEN_POSITION);
 }
-
-TEST_F(GameTest, setKingPositionsTest) {
-	Game game;
-	game.board.setPiece(17, WKing);
-	game.board.setPiece(42, BKing);
-	game.setKingPositions();
-
-	EXPECT_EQ(game.whiteKingPosition, 17);
-	EXPECT_EQ(game.blackKingPosition, 42);
-}
-
 
 TEST_F(GameTest, setPieceTest) {
 	Game game;
@@ -322,7 +311,6 @@ protected:
 TEST_P(CheckControlTest, checkControlTest) {
 	TestParams4* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenBoard);
-	game->setKingPositions();
 	Side side = game->getSide(params->kingPosition);
 	game->sideToMove = BoardUtils::opposite(side);
 	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;

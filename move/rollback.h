@@ -15,7 +15,7 @@ public:
 	~Rollback();
 
 	unsigned int index = 0;
-	unsigned int size = 5;
+	unsigned int size = 10;
 	void save(Game& game);
 	void rollback(Game& game);
 	unsigned int getRollbackSize() const;
@@ -29,18 +29,10 @@ private:
 
 		Board board;
 		Side sideToMove;
-		CastlingInfo castlingInfo;
-		Position enPassantPosition;
 		unsigned int fullMoves;
 		unsigned int halfMoveClock;
-		Position whiteKingPosition;
-		Position blackKingPosition;
-		Piece* whitePieces;
-		Piece* blackPieces;
 
 		void setBoard(const Board& board);
-		void setWhitePieces(Piece* whitePieces);
-		void setBlackPieces(Piece* blackPieces);
 	};
 
 	vector<MoveInfo*> boards;

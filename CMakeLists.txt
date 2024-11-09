@@ -26,10 +26,11 @@ add_executable (clace
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
-	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
-		"move/movesCache.h" "common/bitwise.h"
-        utils/boardUtils.cpp)
+	"utils/fen.h" "utils/positions.h" "utils/pieceHelper.h"
+  	"utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h"
+	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
+	"move/movesCache.h" "common/bitwise.h"
+	utils/boardUtils.cpp)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -38,15 +39,20 @@ add_library(claceLib
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
 	"common/constants.h" "common/types.h"
-	"utils/fen.h" "utils/castlingHelper.h" "utils/positions.h" "utils/pieceHelper.h"
-  "utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h" "game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp" "common/bitwise.h"
-        utils/boardUtils.cpp)
+	"utils/fen.h" "utils/positions.h" "utils/pieceHelper.h"
+  	"utils/boardUtils.h" "engine/r_engine.h" "engine/r_engine.cpp" "utils/utils.h"
+	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
+	"move/movesCache.h" "common/bitwise.h"
+	utils/boardUtils.cpp)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
 else()
     message(STATUS "C++ standard version is not set explicitly.")
 endif()
+
+
+############ TESTS ###################################################################################################################################################
 
 include(FetchContent)
 FetchContent_Declare(
@@ -58,6 +64,11 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+
+add_executable(
+	bitwiseTest
+	"tests/bitwiseTest.cpp"
+)
 
 add_executable(
   boardTest
@@ -72,8 +83,6 @@ add_executable(
 add_executable(
   boardPerformanceTest
   "tests/boardPerformanceTest.cpp"
-		utils/vectorPool.h
-		tests/movesCacheTest.cpp
 )
 
 add_executable(
@@ -121,6 +130,17 @@ add_executable(
   "tests/perftTest.cpp"
 )
 
+add_executable(
+	movesCacheTest
+	"tests/movesCacheTest.cpp"
+)
+
+target_link_libraries(
+	bitwiseTest
+	GTest::gtest_main
+	claceLib
+)
+
 target_link_libraries(
   boardTest
   GTest::gtest_main
@@ -193,7 +213,14 @@ target_link_libraries(
   claceLib
 )
 
+target_link_libraries(
+	movesCacheTest
+	GTest::gtest_main
+	claceLib
+)
+
 include(GoogleTest)
+gtest_discover_tests(bitwiseTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)
 gtest_discover_tests(boardPerformanceTest)
@@ -206,3 +233,4 @@ gtest_discover_tests(playerTest)
 gtest_discover_tests(movesGeneratorTest)
 gtest_discover_tests(positionsTest)
 gtest_discover_tests(perftTest)
+gtest_discover_tests(movesCacheTest)

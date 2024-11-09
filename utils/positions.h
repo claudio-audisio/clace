@@ -84,8 +84,7 @@ public:
         const Position sourceRow = 7 - (coordinates.at(1) - 49);
 
         if (sourceColumn < 0 || sourceColumn > 7 || sourceRow < 0 || sourceRow > 7) {
-            // TODO tirare eccezione
-            // throw new RuntimeException("piece coordinates malformed");
+			throw std::runtime_error("piece coordinates malformed");
         }
 
         return sourceRow * 8 + sourceColumn;
