@@ -316,64 +316,88 @@ public:
 
 	// rays
 	inline Rawboard noWestAttack(const Rawboard occupied, const Position position) {
-		return getPositiveRayAttacks_NEW(occupied, NoWest, position);
+		return getPositiveRayAttacks(occupied, NoWest, position);
 	}
 
 	inline Rawboard northAttack(const Rawboard occupied, const Position position) {
-		return getPositiveRayAttacks_NEW(occupied, North, position);
+		return getPositiveRayAttacks(occupied, North, position);
 	}
 
 	inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
-		return getPositiveRayAttacks_NEW(occupied, NoEast, position);
+		return getPositiveRayAttacks(occupied, NoEast, position);
 	}
 
 	inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
-		return getNegativeRayAttacks_NEW(occupied, East, position);
+		return getNegativeRayAttacks(occupied, East, position);
 	}
 
 	inline Rawboard soEastAttack(const Rawboard occupied, const Position position) {
-		return getNegativeRayAttacks_NEW(occupied, SoEast, position);
+		return getNegativeRayAttacks(occupied, SoEast, position);
 	}
 
 	inline Rawboard southAttack(const Rawboard occupied, const Position position) {
-		return getNegativeRayAttacks_NEW(occupied, South, position);
+		return getNegativeRayAttacks(occupied, South, position);
 	}
 
 	inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
-		return getNegativeRayAttacks_NEW(occupied, SoWest, position);
+		return getNegativeRayAttacks(occupied, SoWest, position);
 	}
 
 	inline Rawboard westAttack(const Rawboard occupied, const Position position) {
-		return getPositiveRayAttacks_NEW(occupied, West, position);
+		return getPositiveRayAttacks(occupied, West, position);
 	}
 
     // ray attacks
+	/* ON THE FLY version
 	inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
 		const Rawboard attacks = direction(position);
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
 		return attacks ^ direction(firstBlockPos);
-	}
+	}*/
 
-	static inline Rawboard getNegativeRayAttacks_NEW(const Rawboard occupied, const unsigned char direction, const Position position) {
+	/* BRANCHLESS version
+	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
 		const Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
 		return attacks ^ rayAttacks[direction][firstBlockPos];
+	}*/
+
+	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+		Rawboard attacks = rayAttacks[direction][position];
+		const Rawboard blocker = attacks & occupied;
+		if (blocker) {
+			const Position firstBlockPos = Utils::getFirstPos(blocker);
+			attacks ^= rayAttacks[direction][firstBlockPos];
+		}
+		return attacks;
 	}
 
-	inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+	/* ON THE FLY version
+	inline static Rawboard getPositiveRayAttacks_onthefly(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
 		const Rawboard attacks = direction(position);
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
 		return attacks ^ direction(firstBlockPos);
-	}
+	}*/
 
-	static inline Rawboard getPositiveRayAttacks_NEW(const Rawboard occupied, const unsigned char direction, const Position position) {
+	/* BRANCHLESS version
+	static inline Rawboard getPositiveRayAttacks_branchless(const Rawboard occupied, const unsigned char direction, const Position position) {
 		const Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
 		return attacks ^ rayAttacks[direction][firstBlockPos];
+	}*/
+
+	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+		Rawboard attacks = rayAttacks[direction][position];
+		const Rawboard blocker = attacks & occupied;
+		if (blocker) {
+			const Position firstBlockPos = Utils::getFirstPosReverse(blocker);
+			attacks ^= rayAttacks[direction][firstBlockPos];
+		}
+		return attacks;
 	}
 
 	// One step
