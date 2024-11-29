@@ -7,14 +7,13 @@ using namespace std;
 
 class Statistics {
 public:
-	Statistics(const unsigned int gamesAmount);
+	explicit Statistics(unsigned int gamesAmount);
 	~Statistics();
 
-	void gameEnded(const int gameResult);
+	void gameEnded(int gameResult);
 	void print();
-	string percentage(const unsigned int value);
+	string percentage(unsigned int value);
 
-private:
 	bool consoleOutput;
 	atomic<unsigned int> running;
 	atomic<unsigned int> blackWins;

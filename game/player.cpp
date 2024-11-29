@@ -1,31 +1,20 @@
 #include <chrono>
 
 #include "player.h"
-#include "../board/piece.h"
-#include "../utils/pieceHelper.h"
 #include "../engine/r_engine.h"
 #include "../ui/userInterface.h"
-#include "../utils/utils.h"
 
-Player::Player() {
-}
-
-Player::Player(const bool white) {
-	init("H725", true, white, new R_Engine());
-}
-
-Player::Player(const bool white, IEngine* engine) {
-	init("H725", true, white, engine);
-}
 
 Player::Player(const string& name, const bool white) {
-	init(name, false, white, new R_Engine());
+	init(name, false, white, nullptr);
+}
+
+Player::Player(const string& name, const bool white, IEngine* engine) {
+	init(name, true, white, engine);
 }
 
 Player::~Player() {
-	if (engine) {
-		delete engine;
-	}
+	delete engine;
 }
 
 void Player::init(const string& name, const bool computer, const bool white, IEngine* engine) {

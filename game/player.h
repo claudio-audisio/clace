@@ -10,10 +10,8 @@ using namespace std;
 
 class Player {
 public:
-	Player();
-	Player(bool white);
-	Player(bool white, IEngine* engine);
 	Player(const string& name, bool white);
+	Player(const string& name, bool white, IEngine* engine);
 	~Player();
 
 	void init(const string& name, bool computer, bool white, IEngine* engine);

@@ -16,8 +16,6 @@ public:
 
     static Game* fenToNewGame(const string& fenPosition) {
         Game* game = new Game();
-        game->initPlayers();
-
         fenToGame(fenPosition, *game);
 
         return game;

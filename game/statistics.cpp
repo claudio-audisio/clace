@@ -11,9 +11,7 @@ Statistics::Statistics(const unsigned int gamesAmount) {
 	draws.store(0);
 }
 
-Statistics::~Statistics() {
-
-}
+Statistics::~Statistics() = default;
 
 void Statistics::gameEnded(const int gameResult) {
 	if (gameResult > 0) {

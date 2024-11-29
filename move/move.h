@@ -60,6 +60,28 @@ public:
 		return move;
 	}
 
+	static void decorate(Move& move, const Piece piece, const Position enPassantPosition, const bool isComputerToMove) {
+		const Position sourcePosition = MoveHelper::getSourcePosition(move);
+		const Position destinationPosition = MoveHelper::getDestinationPosition(move);
+		const Side side = MoveHelper::getSide(move);
+
+		setPiece(move, piece);
+
+		if (PieceHelper::isKing(piece)) {
+			// castling
+			setCastling(move,
+						(side == BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+						(side == WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
+		} else if (PieceHelper::isPawn(piece)) {
+			// En passant
+			setEnPassant(move, enPassantPosition == destinationPosition);
+			// Pawn promotion
+			setPawnPromotion(move, Positions::isEighthRow(destinationPosition, side));
+		}
+
+		setComputer(move, isComputerToMove);
+	}
+
 	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side, const Piece piece) {
 		return getMove(sourcePosition, destinationPosition, side, piece, NO_POS, true);
 	}
@@ -242,6 +264,19 @@ public:
 	inline static bool isCastlingMR(const MoveResult moveResult) {
         return (moveResult & MR_CASTLING_MASK);
     }
+
+	inline static bool isPresent(const Move move, const vector<Move>& moves) {
+		const Position source = MoveHelper::getSourcePosition(move);
+		const Position destination  = MoveHelper::getDestinationPosition(move);
+
+		for (Move m : moves) {
+			if (MoveHelper::getSourcePosition(m) == source && MoveHelper::getDestinationPosition(m) == destination) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 private:
 	static const Move SOURCE_POS_MASK = 0x00000000000000ffLL;

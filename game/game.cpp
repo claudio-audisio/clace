@@ -3,6 +3,7 @@
 #include "game.h"
 #include "../utils/fen.h"
 #include "../move/move.h"
+#include "../game/player.h"
 
 
 Game::Game() {
@@ -15,18 +16,11 @@ Game::~Game() {
 }
 
 void Game::init() {
-	initPlayers();
 	initFromFEN(INITIAL_FEN_POSITION);
 }
 
 void Game::initFromFEN(const string& fenPosition) {
-	initPlayers();
 	FEN::fenToGame(fenPosition, *this);
-}
-
-void Game::initPlayers() {
-	whitePlayer = new Player(true);
-	blackPlayer = new Player(false);
 }
 
 void Game::initPlayers(Player* white, Player* black) {
@@ -287,4 +281,34 @@ string Game::printMovesHistory() {
 
 string Game::printCastlingInfo() const {
     return FEN::castlingInfoToFEN(board.castlingInfo);
+}
+
+string Game::getCapturedList(const Side side) {
+	string captured;
+	for (int i = 0; i < 1 - BoardUtils::positionsCount(board.pieceBoards[WQueen + side]); ++i) {
+		captured += PieceHelper::getPieceCode(WQueen + side);
+		captured.append(" ");
+	}
+
+	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WRook + side]); ++i) {
+		captured += PieceHelper::getPieceCode(WRook + side);
+		captured.append(" ");
+	}
+
+	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WBishop + side]); ++i) {
+		captured += PieceHelper::getPieceCode(WBishop + side);
+		captured.append(" ");
+	}
+
+	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WKnight + side]); ++i) {
+		captured += PieceHelper::getPieceCode(WKnight + side);
+		captured.append(" ");
+	}
+
+	for (int i = 0; i < 8 - BoardUtils::positionsCount(board.pieceBoards[WPawn + side]); ++i) {
+		captured += PieceHelper::getPieceCode(WPawn + side);
+		captured.append(" ");
+	}
+
+	return captured;
 }

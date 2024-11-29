@@ -1,7 +1,15 @@
 ﻿#pragma once
 
+#include <algorithm>
+
 #include "../clace.h"
 #include "../board/piece.h"
+#include "../board/board.h"
+#include "../game/game.h"
+#include "../utils/fen.h"
+#include "../utils/pieceHelper.h"
+#include "../move/move.h"
+#include "../game/player.h"
 
 using namespace std;
 
@@ -27,9 +35,11 @@ public:
 		return value;
 	}*/
 
-	static string readString() {
+	static string readString(bool withPrompt = true) {
 		string value;
-		cout << "> ";
+		if (withPrompt) {
+			cout << "> ";
+		}
 		cin >> value;
 		return value;
 	}
@@ -41,6 +51,16 @@ public:
 		cout << "\t3. print boards" << endl;
 		cout << "\t0. <-- exit" << endl;
 		return readInt();
+	}
+
+	static string readName(const string& color) {
+		if (!color.empty()) {
+			cout << "  Enter " + color + " name: ";
+		} else {
+			cout << "  Enter name: ";
+		}
+
+		return readString(false);
 	}
 
 	static unsigned int readGamesQuantity() {
@@ -96,87 +116,103 @@ public:
 		cout << " \\___| _| \\__,_| \\___| \\___| " << endl;
 	}
 
-	static char getPieceCode(Piece piece) {
-		switch (piece) {
-		case WPawn: return 0x0050;
-		case BPawn: return 0x0070;
-		case WRook: return 0x0052;
-		case BRook: return 0x0072;
-		case WKnight: return 0x004E;
-		case BKnight: return 0x006E;
-		case WBishop: return 0x0042;
-		case BBishop: return 0x0062;
-		case WQueen: return 0x0051;
-		case BQueen: return 0x0071;
-		case WKing: return 0x004B;
-		case BKing: return 0x006B;
-		default: return 0x0020;
-		}
-	}
-
     static void addLines(unsigned int lines) {
         while (lines-- > 0) {
             cout << endl;
         }
     }
 
-	/*
-	public static void printBoard(Board board) {
-		printWriter.println();
+	static void printBoard(const Board& board) {
 		int row = 0;
 
-		System.out.println("        a   b   c   d   e   f   g   h      ");
-		System.out.println("      ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗    ");
+		cout << "        a   b   c   d   e   f   g   h      " << endl;
+		cout << "      ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗    " << endl;
 
 		while (row <= 56) {
-			System.out.print("    " + ((64 - row) / 8) + " ║");
+			cout << "    " << ((64 - row) / 8) << " ║";
 
 			for (int i = 0; i < 8; i++) {
-				System.out.print(" " + (char)getPieceCode(board.getPieceType(row + i)) + " ");
+				cout << " " << (char)PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
 
 				if (i < 7) {
-					System.out.print("│");
+					cout << "│";
 				}
 			}
-			System.out.println("║ " + ((64 - row) / 8) + "  ");
+			cout << "║ " << ((64 - row) / 8) << "  " << endl;
 			row += 8;
 
 			if (row <= 56) {
-				System.out.println("      ╟───┼───┼───┼───┼───┼───┼───┼───╢    ");
+				cout << "      ╟───┼───┼───┼───┼───┼───┼───┼───╢    " << endl;
 			}
 		}
 
-		System.out.println("      ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝    ");
-		System.out.println("        a   b   c   d   e   f   g   h      ");
-		printWriter.println();
+		cout << "      ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝    " << endl;
+		cout << "        a   b   c   d   e   f   g   h      " << endl << endl;
 	}
-	*/
 
-	/*
-	public static void printData(Board board) {
-		printWriter.println();
-		printWriter.println("  moves: " + board.getFullMoves());
-		printWriter.println("  times: " + board.getWhitePlayer().getMoveTime() + " - " + board.getBlackPlayer().getMoveTime());
+	static void printData(Game& game) {
+		cout << endl;
+		cout << "  moves: " << game.fullMoves << endl;
+		cout << "  times: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime() << endl;
 
-		if (!board.getWhitePlayer().getCapturedList().isEmpty() || !board.getBlackPlayer().getCapturedList().isEmpty()) {
-			printWriter.println("  captured: " + board.getWhitePlayer().getCapturedList() + "- " + board.getBlackPlayer().getCapturedList());
+		const string whiteCaptured = game.getCapturedList(WHITE);
+		const string blackCaptured = game.getCapturedList(BLACK);
+
+		if (!whiteCaptured.empty() || !blackCaptured.empty()) {
+			cout << "  captured: " << whiteCaptured << "- " << blackCaptured << endl;
 		}
 
-		printWriter.println("  evaluation: " + String.format("%.2f", board.evaluateAsWhite()));
+		// TODO
+		//cout << "  evaluation: " << String.format("%.2f", game.evaluateAsWhite())<< endl;
 
-		if (board.lastMove != null) {
-			printWriter.println("  last move: " + board.lastMove + " (" + (board.lastMove.isWhite() ? board.getWhitePlayer().getName() : board.getBlackPlayer().getName()) + ")");
+		if (game.lastMove != 0) {
+			cout << "  last move: " << MoveHelper::toString(game.lastMove) << " (" << (MoveHelper::isWhite(game.lastMove) ? game.whitePlayer->name : game.blackPlayer->name) << ")" << endl;
 		}
 
-		printWriter.println("  fen: " + FENConverter.boardToFEN(board));
-
-		System.out.println();
+		cout << "  fen: " << FEN::gameToFEN(game) << endl;
+		cout << endl;
 	}
 
-	public static void printFENBoard(Board board) {
-		printWriter.println("  " + FENConverter.boardToFEN(board));
+	static void printFENGame(Game game) {
+		cout << "  " << FEN::gameToFEN(game) << endl;
 	}
-	*/
+
+	static Move getNextMove(Player* player) {
+		while (true) {
+			cout << "  " << player->getNameAndColor() << " to move: ";
+			try {
+				string line = UI::readString(false);
+				return MoveHelper::getMove(line, player->white);
+			}
+			catch (exception e) {
+				cout << "  --> malformed move: please use this notation e2-e4" << endl;
+			}
+		}
+	}
+
+	static Piece choosePromotionType(bool white) {
+		while(true) {
+			cout << "Pawn promotion, choose piece type: ";
+
+			string piece = readString(false);
+			transform(piece.begin(), piece.end(), piece.begin(), ::toupper);
+
+			if (piece.length() != 1) {
+				continue;
+			}
+
+			switch (piece.at(0)) {
+				case 'P': return white ? WPawn : BPawn;
+				case 'R': return white ? WRook : BRook;
+				case 'N': return white ? WKnight : BKnight;
+				case 'B': return white ? WBishop : BBishop;
+				case 'Q': return white ? WQueen : BQueen;
+				default: break;
+			}
+
+			cout << "Use piece's initial char" << endl;
+		}
+	}
 
 };
 

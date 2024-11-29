@@ -1,12 +1,12 @@
 ﻿// clace.cpp : Defines the entry point for the application.
 //
 
-
 #include "clace.h"
 #include "ui/userInterface.h"
 #include "utils/boardUtils.h"
 #include "board/board.h"
 #include "perft/perft.h"
+#include "game/gameRunner.h"
 
 using namespace std;
 
@@ -41,7 +41,40 @@ int main(int argc, char* argv[]) {
 }
 
 void manageGame() {
-	// TODO
+	string whiteName;
+	string blackName;
+	unsigned int gamesQuantity = 1;
+	string fenBoard;
+
+	switch (UI::menuGame()) {
+		case 2: whiteName = UI::readName("white"); break;
+		case 3: blackName = UI::readName("black"); break;
+		case 4: whiteName = UI::readName("white");
+			blackName = UI::readName("black"); break;
+		case 5: gamesQuantity = UI::readGamesQuantity(); break;
+		case 6: whiteName = UI::readName("");
+			fenBoard = UI::readBoard(); break;
+		default: break;
+	}
+
+	auto statistics = new Statistics(gamesQuantity);
+
+	if (fenBoard.empty()) {
+		for (int i = 0; i < gamesQuantity; i++) {
+			auto runner = new GameRunner(whiteName, blackName, statistics, fenBoard);
+			runner->run();
+		}
+	} else {
+		if (!FEN::isWhiteToMove(fenBoard)) {
+			blackName = whiteName;
+			whiteName = "";
+		}
+
+		auto runner = new GameRunner(whiteName, blackName, statistics, fenBoard);
+		runner->run();
+	}
+
+	statistics->print();
 }
 
 void printBoards() {

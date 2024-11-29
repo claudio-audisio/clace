@@ -419,3 +419,24 @@ INSTANTIATE_TEST_SUITE_P(
                 new TestParams5("1b6/P7/8/8/8/8/8/8 w - - 0 1", 8, 1)                                       // capturing and promotion
         )
 );
+
+TEST_F(GameTest, getCapturedListTest) {
+	Game game;
+	game.init();
+
+	game.board.move(48, 8, WPawn);
+
+	EXPECT_EQ(game.getCapturedList(WHITE), "");
+	EXPECT_EQ(game.getCapturedList(BLACK), "p ");
+
+	game.board.move(1, 57, BKnight);
+
+	EXPECT_EQ(game.getCapturedList(WHITE), "N ");
+	EXPECT_EQ(game.getCapturedList(BLACK), "p ");
+
+	game.board.move(49, 3, WPawn);
+	game.board.move(57, 50, BKnight);
+
+	EXPECT_EQ(game.getCapturedList(WHITE), "N P ");
+	EXPECT_EQ(game.getCapturedList(BLACK), "q p ");
+}

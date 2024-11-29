@@ -7,11 +7,12 @@
 #include "../board/board.h"
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
-#include "../game/player.h"
+//#include "../game/player.h"
 #include "statistics.h"
 
 using namespace std;
 
+class Player;
 
 class Game {
 public:
@@ -20,7 +21,6 @@ public:
 
 	void init();
 	void initFromFEN(const string& fenPosition);
-	void initPlayers();
 	void initPlayers(Player* white, Player* black);
 	MoveResult finalizeMove(Move& move);
 	MoveResult applyMove(Move& move);
@@ -46,6 +46,7 @@ public:
 	Game* duplicate();
     string printMovesHistory();
     string printCastlingInfo() const;
+	string getCapturedList(Side side);
 
 	// Only for testing
 	Board getCopyBoard() {

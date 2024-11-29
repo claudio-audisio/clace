@@ -124,4 +124,22 @@ public:
 		else return 0;
 	}
 
+	static char getPieceCode(Piece piece) {
+		switch (piece) {
+			case WPawn: return 0x0050;
+			case BPawn: return 0x0070;
+			case WRook: return 0x0052;
+			case BRook: return 0x0072;
+			case WKnight: return 0x004E;
+			case BKnight: return 0x006E;
+			case WBishop: return 0x0042;
+			case BBishop: return 0x0062;
+			case WQueen: return 0x0051;
+			case BQueen: return 0x0071;
+			case WKing: return 0x004B;
+			case BKing: return 0x006B;
+			default: return 0x0020;
+		}
+	}
+
 };
