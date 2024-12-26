@@ -3,16 +3,20 @@
 #include "game.h"
 #include "../utils/fen.h"
 #include "../move/move.h"
+#include "../move/movesGenerator.h"
 #include "../game/player.h"
-
+#include "../evaluation/basicEvaluator.h"
 
 Game::Game() {
 	BoardUtils::initAttacks();
+	evaluator = new BasicEvaluator();
 }
 
 Game::~Game() {
 	delete whitePlayer;
 	delete blackPlayer;
+	delete evaluator;
+	delete statistics;
 }
 
 void Game::init() {
@@ -80,10 +84,7 @@ void Game::simulateMove(Move& move) {
     }
 
     if (captured == Empty) {
-        /*if (MoveHelper::isCastling(move)) {
-            board.completeCastlingMove(MoveHelper::getDestinationPosition(move));
-        }
-        else*/ if (MoveHelper::isEnPassant(move)) {
+        if (MoveHelper::isEnPassant(move)) {
             captured = completeEnPassant(move);
         }
     }
@@ -118,7 +119,7 @@ void Game::undoEnPassant(Move& move) {
 
 void Game::verifyChecks() {
     checkStatus.reset();
-	Positions::calculateCheckPositions(*this, getOppositeSide());
+	calculateCheckPositions(getOppositeSide());
 	const Position kingPosition = board.getKingPosition(sideToMove);
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
 }
@@ -225,19 +226,6 @@ void Game::rollbackLastMove() {
 	rollback.rollback(*this);
 }
 
-/*
-public Evaluation evaluate(Move move) {
-	return Optional.ofNullable(evaluator).map(e->e.evaluate(this, move)).orElseGet(() -> new Evaluation(move, Double.NaN));
-}
-
-public double evaluateAsWhite() {
-	if (lastMove != null) {
-		return evaluate(lastMove).getValue() * (isWhiteToMove() ? -1 : 1);
-	}
-
-	return 0;
-}
-*/
 Player* Game::getCurrentPlayer() const {
 	return isWhiteToMove() ? whitePlayer : blackPlayer;
 }
@@ -312,3 +300,70 @@ string Game::getCapturedList(const Side side) {
 
 	return captured;
 }
+
+void Game::calculateCheckPositions(const Side side) {
+	Rawboard positions = board.PIECES(side);
+
+	while(positions) {
+		const Position position = Utils::getFirstPos(positions);
+		const Piece piece = board.getPiece(position);
+
+		if (PieceHelper::isPawn(piece)) {
+			const Rawboard attacks = board.getPawnAttacks(position, side);
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		} else if (PieceHelper::isRook(piece)) {
+			const Rawboard attacks = board.rookAttack(position, ~board.EMPTY, ~board.PIECES(side));
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+			checkStatus.addXRayPosition(position, attacks);
+		} else if (PieceHelper::isKnight(piece)) {
+			const Rawboard attacks = board.knightAttack(position, board.OPP_PIECES(side));
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		} else if (PieceHelper::isBishop(piece)) {
+			const Rawboard attacks = board.bishopAttack(position, ~board.EMPTY, ~board.PIECES(side));
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+			checkStatus.addXRayPosition(position, attacks);
+		} else if (PieceHelper::isQueen(piece)) {
+			const Rawboard attacks = board.queenAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+			checkStatus.addXRayPosition(position, attacks);
+		} else if (PieceHelper::isKing(piece)) {
+			const Rawboard attacks = board.getKingMoves(position, side);
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		}
+
+		positions &= (positions - 1);
+	}
+}
+
+int Game::getAllDestinationQty(const Side side) {
+	int count = 0;
+	Rawboard pieces = board.PIECES(side);
+
+	while(pieces) {
+		const Rawboard destinations = board.getDestinationPositions(Utils::getFirstPos(pieces));
+		count += BoardUtils::positionsCount(destinations);
+		pieces &= (pieces - 1);
+	}
+
+	return count;
+}
+
+/*
+public Evaluation evaluate(Move move) {
+	return Optional.ofNullable(evaluator).map(e->e.evaluate(this, move)).orElseGet(() -> new Evaluation(move, Double.NaN));
+}
+
+public double evaluateAsWhite() {
+	if (lastMove != null) {
+		return evaluate(lastMove).getValue() * (isWhiteToMove() ? -1 : 1);
+	}
+
+	return 0;
+}
+*/

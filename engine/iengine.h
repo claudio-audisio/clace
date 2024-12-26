@@ -7,9 +7,9 @@ class IEngine {
 public:
     virtual void draw() const = 0;
 
-	virtual Move calculateMove(Game& game, vector<Move>& moves) = 0;
+	virtual Evaluation calculateMove(Game& game, vector<Move>& moves) = 0;
 
-	virtual Move calculateMove(Game& game, vector<Move>& moves, int depth) = 0;
+	virtual Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) = 0;
 
 	virtual void setEvaluator(IEvaluator* evaluator) = 0;
 

@@ -2,7 +2,7 @@
 
 //#include <bitset>
 
-//using namespace std;
+using namespace std;
 
 typedef unsigned char Side;
 typedef unsigned char Position;
@@ -14,6 +14,7 @@ typedef unsigned long long unsLL;
 //typedef bitset<72> PieceAndDest;
 typedef unsigned long long Move;
 typedef unsigned char MoveResult;
+typedef pair<Move, double> Evaluation;
 
 enum class EndGameType
 {

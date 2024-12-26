@@ -5,6 +5,7 @@
 #include "player.h"
 #include "../engine/iengine.h"
 #include "../engine/r_engine.h"
+#include "../engine/bf_engine.h"
 #include "../ui/userInterface.h"
 
 using namespace std;
@@ -25,7 +26,8 @@ public:
 		game = new Game();
 
 		if (whiteName.empty()) {
-			IEngine* whiteEngine = new R_Engine();
+			//IEngine* whiteEngine = new R_Engine();
+			IEngine* whiteEngine = new BF_Engine(WHITE, 2);
 			whitePlayer = new Player("H725", true,whiteEngine);
 		} else {
 			whitePlayer = new Player(whiteName, true);
@@ -33,6 +35,7 @@ public:
 
 		if (blackName.empty()) {
 			IEngine* blackEngine = new R_Engine();
+			//IEngine* blackEngine = new BF_Engine(BLACK, 1);
 			blackPlayer = new Player("HAL9000", true, blackEngine);
 		} else {
 			blackPlayer = new Player(blackName, false);
@@ -79,9 +82,10 @@ public:
 			return endGame;
 		}
 
-		Move move = game->getCurrentPlayer()->engine->calculateMove(*game, moves);
+		Evaluation evaluation = game->getCurrentPlayer()->engine->calculateMove(*game, moves);
 		game->getCurrentPlayer()->stopMoveTime();
-		game->applyMove(move);
+		game->applyMove(evaluation.first);
+		game->currentEvaluation = evaluation.second;
 
 		if (game->checkFiveFoldRepetitions()) {
 			game->getCurrentPlayer()->stopMoveTime();
@@ -123,6 +127,7 @@ public:
 		}
 
 		game->applyMove(move);
+		game->currentEvaluation = game->evaluator->evaluate(*game);
 
 		if (game->checkFiveFoldRepetitions()) {
 			game->getCurrentPlayer()->stopMoveTime();

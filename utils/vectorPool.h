@@ -32,7 +32,6 @@ public:
         return v;
     }
 
-private:
     unsigned int size;
     vector<vector<T>*>* pool;
 };

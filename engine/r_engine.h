@@ -7,12 +7,14 @@
 #include "../move/move.h"
 #include "../move/movesGenerator.h"
 #include "../utils/vectorPool.h"
+#include "../evaluation/basicEvaluator.h"
 
 using namespace std;
 
 class R_Engine : public IEngine {
 public:
 	R_Engine() {
+		evaluator = nullptr;
 		srand(time(nullptr));
 	};
 
@@ -20,11 +22,11 @@ public:
 
 	void draw() const {};
 
-	Move calculateMove(Game& game, vector<Move>& moves) {
-		return moves[getRandom(moves.size())];
+	Evaluation calculateMove(Game& game, vector<Move>& moves) {
+		return make_pair(moves[getRandom(moves.size())], 0);
 	}
 
-	Move calculateMove(Game& game, vector<Move>& moves, int depth) {
+	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) {
 		return calculateMove(game, moves);
 	}
 

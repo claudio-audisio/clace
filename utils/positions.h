@@ -12,61 +12,6 @@ using namespace std;
 class Positions {
 public:
 
-    static void calculateCheckPositions(Game& game, Side side) {
-		Rawboard positions = game.board.PIECES(side);
-
-		while(positions) {
-			const Position position = Utils::getFirstPos(positions);
-			const Piece piece = game.board.getPiece(position);
-
-			if (PieceHelper::isPawn(piece)) {
-				const Rawboard attacks = game.board.getPawnAttacks(position, side);
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-			} else if (PieceHelper::isRook(piece)) {
-				const Rawboard attacks = game.board.rookAttack(position, ~game.board.EMPTY, ~game.board.PIECES(side));
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-				game.checkStatus.addXRayPosition(position, attacks);
-			} else if (PieceHelper::isKnight(piece)) {
-				const Rawboard attacks = game.board.knightAttack(position, game.board.OPP_PIECES(side));
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-			} else if (PieceHelper::isBishop(piece)) {
-				const Rawboard attacks = game.board.bishopAttack(position, ~game.board.EMPTY, ~game.board.PIECES(side));
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-				game.checkStatus.addXRayPosition(position, attacks);
-			} else if (PieceHelper::isQueen(piece)) {
-				const Rawboard attacks = game.board.queenAttacks(position, ~game.board.EMPTY, ~game.board.PIECES(side));
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-				game.checkStatus.addXRayPosition(position, attacks);
-			} else if (PieceHelper::isKing(piece)) {
-				const Rawboard attacks = game.board.getKingMoves(position, side);
-				game.checkStatus.updateAllCheckPositions(attacks);
-				game.checkStatus.addCheckPosition(position, attacks);
-			}
-
-			positions &= (positions - 1);
-		}
-    }
-
-	// TODO da fare refactoring
-    static unsigned int getAllDestinationQty(const Game& game, const bool white) {
-        /*unsigned int count = 0;
-
-        for (Position i = 0; i < 64; i++) {
-            if (game.checkColor(i, white)) {
-                const Rawboard destinations = getDestinationPositions(game, i);
-                count += BoardUtils::positionsCount(destinations);
-            }
-        }
-
-        return count;*/
-		return 0;
-    }
-
 	static unordered_set<Position>* getPiecePositions(Game& game, const unordered_set<Piece>& pieces) {
         unordered_set<Position>* positions = new unordered_set<Position>();
 

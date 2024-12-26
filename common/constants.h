@@ -105,3 +105,8 @@ static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1
 #define DRAW_VALUE 0
 #define EVAL_WIN_VALUE (9 * QUEEN_WT + 2 * ROOK_WT + 2 * BISHOP_WT + 2 * KNIGHT_WT)
 #define EVAL_LOSS_VALUE (-EVAL_WIN_VALUE)
+#define MATERIAL_WT 0.9
+#define MOBILITY_WT 0.1
+#define WIN_EVALUATION Evaluation(0, WIN_VALUE)
+#define LOSS_EVALUATION Evaluation(0, LOSS_VALUE)
+#define DRAW_EVALUATION Evaluation(0, DRAW_VALUE)

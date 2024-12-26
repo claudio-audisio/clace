@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <chrono>
+#include <numeric>
 
 #include "../game/game.h"
 #include "../utils/fen.h"
@@ -325,24 +327,24 @@ INSTANTIATE_TEST_SUITE_P(
 	::testing::Values(
 		new TestParams4(INITIAL_FEN_POSITION, false, 4, true),
 		new TestParams4(INITIAL_FEN_POSITION, false, 60, true),
-		new TestParams4("k7/8/8/8/8/8/8/R6Q b - - 0 1", false, 0, false),
-		new TestParams4("q6r/8/8/8/8/8/8/7K w - - 0 1", false, 63, false),
-		new TestParams4("2kr3r/8/8/8/8/8/8/1R6 b - - 0 1", true, 2, true),
-		new TestParams4("2kr3r/8/8/8/8/8/8/2R5 b - - 0 1", true, 2, false),
-		new TestParams4("2kr3r/8/8/8/8/8/8/3R4 b - - 0 1", true, 2, false),
-		new TestParams4("2kr3r/8/8/8/8/8/8/4R3 b - - 0 1", true, 2, false),
-		new TestParams4("r4rk1/8/8/8/8/8/8/4R3 b - - 0 1", true, 6, false),
-		new TestParams4("r4rk1/8/8/8/8/8/8/5R2 b - - 0 1", true, 6, false),
-		new TestParams4("r4rk1/8/8/8/8/8/8/6R1 b - - 0 1", true, 6, false),
-		new TestParams4("r4rk1/8/8/8/8/8/8/7R b - - 0 1", true, 6, true),
-		new TestParams4("1r6/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, true),
-		new TestParams4("2r5/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
-		new TestParams4("3r4/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
-		new TestParams4("4r3/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
-		new TestParams4("4r3/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
-		new TestParams4("5r2/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
-		new TestParams4("6r1/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
-		new TestParams4("7r/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, true)
+		new TestParams4("k7/8/8/8/8/8/8/R4K1Q b - - 0 1", false, 0, false),
+		new TestParams4("q4k1r/8/8/8/8/8/8/7K w - - 0 1", false, 63, false),
+		new TestParams4("2kr3r/8/8/8/8/8/8/1R5K b - - 0 1", true, 2, true),
+		new TestParams4("2kr3r/8/8/8/8/8/8/2R4K b - - 0 1", true, 2, false),
+		new TestParams4("2kr3r/8/8/8/8/8/8/3R3K b - - 0 1", true, 2, false),
+		new TestParams4("2kr3r/8/8/8/8/8/8/4R2K b - - 0 1", true, 2, false),
+		new TestParams4("r4rk1/8/8/8/8/8/8/4R2K b - - 0 1", true, 6, false),
+		new TestParams4("r4rk1/8/8/8/8/8/8/5R1K b - - 0 1", true, 6, false),
+		new TestParams4("r4rk1/8/8/8/8/8/8/6RK b - - 0 1", true, 6, false),
+		new TestParams4("r4rk1/8/8/8/8/8/8/K6R b - - 0 1", true, 6, true),
+		new TestParams4("1r5k/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, true),
+		new TestParams4("2r4k/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
+		new TestParams4("3r3k/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
+		new TestParams4("4r2k/8/8/8/8/8/8/2KR3R w - - 0 1", true, 58, false),
+		new TestParams4("4r2k/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
+		new TestParams4("5r1k/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
+		new TestParams4("6rk/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, false),
+		new TestParams4("k6r/8/8/8/8/8/8/R4RK1 w - - 0 1", true, 62, true)
 	)
 );
 
@@ -439,4 +441,68 @@ TEST_F(GameTest, getCapturedListTest) {
 
 	EXPECT_EQ(game.getCapturedList(WHITE), "N P ");
 	EXPECT_EQ(game.getCapturedList(BLACK), "q p ");
+}
+
+
+TEST_F(GameTest, getAllDestinationQty) {
+	Game game;
+	FEN::fenToGame(INITIAL_FEN_POSITION, game);
+
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 20);
+	EXPECT_EQ(game.getAllDestinationQty(BLACK), 20);
+
+	FEN::fenToGame(PERFT_FEN_POSITION_2, game);
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 48);
+
+	FEN::fenToGame(PERFT_FEN_POSITION_3, game);
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 16);
+
+	FEN::fenToGame(PERFT_FEN_POSITION_4, game);
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 38);
+
+	FEN::fenToGame(PERFT_FEN_POSITION_5, game);
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 41);
+
+	FEN::fenToGame(PERFT_FEN_POSITION_6, game);
+	EXPECT_EQ(game.getAllDestinationQty(WHITE), 46);
+}
+
+
+class CalculateCheckPositionsPerformanceTest : public testing::Test {
+protected:
+	void runCheckPositionWithTime(const string& fenGame, Side side) {
+		Game* game = FEN::fenToNewGame(fenGame);
+		auto start = chrono::steady_clock::now();
+		game->calculateCheckPositions(side);
+		times.push_back(Utils::getElapsedNanos(start));
+	}
+
+	long long getAverageTime() {
+		return times.size() > 0 ?
+			   accumulate(times.begin(), times.end(), 0.0) / times.size() :
+			   0;
+	}
+
+	list<long long> times;
+};
+
+TEST_F(CalculateCheckPositionsPerformanceTest, calculateCheckPositionsPerformanceTest) {
+	GTEST_SKIP();
+	runCheckPositionWithTime(INITIAL_FEN_POSITION, WHITE);
+	runCheckPositionWithTime(INITIAL_FEN_POSITION, BLACK);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_2, WHITE);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_2, BLACK);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_3, WHITE);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_3, BLACK);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_4, WHITE);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_4, BLACK);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_5, WHITE);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_5, BLACK);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_6, WHITE);
+	runCheckPositionWithTime(PERFT_FEN_POSITION_6, BLACK);
+
+	EXPECT_NE(1, 1)
+						<< "check positions time: " << getAverageTime() << endl;
+
+	// 1140
 }

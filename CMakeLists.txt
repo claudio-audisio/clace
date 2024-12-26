@@ -31,7 +31,9 @@ add_executable (clace
 	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
 	"move/movesCache.h" "common/bitwise.h"
 	utils/boardUtils.cpp
-		game/gameRunner.h)
+		game/gameRunner.h
+		engine/bf_engine.h
+		engine/ab_engine.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -45,7 +47,9 @@ add_library(claceLib
 	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
 	"move/movesCache.h" "common/bitwise.h"
 	utils/boardUtils.cpp
-		game/gameRunner.h)
+		game/gameRunner.h
+		engine/bf_engine.h
+		engine/ab_engine.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -137,6 +141,16 @@ add_executable(
 	"tests/movesCacheTest.cpp"
 )
 
+add_executable(
+	evaluationTest
+	"tests/evaluationTest.cpp"
+)
+
+add_executable(
+	bfEngineTest
+	"tests/bfEngineTest.cpp"
+)
+
 target_link_libraries(
 	bitwiseTest
 	GTest::gtest_main
@@ -221,6 +235,18 @@ target_link_libraries(
 	claceLib
 )
 
+target_link_libraries(
+	evaluationTest
+	GTest::gtest_main
+	claceLib
+)
+
+target_link_libraries(
+	bfEngineTest
+	GTest::gtest_main
+	claceLib
+)
+
 include(GoogleTest)
 gtest_discover_tests(bitwiseTest)
 gtest_discover_tests(boardTest)
@@ -236,3 +262,5 @@ gtest_discover_tests(movesGeneratorTest)
 gtest_discover_tests(positionsTest)
 gtest_discover_tests(perftTest)
 gtest_discover_tests(movesCacheTest)
+gtest_discover_tests(evaluationTest)
+gtest_discover_tests(bfEngineTest)

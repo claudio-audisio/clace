@@ -80,6 +80,8 @@ void Player::stopMoveTime() {
 
 string Player::getMoveTime() {
 	ostringstream stringStream;
-	stringStream << int(gameTime / 3600000) << ":" << int((gameTime / 60000) % 60) << ":" << int((gameTime / 1000) % 60);
+	stringStream << setfill('0') << setw(2) << int(gameTime / 3600000) << ":"
+		<< setfill('0') << setw(2) << int((gameTime / 60000) % 60) << ":"
+		<< setfill('0') << setw(2) << int((gameTime / 1000) % 60);
 	return stringStream.str();
 }

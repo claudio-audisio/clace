@@ -162,8 +162,7 @@ public:
 			cout << "  captured: " << whiteCaptured << "- " << blackCaptured << endl;
 		}
 
-		// TODO
-		//cout << "  evaluation: " << String.format("%.2f", game.evaluateAsWhite())<< endl;
+		cout << "  evaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game) << endl;
 
 		if (game.lastMove != 0) {
 			cout << "  last move: " << MoveHelper::toString(game.lastMove) << " (" << (MoveHelper::isWhite(game.lastMove) ? game.whitePlayer->name : game.blackPlayer->name) << ")" << endl;

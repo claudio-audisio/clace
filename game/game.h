@@ -7,12 +7,12 @@
 #include "../board/board.h"
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
-//#include "../game/player.h"
 #include "statistics.h"
 
 using namespace std;
 
 class Player;
+class IEvaluator;
 
 class Game {
 public:
@@ -47,6 +47,8 @@ public:
     string printMovesHistory();
     string printCastlingInfo() const;
 	string getCapturedList(Side side);
+	void calculateCheckPositions(Side side);
+	int getAllDestinationQty(Side side);
 
 	// Only for testing
 	Board getCopyBoard() {
@@ -72,5 +74,7 @@ public:
 	Player* whitePlayer = nullptr;
 	Player* blackPlayer = nullptr;
 	Statistics* statistics = nullptr;
-		
+	IEvaluator* evaluator = nullptr;
+
+	double currentEvaluation = 0;
 };
