@@ -33,7 +33,10 @@ add_executable (clace
 	utils/boardUtils.cpp
 		game/gameRunner.h
 		engine/bf_engine.h
-		engine/ab_engine.h)
+		engine/ab_engine.h
+        uci/uciProcessor.h
+		utils/logger.h
+		uci/movesProcessor.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -49,7 +52,10 @@ add_library(claceLib
 	utils/boardUtils.cpp
 		game/gameRunner.h
 		engine/bf_engine.h
-		engine/ab_engine.h)
+		engine/ab_engine.h
+        uci/uciProcessor.h
+		utils/logger.h
+		uci/movesProcessor.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")

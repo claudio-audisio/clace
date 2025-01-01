@@ -8,15 +8,16 @@
 using namespace std;
 
 
-class BoardPerformanceTest : public testing::Test {
+class MoveTest : public testing::Test {
 protected:
-	BoardPerformanceTest() {
+	MoveTest() {
 		BoardUtils::initAttacks();
 	}
-	~BoardPerformanceTest() {
+	~MoveTest() {
 
 	}
 };
+
 
 class TestParams {
 public:
@@ -32,7 +33,6 @@ public:
     Position sourcePosition;
     Position destinationPosition;
 };
-
 
 class ConstructorTest : public ::testing::TestWithParam<TestParams*> {};
 
@@ -157,3 +157,68 @@ INSTANTIATE_TEST_SUITE_P(
     PiecesTest,
     ::testing::Values(WPawn, BKing, WQueen, BRook, Empty)
 );
+
+
+class TestParams3 {
+public:
+	TestParams3(string uciMove, Position sourcePosition, Position destinationPosition, Piece promotion) {
+		this->uciMove = uciMove;
+		this->sourcePosition = sourcePosition;
+		this->destinationPosition = destinationPosition;
+		this->promotion = promotion;
+	}
+
+	string uciMove;
+	Position sourcePosition;
+	Position destinationPosition;
+	Piece promotion;
+};
+
+class ParseUciMoveTest : public ::testing::TestWithParam<TestParams3*> {};
+
+TEST_P(ParseUciMoveTest, parseUciMoveTest) {
+	TestParams3* params = GetParam();
+	Move move = MoveHelper::parseUciMove(params->uciMove);
+
+	EXPECT_EQ(MoveHelper::getSourcePosition(move), params->sourcePosition);
+	EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
+	EXPECT_EQ(MoveHelper::getPromotion(move), params->promotion);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+		MoveTest,
+		ParseUciMoveTest,
+		::testing::Values(
+			new TestParams3("d2d4", 51, 35, Empty),
+			new TestParams3("b8c6", 1, 18, Empty),
+			new TestParams3("b7b8q", 9, 1, WQueen)
+		)
+);
+
+
+class ToUciMoveTest : public ::testing::TestWithParam<TestParams3*> {};
+
+TEST_P(ToUciMoveTest, toUciMoveTest) {
+	TestParams3* params = GetParam();
+	Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, WHITE);
+	MoveHelper::setPromotion(move, params->promotion);
+
+	if (params->promotion != Empty) {
+		MoveHelper::setPawnPromotion(move, true);
+	}
+
+	EXPECT_EQ(MoveHelper::toUciMove(move), params->uciMove);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+		MoveTest,
+		ToUciMoveTest,
+		::testing::Values(
+				new TestParams3("d2d4", 51, 35, Empty),
+				new TestParams3("b8c6", 1, 18, Empty),
+				new TestParams3("b7b8q", 9, 1, WQueen)
+		)
+);
+
+
+

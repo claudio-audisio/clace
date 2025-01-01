@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define VTUNE_PROFILER
+//#define VTUNE_PROFILER
 
 
 class BFEngineTest : public testing::Test {
@@ -22,10 +22,9 @@ TEST_F(BFEngineTest, ConstructorTest) {
 #ifdef VTUNE_PROFILER
 	GTEST_SKIP();
 #endif
-	auto engine = new BF_Engine(WHITE, 3);
+	auto engine = new BF_Engine(3);
 
 	EXPECT_EQ(engine->depth, 5);
-	EXPECT_EQ(engine->side, WHITE);
 	EXPECT_EQ(engine->pool->size, 5);
 }
 
@@ -35,7 +34,7 @@ TEST_F(BFEngineTest, Depth1Test) {
 #endif
 	Game game;
 	game.init();
-	auto engine = new BF_Engine(WHITE, 1);
+	auto engine = new BF_Engine(1);
 
 	auto moves = new vector<Move>();
 	MovesGenerator::generateLegalMoves(game, *moves);
@@ -50,7 +49,7 @@ TEST_F(BFEngineTest, Depth2Test) {
 #endif
 	Game game;
 	game.init();
-	auto engine = new BF_Engine(WHITE, 2);
+	auto engine = new BF_Engine(2);
 
 	auto moves = new vector<Move>();
 	MovesGenerator::generateLegalMoves(game, *moves);
@@ -65,7 +64,7 @@ TEST_F(BFEngineTest, Depth3Test) {
 #endif
 	Game game;
 	game.init();
-	auto engine = new BF_Engine(WHITE, 3);
+	auto engine = new BF_Engine(3);
 	auto moves = new vector<Move>();
 
 	auto begin = chrono::steady_clock::now();

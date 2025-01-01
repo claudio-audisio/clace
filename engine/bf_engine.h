@@ -8,14 +8,12 @@
 
 class BF_Engine : public IEngine {
 public:
-	explicit BF_Engine(Side side, unsigned int depth) {
-		this->side = side;
+	explicit BF_Engine(unsigned int depth) {
 		this->depth = (depth * 2) - 1;
 		this->pool = new VectorPool<Move>(this->depth, MAX_MOVES);
 		this->evaluator = new BasicEvaluator();
 	};
 
-	Side side;
 	unsigned int depth;
 	IEvaluator* evaluator = nullptr;
 	VectorPool<Move>* pool = nullptr;

@@ -7,6 +7,8 @@
 #include "board/board.h"
 #include "perft/perft.h"
 #include "game/gameRunner.h"
+#include "utils/logger.h"
+#include "uci/uciProcessor.h"
 
 using namespace std;
 
@@ -16,13 +18,16 @@ string getFenPerft(unsigned int index);
 void printBoards();
 
 int main(int argc, char* argv[]) {
-	if (argc == 0) {
+	Logger& logger = Logger::getInstance();
+
+	if (argc == 1) {
 		// uci mode
-		// TODO
+		logger.log("started application in uci mode");
+		UciProcessor processor;
+		processor.run();
 	} else if (strcmp(argv[1], "console") == 0) {
 		// console mode
-        //locale::global(locale(""));
-        //cout.imbue(locale(""));
+		logger.log("started application in console mode");
 		bool exit = false;
         UI::clearScreen();
         UI::printLogo();

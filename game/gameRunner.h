@@ -22,12 +22,12 @@ public:
 	VectorPool<Move>* pool;
 
 	GameRunner(const string& whiteName, const string& blackName, Statistics* statistics, const string& fenBoard) {
-		pool = this->pool = new VectorPool<Move>(1, MAX_MOVES);
+		pool = new VectorPool<Move>(1, MAX_MOVES);
 		game = new Game();
 
 		if (whiteName.empty()) {
 			//IEngine* whiteEngine = new R_Engine();
-			IEngine* whiteEngine = new BF_Engine(WHITE, 2);
+			IEngine* whiteEngine = new BF_Engine(2);
 			whitePlayer = new Player("H725", true,whiteEngine);
 		} else {
 			whitePlayer = new Player(whiteName, true);
@@ -35,7 +35,7 @@ public:
 
 		if (blackName.empty()) {
 			IEngine* blackEngine = new R_Engine();
-			//IEngine* blackEngine = new BF_Engine(BLACK, 1);
+			//IEngine* blackEngine = new BF_Engine(1);
 			blackPlayer = new Player("HAL9000", true, blackEngine);
 		} else {
 			blackPlayer = new Player(blackName, false);

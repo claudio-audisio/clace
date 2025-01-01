@@ -12,17 +12,17 @@
 using namespace std;
 
 
-class BoardPerformanceTest : public testing::Test {
+class MoveTest : public testing::Test {
 protected:
-	BoardPerformanceTest() {
+	MoveTest() {
 		BoardUtils::initAttacks();
 	}
-	~BoardPerformanceTest() {
+	~MoveTest() {
 
 	}
 };
 
-TEST_F(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
+TEST_F(MoveTest, calculateLegalMovesPerformanceTest) {
 	GTEST_SKIP();
 	vector<Move> moves;
     moves.reserve(5000);
@@ -68,7 +68,7 @@ TEST_F(BoardPerformanceTest, calculateLegalMovesPerformanceTest) {
 	// 1300
 }
 
-TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
+TEST_F(MoveTest, getAttacksPerformanceTest) {
 	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
@@ -99,7 +99,7 @@ TEST_F(BoardPerformanceTest, getAttacksPerformanceTest) {
 	// 1020
 }
 
-TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
+TEST_F(MoveTest, getQueenAttacksPerformanceTest) {
 	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
@@ -131,7 +131,7 @@ TEST_F(BoardPerformanceTest, getQueenAttacksPerformanceTest) {
 	// 5941     (attacks)
 }
 
-TEST_F(BoardPerformanceTest, getKnightAttacksPerformanceTest) {
+TEST_F(MoveTest, getKnightAttacksPerformanceTest) {
 	GTEST_SKIP();
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
@@ -162,7 +162,7 @@ TEST_F(BoardPerformanceTest, getKnightAttacksPerformanceTest) {
 	// 5800 - 6000
 }
 
-TEST_F(BoardPerformanceTest, castlingPerformanceTest) {
+TEST_F(MoveTest, castlingPerformanceTest) {
     GTEST_SKIP();
 
 	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
@@ -191,7 +191,7 @@ TEST_F(BoardPerformanceTest, castlingPerformanceTest) {
 	// 3000
 }
 
-TEST_F(BoardPerformanceTest, castlingMaskPerformanceTest) {
+TEST_F(MoveTest, castlingMaskPerformanceTest) {
 	GTEST_SKIP();
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
@@ -214,7 +214,7 @@ TEST_F(BoardPerformanceTest, castlingMaskPerformanceTest) {
 	// 2635 (debug)
 }
 
-TEST_F(BoardPerformanceTest, stuffTest) {
+TEST_F(MoveTest, stuffTest) {
 	GTEST_SKIP();
 	Position source = 4;
 	Position destination = 2;

@@ -11,4 +11,9 @@ public:
 	// quindi la lista delle mosse necessita' anche di un ordinamento
 	// https://www.chessprogramming.org/Alpha-Beta
 
+
+
+
+
+
 };

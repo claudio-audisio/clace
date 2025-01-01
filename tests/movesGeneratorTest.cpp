@@ -9,12 +9,12 @@
 using namespace std;
 
 
-class BoardPerformanceTest : public testing::Test {
+class MovesGeneratorTest : public testing::Test {
 protected:
-	BoardPerformanceTest() {
+	MovesGeneratorTest() {
 		BoardUtils::initAttacks();
 	}
-	~BoardPerformanceTest() {
+	~MovesGeneratorTest() {
 
 	}
 };

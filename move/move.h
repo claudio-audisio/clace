@@ -278,6 +278,37 @@ public:
 		return false;
 	}
 
+	static Move parseUciMove(string& uciMove) {
+		if (uciMove.length() < 4 || uciMove.length() > 5) {
+			throw runtime_error("uci move malformed");
+		}
+
+		Move move = getMove(Positions::coordsToIndex(uciMove.substr(0, 2)), Positions::coordsToIndex(uciMove.substr(2, 4)), WHITE);
+
+		if (uciMove.length() == 5) {
+			const Piece piece = FEN_TO_PIECE.at(uciMove.at(4)) - SIDE_GAP;
+			MoveHelper::setPromotion(move, piece);
+		}
+
+		return move;
+	}
+
+	static string toUciMove(Move move) {
+		string uciMove = Positions::indexToCoords(getSourcePosition(move)) + Positions::indexToCoords(getDestinationPosition(move));
+
+		if (isPawnPromotion(move)) {
+			Piece piece = getPromotion(move);
+
+			if (PieceHelper::isWhite(piece)) {
+				piece = piece + SIDE_GAP;
+			}
+
+			uciMove.append(PIECE_TO_FEN[piece]);
+		}
+
+		return uciMove;
+	}
+
 private:
 	static const Move SOURCE_POS_MASK = 0x00000000000000ffLL;
 	static const Move DEST_POS_MASK = 0x000000000000ff00LL;
