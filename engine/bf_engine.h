@@ -5,6 +5,7 @@
 #include "../move/move.h"
 #include "../move/movesGenerator.h"
 #include "../utils/vectorPool.h"
+#include "../utils/logger.h"
 
 class BF_Engine : public IEngine {
 public:
@@ -18,11 +19,16 @@ public:
 	IEvaluator* evaluator = nullptr;
 	VectorPool<Move>* pool = nullptr;
 	Move moveUnderEvaluation;
+	Logger& logger = Logger::getInstance();
 
 	void draw() const {};
 
 	Evaluation calculateMove(Game& game, vector<Move>& moves) {
-		return calculateMove(game, moves, 0);
+		logger.log(format("{} evaluation", game.isWhiteToMove() ? "white" : "black"));
+		auto time = chrono::steady_clock::now();
+		const Evaluation evaluation = calculateMove(game, moves, 0);
+		logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(evaluation.first), evaluation.second, Utils::getElapsedMicros(time)));
+		return evaluation;
 	}
 
 	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) {
@@ -42,7 +48,10 @@ public:
 			game.rollbackLastMove();
 		}
 
-		//cout << "best (" << depth << "): " << MoveHelper::toString(best.first) << " --> " << best.second << endl;
+		if (depth + 1 >= this->depth) {
+			logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), MoveHelper::toString(best.first), best.second));
+		}
+
 		return best;
 	}
 
@@ -66,7 +75,7 @@ public:
 
 		if (currentDepth >= depth) {
 			double value = evaluator->evaluate(game);
-			//cout << game.printMovesHistory() << " --> " << value << endl;
+			//logger.log(format("{} --> {:.2f}", game.printMovesHistory(depth), value));
 			return Evaluation(0, value);
 		}
 

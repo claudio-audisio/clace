@@ -122,7 +122,7 @@ public:
         }
     }
 
-	static void printBoard(const Board& board) {
+	static void printBoard_old(const Board& board) {
 		int row = 0;
 
 		cout << "        a   b   c   d   e   f   g   h      " << endl;
@@ -148,6 +148,21 @@ public:
 
 		cout << "      ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝    " << endl;
 		cout << "        a   b   c   d   e   f   g   h      " << endl << endl;
+	}
+
+	static void printBoard(const Board& board) {
+		cout << endl;
+		int row = 0;
+
+		while (row <= 56) {
+			cout << "  ";
+			for (int i = 0; i < 8; i++) {
+				cout << PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
+			}
+			cout << endl;
+			row += 8;
+		}
+
 	}
 
 	static void printData(Game& game) {

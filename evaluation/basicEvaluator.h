@@ -11,11 +11,11 @@ public:
 	}
 
 	static double calculateMaterialScore(Game& game) {
-		return QUEEN_WT * (BoardUtils::positionsCount(game.board.pieceBoards[WQueen]) - BoardUtils::positionsCount(game.board.pieceBoards[BQueen])) +
-				ROOK_WT * (BoardUtils::positionsCount(game.board.pieceBoards[WRook]) - BoardUtils::positionsCount(game.board.pieceBoards[BRook])) +
-				BISHOP_WT * (BoardUtils::positionsCount(game.board.pieceBoards[WBishop]) - BoardUtils::positionsCount(game.board.pieceBoards[BBishop])) +
-				KNIGHT_WT * (BoardUtils::positionsCount(game.board.pieceBoards[WKnight]) - BoardUtils::positionsCount(game.board.pieceBoards[BKnight])) +
-				PAWN_WT * (BoardUtils::positionsCount(game.board.pieceBoards[WPawn]) - BoardUtils::positionsCount(game.board.pieceBoards[BPawn]));
+		return QUEEN_WT * (game.board.getPieceCount(WQueen) - game.board.getPieceCount(BQueen)) +
+				ROOK_WT * (game.board.getPieceCount(WRook) - game.board.getPieceCount(BRook)) +
+				BISHOP_WT * (game.board.getPieceCount(WBishop) - game.board.getPieceCount(BBishop)) +
+				KNIGHT_WT * (game.board.getPieceCount(WKnight) - game.board.getPieceCount(BKnight)) +
+				PAWN_WT * (game.board.getPieceCount(WPawn) - game.board.getPieceCount(BPawn));
 	}
 
 	static int calculateMobility(Game& game) {

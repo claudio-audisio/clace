@@ -138,7 +138,7 @@ public:
 			case BQueen: return 0x0071;
 			case WKing: return 0x004B;
 			case BKing: return 0x006B;
-			default: return 0x0020;
+			default: return 0x002E;
 		}
 	}
 

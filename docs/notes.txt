@@ -1,0 +1,27 @@
+GENERALE
+
+    - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
+
+    - Completare test unita'
+
+    - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
+        - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
+
+VALUTAZIONE
+
+    - Il valore del materiale è la parte più influente della valutazione.
+
+    - Dato il valore dei singoli pezzi (intero invece che double) occorre anche dare un valore a:
+        - pedoni raddoppiati
+        - pedoni bloccati
+        - pedoni isolati
+
+    - Utilizzare le tabelle che danno punteggio bonus a seconda della posizione
+        - Queste tabelle possono variare a seconda della fase di gioco: apertura, medio, finale
+            - Stabilire il momento di cambio della fase
+                - A questo proposito ho implementato il calcolo della fase a seconda dei pezzi rimasti e la utilizzo per pesare
+                la valutazione tra medio gioco e gioco finale
+
+ SEARCH
+
+    - Iniziato ab_engine con motore che fa search alpha-beta

@@ -259,10 +259,14 @@ Game* Game::duplicate() {
 	return newGame;
 }
 
-string Game::printMovesHistory() {
+string Game::printMovesHistory(const int depth) const {
     string moves;
+	int i = 0;
     for (Move move : movesHistory) {
         moves = MoveHelper::toString(move) + ", " + moves;
+    	if (depth > 0 && ++i == depth) {
+    		break;
+    	}
     }
     return moves.substr(0, moves.length() - 2);
 }

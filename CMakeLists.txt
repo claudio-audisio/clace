@@ -17,6 +17,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer")
 
 project ("clace")
 
+find_package(spdlog REQUIRED)
+
 # Add source to this project's executable.
 add_executable (clace 
 	"clace.cpp" "clace.h"
@@ -36,7 +38,8 @@ add_executable (clace
 		engine/ab_engine.h
         uci/uciProcessor.h
 		utils/logger.h
-		uci/movesProcessor.h)
+		uci/movesProcessor.h
+		evaluation/phase.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -55,7 +58,8 @@ add_library(claceLib
 		engine/ab_engine.h
         uci/uciProcessor.h
 		utils/logger.h
-		uci/movesProcessor.h)
+		uci/movesProcessor.h
+		evaluation/phase.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -63,6 +67,7 @@ else()
     message(STATUS "C++ standard version is not set explicitly.")
 endif()
 
+target_link_libraries(clace PRIVATE spdlog::spdlog)
 
 ############ TESTS ###################################################################################################################################################
 
@@ -77,6 +82,10 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+add_executable(
+	phaseTest
+	"tests/phaseTest.cpp"
+)
 add_executable(
 	bitwiseTest
 	"tests/bitwiseTest.cpp"
@@ -155,6 +164,12 @@ add_executable(
 add_executable(
 	bfEngineTest
 	"tests/bfEngineTest.cpp"
+)
+
+target_link_libraries(
+	phaseTest
+	GTest::gtest_main
+	claceLib
 )
 
 target_link_libraries(
@@ -254,6 +269,7 @@ target_link_libraries(
 )
 
 include(GoogleTest)
+gtest_discover_tests(phaseTest)
 gtest_discover_tests(bitwiseTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)

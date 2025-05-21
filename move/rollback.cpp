@@ -4,7 +4,7 @@
 Rollback::Rollback() {
 	boards.reserve(size);
 	for (int i = 0; i < size; i++) {
-		boards[i] = new MoveInfo();
+		boards.push_back(new MoveInfo());
 	}
 }
 
@@ -29,7 +29,7 @@ void Rollback::save(Game& game) {
 
 void Rollback::rollback(Game& game) {
 	if (index == 0) {
-		throw runtime_error("asked rollback but here is no data");
+		throw runtime_error("asked rollback but here there is no data");
 	}
 
 	MoveInfo* moveInfo = boards[--index];

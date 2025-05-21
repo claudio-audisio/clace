@@ -44,7 +44,7 @@ public:
 	bool isComputerToMove() const;
 	void setLastMove(const Move& move);
 	Game* duplicate();
-    string printMovesHistory();
+    string printMovesHistory(int depth) const;
     string printCastlingInfo() const;
 	string getCapturedList(Side side);
 	void calculateCheckPositions(Side side);

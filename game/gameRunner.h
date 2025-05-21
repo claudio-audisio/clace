@@ -34,8 +34,8 @@ public:
 		}
 
 		if (blackName.empty()) {
-			IEngine* blackEngine = new R_Engine();
-			//IEngine* blackEngine = new BF_Engine(1);
+			//IEngine* blackEngine = new R_Engine();
+			IEngine* blackEngine = new BF_Engine(2);
 			blackPlayer = new Player("HAL9000", true, blackEngine);
 		} else {
 			blackPlayer = new Player(blackName, false);

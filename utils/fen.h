@@ -109,7 +109,7 @@ private:
         }
     }
 
-static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
+    static CastlingInfo fenToCastlingInfo(const string& fenCastlingInfo) {
         CastlingInfo castlingInfo = 0;
 
         if (strcmp(fenCastlingInfo.c_str(), "-") != 0) {

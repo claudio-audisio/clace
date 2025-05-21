@@ -85,6 +85,10 @@ public:
 	bool equals(const Board& board);
 	void set(const Board& board);
 
+	int getPieceCount(const Piece piece) const {
+		return popcount(pieceBoards[piece]);
+	}
+
 	inline bool isEmpty(const Position position) const {
 		return (EMPTY & posInd(position)) != 0L;
 	}

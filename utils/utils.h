@@ -23,6 +23,10 @@ public:
 		return chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - start).count();
 	}
 
+	static unsLL getElapsedMicros(const chrono::time_point<chrono::steady_clock> start) {
+		return chrono::duration_cast<chrono::microseconds>(chrono::steady_clock::now() - start).count();
+	}
+
 	static unsLL getElapsedMillis(const chrono::time_point<chrono::steady_clock> start) {
 		return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start).count();
 	}
