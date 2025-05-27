@@ -2,7 +2,6 @@
 
 #include <unordered_set>
 
-#include "../clace.h"
 #include "../utils/boardUtils.h"
 #include "../game/game.h"
 #include "../utils/pieceHelper.h"

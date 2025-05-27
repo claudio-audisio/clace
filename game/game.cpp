@@ -8,7 +8,6 @@
 #include "../evaluation/basicEvaluator.h"
 
 Game::Game() {
-	BoardUtils::initAttacks();
 	evaluator = new BasicEvaluator();
 }
 
@@ -16,7 +15,6 @@ Game::~Game() {
 	delete whitePlayer;
 	delete blackPlayer;
 	delete evaluator;
-	delete statistics;
 }
 
 void Game::init() {
@@ -126,6 +124,7 @@ void Game::verifyChecks() {
 
 EndGameType Game::checkEndGame(const bool noMoves) {
 	if (noMoves) {
+		checkStatus.checkmate = checkStatus.check;
 		return checkStatus.check ? EndGameType::CHECKMATE : EndGameType::STALEMATE;
 	}
 

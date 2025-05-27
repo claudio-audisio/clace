@@ -2,10 +2,11 @@
 
 #include <list>
 #include <bit>
+#include <iostream>
 
-#include "../clace.h"
 //#include "../common/boardDef.h"
-
+#include "../common/types.h"
+#include "../common/constants.h"
 
 class BoardUtils {
 public:
@@ -17,19 +18,18 @@ public:
     static void printBoard(const Rawboard board) {
         for (int i = 0; i < 64; ++i) {
             if (i % 8 == 0) {
-                cout << "\t";
+                std::cout << " ";
             }
             if ((board & posInd(i)) == 0) {
-                cout << ". ";
+                std::cout << ". ";
             }
             else {
-                cout << "1 ";
+                std::cout << "1 ";
             }
             if ((i + 1) % 8 == 0) {
                 cout << endl;
             }
         }
-        cout << endl;
     }
 
     static void boardToList(Rawboard board, list<Position>& positions) {

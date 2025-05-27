@@ -4,7 +4,7 @@
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
 
-#define USE_CACHE
+//#define USE_CACHE
 
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {

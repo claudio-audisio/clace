@@ -3,7 +3,6 @@
 #include <list>
 #include <deque>
 
-#include "../clace.h"
 #include "../board/board.h"
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
@@ -73,7 +72,6 @@ public:
 	unsigned int halfMoveClock;
 	Player* whitePlayer = nullptr;
 	Player* blackPlayer = nullptr;
-	Statistics* statistics = nullptr;
 	IEvaluator* evaluator = nullptr;
 
 	double currentEvaluation = 0;

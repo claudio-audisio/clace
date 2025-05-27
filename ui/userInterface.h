@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "../clace.h"
 #include "../board/piece.h"
 #include "../board/board.h"
 #include "../game/game.h"
@@ -22,35 +21,33 @@ public:
 
 	static unsigned int readInt() {
 		unsigned int value;
-		cout << "> ";
-		cin >> value;
-
-		return value;
-	}
-
-	/*static string readString() {
-		string value;
-		cout << "> ";
-		getline(cin, value);
-		return value;
-	}*/
-
-	static string readString(bool withPrompt = true) {
-		string value;
-		if (withPrompt) {
-			cout << "> ";
-		}
 		cin >> value;
 		return value;
 	}
 
-	static unsigned int menu() {
+	static string readString() {
+		string value;
+		cin >> value;
+		return value;
+	}
+
+	static string readLine() {
+		string line;
+		getline(cin, line);
+		return line;
+	}
+
+	static void menu() {
 		cout << endl;
-		cout << "\t1. game" << endl;
-		cout << "\t2. perft" << endl;
-		cout << "\t3. print boards" << endl;
-		cout << "\t0. <-- exit" << endl;
-		return readInt();
+		cout << " new           start new game" << endl;
+		cout << " next          start analysis for next move" << endl;
+		cout << " load <fen>    load fen position" << endl;
+		cout << " cpu <n>       start n cpu game(s)" << endl;
+		cout << " perft <d>     compute perft at depth d" << endl;
+		cout << " print <b>     print bitboards" << endl;
+		cout << " help          show commands" << endl;
+		cout << " quit          exit program" << endl;
+		cout << endl;
 	}
 
 	static string readName(const string& color) {
@@ -60,7 +57,7 @@ public:
 			cout << "  Enter name: ";
 		}
 
-		return readString(false);
+		return readString();
 	}
 
 	static unsigned int readGamesQuantity() {
@@ -114,6 +111,11 @@ public:
 		cout << "   __|  |   _` |   __|   _ \\ " << endl;
 		cout << "  (     |  (   |  (      __/ " << endl;
 		cout << " \\___| _| \\__,_| \\___| \\___| " << endl;
+		cout << " by Claudio Audisio" << endl;
+	}
+
+	static void printMessage(const string& message) {
+		cout << endl << " " << message << endl << endl;
 	}
 
     static void addLines(unsigned int lines) {
@@ -121,6 +123,132 @@ public:
             cout << endl;
         }
     }
+
+	static void printBoard(const Board& board) {
+		cout << endl;
+		int row = 0;
+
+		while (row <= 56) {
+			cout << " ";
+			for (int i = 0; i < 8; i++) {
+				cout << PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
+			}
+			cout << endl;
+
+			row += 8;
+		}
+	}
+
+	static void printGame(Game& game) {
+		cout << endl;
+		int row = 0;
+
+		while (row <= 56) {
+			cout << " ";
+			for (int i = 0; i < 8; i++) {
+				cout << PieceHelper::getPieceCode(game.board.getPiece(row + i)) << " ";
+			}
+
+			switch (row) {
+				case 0: {
+						if (game.checkStatus.check && !game.checkStatus.checkmate) {
+							cout << "\t\tcheck!";
+						}
+						break;
+					}
+				case 8: cout << "\t\tmoves: " << game.fullMoves; break;
+				case 16: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game); break;
+				case 24: cout << "\t\ttimes: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime(); break;
+				case 32: {
+						const string& whiteCaptured = game.getCapturedList(WHITE);
+						const string& blackCaptured = game.getCapturedList(BLACK);
+						if (!whiteCaptured.empty() || !blackCaptured.empty()) {
+							cout << "\t\tcaptured: " << whiteCaptured << "- " << blackCaptured;
+						}
+						break;
+					}
+				case 40: cout << "\t\tfen: " << FEN::gameToFEN(game); break;
+				case 48: {
+						if (game.lastMove != 0) {
+							cout << "\t\tlast move: " << MoveHelper::toString(game.lastMove);
+						}
+						break;
+					}
+				default: break;
+			}
+
+			cout << endl;
+			row += 8;
+		}
+
+		cout << endl;
+	}
+
+	static void printData(Game& game) {
+		cout << endl;
+		cout << " moves: " << game.fullMoves << endl;
+		cout << " times: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime() << endl;
+
+		const string whiteCaptured = game.getCapturedList(WHITE);
+		const string blackCaptured = game.getCapturedList(BLACK);
+
+		if (!whiteCaptured.empty() || !blackCaptured.empty()) {
+			cout << " captured: " << whiteCaptured << "- " << blackCaptured << endl;
+		}
+
+		cout << " evaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game) << endl;
+
+		if (game.lastMove != 0) {
+			cout << " last move: " << MoveHelper::toString(game.lastMove) << " (" << (MoveHelper::isWhite(game.lastMove) ? "white" : "black") << ")" << endl;
+		}
+
+		cout << " fen: " << FEN::gameToFEN(game) << endl;
+		cout << endl;
+	}
+
+	static void printFENGame(Game game) {
+		cout << "  " << FEN::gameToFEN(game) << endl;
+	}
+
+	/*
+	static Move getNextMove(Player* player) {
+		while (true) {
+
+			cout << "  " << player->getNameAndColor() << " to move: ";
+			try {
+				string line = UI::readString(false);
+				return
+			}
+			catch (exception e) {
+				cout << "  --> malformed move: please use this notation e2-e4" << endl;
+			}
+		}
+	}
+	*/
+
+	static Piece choosePromotionType(bool white) {
+		while(true) {
+			cout << " promotion, choose piece: ";
+
+			string piece = readString();
+			transform(piece.begin(), piece.end(), piece.begin(), ::toupper);
+
+			if (piece.length() != 1) {
+				continue;
+			}
+
+			switch (piece.at(0)) {
+				case 'P': return white ? WPawn : BPawn;
+				case 'R': return white ? WRook : BRook;
+				case 'N': return white ? WKnight : BKnight;
+				case 'B': return white ? WBishop : BBishop;
+				case 'Q': return white ? WQueen : BQueen;
+				default: break;
+			}
+
+			cout << "Use piece's initial char" << endl;
+		}
+	}
 
 	static void printBoard_old(const Board& board) {
 		int row = 0;
@@ -148,84 +276,6 @@ public:
 
 		cout << "      ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝    " << endl;
 		cout << "        a   b   c   d   e   f   g   h      " << endl << endl;
-	}
-
-	static void printBoard(const Board& board) {
-		cout << endl;
-		int row = 0;
-
-		while (row <= 56) {
-			cout << "  ";
-			for (int i = 0; i < 8; i++) {
-				cout << PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
-			}
-			cout << endl;
-			row += 8;
-		}
-
-	}
-
-	static void printData(Game& game) {
-		cout << endl;
-		cout << "  moves: " << game.fullMoves << endl;
-		cout << "  times: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime() << endl;
-
-		const string whiteCaptured = game.getCapturedList(WHITE);
-		const string blackCaptured = game.getCapturedList(BLACK);
-
-		if (!whiteCaptured.empty() || !blackCaptured.empty()) {
-			cout << "  captured: " << whiteCaptured << "- " << blackCaptured << endl;
-		}
-
-		cout << "  evaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game) << endl;
-
-		if (game.lastMove != 0) {
-			cout << "  last move: " << MoveHelper::toString(game.lastMove) << " (" << (MoveHelper::isWhite(game.lastMove) ? game.whitePlayer->name : game.blackPlayer->name) << ")" << endl;
-		}
-
-		cout << "  fen: " << FEN::gameToFEN(game) << endl;
-		cout << endl;
-	}
-
-	static void printFENGame(Game game) {
-		cout << "  " << FEN::gameToFEN(game) << endl;
-	}
-
-	static Move getNextMove(Player* player) {
-		while (true) {
-			cout << "  " << player->getNameAndColor() << " to move: ";
-			try {
-				string line = UI::readString(false);
-				return MoveHelper::getMove(line, player->white);
-			}
-			catch (exception e) {
-				cout << "  --> malformed move: please use this notation e2-e4" << endl;
-			}
-		}
-	}
-
-	static Piece choosePromotionType(bool white) {
-		while(true) {
-			cout << "Pawn promotion, choose piece type: ";
-
-			string piece = readString(false);
-			transform(piece.begin(), piece.end(), piece.begin(), ::toupper);
-
-			if (piece.length() != 1) {
-				continue;
-			}
-
-			switch (piece.at(0)) {
-				case 'P': return white ? WPawn : BPawn;
-				case 'R': return white ? WRook : BRook;
-				case 'N': return white ? WKnight : BKnight;
-				case 'B': return white ? WBishop : BBishop;
-				case 'Q': return white ? WQueen : BQueen;
-				default: break;
-			}
-
-			cout << "Use piece's initial char" << endl;
-		}
 	}
 
 };

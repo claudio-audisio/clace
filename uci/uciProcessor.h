@@ -23,7 +23,7 @@ public:
 
 	void run() {
 		while (true) {
-			string command = UI::readString(false);
+			string command = UI::readString();
 
 			logger.log("received command: " + command);
 

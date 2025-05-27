@@ -121,7 +121,7 @@ void Result::print() {
 
 void Result::printGeneratedMoves(const unsLL moves, const unsLL time) {
     const string rate = time > 0 ? formatUnsLL((moves * 1000) / time) : "too much";
-	cout << endl << "generated " << moves << " moves in " << time << " msec (" << rate << " moves/sec)" << endl;
+	cout << " generated " << moves << " moves in " << time << " ms (" << rate << " moves/sec)" << endl;
 }
 
 string Result::getTabs(unsigned int maxTabs, const string& number) {

@@ -5,27 +5,23 @@
 #include "../ui/userInterface.h"
 
 
-Player::Player(const string& name, const bool white) {
-	init(name, false, white, nullptr);
+Player::Player(const bool white) {
+	init(false, white, nullptr);
 }
 
-Player::Player(const string& name, const bool white, IEngine* engine) {
-	init(name, true, white, engine);
+Player::Player(const bool white, IEngine* engine) {
+	init(true, white, engine);
 }
 
 Player::~Player() {
 	delete engine;
 }
 
-void Player::init(const string& name, const bool computer, const bool white, IEngine* engine) {
-	this->name = name;
+void Player::init(const bool computer, const bool white, IEngine* engine) {
 	this->computer = computer;
 	this->white = white;
 	this->engine = engine;
-}
-
-string Player::getNameAndColor() {
-	return name + (white ? " (white)" : " (black)");
+	this->name = white ? "white" : "black";
 }
 
 /*

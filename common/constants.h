@@ -12,6 +12,9 @@
 using namespace std;
 
 
+#define HvsC 0
+#define CvsC 1
+
 #define WHITE 0
 #define BLACK (WHITE + SIDE_GAP)
 #define NO_POS 64

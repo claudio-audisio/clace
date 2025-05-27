@@ -20,26 +20,20 @@ public:
 	Statistics* statistics;
 	string fenBoard;
 	VectorPool<Move>* pool;
+	string humanMove = "";
+	mutex moveMtx;
+	Logger& logger = Logger::getInstance();
+	bool running = false;
 
-	GameRunner(const string& whiteName, const string& blackName, Statistics* statistics, const string& fenBoard) {
+	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
 		pool = new VectorPool<Move>(1, MAX_MOVES);
 		game = new Game();
 
-		if (whiteName.empty()) {
-			//IEngine* whiteEngine = new R_Engine();
-			IEngine* whiteEngine = new BF_Engine(2);
-			whitePlayer = new Player("H725", true,whiteEngine);
-		} else {
-			whitePlayer = new Player(whiteName, true);
-		}
+		whitePlayer = gameType == CvsC ?
+			new Player(true, new BF_Engine(1)) :
+			new Player(true);
 
-		if (blackName.empty()) {
-			//IEngine* blackEngine = new R_Engine();
-			IEngine* blackEngine = new BF_Engine(2);
-			blackPlayer = new Player("HAL9000", true, blackEngine);
-		} else {
-			blackPlayer = new Player(blackName, false);
-		}
+		blackPlayer = new Player(false, new BF_Engine(2));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
@@ -54,25 +48,22 @@ public:
 
 		game->initPlayers(whitePlayer, blackPlayer);
 		EndGameType endGame;
+		running = true;
 
 		do {
-			if (statistics->consoleOutput) {
-				UI::clearScreen();
-				UI::printBoard(game->board);
-				UI::printData(*game);
-			}
-
 			if (game->getCurrentPlayer()->computer) {
 				endGame = processComputerMove();
 			} else {
+				if (statistics->consoleOutput) {
+					UI::printGame(*game);
+				}
 				endGame = processHumanMove();
 			}
-		} while (!isGameEnded(endGame));
+		} while (running && !isGameEnded(endGame));
 	}
 
 	EndGameType processComputerMove() {
 		game->getCurrentPlayer()->startMoveTime();
-		game->verifyChecks();
 		vector<Move>& moves = pool->getVector(0);
 		MovesGenerator::generateLegalMoves(*game, moves);
 		EndGameType endGame = game->checkEndGame(moves.empty());
@@ -84,6 +75,7 @@ public:
 
 		Evaluation evaluation = game->getCurrentPlayer()->engine->calculateMove(*game, moves);
 		game->getCurrentPlayer()->stopMoveTime();
+		logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(evaluation.first)));
 		game->applyMove(evaluation.first);
 		game->currentEvaluation = evaluation.second;
 
@@ -92,11 +84,12 @@ public:
 			return EndGameType::FIVEFOLD_REPETITION;
 		}
 
+		game->verifyChecks();
+
 		return EndGameType::NONE;
 	}
 
 	EndGameType processHumanMove() {
-		game->verifyChecks();
 		vector<Move>& moves = pool->getVector(0);
 		MovesGenerator::generateLegalMoves(*game, moves);
 		EndGameType endGame = game->checkEndGame(moves.empty());
@@ -108,9 +101,10 @@ public:
 
 		Move move;
 
-		while (true) {
+		while (running) {
 			game->getCurrentPlayer()->startMoveTime();
-			move = UI::getNextMove(game->getCurrentPlayer());
+			string humanMove = waitForHumanMove();
+			move = MoveHelper::getMove(humanMove, game->getCurrentPlayer()->white);
 			MoveHelper::decorate(move, game->board.getPiece(MoveHelper::getSourcePosition(move)), game->board.enPassantPosition, game->isComputerToMove());
 
 			if (MoveHelper::isPawnPromotion(move)) {
@@ -123,9 +117,10 @@ public:
 				break;
 			}
 
-			cout << "  --> Invalid move!" << endl;
+			UI::printMessage(" invalid move");
 		}
 
+		logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(move)));
 		game->applyMove(move);
 		game->currentEvaluation = game->evaluator->evaluate(*game);
 
@@ -134,35 +129,53 @@ public:
 			return EndGameType::FIVEFOLD_REPETITION;
 		}
 
+		game->verifyChecks();
+
 		return EndGameType::NONE;
+	}
+
+	string waitForHumanMove() {
+		while (running) {
+			std::this_thread::sleep_for(100ms);
+			moveMtx.lock();
+			if (!humanMove.empty()) {
+				string move = humanMove;
+				humanMove = "";
+				moveMtx.unlock();
+				return move;
+			}
+			moveMtx.unlock();
+		}
+		return nullptr;
+	}
+
+	void setHumanMove(const string& move) {
+		moveMtx.lock();
+		humanMove = move;
+		moveMtx.unlock();
 	}
 
 	bool isGameEnded(EndGameType endGame) {
 		if (endGame != EndGameType::NONE) {
-			if (statistics->consoleOutput) {
-				UI::printBoard(game->board);
-
-				if (endGame == EndGameType::CHECKMATE) {
-					cout << "  --> Game ended: " << (game->isWhiteToMove() ? game->blackPlayer->name : game->whitePlayer->name) << " WINS" << endl;
-				} else {
-					cout << "  --> Game ended: DRAW" << (endGame == EndGameType::STALEMATE ? " (stalemate)" : "") << endl;
-				}
-			} else {
-				// TODO introduce logging
-				/*if (EndGameType.CHECKMATE.equals(endGame)) {
-					log.info("Game ended: {} WINS ({} moves in {} msec)", board.isWhiteToMove() ? board.getBlackPlayer().getName() : board.getWhitePlayer().getName(), board.getFullMoves(), board.getWhitePlayer().getGameTime() + board.getBlackPlayer().getGameTime());
-					log.info(board.getMovesHistory().toString());
-					log.info(FENConverter.boardToFEN(board));
-					log.info("\n");
-				} else {
-					log.info("Game ended: DRAW{} ({} moves in {} msec)", EndGameType.STALEMATE.equals(endGame) ? " (stalemate)" : "", board.getFullMoves(), board.getWhitePlayer().getGameTime() + board.getBlackPlayer().getGameTime());
-				}*/
-			}
-
 			if (endGame == EndGameType::CHECKMATE) {
 				statistics->gameEnded(game->isWhiteToMove() ? -1 : 1);
+				logger.log(format("Game ended: {} WINS ({} moves in {} ms)",
+					game->isWhiteToMove() ? "black" : "white", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
+				logger.log(game->printMovesHistory(0));
+				logger.log(FEN::gameToFEN(*game));
 			} else {
 				statistics->gameEnded(0);
+				logger.log(format("Game ended: DRAW{} ({} moves in {} ms)",
+					endGame == EndGameType::STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
+			}
+
+			if (statistics->consoleOutput) {
+				UI::printGame(*game);
+				if (endGame == EndGameType::CHECKMATE) {
+					cout << (game->isWhiteToMove() ? " black" : " white") << " wins" << endl << endl;
+				} else {
+					cout << " draw" << (endGame == EndGameType::STALEMATE ? " (stalemate)" : "") << endl << endl;
+				}
 			}
 
 			return true;
@@ -171,4 +184,11 @@ public:
 		return false;
 	}
 
+	void stop() {
+		running = false;
+		delete game;
+		delete pool;
+		game = nullptr;
+		pool = nullptr;
+	}
 };

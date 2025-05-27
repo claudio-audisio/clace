@@ -2,102 +2,197 @@
 //
 
 #include "clace.h"
-#include "ui/userInterface.h"
-#include "utils/boardUtils.h"
-#include "board/board.h"
 #include "perft/perft.h"
-#include "game/gameRunner.h"
-#include "utils/logger.h"
 #include "uci/uciProcessor.h"
 
 using namespace std;
 
-void manageGame();
-void managePerft();
-string getFenPerft(unsigned int index);
-void printBoards();
 
 int main(int argc, char* argv[]) {
-	Logger& logger = Logger::getInstance();
+	Clace clace(argc == 1);
 
-	if (argc == 1) {
+	auto future = async(launch::async, [&]() {
+		clace.run();
+	});
+
+	future.wait();
+
+	return 0;
+}
+
+Clace::Clace(bool uciMode) {
+	BoardUtils::initAttacks();
+	this->engine = new BF_Engine(2);
+	this->uciMode = uciMode;
+}
+
+Clace::~Clace() {
+	stopGame();
+	delete engine;
+};
+
+void Clace::run() {
+	if (uciMode) {
 		// uci mode
 		logger.log("started application in uci mode");
 		UciProcessor processor;
 		processor.run();
-	} else if (strcmp(argv[1], "console") == 0) {
+	} else {
 		// console mode
 		logger.log("started application in console mode");
-		bool exit = false;
-        UI::clearScreen();
-        UI::printLogo();
+		bool run = true;
+		UI::clearScreen();
+		UI::printLogo();
+		UI::menu();
 
-		while (!exit) {
-			switch (UI::menu()) {
-				case 1: manageGame(); break;
-				case 2: managePerft(); break;
-				case 3: printBoards(); break;
-				default: exit = true; break;
-			}
+		while (run) {
+			run = processCommand(UI::readLine());
 		}
 	}
-	
-	return 0;
 }
 
-void manageGame() {
-	string whiteName;
-	string blackName;
-	unsigned int gamesQuantity = 1;
-	string fenBoard;
-
-	switch (UI::menuGame()) {
-		case 2: whiteName = UI::readName("white"); break;
-		case 3: blackName = UI::readName("black"); break;
-		case 4: whiteName = UI::readName("white");
-			blackName = UI::readName("black"); break;
-		case 5: gamesQuantity = UI::readGamesQuantity(); break;
-		case 6: whiteName = UI::readName("");
-			fenBoard = UI::readBoard(); break;
-		default: break;
+bool Clace::processCommand(const string& command) {
+	if (strcmp(command.c_str(), "new") == 0) {
+		newHumanGame("");
+	} else if (strcmp(command.c_str(), "next") == 0) {
+		manageNextMove();
+	} else if (strncmp(command.c_str(), "load ", 5) == 0) {
+		newHumanGame(command.substr(5));
+	} else if (strncmp(command.c_str(), "cpu ", 4) == 0) {
+		newCpuGame(stoi(command.substr(4)));
+	} else if (strncmp(command.c_str(), "perft ", 6) == 0) {
+		managePerft(stoi(command.substr(6)));
+	} else if (strncmp(command.c_str(), "print ", 6) == 0) {
+		printBoards(stoull(command.substr(6)));
+	} else if (strcmp(command.c_str(), "help") == 0) {
+		UI::menu();
+	} else if (strcmp(command.c_str(), "quit") == 0) {
+		return false;
+	} else {
+		processMove(command);
 	}
 
-	auto statistics = new Statistics(gamesQuantity);
+	return true;
+}
 
-	if (fenBoard.empty()) {
-		for (int i = 0; i < gamesQuantity; i++) {
-			auto runner = new GameRunner(whiteName, blackName, statistics, fenBoard);
-			runner->run();
+void Clace::manageNextMove() const {
+	if (!gameRunner) {
+		UI::printMessage("no game running");
+		return;
+	}
+
+	Game& game = *(gameRunner->game);
+
+	if (game.getCurrentPlayer()->computer) {
+		UI::printMessage("wait your turn");
+		return;
+	}
+
+	vector<Move>& moves = gameRunner->pool->getVector(0);
+	MovesGenerator::generateLegalMoves(game, moves);
+	const Evaluation evaluation = engine->calculateMove(game, moves);
+	cout << endl << " --> " << MoveHelper::toString(evaluation.first) << endl;
+	processMove(MoveHelper::toString(evaluation.first));
+}
+
+
+void Clace::processMove(const string& move) const {
+	if (gameRunner) {
+		if (move.length() == 4 && isValidMove(move)) {
+			gameRunner->setHumanMove(move);
+		} else {
+			UI::printMessage("invalid move");
 		}
 	} else {
-		if (!FEN::isWhiteToMove(fenBoard)) {
-			blackName = whiteName;
-			whiteName = "";
-		}
+		UI::printMessage("no game running");
+	}
+}
 
-		auto runner = new GameRunner(whiteName, blackName, statistics, fenBoard);
-		runner->run();
+bool Clace::isValidMove(const string& move) {
+	return (move.at(0) >= 'a' && move.at(0) <= 'h') &&
+			(move.at(1) >= '1' && move.at(1) <= '8') &&
+			(move.at(2) >= 'a' && move.at(2) <= 'h') &&
+			(move.at(3) >= '1' && move.at(3) <= '8');
+}
+
+void Clace::stopGame() {
+	if (gameRunner != nullptr) {
+		gameRunner->stop();
+		gameFuture.wait();
+		delete gameRunner;
+		delete statistics;
+		gameRunner = nullptr;
+		statistics = nullptr;
+	}
+}
+
+void Clace::newHumanGame(const string& fenGame) {
+	stopGame();
+	statistics = new Statistics(1);
+	gameRunner = fenGame.empty() ? new GameRunner(statistics) : new GameRunner(statistics, HvsC, fenGame);
+	gameFuture = async(launch::async, [&]() {
+		return gameRunner->run();
+	});
+}
+
+void Clace::newCpuGame(int gamesAmount) {
+	stopGame();
+
+	if (gamesAmount > 1) {
+		logger.off();
+	}
+
+	statistics = new Statistics(gamesAmount);
+	vector<GameRunner*> games;
+	vector<future<void>> futures;
+
+	for (int i = 0; i < gamesAmount; i++) {
+		auto game = new GameRunner(statistics, CvsC);
+		games.push_back(game);
+		futures.push_back(async(launch::async, [game]() {
+			return game->run();
+		}));
+	}
+
+	if (gamesAmount > 1) {
+		statistics->waitAllEnds();
+	}
+
+	for (auto& future : futures) {
+		future.wait();
+	}
+
+	for (auto& game : games) {
+		delete game;
 	}
 
 	statistics->print();
+
+	delete statistics;
+	statistics = nullptr;
+
+	if (gamesAmount > 1) {
+		logger.on();
+	}
 }
 
-void printBoards() {
-	string stringBoard;
-	do {
-		stringBoard = UI::readString();
-		const Rawboard board = stoull(stringBoard);
-
-		if (!board) {
-			break;
-		}
-
-		BoardUtils::printBoard(board);
-		cout << BoardUtils::positionsCount(board) << endl;
-	} while (true);
+void Clace::printBoards(Rawboard board) {
+	UI::addLines(1);
+	BoardUtils::printBoard(board);
+	UI::addLines(1);
+	cout << " " << BoardUtils::positionsCount(board) << endl;
+	UI::addLines(1);
 }
 
-void managePerft() {
+void Clace::managePerft(const int depth) {
+	UI::addLines(1);
+	auto perft = new Perft(getFenPerft(1), depth);
+	perft->runBulk();
+	delete perft;
+	UI::addLines(1);
+}
+
+void Clace::managePerftComplete() {
 	const unsigned int type = UI::readPerftType();
     const unsigned int index = UI::readPerftIndex();
 	const unsigned int depth = UI::readDepth();
@@ -120,7 +215,7 @@ void managePerft() {
 	UI::addLines(2);
 }
 
-string getFenPerft(const unsigned int index) {
+string Clace::getFenPerft(const unsigned int index) {
     switch (index) {
         default: return INITIAL_FEN_POSITION;
         case 2: return PERFT_FEN_POSITION_2;

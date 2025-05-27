@@ -22,11 +22,7 @@ public:
 	// bool computer;					51
 
 	static Move getMove(const string& move, const Side side) {
-		if (move.length() != 5) {
-			throw runtime_error("move malformed");
-		}
-
-		return getMove(Positions::coordsToIndex(move.substr(0, 2)), Positions::coordsToIndex(move.substr(3, 5)), side);
+		return getMove(Positions::coordsToIndex(move.substr(0, 2)), Positions::coordsToIndex(move.substr(2, 4)), side);
 	}
 
 	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side) {
@@ -87,7 +83,7 @@ public:
 	}
 
 	static string toString(const Move& move) {
-		return Positions::indexToCoords(getSourcePosition(move)) + "-" + Positions::indexToCoords(getDestinationPosition(move));
+		return Positions::indexToCoords(getSourcePosition(move)) + Positions::indexToCoords(getDestinationPosition(move));
 	}
 
 	inline static void setSourcePosition(Move& move, const Position sourcePosition) {

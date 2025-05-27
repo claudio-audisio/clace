@@ -4,7 +4,6 @@
 #include <algorithm> 
 #include <cctype>
 
-#include "../clace.h"
 #include "../game/game.h"
 #include "../utils/positions.h"
 #include "../utils/pieceHelper.h"

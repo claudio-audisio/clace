@@ -15,12 +15,7 @@ private:
 	ofstream logFile;
 
 	Logger() {
-		string filename = "clace_" + getDate() + ".log";
-		logFile.open(filename, ios::app);
-
-		if (!logFile) {
-			cerr << "Failed to open the log file: " << filename << "\n";
-		}
+		on();
 	}
 
 public:
@@ -36,6 +31,19 @@ public:
 		if (logFile.is_open()) {
 			logFile.close();
 		}
+	}
+
+	void on() {
+		string filename = "clace_" + getDate() + ".log";
+		logFile.open(filename, ios::app);
+
+		if (!logFile) {
+			cerr << "Failed to open the log file: " << filename << "\n";
+		}
+	}
+
+	void off() {
+		logFile.close();
 	}
 
 	void log(const string& message) {

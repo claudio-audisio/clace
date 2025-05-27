@@ -4,6 +4,7 @@
 
 using namespace std;
 
+typedef unsigned char GameType;
 typedef unsigned char Side;
 typedef unsigned char Position;
 typedef unsigned char RawboardIndex;

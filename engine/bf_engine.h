@@ -24,14 +24,14 @@ public:
 	void draw() const {};
 
 	Evaluation calculateMove(Game& game, vector<Move>& moves) {
-		logger.log(format("{} evaluation", game.isWhiteToMove() ? "white" : "black"));
+		logger.log(format("{} evaluation ({})", game.isWhiteToMove() ? "white" : "black", game.fullMoves));
 		auto time = chrono::steady_clock::now();
 		const Evaluation evaluation = calculateMove(game, moves, 0);
 		logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(evaluation.first), evaluation.second, Utils::getElapsedMicros(time)));
 		return evaluation;
 	}
 
-	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) {
+	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) override {
 		Evaluation best = make_pair(0, 0);
 
 		for (Move move : moves) {
@@ -49,7 +49,7 @@ public:
 		}
 
 		if (depth + 1 >= this->depth) {
-			logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), MoveHelper::toString(best.first), best.second));
+			//logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), MoveHelper::toString(best.first), best.second));
 		}
 
 		return best;
