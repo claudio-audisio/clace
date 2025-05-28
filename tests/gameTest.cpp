@@ -182,16 +182,16 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	ApplyMoveTest,
 	::testing::Values(
-		new TestParams2(INITIAL_FEN_POSITION, 48, 40, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2-a3"),
-		new TestParams2(INITIAL_FEN_POSITION, 48, 32, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2-a4"),
-		new TestParams2(CASTLING_FEN_POSITION, 4, 2, "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-c8"),
-		new TestParams2(CASTLING_FEN_POSITION, 4, 6, "r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8-g8"),
-		new TestParams2(CASTLING_FEN_POSITION, 60, 58, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1", false, false, "e1-c1"),
-		new TestParams2(CASTLING_FEN_POSITION, 60, 62, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1-g1"),
-		new TestParams2("8/8/8/8/Pp6/8/8/8 b - a3 0 1", 33, 40, "8/8/8/8/8/p7/8/8 w - - 0 2", true, false, "b4-a3"),
-		new TestParams2("8/P7/8/8/8/8/8/8 w - - 0 1", 8, 0, "Q7/8/8/8/8/8/8/8 b - - 0 1", false, true, "a7-a8"),
-		new TestParams2("1b6/P7/8/8/8/8/8/8 w - - 0 1", 8, 1, "1Q6/8/8/8/8/8/8/8 b - - 0 1", true, true, "a7-b8"),
-		new TestParams2("q7/8/8/8/8/8/8/7Q b - - 0 1", 0, 63, "8/8/8/8/8/8/8/7q w - - 0 2", true, false, "a8-h1")
+		new TestParams2(INITIAL_FEN_POSITION, 48, 40, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2a3"),
+		new TestParams2(INITIAL_FEN_POSITION, 48, 32, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2a4"),
+		new TestParams2(CASTLING_FEN_POSITION, 4, 2, "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8c8"),
+		new TestParams2(CASTLING_FEN_POSITION, 4, 6, "r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8g8"),
+		new TestParams2(CASTLING_FEN_POSITION, 60, 58, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1", false, false, "e1c1"),
+		new TestParams2(CASTLING_FEN_POSITION, 60, 62, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1g1"),
+		new TestParams2("8/8/8/8/Pp6/8/8/8 b - a3 0 1", 33, 40, "8/8/8/8/8/p7/8/8 w - - 0 2", true, false, "b4a3"),
+		new TestParams2("8/P7/8/8/8/8/8/8 w - - 0 1", 8, 0, "Q7/8/8/8/8/8/8/8 b - - 0 1", false, true, "a7a8"),
+		new TestParams2("1b6/P7/8/8/8/8/8/8 w - - 0 1", 8, 1, "1Q6/8/8/8/8/8/8/8 b - - 0 1", true, true, "a7b8"),
+		new TestParams2("q7/8/8/8/8/8/8/7Q b - - 0 1", 0, 63, "8/8/8/8/8/8/8/7q w - - 0 2", true, false, "a8h1")
 	)
 );
 
@@ -235,10 +235,10 @@ INSTANTIATE_TEST_SUITE_P(
 	VerifyChecksTest,
 	::testing::Values(
 		new TestParams3(INITIAL_FEN_POSITION, "", false, false, false),
-		new TestParams3("8/8/8/8/8/8/r7/1r5K w - - 0 1", "b3-b1", true, false, false),
-		new TestParams3("8/8/8/8/8/4n3/r7/1r5K w - - 0 1", "d1-e3", true, true, false),
-		new TestParams3("b7/8/8/8/8/8/r7/1r5K w - - 0 1", "b7-b1", true, false, true),
-		new TestParams3("K7/2p5/1pp5/8/8/8/8/8 w - - 0 1", "b5-b6", false, false, false)
+		new TestParams3("8/8/8/8/8/8/r7/1r5K w - - 0 1", "b3b1", true, false, false),
+		new TestParams3("8/8/8/8/8/4n3/r7/1r5K w - - 0 1", "d1e3", true, true, false),
+		new TestParams3("b7/8/8/8/8/8/r7/1r5K w - - 0 1", "b7b1", true, false, true),
+		new TestParams3("K7/2p5/1pp5/8/8/8/8/8 w - - 0 1", "b5b6", false, false, false)
 	)
 );
 
@@ -352,7 +352,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(GameTest, duplicateTest) {
 	const string fenBoard = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25";
 	Game* game = FEN::fenToNewGame(fenBoard);
-	game->setLastMove(MoveHelper::getMove("b7-a6", BLACK));
+	game->setLastMove(MoveHelper::getMove("b7a6", BLACK));
 	game->verifyChecks();
 
 	Game* newGame = game->duplicate();
@@ -360,7 +360,7 @@ TEST_F(GameTest, duplicateTest) {
 	EXPECT_EQ(FEN::gameToFEN(*newGame), fenBoard);
 	EXPECT_EQ(newGame->movesHistory.size(), 1);
 	GTEST_ASSERT_FALSE(MoveHelper::isWhite(newGame->movesHistory.front()));
-	EXPECT_EQ(MoveHelper::toString(newGame->movesHistory.front()), "b7-a6");
+	EXPECT_EQ(MoveHelper::toString(newGame->movesHistory.front()), "b7a6");
 	EXPECT_EQ(BoardUtils::positionsCount(newGame->checkStatus.allCheckPositions), 25);
 	EXPECT_EQ(newGame->checkStatus.checkPositions.size(), 16);
 	EXPECT_EQ(newGame->checkStatus.xRayPositions.size(), 5);

@@ -251,7 +251,12 @@ public:
 };
 
 
-class GetKingAttacksTest : public ::testing::TestWithParam<TestParams*> {};
+class GetKingAttacksTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+    GetKingAttacksTest() {
+        BoardUtils::initAttacks();
+    }
+};
 
 TEST_P(GetKingAttacksTest, getKingAttacksTest) {
     TestParams* params = GetParam();
@@ -275,7 +280,12 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-class GetKingMovesTest : public ::testing::TestWithParam<TestParams*> {};
+class GetKingMovesTest : public ::testing::TestWithParam<TestParams*> {
+protected:
+    GetKingMovesTest() {
+        BoardUtils::initAttacks();
+    }
+};
 
 TEST_P(GetKingMovesTest, getKingMovesTest) {
     TestParams* params = GetParam();

@@ -10,7 +10,7 @@
 class BF_Engine : public IEngine {
 public:
 	explicit BF_Engine(unsigned int depth) {
-		this->depth = (depth * 2) - 1;
+		this->depth = depth;
 		this->pool = new VectorPool<Move>(this->depth, MAX_MOVES);
 		this->evaluator = new BasicEvaluator();
 	};
@@ -18,84 +18,65 @@ public:
 	unsigned int depth;
 	IEvaluator* evaluator = nullptr;
 	VectorPool<Move>* pool = nullptr;
-	Move moveUnderEvaluation;
 	Logger& logger = Logger::getInstance();
 
 	void draw() const {};
 
-	Evaluation calculateMove(Game& game, vector<Move>& moves) {
-		logger.log(format("{} evaluation ({})", game.isWhiteToMove() ? "white" : "black", game.fullMoves));
+	Evaluation calculateMove(Game& game, vector<Move>& moves) override {
+		logger.log(format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
 		auto time = chrono::steady_clock::now();
-		const Evaluation evaluation = calculateMove(game, moves, 0);
-		logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(evaluation.first), evaluation.second, Utils::getElapsedMicros(time)));
-		return evaluation;
-	}
-
-	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) override {
-		Evaluation best = make_pair(0, 0);
+		Evaluation best = make_pair(0, LOSS_VALUE);
 
 		for (Move move : moves) {
 			game.save();
 			game.applyMove(move);
-			moveUnderEvaluation = move;
-			Evaluation evaluation = evaluate(game, depth + 1);
+			const double value = -negaMax(game, depth - 1);
 
-			if (isBestEvaluation(MoveHelper::getSide(move), evaluation.second, best.second) || best.first == 0) {
+			if (value > best.second) {
 				best.first = move;
-				best.second = evaluation.second;
+				best.second = value;
 			}
 
 			game.rollbackLastMove();
 		}
 
-		if (depth + 1 >= this->depth) {
-			//logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), MoveHelper::toString(best.first), best.second));
-		}
-
+		logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(best.first), best.second, Utils::getElapsedMicros(time)));
 		return best;
 	}
 
-	Evaluation evaluate(Game& game, unsigned int currentDepth) {
+	double negaMax(Game& game, const unsigned int depth) {
 		game.verifyChecks();
-		vector<Move>& moves = pool->getVector(currentDepth - 1);
+		vector<Move>& moves = pool->getVector(depth);
 		MovesGenerator::generateLegalMoves(game, moves);
 		EndGameType endGame = game.checkEndGame(moves.empty());
 
 		if (endGame != EndGameType::NONE) {
-			if (endGame == EndGameType::CHECKMATE) {
-				//cout << "Checkmate on {}" << printMovesHistory() << endl;
-				return game.isWhiteToMove() ? LOSS_EVALUATION : WIN_EVALUATION;
-			} else {
-				// TODO si vero la valutazione e' zero ma la partita e' finita, bisogna considerare il fatto che magari si vorrebbe provare altre strade anche se peggiori
-				// Quando e' patta devo valutare se io o il mio avversario puo' ancora vincerla
-				// Se posso ancora vinverla la patta e' una mezza sconfitta, soprattutto se l'avversario non puo' piu' vicnerla (e viceversa)
-				return DRAW_EVALUATION;
+			return endGame == EndGameType::CHECKMATE ? WIN_VALUE : DRAW_VALUE;
+		}
+
+		if (depth == 0) {
+			const double value = evaluator->evaluate(game);
+			//logger.log(format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
+			return value;
+		}
+
+		double best = LOSS_VALUE;
+
+		for (Move move : moves) {
+			game.save();
+			game.applyMove(move);
+			const double value = -negaMax(game, depth - 1);
+
+			if (value > best) {
+				best = value;
 			}
+
+			game.rollbackLastMove();
 		}
 
-		if (currentDepth >= depth) {
-			double value = evaluator->evaluate(game);
-			//logger.log(format("{} --> {:.2f}", game.printMovesHistory(depth), value));
-			return Evaluation(0, value);
-		}
-
-		return calculateMove(game, moves, currentDepth);
+		//logger.log(format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		return best;
 	}
 
-	void setEvaluator(IEvaluator* evaluator) {
-		this->evaluator = evaluator;
-	}
-
-	bool isOpponent(Game& game) const {
-		return true;	// TODO
-	}
-
-	bool isBestEvaluation(Side side, double evaluation, double bestEvaluation) {
-		if (side == WHITE) {
-			return evaluation > bestEvaluation;
-		}
-
-		return evaluation < bestEvaluation;
-	}
-
+	void setEvaluator(IEvaluator* evaluator) override {}
 };

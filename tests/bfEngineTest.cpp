@@ -5,7 +5,7 @@
 
 using namespace std;
 
-//#define VTUNE_PROFILER
+#define VTUNE_PROFILER
 
 
 class BFEngineTest : public testing::Test {
@@ -24,8 +24,8 @@ TEST_F(BFEngineTest, ConstructorTest) {
 #endif
 	auto engine = new BF_Engine(3);
 
-	EXPECT_EQ(engine->depth, 5);
-	EXPECT_EQ(engine->pool->size, 5);
+	EXPECT_EQ(engine->depth, 3);
+	EXPECT_EQ(engine->pool->size, 3);
 }
 
 TEST_F(BFEngineTest, Depth1Test) {
@@ -35,12 +35,13 @@ TEST_F(BFEngineTest, Depth1Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(1);
+	engine->setEvaluator(new BasicEvaluator());
 
 	auto moves = new vector<Move>();
 	MovesGenerator::generateLegalMoves(game, *moves);
 	Evaluation best = engine->calculateMove(game, *moves);
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2-e4");
+	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth2Test) {
@@ -50,21 +51,55 @@ TEST_F(BFEngineTest, Depth2Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(2);
+	engine->setEvaluator(new BasicEvaluator());
 
 	auto moves = new vector<Move>();
 	MovesGenerator::generateLegalMoves(game, *moves);
 	Evaluation best = engine->calculateMove(game, *moves);
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2-e3");
+	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth3Test) {
-#ifndef VTUNE_PROFILER
+#ifdef VTUNE_PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(3);
+	engine->setEvaluator(new BasicEvaluator());
+
+	auto moves = new vector<Move>();
+	MovesGenerator::generateLegalMoves(game, *moves);
+	Evaluation best = engine->calculateMove(game, *moves);
+
+	EXPECT_EQ(MoveHelper::toString(best.first), "e2e3");
+}
+
+TEST_F(BFEngineTest, Depth4Test) {
+#ifdef VTUNE_PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.init();
+	auto engine = new BF_Engine(4);
+	engine->setEvaluator(new BasicEvaluator());
+
+	auto moves = new vector<Move>();
+	MovesGenerator::generateLegalMoves(game, *moves);
+	Evaluation best = engine->calculateMove(game, *moves);
+
+	EXPECT_EQ(MoveHelper::toString(best.first), "e2e3");
+}
+
+TEST_F(BFEngineTest, Depth5Test) {
+#ifndef VTUNE_PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.init();
+	auto engine = new BF_Engine(5);
+	engine->setEvaluator(new BasicEvaluator());
 	auto moves = new vector<Move>();
 
 	auto begin = chrono::steady_clock::now();
@@ -73,8 +108,8 @@ TEST_F(BFEngineTest, Depth3Test) {
 	Evaluation best = engine->calculateMove(game, *moves);
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
-	// 10747
+	// 107519
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2-e4");
+	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
 }
 

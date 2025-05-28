@@ -2,6 +2,9 @@
 //
 
 #include "clace.h"
+
+#include "engine/ab_engine.h"
+#include "engine/bf_engine.h"
 #include "perft/perft.h"
 #include "uci/uciProcessor.h"
 
@@ -22,7 +25,7 @@ int main(int argc, char* argv[]) {
 
 Clace::Clace(bool uciMode) {
 	BoardUtils::initAttacks();
-	this->engine = new BF_Engine(2);
+	this->engine = new BF_Engine(4);
 	this->uciMode = uciMode;
 }
 
@@ -34,11 +37,13 @@ Clace::~Clace() {
 void Clace::run() {
 	if (uciMode) {
 		// uci mode
+		logger.log("=================================================");
 		logger.log("started application in uci mode");
 		UciProcessor processor;
 		processor.run();
 	} else {
 		// console mode
+		logger.log("=================================================");
 		logger.log("started application in console mode");
 		bool run = true;
 		UI::clearScreen();

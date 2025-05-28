@@ -19,11 +19,11 @@ void CheckStatus::updateAllCheckPositions(const Rawboard newPositions) {
 }
 
 void CheckStatus::addCheckPosition(const Position position, const Rawboard newPositions) {
-    checkPositions[position] = newPositions;
+    checkPositions.emplace(position, newPositions);
 }
 
 void CheckStatus::addXRayPosition(const Position position, const Rawboard newPositions) {
-    xRayPositions[position] = newPositions;
+    checkPositions.emplace(position, newPositions);
 }
 
 void CheckStatus::updateStatus(const Position kingPosition, const Move move) {

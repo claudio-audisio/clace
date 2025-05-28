@@ -30,10 +30,10 @@ public:
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
-			new Player(true, new BF_Engine(1)) :
+			new Player(true, new BF_Engine(2)) :
 			new Player(true);
 
-		blackPlayer = new Player(false, new BF_Engine(2));
+		blackPlayer = new Player(false, new BF_Engine(4));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;

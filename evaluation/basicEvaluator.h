@@ -2,12 +2,19 @@
 
 #include "ievaluator.h"
 #include "../common/constants.h"
-#include "../utils/boardUtils.h"
+#include "../move/move.h"
+
 
 class BasicEvaluator : public IEvaluator {
 public:
 	double evaluate(Game& game) override {
-		return (calculateMaterialScore(game) * MATERIAL_WT) + ((double)calculateMobility(game) * MOBILITY_WT);
+		const double evaluation = (calculateMaterialScore(game) * MATERIAL_WT) + (static_cast<double>(calculateMobility(game)) * MOBILITY_WT);
+
+		if (game.isWhiteToMove()) {
+			return evaluation;
+		}
+
+		return -evaluation;
 	}
 
 	static double calculateMaterialScore(Game& game) {

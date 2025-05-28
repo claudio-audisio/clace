@@ -20,22 +20,12 @@ public:
 
 	IEvaluator* evaluator;
 
-	void draw() const {};
-
 	Evaluation calculateMove(Game& game, vector<Move>& moves) {
 		return make_pair(moves[getRandom(moves.size())], 0);
 	}
 
-	Evaluation calculateMove(Game& game, vector<Move>& moves, int depth) {
-		return calculateMove(game, moves);
-	}
-
 	void setEvaluator(IEvaluator* evaluator) {
 		this->evaluator = evaluator;
-	};
-
-	bool isOpponent(Game& board) const {
-		return true;
 	};
 
 	static unsigned int getRandom(unsigned int upper) {

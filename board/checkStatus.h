@@ -20,6 +20,7 @@ public:
     void set(const CheckStatus& checkStatus);
 
     Rawboard allCheckPositions;                          // all positions under check
+	// TODO cambiare queste due mappe in due array di Rawboard
     unordered_map<Position, Rawboard> checkPositions;    // positions under check by piece position
     unordered_map<Position, Rawboard> xRayPositions;     // xray positions under check by piece position
     bool check;
