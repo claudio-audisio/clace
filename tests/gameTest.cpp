@@ -213,7 +213,12 @@ public:
 	bool doubleCheck;
 };
 
-class VerifyChecksTest : public ::testing::TestWithParam<TestParams3*> {};
+class VerifyChecksTest : public ::testing::TestWithParam<TestParams3*> {
+protected:
+	VerifyChecksTest() {
+		BoardUtils::initAttacks();
+	}
+};
 
 TEST_P(VerifyChecksTest, verifyChecksTest) {
 	TestParams3* testParams = GetParam();
@@ -362,12 +367,24 @@ TEST_F(GameTest, duplicateTest) {
 	GTEST_ASSERT_FALSE(MoveHelper::isWhite(newGame->movesHistory.front()));
 	EXPECT_EQ(MoveHelper::toString(newGame->movesHistory.front()), "b7a6");
 	EXPECT_EQ(BoardUtils::positionsCount(newGame->checkStatus.allCheckPositions), 25);
-	EXPECT_EQ(newGame->checkStatus.checkPositions.size(), 16);
-	EXPECT_EQ(newGame->checkStatus.xRayPositions.size(), 5);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.check);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.discoveryCheck);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.doubleCheck);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.checkmate);
+
+	int checkPositionsCount = 0;
+	int xRayPositionsCount = 0;
+	for (int i = 0; i < 64; ++i) {
+		if (newGame->checkStatus.checkPositions[i] != 0) {
+			++checkPositionsCount;
+		}
+		if (newGame->checkStatus.xRayPositions[i] != 0) {
+			++xRayPositionsCount;
+		}
+	}
+
+	EXPECT_EQ(checkPositionsCount, 14);
+	EXPECT_EQ(xRayPositionsCount, 5);
 }
 
 

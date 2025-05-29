@@ -33,7 +33,7 @@ public:
 			new Player(true, new BF_Engine(2)) :
 			new Player(true);
 
-		blackPlayer = new Player(false, new BF_Engine(4));
+		blackPlayer = new Player(false, new BF_Engine(3));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;

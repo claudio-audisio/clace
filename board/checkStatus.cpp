@@ -4,10 +4,7 @@
 
 
 CheckStatus::CheckStatus() {
-	check = discoveryCheck = doubleCheck = checkmate = false;
-	allCheckPositions = 0;
-    checkPositions.reserve(64);
-    xRayPositions.reserve(64);
+	reset();
 }
 
 CheckStatus::~CheckStatus() {
@@ -19,11 +16,11 @@ void CheckStatus::updateAllCheckPositions(const Rawboard newPositions) {
 }
 
 void CheckStatus::addCheckPosition(const Position position, const Rawboard newPositions) {
-    checkPositions.emplace(position, newPositions);
+    checkPositions[position] = newPositions;
 }
 
 void CheckStatus::addXRayPosition(const Position position, const Rawboard newPositions) {
-    checkPositions.emplace(position, newPositions);
+    xRayPositions[position] = newPositions;
 }
 
 void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
@@ -38,16 +35,18 @@ void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
 }
 
 bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move& lastMove) const {
+    const Position destination = MoveHelper::getDestinationPosition(lastMove);
+
     if (MoveHelper::isEnPassant(lastMove) && MoveHelper::isCaptured(lastMove)) {
-        for (const pair<const Position, Rawboard>& checkPos : checkPositions) {
-            if (checkPos.first != MoveHelper::getDestinationPosition(lastMove) && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
+        for (int pos = 0; pos < 64; pos++) {
+            if (pos != destination && BoardUtils::isUnderCheck(checkPositions[pos], kingPosition)) {
                 return true;
             }
         }
     }
     else {
-        for (const pair<const Position, Rawboard>& checkPos : xRayPositions) {
-            if (checkPos.first != MoveHelper::getDestinationPosition(lastMove) && BoardUtils::isUnderCheck(checkPos.second, kingPosition)) {
+        for (int pos = 0; pos < 64; pos++) {
+            if (pos != destination && BoardUtils::isUnderCheck(xRayPositions[pos], kingPosition)) {
                 return true;
             }
         }
@@ -72,8 +71,11 @@ void CheckStatus::adjustChecks() {
 void CheckStatus::reset() {
     check = discoveryCheck = doubleCheck = checkmate = false;
     allCheckPositions = 0;
-    checkPositions.clear();
-    xRayPositions.clear();
+
+    for (int i = 0; i < 64; i++) {
+        checkPositions[i] = 0;
+        xRayPositions[i] = 0;
+    }
 }
 
 void CheckStatus::set(const CheckStatus& checkStatus) {
@@ -83,6 +85,9 @@ void CheckStatus::set(const CheckStatus& checkStatus) {
     doubleCheck = checkStatus.doubleCheck;
     checkmate = checkStatus.checkmate;
     allCheckPositions = checkStatus.allCheckPositions;
-    checkPositions = checkStatus.checkPositions;
-    xRayPositions = checkStatus.xRayPositions;
+
+    for (int i = 0; i < 64; i++) {
+        checkPositions[i] = checkStatus.checkPositions[i];
+        xRayPositions[i] = checkStatus.xRayPositions[i];
+    }
 }

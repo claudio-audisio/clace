@@ -69,8 +69,8 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams("", true, NO_POS, NO_POS),
         new TestParams("dasfdfs", true, NO_POS, NO_POS),
         new TestParams("dasfd", true, NO_POS, NO_POS),
-        new TestParams("a1-b1", true, 56, 57),
-        new TestParams("e3-h6", false, 44, 23)
+        new TestParams("a1b1", true, 56, 57),
+        new TestParams("e3h6", false, 44, 23)
     )
 );
 

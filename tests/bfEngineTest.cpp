@@ -108,7 +108,7 @@ TEST_F(BFEngineTest, Depth5Test) {
 	Evaluation best = engine->calculateMove(game, *moves);
 
 	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
-	// 107519
+	// 8676
 
 	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
 }
