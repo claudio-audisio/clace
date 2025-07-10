@@ -25,12 +25,12 @@ void CheckStatus::addXRayPosition(const Position position, const Rawboard newPos
 
 void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
     if (move) {
-        check = BoardUtils::isUnderCheck(checkPositions[MoveHelper::getDestinationPosition(move)], kingPosition);
+        check = isUnderCheck(checkPositions[MoveHelper::getDestinationPosition(move)], kingPosition);
         discoveryCheck = isDiscoveryCheck(kingPosition, move);
         adjustChecks();
     }
     else {
-        check = BoardUtils::isUnderCheck(allCheckPositions, kingPosition);
+        check = isUnderCheck(allCheckPositions, kingPosition);
     }
 }
 
@@ -39,14 +39,14 @@ bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move& last
 
     if (MoveHelper::isEnPassant(lastMove) && MoveHelper::isCaptured(lastMove)) {
         for (int pos = 0; pos < 64; pos++) {
-            if (pos != destination && BoardUtils::isUnderCheck(checkPositions[pos], kingPosition)) {
+            if (pos != destination && isUnderCheck(checkPositions[pos], kingPosition)) {
                 return true;
             }
         }
     }
     else {
         for (int pos = 0; pos < 64; pos++) {
-            if (pos != destination && BoardUtils::isUnderCheck(xRayPositions[pos], kingPosition)) {
+            if (pos != destination && isUnderCheck(xRayPositions[pos], kingPosition)) {
                 return true;
             }
         }

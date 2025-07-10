@@ -145,7 +145,7 @@ bool Game::checkControl(const Move& move) {
 	const Rawboard checkBoard = board.getAttacks(BLACK - side);
 	const Position kingPosition = board.getKingPosition(side);
 
-	if (BoardUtils::isUnderCheck(checkBoard, kingPosition)) {
+	if (isUnderCheck(checkBoard, kingPosition)) {
 		return false;
 	}
 
@@ -154,15 +154,15 @@ bool Game::checkControl(const Move& move) {
 	if (MoveHelper::isCastling(move)) {
 		if (side) {
 			switch (MoveHelper::getDestinationPosition(move)) {
-				case 2: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 3); break;
-				case 6: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 4) || BoardUtils::isUnderCheck(checkBoard, 5); break;
+				case 2: castlingNotValid = isUnderCheck(checkBoard, 4) || isUnderCheck(checkBoard, 3); break;
+				case 6: castlingNotValid = isUnderCheck(checkBoard, 4) || isUnderCheck(checkBoard, 5); break;
 				default: break;
 			}
 		}
 		else {
 			switch (MoveHelper::getDestinationPosition(move)) {
-				case 58: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 59); break;
-				case 62: castlingNotValid = BoardUtils::isUnderCheck(checkBoard, 60) || BoardUtils::isUnderCheck(checkBoard, 61); break;
+				case 58: castlingNotValid = isUnderCheck(checkBoard, 60) || isUnderCheck(checkBoard, 59); break;
+				case 62: castlingNotValid = isUnderCheck(checkBoard, 60) || isUnderCheck(checkBoard, 61); break;
 				default: break;
 			}
 		}
@@ -199,7 +199,7 @@ void Game::completePawnPromotion(const Move& move) {
 }
 
 void Game::changeTurn() {
-	sideToMove = BoardUtils::opposite(sideToMove);
+	sideToMove = opposite(sideToMove);
 }
 
 Side Game::getSide(Position position) const {
@@ -276,27 +276,27 @@ string Game::printCastlingInfo() const {
 
 string Game::getCapturedList(const Side side) {
 	string captured;
-	for (int i = 0; i < 1 - BoardUtils::positionsCount(board.pieceBoards[WQueen + side]); ++i) {
+	for (int i = 0; i < 1 - positionsCount(board.pieceBoards[WQueen + side]); ++i) {
 		captured += PieceHelper::getPieceCode(WQueen + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WRook + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WRook + side]); ++i) {
 		captured += PieceHelper::getPieceCode(WRook + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WBishop + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WBishop + side]); ++i) {
 		captured += PieceHelper::getPieceCode(WBishop + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - BoardUtils::positionsCount(board.pieceBoards[WKnight + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WKnight + side]); ++i) {
 		captured += PieceHelper::getPieceCode(WKnight + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 8 - BoardUtils::positionsCount(board.pieceBoards[WPawn + side]); ++i) {
+	for (int i = 0; i < 8 - positionsCount(board.pieceBoards[WPawn + side]); ++i) {
 		captured += PieceHelper::getPieceCode(WPawn + side);
 		captured.append(" ");
 	}
@@ -350,7 +350,7 @@ int Game::getAllDestinationQty(const Side side) {
 
 	while(pieces) {
 		const Rawboard destinations = board.getDestinationPositions(Utils::getFirstPos(pieces));
-		count += BoardUtils::positionsCount(destinations);
+		count += positionsCount(destinations);
 		pieces &= (pieces - 1);
 	}
 

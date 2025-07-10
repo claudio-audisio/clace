@@ -11,7 +11,7 @@ using namespace std;
 class MoveTest : public testing::Test {
 protected:
 	MoveTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 	~MoveTest() {
 

@@ -2,8 +2,8 @@
 
 #include "../perft/perft.h"
 #include "../utils/positions.h"
+#include "../common/defines.h"
 
-//#define VTUNE_PROFILER
 
 #ifdef VTUNE_PROFILER
 	#define DEPTH 6
@@ -14,7 +14,7 @@
 class PerftTest : public testing::Test {
 protected:
 	PerftTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 
     void checkBulkPerftResult(const unsLL nodes, const unsigned int depth, const unsigned int currentDepth, const Result& result) {

@@ -1,11 +1,29 @@
 GENERALE
 
+    - Ottimizzare uso della cache
+        - Per esempio in perft 6 viene usata il 73% delle volte ma
+            - la chiave della mappa fa schifo (usare long)
+            - vedere se la mappa e' quella giusta
+            - introdurne l'uso anche nei motori
+                - in questo caso va mantenuta smilza (cancellare le mosse non piu' possibili)
+
+
+
+
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
 
     - Completare test unita'
 
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
-        - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
+        - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)\
+            - generateLegalMoves
+                - generatePseudoLegalMoves
+                    - getDestinationPositions
+                - isValid
+                    - simulateMove
+                    - checkControl
+                        - getAttacks
+                    - undoSimulateMove
 
 VALUTAZIONE
 
@@ -22,6 +40,7 @@ VALUTAZIONE
                 - A questo proposito ho implementato il calcolo della fase a seconda dei pezzi rimasti e la utilizzo per pesare
                 la valutazione tra medio gioco e gioco finale
 
- SEARCH
+SEARCH
 
     - Iniziato ab_engine con motore che fa search alpha-beta
+

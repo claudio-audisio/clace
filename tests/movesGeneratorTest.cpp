@@ -12,7 +12,7 @@ using namespace std;
 class MovesGeneratorTest : public testing::Test {
 protected:
 	MovesGeneratorTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 	~MovesGeneratorTest() {
 
@@ -49,7 +49,7 @@ public:
 class GetLegalMovesTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetLegalMovesTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 };
 

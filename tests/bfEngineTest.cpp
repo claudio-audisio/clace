@@ -2,16 +2,15 @@
 
 #include "../engine/bf_engine.h"
 #include "../ui/userInterface.h"
+#include "../common/defines.h"
 
 using namespace std;
-
-#define VTUNE_PROFILER
 
 
 class BFEngineTest : public testing::Test {
 protected:
 	BFEngineTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 	~BFEngineTest() {
 
@@ -106,9 +105,6 @@ TEST_F(BFEngineTest, Depth5Test) {
 
 	MovesGenerator::generateLegalMoves(game, *moves);
 	Evaluation best = engine->calculateMove(game, *moves);
-
-	cout << "time: " << Utils::getElapsedMillis(begin) << endl;
-	// 8676
 
 	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
 }

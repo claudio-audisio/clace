@@ -3,8 +3,8 @@
 #include "perft.h"
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
+#include "../common/defines.h"
 
-//#define USE_CACHE
 
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {
@@ -13,7 +13,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
     this->pool = new VectorPool<Move>(depth + 1, MAX_MOVES);
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
     this->cache = new MovesCache(0);
 #endif
 }
@@ -22,7 +22,7 @@ Perft::~Perft() {
 	delete this->game;
     delete this->result;
     delete this->pool;
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
 	delete this->cache;
 #endif
 }
@@ -33,7 +33,7 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
     cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
 #endif
     return result;
@@ -42,7 +42,7 @@ Result* Perft::runBulk() {
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth - 1);
 
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
 	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
         MovesGenerator::generateLegalMoves(*game, moves);
@@ -85,7 +85,7 @@ Result* Perft::run(const bool consoleMode) {
     runPerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
     cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
 #endif
     return result;
@@ -94,7 +94,7 @@ Result* Perft::run(const bool consoleMode) {
 void Perft::runPerft(const unsigned int currentDepth) {
     vector<Move>& moves = pool->getVector(currentDepth);
 
-#ifdef USE_CACHE
+#ifdef PERFT_USE_CACHE
 	const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves)) {
         MovesGenerator::generateLegalMoves(*game, moves);

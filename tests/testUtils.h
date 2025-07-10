@@ -4,12 +4,29 @@
 #include "../utils/boardUtils.h"
 
 template <typename... SetOfPosition>
+bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
+	for (Position positionToCheck : {positions...}) {
+		bool found = false;
+		for (Position position : listOfPositions) {
+			if (position == positionToCheck) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+	}
+	return true;
+}
+
+template <typename... SetOfPosition>
 static bool checkBoard(Rawboard board, SetOfPosition... expectedPositions) {
 	Rawboard bitPositions = 0;
 
 	for (Position position : {expectedPositions...}) {
 		if (position != NO_POS) {
-			bitPositions |= BoardUtils::posInd(position);
+			bitPositions |= posInd(position);
 		}
 	}
 
@@ -21,7 +38,7 @@ static bool checkBoard(Rawboard board, list<Position> expectedPositions) {
 
 	for (Position position : expectedPositions) {
 		if (position != NO_POS) {
-			bitPositions |= BoardUtils::posInd(position);
+			bitPositions |= posInd(position);
 		}
 	}
 

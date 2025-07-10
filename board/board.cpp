@@ -20,8 +20,9 @@ void Board::reset() {
 
 	castlingInfo = 0;
 	enPassantPosition = NO_POS;
-
+#ifdef BOARD_USE_PRE_CALCULATED
 	resetCalculated();
+#endif
 }
 
 bool Board::equals(const Board& board) {
@@ -52,12 +53,14 @@ void Board::set(const Board& board) {
 	castlingInfo = board.castlingInfo;
 	enPassantPosition = board.enPassantPosition;
 
+#ifdef BOARD_USE_PRE_CALCULATED
 	resetCalculated();
+#endif
 }
 
-bool Board::isUnderCheck(const Position position, const Side side) {
-    return BoardUtils::isUnderCheck(getAttacks(BLACK - side), position);
-}
+/*bool Board::isUnderCheck(const Position position, const Side side) {
+    return isUnderCheck(getAttacks(BLACK - side), position);
+}*/
 
 Rawboard Board::getPawnMoves(const Side side) {
     Rawboard attacks = 0;
@@ -168,7 +171,7 @@ Rawboard Board::getKingCastling(const Position position, const Side side) const 
 }
 
 
-/*Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard oppositeBoard) const {
+Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard occupiedBoard) const {
     Rawboard positions = 0;
     Rawboard newPos = position;
 
@@ -177,7 +180,7 @@ Rawboard Board::getKingCastling(const Position position, const Side side) const 
         const Rawboard emptyPos = attack & EMPTY;
 
         if (!emptyPos) {
-            positions |= attack & oppositeBoard;
+            positions |= attack & occupiedBoard;
             break;
         }
 
@@ -186,4 +189,4 @@ Rawboard Board::getKingCastling(const Position position, const Side side) const 
     }
 
     return positions;
-}*/
+}

@@ -13,7 +13,7 @@ using namespace std;
 class GameTest : public testing::Test {
 protected:
 	GameTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 	~GameTest() {
 
@@ -216,7 +216,7 @@ public:
 class VerifyChecksTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
 	VerifyChecksTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 };
 
@@ -265,7 +265,7 @@ TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameType>> {
 protected:
 	CheckEndGameTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 };
 
@@ -311,7 +311,7 @@ public:
 class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {
 protected:
 	CheckControlTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 };
 
@@ -319,7 +319,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	TestParams4* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenBoard);
 	Side side = game->getSide(params->kingPosition);
-	game->sideToMove = BoardUtils::opposite(side);
+	game->sideToMove = opposite(side);
 	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
 	Move move = MoveHelper::getMove(sourcePosition, params->kingPosition, side, game->board.getPiece(params->kingPosition), game->board.enPassantPosition, game->isComputerToMove());
 
@@ -366,7 +366,7 @@ TEST_F(GameTest, duplicateTest) {
 	EXPECT_EQ(newGame->movesHistory.size(), 1);
 	GTEST_ASSERT_FALSE(MoveHelper::isWhite(newGame->movesHistory.front()));
 	EXPECT_EQ(MoveHelper::toString(newGame->movesHistory.front()), "b7a6");
-	EXPECT_EQ(BoardUtils::positionsCount(newGame->checkStatus.allCheckPositions), 25);
+	EXPECT_EQ(positionsCount(newGame->checkStatus.allCheckPositions), 25);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.check);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.discoveryCheck);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.doubleCheck);

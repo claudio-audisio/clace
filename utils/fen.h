@@ -47,7 +47,6 @@ public:
         return fenBoard;
     }
 
-    // TODO scrivere test per FENKey
     static string gameToFENKey(Game& game) {
         string fenKey;
         fenKey.append(chessBoardToFENKey(game.board));
@@ -174,18 +173,16 @@ private:
             }
             else {
                 if (empty > 0) {
-                    fenKey.append(EMPTY_FEN[empty]);
+                    fenKey.append(to_string(empty));
                     empty = 0;
                 }
                 fenKey.append(PIECE_TO_FEN[piece]);
             }
+        }
 
-            if ((i + 1) % 8 == 0) {
-                if (empty > 0) {
-                    fenKey.append(EMPTY_FEN[empty]);
-                    empty = 0;
-                }
-            }
+        if (empty > 0) {
+            fenKey.append(to_string(empty));
+            empty = 0;
         }
 
         return fenKey;

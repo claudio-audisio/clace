@@ -304,7 +304,7 @@ public:
 class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
 	IsOnXRayTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 };
 

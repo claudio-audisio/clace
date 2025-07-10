@@ -31,15 +31,16 @@ add_executable (clace
 	"utils/fen.h" "utils/positions.h" "utils/pieceHelper.h"
   	"utils/boardUtils.h" "engine/r_engine.h" "utils/utils.h"
 	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
-	"move/movesCache.h" "common/bitwise.h"
-	utils/boardUtils.cpp
+	"move/movesCache.h" "move/movesCacheNew.h" "common/bitwise.h"
 		game/gameRunner.h
 		engine/bf_engine.h
 		engine/ab_engine.h
         uci/uciProcessor.h
 		utils/logger.h
 		uci/movesProcessor.h
-		evaluation/phase.h)
+		evaluation/phase.h
+		board/attackBoards.h
+		common/defines.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -51,15 +52,16 @@ add_library(claceLib
 	"utils/fen.h" "utils/positions.h" "utils/pieceHelper.h"
   	"utils/boardUtils.h" "engine/r_engine.h" "utils/utils.h"
 	"game/statistics.h" "game/statistics.cpp" "move/movesGenerator.h" "perft/perft.h" "perft/result.h" "perft/perft.cpp" "perft/result.cpp"
-	"move/movesCache.h" "common/bitwise.h"
-	utils/boardUtils.cpp
+	"move/movesCache.h" "move/movesCacheNew.h" "common/bitwise.h"
 		game/gameRunner.h
 		engine/bf_engine.h
 		engine/ab_engine.h
         uci/uciProcessor.h
 		utils/logger.h
 		uci/movesProcessor.h
-		evaluation/phase.h)
+		evaluation/phase.h
+		board/attackBoards.h
+		common/defines.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -154,6 +156,11 @@ add_executable(
 add_executable(
 	movesCacheTest
 	"tests/movesCacheTest.cpp"
+)
+
+add_executable(
+	movesCacheNewTest
+	"tests/movesCacheNewTest.cpp"
 )
 
 add_executable(
@@ -257,6 +264,12 @@ target_link_libraries(
 )
 
 target_link_libraries(
+	movesCacheNewTest
+	GTest::gtest_main
+	claceLib
+)
+
+target_link_libraries(
 	evaluationTest
 	GTest::gtest_main
 	claceLib
@@ -284,5 +297,6 @@ gtest_discover_tests(movesGeneratorTest)
 gtest_discover_tests(positionsTest)
 gtest_discover_tests(perftTest)
 gtest_discover_tests(movesCacheTest)
+gtest_discover_tests(movesCacheNewTest)
 gtest_discover_tests(evaluationTest)
 gtest_discover_tests(bfEngineTest)

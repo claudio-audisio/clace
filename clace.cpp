@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 }
 
 Clace::Clace(bool uciMode) {
-	BoardUtils::initAttacks();
+	initAttacks();
 	this->engine = new BF_Engine(4);
 	this->uciMode = uciMode;
 }
@@ -183,9 +183,9 @@ void Clace::newCpuGame(int gamesAmount) {
 
 void Clace::printBoards(Rawboard board) {
 	UI::addLines(1);
-	BoardUtils::printBoard(board);
+	printBoard(board);
 	UI::addLines(1);
-	cout << " " << BoardUtils::positionsCount(board) << endl;
+	cout << " " << positionsCount(board) << endl;
 	UI::addLines(1);
 }
 

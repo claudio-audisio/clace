@@ -67,77 +67,77 @@ TEST(bitwiseTest, raysTest) {
 }
 
 TEST(bitwiseTest, oneStepTest) {
-	GTEST_ASSERT_TRUE(checkBoardNoPos(northOne(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoard(eastOne(BoardUtils::posInd(0)), 1));
-	GTEST_ASSERT_TRUE(checkBoard(soEastOne(BoardUtils::posInd(0)), 9));
-	GTEST_ASSERT_TRUE(checkBoard(southOne(BoardUtils::posInd(0)), 8));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(westOne(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(BoardUtils::posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(northOne(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoard(eastOne(posInd(0)), 1));
+	GTEST_ASSERT_TRUE(checkBoard(soEastOne(posInd(0)), 9));
+	GTEST_ASSERT_TRUE(checkBoard(southOne(posInd(0)), 8));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(westOne(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(posInd(0))));
 
-	GTEST_ASSERT_TRUE(checkBoardNoPos(northOne(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(eastOne(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoard(southOne(BoardUtils::posInd(7)), 15));
-	GTEST_ASSERT_TRUE(checkBoard(soWestOne(BoardUtils::posInd(7)), 14));
-	GTEST_ASSERT_TRUE(checkBoard(westOne(BoardUtils::posInd(7)), 6));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(BoardUtils::posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(northOne(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(eastOne(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoard(southOne(posInd(7)), 15));
+	GTEST_ASSERT_TRUE(checkBoard(soWestOne(posInd(7)), 14));
+	GTEST_ASSERT_TRUE(checkBoard(westOne(posInd(7)), 6));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(posInd(7))));
 
-	GTEST_ASSERT_TRUE(checkBoard(northOne(BoardUtils::posInd(56)), 48));
-	GTEST_ASSERT_TRUE(checkBoard(noEastOne(BoardUtils::posInd(56)), 49));
-	GTEST_ASSERT_TRUE(checkBoard(eastOne(BoardUtils::posInd(56)), 57));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(southOne(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(westOne(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(BoardUtils::posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoard(northOne(posInd(56)), 48));
+	GTEST_ASSERT_TRUE(checkBoard(noEastOne(posInd(56)), 49));
+	GTEST_ASSERT_TRUE(checkBoard(eastOne(posInd(56)), 57));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(southOne(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(westOne(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWestOne(posInd(56))));
 
-	GTEST_ASSERT_TRUE(checkBoard(northOne(BoardUtils::posInd(63)), 55));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(eastOne(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(southOne(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoard(westOne(BoardUtils::posInd(63)), 62));
-	GTEST_ASSERT_TRUE(checkBoard(noWestOne(BoardUtils::posInd(63)), 54));
+	GTEST_ASSERT_TRUE(checkBoard(northOne(posInd(63)), 55));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(eastOne(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEastOne(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(southOne(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoard(westOne(posInd(63)), 62));
+	GTEST_ASSERT_TRUE(checkBoard(noWestOne(posInd(63)), 54));
 }
 
 TEST(bitwiseTest, knightStepTest) {
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoard(soEaEa(BoardUtils::posInd(0)), 10));
-	GTEST_ASSERT_TRUE(checkBoard(soSoEa(BoardUtils::posInd(0)), 17));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(BoardUtils::posInd(0))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(BoardUtils::posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoard(soEaEa(posInd(0)), 10));
+	GTEST_ASSERT_TRUE(checkBoard(soSoEa(posInd(0)), 17));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(posInd(0))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(posInd(0))));
 
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(BoardUtils::posInd(7))));
-	GTEST_ASSERT_TRUE(checkBoard(soWeWe(BoardUtils::posInd(7)), 13));
-	GTEST_ASSERT_TRUE(checkBoard(soSoWe(BoardUtils::posInd(7)), 22));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(posInd(7))));
+	GTEST_ASSERT_TRUE(checkBoard(soWeWe(posInd(7)), 13));
+	GTEST_ASSERT_TRUE(checkBoard(soSoWe(posInd(7)), 22));
 
-	GTEST_ASSERT_TRUE(checkBoard(noNoEa(BoardUtils::posInd(56)), 41));
-	GTEST_ASSERT_TRUE(checkBoard(noEaEa(BoardUtils::posInd(56)), 50));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(BoardUtils::posInd(56))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(BoardUtils::posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoard(noNoEa(posInd(56)), 41));
+	GTEST_ASSERT_TRUE(checkBoard(noEaEa(posInd(56)), 50));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoWe(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noWeWe(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(posInd(56))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(posInd(56))));
 
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoard(noNoWe(BoardUtils::posInd(63)), 46));
-	GTEST_ASSERT_TRUE(checkBoard(noWeWe(BoardUtils::posInd(63)), 53));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(BoardUtils::posInd(63))));
-	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(BoardUtils::posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soEaEa(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoEa(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoard(noNoWe(posInd(63)), 46));
+	GTEST_ASSERT_TRUE(checkBoard(noWeWe(posInd(63)), 53));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(posInd(63))));
+	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(posInd(63))));
 }

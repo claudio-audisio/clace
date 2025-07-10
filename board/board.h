@@ -5,16 +5,16 @@
 
 #include "../common/types.h"
 #include "../common/constants.h"
-//#include "../common/bitwise.h"
+#include "../common/bitwise.h"
 #include "piece.h"
 #include "../utils/utils.h"
 #include "../utils/pieceHelper.h"
+#include "attackBoards.h"
+#include "../common/defines.h"
+
 
 using namespace std;
 
-extern Rawboard rayAttacks[8][64];
-extern Rawboard knightAttacks[64];
-extern Rawboard kingAttacks[64];
 
 class Board {
 public:
@@ -30,6 +30,8 @@ public:
 	Rawboard _PIECES[2];
 
 	inline Rawboard PIECES(const Side side) {
+		// TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
+#ifdef BOARD_USE_PRE_CALCULATED
 		if (!_PIECES[side]) {
 			_PIECES[side] = pieceBoards[WPawn + side] |
 				   pieceBoards[WBishop + side] |
@@ -40,17 +42,19 @@ public:
 		}
 
 		return _PIECES[side];
-
+#else
 		// Usare per test di performance sui metodi della board
-		/*return pieceBoards[WPawn + side] |
+		return pieceBoards[WPawn + side] |
 			   pieceBoards[WBishop + side] |
 			   pieceBoards[WQueen + side] |
 			   pieceBoards[WKnight + side] |
 			   pieceBoards[WKing + side] |
-			   pieceBoards[WRook + side];*/
+			   pieceBoards[WRook + side];
+#endif
 	}
 
 	inline Rawboard OPP_PIECES(const Side side) {
+#ifdef BOARD_USE_PRE_CALCULATED
 		if (!_OPP_PIECES[side]) {
 			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
 					pieceBoards[BBishop - side] |
@@ -61,16 +65,18 @@ public:
 		}
 
 		return _OPP_PIECES[side];
-
+#else
 		// Usare per test di performance sui metodi della board
-		/*return pieceBoards[BPawn - side] |
+		return pieceBoards[BPawn - side] |
 			   pieceBoards[BBishop - side] |
 			   pieceBoards[BQueen - side] |
 			   pieceBoards[BKnight - side] |
 			   pieceBoards[BKing - side] |
-			   pieceBoards[BRook - side];*/
+			   pieceBoards[BRook - side];
+#endif
 	}
 
+#ifdef BOARD_USE_PRE_CALCULATED
 	void resetCalculated() {
 		resetCalculated(WHITE);
 		resetCalculated(BLACK);
@@ -80,10 +86,12 @@ public:
 		_PIECES[side] = 0;
 		_OPP_PIECES[side] = 0;
 	}
+#endif
 
     void reset();
 	bool equals(const Board& board);
 	void set(const Board& board);
+	void toSpaces(list<Position>& spaces);
 
 	int getPieceCount(const Piece piece) const {
 		return popcount(pieceBoards[piece]);
@@ -147,7 +155,9 @@ public:
 		pieceBoards[oldPiece] &= ~posIndex;
 		pieceBoards[piece] |= posIndex;
 		piecePositions[position] = piece;
+#ifdef BOARD_USE_PRE_CALCULATED
 		resetCalculated();
+#endif
 		return oldPiece;
 	}
 
@@ -171,7 +181,9 @@ public:
 	inline Piece move(const Position source, const Position destination, Piece piece, const bool isCastling) {
 		if (isCastling) {
 			castlingMove(source, destination);
+#ifdef BOARD_USE_PRE_CALCULATED
 			resetCalculated();
+#endif
 			return Empty;
 		}
 
@@ -299,7 +311,7 @@ public:
 		return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 	}
 
-	bool isUnderCheck(Position position, Side side);
+	//bool isUnderCheck(Position position, Side side);
 
 	Rawboard getPawnMoves(Side side);
     Rawboard getPawnMoves(Position position, Side side);
@@ -312,61 +324,92 @@ public:
 	Rawboard getKingCastling(Side side) const;
 	Rawboard getKingCastling(Position position, Side side) const;
 
-    //Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard oppositeBoard) const;
-
-	inline static Rawboard posInd(const Position position) {
-		return 1LL << position;
-	}
+    Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard occupiedBoard) const;
 
 	// rays
 	inline Rawboard noWestAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(noWestOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, noWestRay, position);
+#else
 		return getPositiveRayAttacks(occupied, NoWest, position);
+#endif
 	}
 
 	inline Rawboard northAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(northOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, northRay, position);
+#else
 		return getPositiveRayAttacks(occupied, North, position);
+#endif
 	}
 
 	inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(noEastOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, noEastRay, position);
+#else
 		return getPositiveRayAttacks(occupied, NoEast, position);
+#endif
 	}
 
 	inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(eastOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, eastRay, position);
+#else
 		return getNegativeRayAttacks(occupied, East, position);
+#endif
 	}
 
 	inline Rawboard soEastAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(soEastOne, position, occupied);
+		return getPositiveRayAttacks(occupied, soEastRay, position);
+#else
 		return getNegativeRayAttacks(occupied, SoEast, position);
+#endif
 	}
 
 	inline Rawboard southAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(southOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, southRay, position);
+#else
 		return getNegativeRayAttacks(occupied, South, position);
+#endif
 	}
 
 	inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(soWestOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, soWestRay, position);
+#else
 		return getNegativeRayAttacks(occupied, SoWest, position);
+#endif
 	}
 
 	inline Rawboard westAttack(const Rawboard occupied, const Position position) {
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+		return slidingAttack(westOne, position, occupied);
+		//return getPositiveRayAttacks(occupied, westRay, position);
+#else
 		return getPositiveRayAttacks(occupied, West, position);
+#endif
 	}
 
     // ray attacks
-	/* ON THE FLY version
-	inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
+#ifdef BOARD_STANDARD_RAY_ATTACKS
+	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+		Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
-		return attacks ^ direction(firstBlockPos);
-	}*/
-
-	/* BRANCHLESS version
-	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		const Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
-		return attacks ^ rayAttacks[direction][firstBlockPos];
-	}*/
+		if (blocker) {
+			const Position firstBlockPos = Utils::getFirstPosReverse(blocker);
+			attacks ^= rayAttacks[direction][firstBlockPos];
+		}
+		return attacks;
+	}
 
 	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
 		Rawboard attacks = rayAttacks[direction][position];
@@ -377,32 +420,39 @@ public:
 		}
 		return attacks;
 	}
+#endif
 
-	/* ON THE FLY version
-	inline static Rawboard getPositiveRayAttacks_onthefly(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
-		return attacks ^ direction(firstBlockPos);
-	}*/
-
-	/* BRANCHLESS version
-	static inline Rawboard getPositiveRayAttacks_branchless(const Rawboard occupied, const unsigned char direction, const Position position) {
+#ifdef BOARD_BRANCHLESS_RAY_ATTACKS
+	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
 		const Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
 		return attacks ^ rayAttacks[direction][firstBlockPos];
-	}*/
-
-	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		if (blocker) {
-			const Position firstBlockPos = Utils::getFirstPosReverse(blocker);
-			attacks ^= rayAttacks[direction][firstBlockPos];
-		}
-		return attacks;
 	}
+
+	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+		const Rawboard attacks = rayAttacks[direction][position];
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		return attacks ^ rayAttacks[direction][firstBlockPos];
+	}
+#endif
+
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+	inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+		const Rawboard attacks = direction(position);
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
+		return attacks ^ direction(firstBlockPos);
+	}
+
+	inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+		const Rawboard attacks = direction(position);
+		const Rawboard blocker = attacks & occupied;
+		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		return attacks ^ direction(firstBlockPos);
+	}
+#endif
 
 	// One step
 	inline static Rawboard northOne(const Rawboard start) {

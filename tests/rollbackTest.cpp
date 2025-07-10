@@ -13,7 +13,7 @@ using namespace std;
 class RollbackTest : public testing::Test {
 protected:
 	RollbackTest() {
-		BoardUtils::initAttacks();
+		initAttacks();
 	}
 	~RollbackTest() {
 

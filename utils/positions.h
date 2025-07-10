@@ -82,7 +82,7 @@ public:
             xRayPositions |= game.board.getDestinationPositions(position);
         }
 
-        return BoardUtils::isUnderCheck(xRayPositions, sourcePosition);
+        return isUnderCheck(xRayPositions, sourcePosition);
     }
     
     static Position getRow(const Position position) {
