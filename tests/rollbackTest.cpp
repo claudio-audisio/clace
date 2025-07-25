@@ -23,7 +23,7 @@ protected:
 TEST_F(RollbackTest, rollbackTest1) {
 	Game game;
 	game.init();
-	Rollback* rollback = new Rollback();
+	Rollback* rollback = new Rollback(10);
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
 	Move move = MoveHelper::getMove(48, 32, WHITE, WPawn);
@@ -42,7 +42,7 @@ TEST_F(RollbackTest, rollbackTest1) {
 TEST_F(RollbackTest, rollbackInfo2Test) {
 	Game game;
 	game.init();
-	Rollback* rollback = new Rollback();
+	Rollback* rollback = new Rollback(10);
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
 	Move move = MoveHelper::getMove(57, 40, WHITE, WKnight);
@@ -78,12 +78,10 @@ TEST_F(RollbackTest, rollbackInfo2Test) {
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
-
 TEST_F(RollbackTest, rollbackInfoFailureTest) {
-	GTEST_SKIP();
 	Game game;
 	game.init();
-	Rollback* rollback = new Rollback();
+	Rollback* rollback = new Rollback(10);
 	const string boardBeforeRollback = FEN::gameToFEN(game);
 
 	Move move = MoveHelper::getMove(48, 32, true);
@@ -98,42 +96,5 @@ TEST_F(RollbackTest, rollbackInfoFailureTest) {
 	EXPECT_EQ(rollback->getRollbackSize(), 0);
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 
-	/*	TODO da finire quando gestiamo le eccezioni
-	Exception exception = assertThrows(RuntimeException.class, () -> {
-		rollback->rollback(board);
-	});
-
-	EXPECT_EQ(exception.getMessage(), "rollback failed: empty stack");
-
-	EXPECT_THROW(statement,exception_type)
-	*/
-}
-
-TEST_F(RollbackTest, performanceTest) {
-	GTEST_SKIP();
-	list<long long> saveTimes;
-	list<long long> rollbackTimes;
-	Game* game = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
-	game->verifyChecks();
-
-	for (int i = 0; i < 10000; ++i) {
-		auto start = chrono::steady_clock::now();
-		game->save();
-		saveTimes.push_back(Utils::getElapsedNanos(start));
-
-		Move move = MoveHelper::getMove("g2-h3", true);
-		game->applyMove(move);
-
-		start = chrono::steady_clock::now();
-		game->rollbackLastMove();
-		rollbackTimes.push_back(Utils::getElapsedNanos(start));
-	}
-
-	EXPECT_NE(1, 1)
-		<< "save avg time: " << accumulate(saveTimes.begin(), saveTimes.end(), 0.0) / saveTimes.size() << endl
-		<< "rollback avg time: " << accumulate(rollbackTimes.begin(), rollbackTimes.end(), 0.0) / rollbackTimes.size() << endl;
-	
-
-	// 200
-	// 60
+	EXPECT_THROW(rollback->rollback(game), runtime_error);
 }

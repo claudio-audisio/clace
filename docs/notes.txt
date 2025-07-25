@@ -1,3 +1,14 @@
+DA FINIRE
+
+    - Finire il replace del pool di vector a pool di array: fare test performance nell'engine
+
+    - Completare test unita'
+
+REFACTORING
+
+    - La chiamata all'engine dovrebbe essere fatta senza passare le mosse
+        - Se le calcola all'interno e di conseguenza anche il caso di fine partita.
+
 GENERALE
 
     - Ottimizzare uso della cache
@@ -7,13 +18,8 @@ GENERALE
             - introdurne l'uso anche nei motori
                 - in questo caso va mantenuta smilza (cancellare le mosse non piu' possibili)
 
-
-
-
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
-
-    - Completare test unita'
-
+i
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
         - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)\
             - generateLegalMoves

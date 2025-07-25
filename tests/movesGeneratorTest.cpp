@@ -19,19 +19,18 @@ protected:
 	}
 };
 
-/* TODO da mettere a posto
-TEST(MovesGeneratorTest, calculateLegalMoves) {
-	Game* game = FEN::fenToNewGame("r7/8/8/8/8/1n6/1PPPPPPP/K7 w - - 0 1");
-	game->setLastMove(MoveHelper::getMove("a5-b3", false));
+
+TEST_F(MovesGeneratorTest, calculateLegalMoves) {
+	Game* game = FEN::fenToNewGame("rk6/8/8/8/8/1n6/1PPPPPPP/K7 w - - 0 1");
+	game->setLastMove(MoveHelper::getMove("a5b3", BLACK));
 	game->verifyChecks();
 
-	list<Move> moves;
+	vector<Move> moves;
 	MovesGenerator::generateLegalMoves(*game, moves);
 
-	EXPECT_EQ(moves.size(), 2);
-	GTEST_ASSERT_TRUE(TestUtils::containsExactlyInAnyOrder(moves, "a1-a2", "a1-b1"));
+	EXPECT_EQ(moves.size(), 1);
+	EXPECT_EQ(MoveHelper::toString(moves.at(0)), "a1b1");
 }
-*/
 
 
 class TestParams {

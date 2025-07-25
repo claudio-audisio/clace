@@ -13,7 +13,7 @@ using namespace std;
 class TestUtils {
 public:
 	template <typename... SetOfString>
-	static bool containsExactlyInAnyOrder(list<Move>& moves, SetOfString... stringMoves) {
+	static bool containsExactlyInAnyOrder(vector<Move>& moves, SetOfString... stringMoves) {
 		unsigned int counter = 0;
 		for (string stringMove : { stringMoves... }) {
 			++counter;

@@ -3,6 +3,8 @@
 
 #include "clace.h"
 
+#include <ranges>
+
 #include "engine/ab_engine.h"
 #include "engine/bf_engine.h"
 #include "perft/perft.h"
@@ -66,7 +68,9 @@ bool Clace::processCommand(const string& command) {
 	} else if (strncmp(command.c_str(), "cpu ", 4) == 0) {
 		newCpuGame(stoi(command.substr(4)));
 	} else if (strncmp(command.c_str(), "perft ", 6) == 0) {
-		managePerft(stoi(command.substr(6)));
+		managePerft(parsePerftParams(command.substr(6)));
+	} else if (strncmp(command.c_str(), "perfc ", 6) == 0) {
+		managePerftComplete(parsePerftParams(command.substr(6)));
 	} else if (strncmp(command.c_str(), "print ", 6) == 0) {
 		printBoards(stoull(command.substr(6)));
 	} else if (strcmp(command.c_str(), "help") == 0) {
@@ -78,6 +82,16 @@ bool Clace::processCommand(const string& command) {
 	}
 
 	return true;
+}
+
+pair<int, int> Clace::parsePerftParams(const string& params) {
+	const size_t pos = params.find(' ');
+
+	if (pos == string::npos) {
+		return make_pair(stoi(params), 1);
+	}
+
+	return make_pair(stoi(params.substr(0, pos)), stoi(params.substr(pos + 1)));
 }
 
 void Clace::manageNextMove() const {
@@ -189,15 +203,29 @@ void Clace::printBoards(Rawboard board) {
 	UI::addLines(1);
 }
 
-void Clace::managePerft(const int depth) {
-	UI::addLines(1);
-	auto perft = new Perft(getFenPerft(1), depth);
-	perft->runBulk();
-	delete perft;
+void Clace::managePerft(pair<int, int> params) {
+	for (int i = 0; i < params.second; i++) {
+		UI::addLines(1);
+		auto perft = new Perft(getFenPerft(1), params.first);
+		perft->runBulk_new();
+		delete perft;
+	}
+
 	UI::addLines(1);
 }
 
-void Clace::managePerftComplete() {
+void Clace::managePerftComplete(pair<int, int> params) {
+	for (int i = 0; i < params.second; i++) {
+		UI::addLines(1);
+		auto perft = new Perft(getFenPerft(1), params.first);
+		perft->run(true);
+		delete perft;
+	}
+
+	UI::addLines(1);
+}
+
+/*void Clace::managePerftComplete() {
 	const unsigned int type = UI::readPerftType();
     const unsigned int index = UI::readPerftIndex();
 	const unsigned int depth = UI::readDepth();
@@ -218,7 +246,7 @@ void Clace::managePerftComplete() {
 	}
 	
 	UI::addLines(2);
-}
+}*/
 
 string Clace::getFenPerft(const unsigned int index) {
     switch (index) {

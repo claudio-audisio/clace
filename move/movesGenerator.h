@@ -89,4 +89,75 @@ public:
 		return checkControl;
 	}
 
+	static pair<unsigned int, unsigned int> generateLegalMoves_new(Game& game, Move moves[]) {
+		const unsigned int tot = generatePseudoLegalMoves_new(game, moves);
+		unsigned int removed = 0;
+
+		for (unsigned int i = 0; i < tot; ++i) {
+			if (!isValid(game, moves[i])) {
+				moves[i] = 0;
+				++removed;
+			}
+		}
+
+		return make_pair(tot,tot - removed);
+	}
+
+	static unsigned int generatePseudoLegalMoves_new(Game& game, Move moves[]) {
+		const bool isComputerToMove = game.isComputerToMove();	// TODO verificare se alla move serve veramente questa info
+		Rawboard sources = game.board.PIECES(game.sideToMove);
+		unsigned int count = 0;
+
+		/*if (MoveHelper::toString(game.lastMove) == "e2-b5") {
+			int stop = 1;
+		}*/
+
+		while (sources) {
+            const Position position = Utils::getFirstPos(sources);
+
+			if (game.checkStatus.doubleCheck && !game.board.isKing(position)) {
+				sources &= (sources - 1);
+				continue;
+			}
+
+            const Piece piece = game.board.getPiece(position);
+			Rawboard destinations = game.board.getDestinationPositions(position, piece);
+
+			while (destinations) {
+                const Position destination = Utils::getFirstPos(destinations);
+				Move move = MoveHelper::getMove(position, destination, game.sideToMove, piece, game.board.enPassantPosition, isComputerToMove);
+
+                /*if (MoveHelper::isCastling(move) && game.movesHistory.size() == 2) {
+                    int stop = 1;
+                }*/
+
+                /*if (MoveHelper::isCastling(move) && MoveHelper::toString(move) == "e8-c8" && MoveHelper::toString(game.lastMove) == "e5-d7") {
+                    int stop = 1;
+                }*/
+
+				if (MoveHelper::isPawnPromotion(move)) {
+					for (Piece promotion : PieceHelper::getPromotionTypes(game.sideToMove)) {
+						Move promotionMove = move;
+						MoveHelper::setPromotion(promotionMove, promotion);
+
+						//if (isValid(game, promotionMove)) {
+							moves[count++] = promotionMove;
+						//}
+					}
+				}
+				else {
+					//if (isValid(game, move)) {
+						moves[count++] = move;
+					//}
+				}
+
+				destinations &= (destinations - 1);
+			}
+
+			sources &= (sources - 1);
+		}
+
+		return count;
+	}
+
 };

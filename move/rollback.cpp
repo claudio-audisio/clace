@@ -1,7 +1,8 @@
 #include "rollback.h"
 #include "../game/game.h"
 
-Rollback::Rollback() {
+Rollback::Rollback(unsigned int size) {
+	this->size = size;
 	boards.reserve(size);
 	for (int i = 0; i < size; i++) {
 		boards.push_back(new MoveInfo());
@@ -56,4 +57,3 @@ Rollback::MoveInfo::~MoveInfo() {
 void Rollback::MoveInfo::setBoard(const Board& board) {
 	this->board.set(board);
 }
-

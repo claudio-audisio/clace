@@ -21,12 +21,14 @@ public:
     void newHumanGame(const string& fenGame);
     void newCpuGame(int gamesAmount);
     void stopGame();
-    static void managePerft(int depth);
-    static void managePerftComplete();
+    static void managePerft(pair<int, int> params);
+    static void managePerftComplete(pair<int, int> params);
+    //static void managePerftComplete();
     static string getFenPerft(unsigned int index);
     static void printBoards(Rawboard board);
     void manageNextMove() const;
     bool processCommand(const string& command);
     void processMove(const string& move) const;
+    static pair<int, int> parsePerftParams(const string& params);
     static bool isValidMove(const string& move);
 };

@@ -46,20 +46,9 @@ TEST_P(ConstructorTest, decorateTest) {
         EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
         EXPECT_EQ(MoveHelper::getSide(move), params->side);
     }
-    /* TODO da fare quandoo gestiamo le eccezioni
     else {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            new Move(stringMove, white);
-        });
-
-        if (destinationPosition == -1) {
-            EXPECT_EQ(exception.getMessage(), "move malformed");
-        }
-        else {
-            EXPECT_EQ(exception.getMessage(), "piece coordinates malformed");
-        }
+    	EXPECT_ANY_THROW(MoveHelper::getMove(params->stringMove, params->side));
     }
-    */
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -75,7 +64,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
-/*class TestParams2 {
+class TestParams2 {
 public:
     TestParams2(string fenGame, Position sourcePosition, Position destinationPosition, Piece piece, bool isCastling, bool isEnPassant, bool isPawnPromotion) {
         this->fenGame = fenGame;
@@ -107,7 +96,7 @@ TEST_P(DecorateTest, decorateTest) {
     EXPECT_EQ(MoveHelper::isCastling(move), params->isCastling);
     EXPECT_EQ(MoveHelper::isEnPassant(move), params->isEnPassant);
     EXPECT_EQ(MoveHelper::isPawnPromotion(move), params->isPawnPromotion);
-    GTEST_ASSERT_TRUE(MoveHelper::isComputer(move));
+    //GTEST_ASSERT_TRUE(MoveHelper::isComputer(move));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -122,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams2("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 11, 2, WPawn, false, false, true),
         new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1", 34, 43, BPawn, false, true, false)
     )
-);*/
+);
 
 
 class PositionsTest : public ::testing::TestWithParam<Position> {};

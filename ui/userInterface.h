@@ -39,18 +39,19 @@ public:
 
 	static void menu() {
 		cout << endl;
-		cout << " new           start new game" << endl;
-		cout << " next          start analysis for next move" << endl;
-		cout << " load <fen>    load fen position" << endl;
-		cout << " cpu <n>       start n cpu game(s)" << endl;
-		cout << " perft <d>     compute perft at depth d" << endl;
-		cout << " print <b>     print bitboards" << endl;
-		cout << " help          show commands" << endl;
-		cout << " quit          exit program" << endl;
+		cout << " new             start new game" << endl;
+		cout << " next            start analysis for next move" << endl;
+		cout << " load <fen>      load fen position" << endl;
+		cout << " cpu <n>         start n cpu game(s)" << endl;
+		cout << " perft <d> <n>   compute perft at depth d (n times)" << endl;
+		cout << " perfc <d> <n>   compute perft complete at depth d (n times)" << endl;
+		cout << " print <b>       print bitboards" << endl;
+		cout << " help            show commands" << endl;
+		cout << " quit            exit program" << endl;
 		cout << endl;
 	}
 
-	static string readName(const string& color) {
+	/*static string readName(const string& color) {
 		if (!color.empty()) {
 			cout << "  Enter " + color + " name: ";
 		} else {
@@ -104,7 +105,7 @@ public:
 		cout << "\t6. user vs computer (board provided)" << endl;
 		cout << "\t0. <-- back" << endl;
 		return readInt();
-	}
+	}*/
 
 	static void printLogo() {
 		cout << "        |" << endl;

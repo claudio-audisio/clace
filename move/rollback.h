@@ -11,11 +11,11 @@ class Game;
 
 class Rollback {
 public:
-	Rollback();
+	explicit Rollback(unsigned int size);
 	~Rollback();
 
 	unsigned int index = 0;
-	unsigned int size = 10;
+	unsigned int size;
 	void save(Game& game);
 	void rollback(Game& game);
 	unsigned int getRollbackSize() const;

@@ -7,7 +7,8 @@
 #include "../game/player.h"
 #include "../evaluation/basicEvaluator.h"
 
-Game::Game() {
+Game::Game() :
+	rollback(10), sideToMove(0), fullMoves(0), halfMoveClock(0) {
 	evaluator = new BasicEvaluator();
 }
 
@@ -35,15 +36,30 @@ MoveResult Game::finalizeMove(Move& move) {
 	board.updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
 	updateEnPassantInfo(move);
 
-    if (MoveHelper::isPawnPromotion(move)) {
-        completePawnPromotion(move);
-    }
+	if (MoveHelper::isPawnPromotion(move)) {
+		completePawnPromotion(move);
+	}
 
-    if (captured == Empty && MoveHelper::isEnPassant(move)) {
+	if (captured == Empty && MoveHelper::isEnPassant(move)) {
 		captured = completeEnPassant(move);
-    }
+	}
 
-    MoveHelper::setCaptured(move, captured);
+	MoveHelper::setCaptured(move, captured);
+
+	if (captured == Empty && !MoveHelper::isPawnPromotion(move) && !board.isPawn(MoveHelper::getDestinationPosition(move))) {
+		halfMoveClock++;
+	}
+	else {
+		halfMoveClock = 0;
+	}
+
+	return MoveHelper::getMoveResult(captured != Empty, MoveHelper::isPawnPromotion(move), MoveHelper::isEnPassant(move), MoveHelper::isCastling(move));
+}
+
+MoveResult Game::finalizeMoveNew(Move& move) {
+	board.updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
+	updateEnPassantInfo(move);
+	const bool captured = MoveHelper::isCaptured(move);
 
 	if (captured == Empty && !MoveHelper::isPawnPromotion(move) && !board.isPawn(MoveHelper::getDestinationPosition(move))) {
 		halfMoveClock++;
@@ -57,6 +73,19 @@ MoveResult Game::finalizeMove(Move& move) {
 
 MoveResult Game::applyMove(Move& move) {
 	MoveResult moveResult = finalizeMove(move);
+	lastMove = move;
+	movesHistory.push_front(move);
+
+	if (!MoveHelper::isWhite(move)) {
+		fullMoves++;
+	}
+
+	changeTurn();
+	return moveResult;
+}
+
+MoveResult Game::applyMoveNew(Move& move) {
+	MoveResult moveResult = finalizeMoveNew(move);
 	lastMove = move;
 	movesHistory.push_front(move);
 
@@ -116,7 +145,6 @@ void Game::undoEnPassant(Move& move) {
 }
 
 void Game::verifyChecks() {
-    checkStatus.reset();
 	calculateCheckPositions(getOppositeSide());
 	const Position kingPosition = board.getKingPosition(sideToMove);
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
@@ -305,6 +333,7 @@ string Game::getCapturedList(const Side side) {
 }
 
 void Game::calculateCheckPositions(const Side side) {
+	checkStatus.reset();
 	Rawboard positions = board.PIECES(side);
 
 	while(positions) {

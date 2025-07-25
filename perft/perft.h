@@ -5,6 +5,7 @@
 #include "../game/game.h"
 #include "result.h"
 #include "../utils/vectorPool.h"
+#include "../utils/arrayPool.h"
 #include "../move/movesCache.h"
 #include "../move/movesCacheNew.h"
 
@@ -17,7 +18,9 @@ public:
 	~Perft();
 
 	Result* runBulk();
+	Result* runBulk_new();
     Result* run(bool consoleMode = false);
+	Result* runNew(bool consoleMode = false);
 
 private:
 	Game* game;
@@ -25,11 +28,15 @@ private:
 	string fenGame;
 	Result* result;
     VectorPool<Move>* pool;
+	ArrayPool<Move>* pool_new;
     MovesCache* cache;
 	MovesCacheNew* cacheNew;
     unsigned int cacheUsage = 0;
     unsigned int generatorUsage = 0;
 
 	unsLL runBulkPerft(unsigned int depth);
+	unsLL runBulkPerft_new(unsigned int depth);
     void runPerft(unsigned int depth);
+	void runPerftNew(unsigned int depth);
+
 };

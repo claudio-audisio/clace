@@ -22,7 +22,9 @@ public:
 	void initFromFEN(const string& fenPosition);
 	void initPlayers(Player* white, Player* black);
 	MoveResult finalizeMove(Move& move);
+	MoveResult finalizeMoveNew(Move& move);
 	MoveResult applyMove(Move& move);
+	MoveResult applyMoveNew(Move& move);
 	void applyMoves(list<Move>& moves);
 	void simulateMove(Move& move);
     void undoSimulateMove(Move& move);
@@ -54,11 +56,11 @@ public:
 		return board;
 	}
 
-	inline bool isWhiteToMove() const {
+    bool isWhiteToMove() const {
 		return sideToMove == WHITE;
 	}
 
-	inline Side getOppositeSide() const {
+    Side getOppositeSide() const {
 		return BLACK - sideToMove;
 	}
 

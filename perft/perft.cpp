@@ -13,6 +13,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
     this->pool = new VectorPool<Move>(depth + 1, MAX_MOVES);
+    this->pool_new = new ArrayPool<Move>(depth + 1, MAX_MOVES);
 #ifdef PERFT_USE_CACHE
     this->cache = new MovesCache(0);
 #endif
@@ -22,6 +23,7 @@ Perft::~Perft() {
 	delete this->game;
     delete this->result;
     delete this->pool;
+    delete this->pool_new;
 #ifdef PERFT_USE_CACHE
 	delete this->cache;
 #endif
@@ -129,4 +131,80 @@ void Perft::runPerft(const unsigned int currentDepth) {
 		}*/
         game->rollbackLastMove();
     }
+}
+
+Result* Perft::runNew(const bool consoleMode) {
+    result->startTime();
+    runPerftNew(depth);
+    result->stopTime();
+    result->print(fenGame, consoleMode);
+#ifdef PERFT_USE_CACHE
+    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
+#endif
+    return result;
+}
+
+void Perft::runPerftNew(const unsigned int currentDepth) {
+    Move* moves = pool_new->getArray(currentDepth - 1);
+
+    // TODO introdurre uso cache
+    const pair<unsigned int, unsigned int> res = MovesGenerator::generateLegalMoves_new(*game, moves);
+
+    if (game->checkStatus.check && res.second == 0) {
+        result->incrementCheckmates((depth - currentDepth) - 1);
+        return;
+    }
+
+    if (currentDepth == 0) {
+        return;
+    }
+
+    for (unsigned int i = 0; i < res.first; i++) {
+        if (moves[i]) {
+            game->save();
+            const MoveResult moveResult = game->applyMove(moves[i]);
+            result->incrementCounters(moveResult, depth - currentDepth);
+            game->verifyChecks();
+            result->incrementCounters(game->checkStatus, depth - currentDepth);
+            //cout << game->printMovesHistory() << " done " << endl;
+            runPerft(currentDepth - 1);
+            /*if (currentDepth == 3) {
+                cout << MoveHelper::toString(move) << "\t" << result->getCaptures(2) << endl;
+            }*/
+            game->rollbackLastMove();
+        }
+    }
+}
+
+Result* Perft::runBulk_new() {
+    result->startTime();
+    const unsLL nodes = runBulkPerft_new(depth);
+    result->stopTime();
+    result->incrementNodes(nodes, depth - 1);
+    result->print();
+    return result;
+}
+
+unsLL Perft::runBulkPerft_new(const unsigned int currentDepth) {
+    // TODO reintrodurre uso cache (memset ?)
+    Move* moves = pool_new->getArray(currentDepth - 1);
+    const pair<unsigned int, unsigned int> res = MovesGenerator::generateLegalMoves_new(*game, moves);
+
+    if (currentDepth == 1) {
+        return res.second;
+    }
+
+    unsLL nodes = 0;
+
+    for (unsigned int i = 0; i < res.first; i++) {
+        if (moves[i]) {
+            game->save();
+            game->applyMove(moves[i]);
+            const unsLL newNodes = runBulkPerft_new(currentDepth - 1);
+            nodes += newNodes;
+            game->rollbackLastMove();
+        }
+    }
+
+    return nodes;
 }

@@ -17,6 +17,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer")
 
 project ("clace")
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(DEBUG_MODE)
+endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+	add_compile_definitions(RELEASE_MODE)
+endif()
+
 find_package(spdlog REQUIRED)
 
 # Add source to this project's executable.
@@ -40,7 +48,8 @@ add_executable (clace
 		uci/movesProcessor.h
 		evaluation/phase.h
 		board/attackBoards.h
-		common/defines.h)
+		common/defines.h
+		utils/arrayPool.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -61,7 +70,8 @@ add_library(claceLib
 		uci/movesProcessor.h
 		evaluation/phase.h
 		board/attackBoards.h
-		common/defines.h)
+		common/defines.h
+		utils/arrayPool.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -104,8 +114,13 @@ add_executable(
 )
 
 add_executable(
-  boardPerformanceTest
-  "tests/boardPerformanceTest.cpp"
+  performanceDebugTest
+  "tests/performanceDebugTest.cpp"
+)
+
+add_executable(
+	performanceReleaseTest
+	"tests/performanceReleaseTest.cpp"
 )
 
 add_executable(
@@ -198,9 +213,15 @@ target_link_libraries(
 )
 
 target_link_libraries(
-  boardPerformanceTest
+  performanceDebugTest
   GTest::gtest_main
   claceLib
+)
+
+target_link_libraries(
+	performanceReleaseTest
+	GTest::gtest_main
+	claceLib
 )
 
 target_link_libraries(
@@ -286,7 +307,8 @@ gtest_discover_tests(phaseTest)
 gtest_discover_tests(bitwiseTest)
 gtest_discover_tests(boardTest)
 gtest_discover_tests(boardUtilsTest)
-gtest_discover_tests(boardPerformanceTest)
+gtest_discover_tests(performanceDebugTest)
+gtest_discover_tests(performanceReleaseTest)
 gtest_discover_tests(gameTest)
 gtest_discover_tests(fenTest)
 gtest_discover_tests(rollbackTest)

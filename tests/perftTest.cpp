@@ -8,7 +8,7 @@
 #ifdef VTUNE_PROFILER
 	#define DEPTH 6
 #else
-	#define DEPTH 3
+	#define DEPTH 4
 #endif
 
 class PerftTest : public testing::Test {
@@ -41,7 +41,7 @@ protected:
 TEST_F(PerftTest, initialPositionBulkPerft) {
     //GTEST_SKIP();
     Perft* perft = new Perft(INITIAL_FEN_POSITION, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(20, DEPTH, 1, *result); 
     checkBulkPerftResult(400, DEPTH, 2, *result);
@@ -57,7 +57,7 @@ TEST_F(PerftTest, position2BulkPerft) {
     GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(48, DEPTH, 1, *result);
     checkBulkPerftResult(2039, DEPTH, 2, *result);
@@ -71,14 +71,14 @@ TEST_F(PerftTest, position3BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(14, DEPTH, 1, *result);
     checkBulkPerftResult(191, DEPTH, 2, *result);
     checkBulkPerftResult(2812, DEPTH, 3, *result);
     checkBulkPerftResult(43238, DEPTH, 4, *result);
     checkBulkPerftResult(674624, DEPTH, 5, *result);
-    checkBulkPerftResult(11030083, DEPTH, 6, *result);      // TODO
+    checkBulkPerftResult(11030083, DEPTH, 6, *result);
     checkBulkPerftResult(178633661, DEPTH, 7, *result);     // TODO
 }
 
@@ -87,14 +87,14 @@ TEST_F(PerftTest, position4BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(6, DEPTH, 1, *result);
     checkBulkPerftResult(264, DEPTH, 2, *result);
     checkBulkPerftResult(9467, DEPTH, 3, *result);
     checkBulkPerftResult(422333, DEPTH, 4, *result);
     checkBulkPerftResult(15833292, DEPTH, 5, *result);
-    checkBulkPerftResult(706045033, DEPTH, 6, *result);     // TODO
+    checkBulkPerftResult(706045033, DEPTH, 6, *result);
 }
 
 TEST_F(PerftTest, position5BulkPerft) {
@@ -102,7 +102,7 @@ TEST_F(PerftTest, position5BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_5, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(44, DEPTH, 1, *result);
     checkBulkPerftResult(1486, DEPTH, 2, *result);
@@ -116,7 +116,7 @@ TEST_F(PerftTest, position6BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_6, DEPTH);
-    Result* result = perft->runBulk();
+    Result* result = perft->runBulk_new();
 
     checkBulkPerftResult(46, DEPTH, 1, *result);
     checkBulkPerftResult(2079, DEPTH, 2, *result);

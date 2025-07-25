@@ -52,7 +52,7 @@ public:
 			setPawnPromotion(move, Positions::isEighthRow(destinationPosition, side));
 		}
 
-		setComputer(move, isComputerToMove);
+		//setComputer(move, isComputerToMove);
 		return move;
 	}
 
@@ -75,7 +75,7 @@ public:
 			setPawnPromotion(move, Positions::isEighthRow(destinationPosition, side));
 		}
 
-		setComputer(move, isComputerToMove);
+		//setComputer(move, isComputerToMove);
 	}
 
 	static Move getMove(const Position sourcePosition, const Position destinationPosition, const Side side, const Piece piece) {
@@ -187,7 +187,8 @@ public:
 		return (move & PAWN_PROM_MASK) >> 43;
 	}
 
-	inline static void setComputer(Move& move, const bool computer) {
+	// TODO cancellare se effettivamente non serve
+	/*inline static void setComputer(Move& move, const bool computer) {
 		if (computer) {
 			move |= COMPUTER_MASK;
 		}
@@ -198,7 +199,7 @@ public:
 
 	inline static bool isComputer(const Move move) {
 		return (move & COMPUTER_MASK) >> 44;
-	}
+	}*/
 
     static MoveResult getMoveResult(const bool captured, const bool promoted, const bool enPassant, const bool castling) {
         MoveResult moveResult = 0;
@@ -315,7 +316,7 @@ private:
 	static const Move CASTLING_MASK = 0x0001000000000000LL;
 	static const Move EN_PASSANT_MASK = 0x0002000000000000LL;
 	static const Move PAWN_PROM_MASK = 0x0004000000000000LL;
-	static const Move COMPUTER_MASK = 0x0008000000000000LL;
+	//static const Move COMPUTER_MASK = 0x0008000000000000LL;
 
     static const MoveResult MR_CAPTURED_MASK = 0x01;
     static const MoveResult MR_PROMOTED_MASK = 0x02;
