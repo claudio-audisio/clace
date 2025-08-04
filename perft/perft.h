@@ -7,7 +7,6 @@
 #include "../utils/vectorPool.h"
 #include "../utils/arrayPool.h"
 #include "../move/movesCache.h"
-#include "../move/movesCacheNew.h"
 
 using namespace std;
 
@@ -30,7 +29,6 @@ private:
     VectorPool<Move>* pool;
 	ArrayPool<Move>* pool_new;
     MovesCache* cache;
-	MovesCacheNew* cacheNew;
     unsigned int cacheUsage = 0;
     unsigned int generatorUsage = 0;
 

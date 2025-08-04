@@ -218,7 +218,7 @@ void Clace::managePerftComplete(pair<int, int> params) {
 	for (int i = 0; i < params.second; i++) {
 		UI::addLines(1);
 		auto perft = new Perft(getFenPerft(1), params.first);
-		perft->run(true);
+		perft->runNew(true);
 		delete perft;
 	}
 

@@ -146,9 +146,20 @@ Result* Perft::runNew(const bool consoleMode) {
 
 void Perft::runPerftNew(const unsigned int currentDepth) {
     Move* moves = pool_new->getArray(currentDepth - 1);
+    pair<unsigned int, unsigned int> res;
 
-    // TODO introdurre uso cache
-    const pair<unsigned int, unsigned int> res = MovesGenerator::generateLegalMoves_new(*game, moves);
+#ifdef PERFT_USE_CACHE
+    const string fenKey = FEN::gameToFENKey(*game);
+    if (!cache->getNew(fenKey, moves, res)) {
+        res = MovesGenerator::generateLegalMoves_new(*game, moves);
+        cache->addNew(fenKey, moves, res.first, res.second);
+        generatorUsage++;
+    } else {
+        cacheUsage++;
+    }
+#else
+    res = MovesGenerator::generateLegalMoves_new(*game, moves);
+#endif
 
     if (game->checkStatus.check && res.second == 0) {
         result->incrementCheckmates((depth - currentDepth) - 1);
@@ -182,13 +193,28 @@ Result* Perft::runBulk_new() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
+#ifdef PERFT_USE_CACHE
+    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
+#endif
     return result;
 }
 
 unsLL Perft::runBulkPerft_new(const unsigned int currentDepth) {
-    // TODO reintrodurre uso cache (memset ?)
     Move* moves = pool_new->getArray(currentDepth - 1);
-    const pair<unsigned int, unsigned int> res = MovesGenerator::generateLegalMoves_new(*game, moves);
+    pair<unsigned int, unsigned int> res;
+
+#ifdef PERFT_USE_CACHE
+    const string fenKey = FEN::gameToFENKey(*game);
+    if (!cache->getNew(fenKey, moves, res)) {
+        res = MovesGenerator::generateLegalMoves_new(*game, moves);
+        cache->addNew(fenKey, moves, res.first, res.second);
+        generatorUsage++;
+    } else {
+        cacheUsage++;
+    }
+#else
+    res = MovesGenerator::generateLegalMoves_new(*game, moves);
+#endif
 
     if (currentDepth == 1) {
         return res.second;

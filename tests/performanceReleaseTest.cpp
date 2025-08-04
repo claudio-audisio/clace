@@ -312,7 +312,7 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 	}
 
 	auto saveTime = Utils::getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(saveTime, 1800, 50);
+	GTEST_ASSERT_NEAR(saveTime, 1750, 50);
 	cout << "save time: " << saveTime  << endl;
 
 	start = chrono::steady_clock::now();
@@ -349,12 +349,71 @@ TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1700, 50);	// TODO imbarazzante
+	GTEST_ASSERT_NEAR(time, 1720, 50);	// TODO imbarazzante
 
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft5Test) {
+TEST_F(PerformanceReleaseTest, movesCacheTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	vector<Move> moves;
+	vector<Move> moves2;
+
+	for (int i = 0; i < MAX_MOVES; ++i) {
+		moves.push_back(i);
+	}
+
+	const unsigned int testSize = 1000000;
+	MovesCache cache(testSize);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (int m = 0; m < testSize; ++m) {
+		const string key = to_string(m);
+		cache.add(key, moves);
+		cache.get(key, moves2);
+	}
+
+	unsLL time = Utils::getElapsedMillis(begin);
+
+	GTEST_ASSERT_NEAR(time, 1130, 50);	// since second iteration 480
+
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Move moves[MAX_MOVES];
+	Move* moves2;
+	pair<unsigned int, unsigned int> res;
+
+	for (int i = 0; i < MAX_MOVES; ++i) {
+		moves[i];
+	}
+
+	const unsigned int testSize = 1000000;
+	MovesCache cache(testSize);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (int m = 0; m < testSize; ++m) {
+		const string key = to_string(m);
+		cache.addNew(key, moves, MAX_MOVES, 1);
+		cache.getNew(key, moves2, res);
+	}
+
+	unsLL time = Utils::getElapsedMillis(begin);
+
+	GTEST_ASSERT_NEAR(time, 1130, 50);	// since second iteration 480
+
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -369,7 +428,7 @@ TEST_F(PerformanceReleaseTest, Perft5Test) {
 	cout << "time: " << result->getElapsed()  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft5NewTest) {
+TEST_F(PerformanceReleaseTest, Perft5BulkNewTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -377,14 +436,14 @@ TEST_F(PerformanceReleaseTest, Perft5NewTest) {
 
 	auto result = perft->runBulk_new();
 
-	GTEST_ASSERT_NEAR(result->getElapsed(), 225, 10);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 225, 10);
 	//GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);		// BOARD_USE_PRE_CALCULATED
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 270, 10);		// PERFT_USE_CACHE	// TODO da fare per la versione new
+	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft6Test) {
+TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -399,7 +458,7 @@ TEST_F(PerformanceReleaseTest, Perft6Test) {
 	cout << "time: " << result->getElapsed()  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft6NewTest) {
+TEST_F(PerformanceReleaseTest, Perft6BulkNewTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -407,9 +466,69 @@ TEST_F(PerformanceReleaseTest, Perft6NewTest) {
 
 	auto result = perft->runBulk_new();
 
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6050, 50);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 6020, 50);
 	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 270, 10);		// PERFT_USE_CACHE	// TODO da fare per la versione new
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);		// PERFT_USE_CACHE
+
+	cout << "time: " << result->getElapsed()  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, Perft4Test) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	auto perft = new Perft(INITIAL_FEN_POSITION, 4);
+
+	auto result = perft->run();
+
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 280, 50);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 6100, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
+	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);		// PERFT_USE_CACHE
+
+	cout << "time: " << result->getElapsed()  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, Perft4NewTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	auto perft = new Perft(INITIAL_FEN_POSITION, 4);
+
+	auto result = perft->runNew();
+
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 280, 10);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
+	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);		// PERFT_USE_CACHE
+
+	cout << "time: " << result->getElapsed()  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, Perft5Test) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
+
+	auto result = perft->run();
+
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 7300, 50);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 6100, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6620, 50);		// PERFT_USE_CACHE
+
+	cout << "time: " << result->getElapsed()  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, Perft5NewTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
+
+	auto result = perft->runNew();
+
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 7300, 50);
+	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }

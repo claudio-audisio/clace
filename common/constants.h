@@ -17,6 +17,7 @@ using namespace std;
 
 #define WHITE 0
 #define BLACK (WHITE + SIDE_GAP)
+#define OPPOSITE(side) (BLACK - side)
 #define NO_POS 64
 #define SIZE 13
 #define MAX_MOVES 218

@@ -1,6 +1,10 @@
 DA FINIRE
 
+    - Scrivere test sulle macro
+
     - Finire il replace del pool di vector a pool di array: fare test performance nell'engine
+        - Finire cachine
+            - Introdurre nel caching anche gli ataacks di opposite
 
     - Completare test unita'
 
@@ -29,7 +33,12 @@ i
                     - simulateMove
                     - checkControl
                         - getAttacks
+                            - getPawnAttacks
+                            - getKnightAttacks
+                            - ...
                     - undoSimulateMove
+
+
 
 VALUTAZIONE
 

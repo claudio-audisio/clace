@@ -170,7 +170,7 @@ bool Game::checkFiveFoldRepetitions() {
 
 bool Game::checkControl(const Move& move) {
 	const Side side = MoveHelper::getSide(move);
-	const Rawboard checkBoard = board.getAttacks(BLACK - side);
+	const Rawboard checkBoard = board.getAttacks(OPPOSITE(side));
 	const Position kingPosition = board.getKingPosition(side);
 
 	if (isUnderCheck(checkBoard, kingPosition)) {
