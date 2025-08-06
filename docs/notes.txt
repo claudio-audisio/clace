@@ -1,17 +1,6 @@
 DA FINIRE
 
-    - Scrivere test sulle macro
-
-    - Finire il replace del pool di vector a pool di array: fare test performance nell'engine
-        - Finire cachine
-            - Introdurre nel caching anche gli ataacks di opposite
-
     - Completare test unita'
-
-REFACTORING
-
-    - La chiamata all'engine dovrebbe essere fatta senza passare le mosse
-        - Se le calcola all'interno e di conseguenza anche il caso di fine partita.
 
 GENERALE
 
@@ -19,8 +8,9 @@ GENERALE
         - Per esempio in perft 6 viene usata il 73% delle volte ma
             - la chiave della mappa fa schifo (usare long)
             - vedere se la mappa e' quella giusta
-            - introdurne l'uso anche nei motori
-                - in questo caso va mantenuta smilza (cancellare le mosse non piu' possibili)
+            - nei motori va mantenuta smilza (cancellare le mosse non piu' possibili)
+            - aggiungere gli attacks di opposite
+            - aggiungere i check positions
 
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
 i

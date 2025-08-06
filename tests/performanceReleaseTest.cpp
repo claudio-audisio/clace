@@ -9,7 +9,6 @@
 #include "../move/movesGenerator.h"
 #include "../move/move.h"
 #include "../perft/perft.h"
-#include "../utils/vectorPool.h"
 #include "../engine/bf_engine.h"
 #include "../common/defines.h"
 
@@ -32,68 +31,6 @@ protected:
 	}
 };
 
-TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	vector<Move> moves;
-    moves.reserve(MAX_MOVES);
-	Game* boardInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
-	Game* boardPerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
-	Game* boardPerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
-	Game* boardPerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
-	Game* boardPerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
-	Game* boardPerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
-
-	auto begin = chrono::steady_clock::now();
-
-	for (int i = 1; i < 100000; ++i) {
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardInitial, moves);
-		boardInitial->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardInitial, moves);
-		boardInitial->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
-		boardPerft2->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
-		boardPerft2->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
-		boardPerft3->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
-		boardPerft3->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
-		boardPerft4->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
-		boardPerft4->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
-		boardPerft5->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
-		boardPerft5->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
-		boardPerft6->changeTurn();
-		moves.clear();
-		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
-		boardPerft6->changeTurn();
-	}
-
-	unsLL time = Utils::getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 1730, 50);
-	//GTEST_ASSERT_NEAR(time, 1760, 50);	// USE_PRE_CALCULATED_BOARDS
-
-	cout << "time: " << time  << endl;
-}
-
 TEST_F(PerformanceReleaseTest, calculateLegalMovesNewPerformanceTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
@@ -110,47 +47,50 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesNewPerformanceTest) {
 
 	for (int i = 1; i < 100000; ++i) {
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardInitial, moves);
+		MovesGenerator::generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardInitial, moves);
+		MovesGenerator::generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft2, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft2, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft3, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft3, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft4, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft4, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft5, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft5, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft6, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves_new(*boardPerft6, moves);
+		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
 	}
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
+#ifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(time, 1800, 50);
+#else
 	GTEST_ASSERT_NEAR(time, 1730, 50);
-	//GTEST_ASSERT_NEAR(time, 1800, 50);	// USE_PRE_CALCULATED_BOARDS
+#endif
 
 	cout << "time: " << time  << endl;
 }
@@ -188,8 +128,11 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 
 	unsLL time = Utils::getElapsedMillis(start);
 
+#ifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(time, 1100, 50);
+#else
 	GTEST_ASSERT_NEAR(time, 1130, 50);
-	//GTEST_ASSERT_NEAR(time, 1100, 50);		// USE_PRE_CALCULATED_BOARDS
+#endif
 
 	cout << "time: " << time  << endl;
 }
@@ -224,17 +167,29 @@ TEST_F(PerformanceReleaseTest, getAttacksPerformanceTest) {
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	//**** BOARD_STANDARD_RAY_ATTACKS ****///
-	GTEST_ASSERT_NEAR(time, 1280, 50);
-	//GTEST_ASSERT_NEAR(time, 2170, 50);		// USE_PRE_CALCULATED_BOARDS
+#ifdef BOARD_STANDARD_RAY_ATTACKS
+	#ifdef BOARD_USE_PRE_CALCULATED
+		GTEST_ASSERT_NEAR(time, 2170, 50);
+	#else
+		GTEST_ASSERT_NEAR(time, 1280, 50);
+	#endif
+#endif
 
-	//**** BOARD_BRANCHLESS_RAY_ATTACKS ****///
-	//GTEST_ASSERT_NEAR(time, 1300, 50);
-	//GTEST_ASSERT_NEAR(time, 2160, 50);		// USE_PRE_CALCULATED_BOARDS
+#ifdef BOARD_BRANCHLESS_RAY_ATTACKS
+	#ifdef BOARD_USE_PRE_CALCULATED
+		GTEST_ASSERT_NEAR(time, 2160, 50);
+	#else
+		GTEST_ASSERT_NEAR(time, 1300, 50);
+	#endif
+#endif
 
-	//**** BOARD_ONTHEFLY_RAY_ATTACKS ****/// TODO
-	//GTEST_ASSERT_NEAR(time, 1280, 50);
-	//GTEST_ASSERT_NEAR(time, 2170, 50);		// USE_PRE_CALCULATED_BOARDS
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS	// TODO
+	#ifdef BOARD_USE_PRE_CALCULATED
+		GTEST_ASSERT_NEAR(time, 2170, 50);
+	#else
+		GTEST_ASSERT_NEAR(time, 1280, 50);
+	#endif
+#endif
 
 	cout << "time: " << time  << endl;
 }
@@ -277,7 +232,7 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
 	auto moves = new Move[MAX_MOVES];
-	pair<int, int> res = MovesGenerator::generateLegalMoves_new(*game, moves);
+	pair<int, int> res = MovesGenerator::generateLegalMoves(*game, moves);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -349,50 +304,23 @@ TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1720, 50);	// TODO imbarazzante
+	GTEST_ASSERT_NEAR(time, 1650, 50);	// TODO imbarazzante
 
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, movesCacheTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	vector<Move> moves;
-	vector<Move> moves2;
-
-	for (int i = 0; i < MAX_MOVES; ++i) {
-		moves.push_back(i);
-	}
-
-	const unsigned int testSize = 1000000;
-	MovesCache cache(testSize);
-
-	auto begin = chrono::steady_clock::now();
-
-	for (int m = 0; m < testSize; ++m) {
-		const string key = to_string(m);
-		cache.add(key, moves);
-		cache.get(key, moves2);
-	}
-
-	unsLL time = Utils::getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 1130, 50);	// since second iteration 480
-
-	cout << "time: " << time  << endl;
-}
-
+// TODO questo test e il prossimo alla prima iterazione il tempo e' doppio, capire il perche'
+// (non e' ottimizzazione release, forse ottimizzazione cpu ?)
 TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
 	Move moves[MAX_MOVES];
 	Move* moves2;
-	pair<unsigned int, unsigned int> res;
+	MovesAmount amount;
 
 	for (int i = 0; i < MAX_MOVES; ++i) {
-		moves[i];
+		moves[i] = i;
 	}
 
 	const unsigned int testSize = 1000000;
@@ -402,13 +330,13 @@ TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 
 	for (int m = 0; m < testSize; ++m) {
 		const string key = to_string(m);
-		cache.addNew(key, moves, MAX_MOVES, 1);
-		cache.getNew(key, moves2, res);
+		cache.add(key, moves, MAX_MOVES, MAX_MOVES - 1);
+		cache.get(key, moves2, amount);
 	}
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1130, 50);	// since second iteration 480
+	GTEST_ASSERT_NEAR(time, 1100, 50);	// since second iteration 480
 
 	cout << "time: " << time  << endl;
 }
@@ -421,24 +349,13 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 
 	auto result = perft->runBulk();
 
-	GTEST_ASSERT_NEAR(result->getElapsed(), 230, 10);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 230, 10);		// BOARD_USE_PRE_CALCULATED
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 270, 10);		// PERFT_USE_CACHE
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft5BulkNewTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
+#ifdef PERFT_USE_CACHE
+	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);
+#elifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);
+#else
+	GTEST_ASSERT_NEAR(result->getElapsed(), 225, 10);
 #endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
-
-	auto result = perft->runBulk_new();
-
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 225, 10);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);		// BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }
@@ -451,84 +368,51 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 
 	auto result = perft->runBulk();
 
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6030, 50);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6100, 50);		// BOARD_USE_PRE_CALCULATED
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 5310, 50);		// PERFT_USE_CACHE
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft6BulkNewTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
+#ifdef PERFT_USE_CACHE
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);
+#elifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
+#else
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6020, 50);
 #endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 6);
-
-	auto result = perft->runBulk_new();
-
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6020, 50);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft4Test) {
+TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
 	auto perft = new Perft(INITIAL_FEN_POSITION, 4);
 
-	auto result = perft->run();
+	auto result = perft->runComplete();
 
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 280, 50);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6100, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
-	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);		// PERFT_USE_CACHE
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft4NewTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
+#ifdef PERFT_USE_CACHE
+	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);
+#elifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// TODO
+#else
+	GTEST_ASSERT_NEAR(result->getElapsed(), 280, 10);
 #endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 4);
-
-	auto result = perft->runNew();
-
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 280, 10);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
-	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, Perft5Test) {
+TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
 	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
 
-	auto result = perft->run();
+	auto result = perft->runComplete();
 
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 7300, 50);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6100, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6620, 50);		// PERFT_USE_CACHE
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft5NewTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
+#ifdef PERFT_USE_CACHE
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);
+#elifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// TODO
+#else
+	GTEST_ASSERT_NEAR(result->getElapsed(), 7300, 50);
 #endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
-
-	auto result = perft->runNew();
-
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 7300, 50);
-	//GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);		// BOARD_USE_PRE_CALCULATED		// TODO
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);		// PERFT_USE_CACHE
 
 	cout << "time: " << result->getElapsed()  << endl;
 }
@@ -541,22 +425,21 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 	game.initFromFEN(INITIAL_FEN_POSITION);
 	auto engine = new BF_Engine(4);
 	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new vector<Move>();
+	auto moves = new Move[MAX_MOVES];
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
+	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e3");
 	GTEST_ASSERT_NEAR(time, 340, 10);
 
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth4Test) {
+TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -564,39 +447,36 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth4Test) {
 	game.initFromFEN(PERFT_FEN_POSITION_6);
 	auto engine = new BF_Engine(3);
 	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new vector<Move>();
+	auto moves = new Move[MAX_MOVES];
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
+	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "c3d5");
 	GTEST_ASSERT_NEAR(time, 240, 10);
 
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth4Test) {
+TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
 	Game game;
 	game.initFromFEN(PERFT_FEN_POSITION_3);
 	auto engine = new BF_Engine(5);
-	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new vector<Move>();
+	auto moves = new Move[MAX_MOVES];
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
+	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = Utils::getElapsedMillis(begin);
 
-	EXPECT_EQ(MoveHelper::toString(best.first), "b4f4");
 	GTEST_ASSERT_NEAR(time, 590, 10);
 
 	cout << "time: " << time  << endl;

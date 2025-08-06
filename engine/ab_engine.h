@@ -6,16 +6,19 @@
 #include "../move/movesGenerator.h"
 #include "../utils/vectorPool.h"
 
-class AB_Engine : public IEngine {
+class AB_Engine : public Abstract_Engine {
 public:
 	AB_Engine();
+
+	void _calculateMove(Game& game, Move* moves, MovesAmount amount) {
+	};
 
 	// TODO questo engine dovra' implementare la search alfa-beta mozzando i branch non produttivi
 	// quindi la lista delle mosse necessita' anche di un ordinamento
 	// https://www.chessprogramming.org/Alpha-Beta
 
 
-	explicit AB_Engine(unsigned int depth) {
+	/*explicit AB_Engine(unsigned int depth) {
 		//this->depth = (depth * 2) - 1;
 		this->depth = depth;
 		this->pool = new VectorPool<Move>(this->depth, MAX_MOVES);
@@ -111,8 +114,8 @@ public:
 		MovesGenerator::generateLegalMoves(game, moves);
 		EndGameType endGame = game.checkEndGame(moves.empty());
 
-		if (endGame != EndGameType::NONE) {
-			if (endGame == EndGameType::CHECKMATE) {
+		if (endGame != NONE) {
+			if (endGame == CHECKMATE) {
 				return game.isWhiteToMove() ? LOSS_EVALUATION : WIN_EVALUATION;
 			} else {
 				return DRAW_EVALUATION;
@@ -142,6 +145,6 @@ public:
 		}
 
 		return evaluation < bestEvaluation;
-	}
+	}*/
 
 };

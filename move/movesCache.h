@@ -15,100 +15,65 @@ class MovesCache {
 public:
     explicit MovesCache(unsigned int size) {
         cache.reserve(size);
-        cacheNew.reserve(size);
     }
 
 	~MovesCache() {
         clear();
-        clearNew();
     }
 
-    void add(Game& game, const vector<Move>& moves) {
-        add(FEN::gameToFENKey(game), moves);
+    void add(Game& game, Move moves[], int total, int valid) {
+        add(FEN::gameToFENKey(game), moves, total, valid);
     }
 
-    void add(const string& game, const vector<Move>& moves) {
-        cache.insert(make_pair(game, moves));
+    void add(const string& game, Move moves[], int total, int valid) {
+        Moves* cacheEntry = static_cast<Moves*>(malloc(sizeof(Moves)));
+        cacheEntry->movesList = new Move[total];;
+        memcpy(cacheEntry->movesList, moves, total * sizeof(Move));
+        cacheEntry->amount.first = total;
+        cacheEntry->amount.second = valid;
+        cache.insert(make_pair(game, cacheEntry));
     }
 
-    bool get(Game& game, vector<Move>& moves) {
-        return get(FEN::gameToFENKey(game), moves);
+    bool get(Game& game, Move moves[], MovesAmount& amount) {
+        return get(FEN::gameToFENKey(game), moves, amount);
     }
 
-    bool get(const string& game, vector<Move>& moves) {
+    bool get(const string& game, Move*& moves, MovesAmount& amount) {
         auto it = cache.find(game);
 
         if (it == cache.end()) {
             return false;
         }
 
-        moves = it->second;
-        return true;
-    }
-
-    unsigned int size() {
-        return cache.size();
-    }
-
-    void clear() {
-        cache.clear();
-    }
-
-    void addNew(Game& game, Move moves[], int total, int notValid) {
-        addNew(FEN::gameToFENKey(game), moves, total, notValid);
-    }
-
-    void addNew(const string& game, Move moves[], int total, int notValid) {
-        Moves* cacheEntry = static_cast<Moves*>(malloc(sizeof(Moves)));
-        cacheEntry->movesList = new Move[total];;
-        memcpy(cacheEntry->movesList, moves, total * sizeof(Move));
-        cacheEntry->total = total;
-        cacheEntry->notValid = notValid;
-        cacheNew.insert(make_pair(game, cacheEntry));
-    }
-
-    bool getNew(Game& game, Move moves[], pair<unsigned int, unsigned int>& res) {
-        return getNew(FEN::gameToFENKey(game), moves, res);
-    }
-
-    bool getNew(const string& game, Move*& moves, pair<unsigned int, unsigned int>& res) {
-        auto it = cacheNew.find(game);
-
-        if (it == cacheNew.end()) {
-            return false;
-        }
-
         moves = it->second->movesList;
-        res.first = it->second->total;
-        res.second = it->second->notValid;
+        amount.first = it->second->amount.first;
+        amount.second = it->second->amount.second;
 
         return true;
     }
 
     unsigned int sizeNew() {
-        return cacheNew.size();
+        return cache.size();
     }
 
-    void clearNew() {
-        auto it = cacheNew.begin();
+    void clear() {
+        auto it = cache.begin();
 
-        while (it != cacheNew.end()) {
+        while (it != cache.end()) {
             delete it->second->movesList;
             free(it->second);
             ++it;
         }
 
-        cacheNew.clear();
+        cache.clear();
     }
 
 private:
     struct Moves {
         Move* movesList;
-        unsigned int total;
-        unsigned int notValid;
+        MovesAmount amount;
     };
 
-    unordered_map<string, vector<Move>> cache;
-    unordered_map<string, Moves*> cacheNew;
+    unordered_map<string, Moves*> cache;
 
 };

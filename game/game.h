@@ -21,6 +21,7 @@ public:
 	void init();
 	void initFromFEN(const string& fenPosition);
 	void initPlayers(Player* white, Player* black);
+	Evaluation calculateMove();
 	MoveResult finalizeMove(Move& move);
 	MoveResult finalizeMoveNew(Move& move);
 	MoveResult applyMove(Move& move);
@@ -30,9 +31,9 @@ public:
     void undoSimulateMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
-	EndGameType checkEndGame(bool noMoves);
-	EndGameType checkFiftyMoveRule();
-	bool checkFiveFoldRepetitions();
+	EndGameType checkEndGame(unsigned char legalMoves);
+	bool checkFiftyMoveRule() const;
+	bool checkFiveFoldRepetitions() const;
 	bool checkControl(const Move& move);
 	void updateEnPassantInfo(const Move& move);
 	Piece completeEnPassant(const Move& move);

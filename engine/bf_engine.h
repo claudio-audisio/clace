@@ -1,57 +1,38 @@
 #pragma once
 
+#include "abstract_engine.h"
 #include "iengine.h"
-#include "../evaluation/basicEvaluator.h"
-#include "../move/move.h"
 #include "../move/movesGenerator.h"
-#include "../utils/vectorPool.h"
-#include "../utils/logger.h"
 
-class BF_Engine : public IEngine {
+class BF_Engine : public Abstract_Engine {
 public:
-	explicit BF_Engine(unsigned int depth) {
-		this->depth = depth;
-		this->pool = new VectorPool<Move>(this->depth, MAX_MOVES);
-		this->evaluator = new BasicEvaluator();
-	};
+	explicit BF_Engine(unsigned int depth): Abstract_Engine(depth) {};
 
-	unsigned int depth;
-	IEvaluator* evaluator = nullptr;
-	VectorPool<Move>* pool = nullptr;
-	Logger& logger = Logger::getInstance();
+	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
+		for (unsigned int i = 0; i < amount.first; i++) {
+			if (moves[i]) {
+				game.save();
+				game.applyMove(moves[i]);
+				const double value = -negaMax(game, depth - 1);
 
-	void draw() const {};
+				if (value > best.value) {
+					best.move = moves[i];
+					best.value = value;
+				}
 
-	Evaluation calculateMove(Game& game, vector<Move>& moves) override {
-		logger.log(format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
-		auto time = chrono::steady_clock::now();
-		Evaluation best = make_pair(0, LOSS_VALUE);
-
-		for (Move move : moves) {
-			game.save();
-			game.applyMove(move);
-			const double value = -negaMax(game, depth - 1);
-
-			if (value > best.second) {
-				best.first = move;
-				best.second = value;
+				game.rollbackLastMove();
 			}
-
-			game.rollbackLastMove();
 		}
-
-		logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(best.first), best.second, Utils::getElapsedMicros(time)));
-		return best;
 	}
 
 	double negaMax(Game& game, const unsigned int depth) {
 		game.verifyChecks();
-		vector<Move>& moves = pool->getVector(depth);
-		MovesGenerator::generateLegalMoves(game, moves);
-		EndGameType endGame = game.checkEndGame(moves.empty());
+		Move* moves = pool->getArray(depth);
+		MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+		EndGameType endGame = game.checkEndGame(amount.second);
 
-		if (endGame != EndGameType::NONE) {
-			return endGame == EndGameType::CHECKMATE ? WIN_VALUE : DRAW_VALUE;
+		if (endGame != NONE) {
+			return endGame == CHECKMATE ? WIN_VALUE : DRAW_VALUE;
 		}
 
 		if (depth == 0) {
@@ -62,21 +43,22 @@ public:
 
 		double best = LOSS_VALUE;
 
-		for (Move move : moves) {
-			game.save();
-			game.applyMove(move);
-			const double value = -negaMax(game, depth - 1);
+		for (unsigned int i = 0; i < amount.first; i++) {
+			if (moves[i]) {
+				game.save();
+				game.applyMove(moves[i]);
+				const double value = -negaMax(game, depth - 1);
 
-			if (value > best) {
-				best = value;
+				if (value > best) {
+					best = value;
+				}
+
+				game.rollbackLastMove();
 			}
-
-			game.rollbackLastMove();
 		}
 
 		//logger.log(format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
 	}
 
-	void setEvaluator(IEvaluator* evaluator) override {}
 };

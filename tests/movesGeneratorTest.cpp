@@ -25,11 +25,11 @@ TEST_F(MovesGeneratorTest, calculateLegalMoves) {
 	game->setLastMove(MoveHelper::getMove("a5b3", BLACK));
 	game->verifyChecks();
 
-	vector<Move> moves;
-	MovesGenerator::generateLegalMoves(*game, moves);
+	Move* moves = new Move[MAX_MOVES];
+	MovesAmount amount = MovesGenerator::generateLegalMoves(*game, moves);
 
-	EXPECT_EQ(moves.size(), 1);
-	EXPECT_EQ(MoveHelper::toString(moves.at(0)), "a1b1");
+	EXPECT_EQ(amount.second, 1);
+	EXPECT_EQ(MoveHelper::toString(moves[0]), "a1b1");
 }
 
 
@@ -55,10 +55,10 @@ protected:
 TEST_P(GetLegalMovesTest, getLegalMovesTest) {
 	TestParams* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenGame);
-	vector<Move> moves;
-	MovesGenerator::generateLegalMoves(*game, moves);
+	Move* moves = new Move[MAX_MOVES];
+	MovesAmount amount = MovesGenerator::generateLegalMoves(*game, moves);
 
-	EXPECT_EQ(moves.size(), params->expectedPossibleMoves);
+	EXPECT_EQ(amount.second, params->expectedPossibleMoves);
 }
 
 INSTANTIATE_TEST_SUITE_P(

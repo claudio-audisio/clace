@@ -6,7 +6,7 @@ using namespace std;
 template<class T>
 class ArrayPool {
 public:
-    ArrayPool(unsigned int size, unsigned int arraySize) {
+    ArrayPool(unsigned int size, unsigned int arraySize = MAX_MOVES) {
         this->size = size;
         this->arraySize = arraySize;
         pool = new T*[size];
@@ -24,7 +24,7 @@ public:
         delete pool;
     }
 
-    T* getArray(unsigned int index) {
+    T* getArray(unsigned int index = 0) {
         memset(pool[index], 0, sizeof(pool[index]));
         return pool[index];
     }

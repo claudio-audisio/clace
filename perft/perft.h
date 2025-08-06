@@ -17,24 +17,19 @@ public:
 	~Perft();
 
 	Result* runBulk();
-	Result* runBulk_new();
-    Result* run(bool consoleMode = false);
-	Result* runNew(bool consoleMode = false);
+	Result* runComplete(bool consoleMode = false);
 
 private:
 	Game* game;
 	unsigned int depth;
 	string fenGame;
 	Result* result;
-    VectorPool<Move>* pool;
-	ArrayPool<Move>* pool_new;
+	ArrayPool<Move>* pool;
     MovesCache* cache;
     unsigned int cacheUsage = 0;
     unsigned int generatorUsage = 0;
 
 	unsLL runBulkPerft(unsigned int depth);
-	unsLL runBulkPerft_new(unsigned int depth);
-    void runPerft(unsigned int depth);
-	void runPerftNew(unsigned int depth);
+	void runCompletePerft(unsigned int depth);
 
 };

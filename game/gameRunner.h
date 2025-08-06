@@ -19,14 +19,14 @@ public:
 	Player* blackPlayer;
 	Statistics* statistics;
 	string fenBoard;
-	VectorPool<Move>* pool;
+	ArrayPool<Move>* pool;
 	string humanMove = "";
 	mutex moveMtx;
 	Logger& logger = Logger::getInstance();
 	bool running = false;
 
 	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
-		pool = new VectorPool<Move>(1, MAX_MOVES);
+		pool = new ArrayPool<Move>(1);
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
@@ -64,37 +64,26 @@ public:
 
 	EndGameType processComputerMove() {
 		game->getCurrentPlayer()->startMoveTime();
-		vector<Move>& moves = pool->getVector(0);
-		MovesGenerator::generateLegalMoves(*game, moves);
-		EndGameType endGame = game->checkEndGame(moves.empty());
+		Evaluation evaluation = game->calculateMove();
 
-		if (endGame != EndGameType::NONE) {
-			game->getCurrentPlayer()->stopMoveTime();
-			return endGame;
+		if (evaluation.endGameType == NONE) {
+			logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(evaluation.move)));
+			game->applyMove(evaluation.move);
+			game->currentEvaluation = evaluation.value;
 		}
 
-		Evaluation evaluation = game->getCurrentPlayer()->engine->calculateMove(*game, moves);
 		game->getCurrentPlayer()->stopMoveTime();
-		logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(evaluation.first)));
-		game->applyMove(evaluation.first);
-		game->currentEvaluation = evaluation.second;
 
-		if (game->checkFiveFoldRepetitions()) {
-			game->getCurrentPlayer()->stopMoveTime();
-			return EndGameType::FIVEFOLD_REPETITION;
-		}
-
-		game->verifyChecks();
-
-		return EndGameType::NONE;
+		return evaluation.endGameType;
 	}
 
 	EndGameType processHumanMove() {
-		vector<Move>& moves = pool->getVector(0);
-		MovesGenerator::generateLegalMoves(*game, moves);
-		EndGameType endGame = game->checkEndGame(moves.empty());
+		game->verifyChecks();
+		Move* moves = pool->getArray();
+		MovesAmount amount = MovesGenerator::generateLegalMoves(*game, moves);
+		EndGameType endGame = game->checkEndGame(amount.second);
 
-		if (endGame != EndGameType::NONE) {
+		if (endGame != NONE) {
 			game->getCurrentPlayer()->stopMoveTime();
 			return endGame;
 		}
@@ -113,7 +102,7 @@ public:
 
 			game->getCurrentPlayer()->stopMoveTime();
 
-			if (MoveHelper::isPresent(move, moves)) {
+			if (MoveHelper::isPresent(move, moves, amount.first)) {
 				break;
 			}
 
@@ -124,14 +113,7 @@ public:
 		game->applyMove(move);
 		game->currentEvaluation = game->evaluator->evaluate(*game);
 
-		if (game->checkFiveFoldRepetitions()) {
-			game->getCurrentPlayer()->stopMoveTime();
-			return EndGameType::FIVEFOLD_REPETITION;
-		}
-
-		game->verifyChecks();
-
-		return EndGameType::NONE;
+		return NONE;
 	}
 
 	string waitForHumanMove() {
@@ -156,8 +138,8 @@ public:
 	}
 
 	bool isGameEnded(EndGameType endGame) {
-		if (endGame != EndGameType::NONE) {
-			if (endGame == EndGameType::CHECKMATE) {
+		if (endGame != NONE) {
+			if (endGame == CHECKMATE) {
 				statistics->gameEnded(game->isWhiteToMove() ? -1 : 1);
 				logger.log(format("Game ended: {} WINS ({} moves in {} ms)",
 					game->isWhiteToMove() ? "black" : "white", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
@@ -166,15 +148,15 @@ public:
 			} else {
 				statistics->gameEnded(0);
 				logger.log(format("Game ended: DRAW{} ({} moves in {} ms)",
-					endGame == EndGameType::STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
+					endGame == STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
 			}
 
 			if (statistics->consoleOutput) {
 				UI::printGame(*game);
-				if (endGame == EndGameType::CHECKMATE) {
+				if (endGame == CHECKMATE) {
 					cout << (game->isWhiteToMove() ? " black" : " white") << " wins" << endl << endl;
 				} else {
-					cout << " draw" << (endGame == EndGameType::STALEMATE ? " (stalemate)" : "") << endl << endl;
+					cout << " draw" << (endGame == STALEMATE ? " (stalemate)" : "") << endl << endl;
 				}
 			}
 

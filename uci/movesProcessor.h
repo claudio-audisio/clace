@@ -13,7 +13,7 @@ class MovesProcessor {
 public:
 	vector<string> movesHistory;
 	unsigned int movesHistoryIndex = 0;
-	VectorPool<Move>* pool = new VectorPool<Move>(1, MAX_MOVES);
+	ArrayPool<Move>* pool = new ArrayPool<Move>(1);
 	IEngine* engine = new BF_Engine(2);
 
 	void processMove(Game& game, string& command) {
@@ -48,17 +48,13 @@ public:
 
 	string calculateMove(Game& game) {
 		logger.log("calculating best move...");
-		game.verifyChecks();
-		vector<Move>& moves = pool->getVector(0);
-		MovesGenerator::generateLegalMoves(game, moves);
-
-		Evaluation evaluation = engine->calculateMove(game, moves);
+		Evaluation evaluation = engine->calculateMove(game);
 
 		this_thread::sleep_for(chrono::milliseconds (200));
 
-		if (evaluation.first) {
-			game.applyMove(evaluation.first);
-			string uciMove = MoveHelper::toUciMove(evaluation.first);
+		if (evaluation.move) {
+			game.applyMove(evaluation.move);
+			string uciMove = MoveHelper::toUciMove(evaluation.move);
 			movesHistory.push_back(uciMove);
 			++movesHistoryIndex;
 			return uciMove;

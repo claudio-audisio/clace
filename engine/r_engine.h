@@ -3,30 +3,26 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "iengine.h"
-#include "../move/move.h"
+#include "abstract_engine.h"
 #include "../move/movesGenerator.h"
-#include "../utils/vectorPool.h"
-#include "../evaluation/basicEvaluator.h"
 
 using namespace std;
 
-class R_Engine : public IEngine {
+class R_Engine : public Abstract_Engine {
 public:
-	R_Engine() {
-		evaluator = nullptr;
+	R_Engine() : Abstract_Engine(1) {
 		srand(time(nullptr));
 	};
 
-	IEvaluator* evaluator;
+	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
+		int index;
 
-	Evaluation calculateMove(Game& game, vector<Move>& moves) {
-		return make_pair(moves[getRandom(moves.size())], 0);
+		do {
+			index = getRandom(amount.first);
+		} while (moves[index] == 0);
+
+		best.move = moves[index];
 	}
-
-	void setEvaluator(IEvaluator* evaluator) {
-		this->evaluator = evaluator;
-	};
 
 	static unsigned int getRandom(unsigned int upper) {
 		return rand() % upper;

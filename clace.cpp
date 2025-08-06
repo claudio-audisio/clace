@@ -107,11 +107,9 @@ void Clace::manageNextMove() const {
 		return;
 	}
 
-	vector<Move>& moves = gameRunner->pool->getVector(0);
-	MovesGenerator::generateLegalMoves(game, moves);
-	const Evaluation evaluation = engine->calculateMove(game, moves);
-	cout << endl << " --> " << MoveHelper::toString(evaluation.first) << endl;
-	processMove(MoveHelper::toString(evaluation.first));
+	const Evaluation evaluation = engine->calculateMove(game);
+	cout << endl << " --> " << MoveHelper::toString(evaluation.move) << endl;
+	processMove(MoveHelper::toString(evaluation.move));
 }
 
 
@@ -207,7 +205,7 @@ void Clace::managePerft(pair<int, int> params) {
 	for (int i = 0; i < params.second; i++) {
 		UI::addLines(1);
 		auto perft = new Perft(getFenPerft(1), params.first);
-		perft->runBulk_new();
+		perft->runBulk();
 		delete perft;
 	}
 
@@ -218,7 +216,7 @@ void Clace::managePerftComplete(pair<int, int> params) {
 	for (int i = 0; i < params.second; i++) {
 		UI::addLines(1);
 		auto perft = new Perft(getFenPerft(1), params.first);
-		perft->runNew(true);
+		perft->runComplete(true);
 		delete perft;
 	}
 

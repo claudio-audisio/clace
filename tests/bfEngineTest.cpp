@@ -24,7 +24,7 @@ TEST_F(BFEngineTest, ConstructorTest) {
 	auto engine = new BF_Engine(3);
 
 	EXPECT_EQ(engine->depth, 3);
-	EXPECT_EQ(engine->pool->size, 3);
+	EXPECT_EQ(engine->pool->size, 4);
 }
 
 TEST_F(BFEngineTest, Depth1Test) {
@@ -34,13 +34,9 @@ TEST_F(BFEngineTest, Depth1Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(1);
-	engine->setEvaluator(new BasicEvaluator());
+	Evaluation best = engine->calculateMove(game);
 
-	auto moves = new vector<Move>();
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
-
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
+	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth2Test) {
@@ -50,13 +46,9 @@ TEST_F(BFEngineTest, Depth2Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(2);
-	engine->setEvaluator(new BasicEvaluator());
+	Evaluation best = engine->calculateMove(game);
 
-	auto moves = new vector<Move>();
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
-
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
+	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth3Test) {
@@ -66,13 +58,9 @@ TEST_F(BFEngineTest, Depth3Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(3);
-	engine->setEvaluator(new BasicEvaluator());
+	Evaluation best = engine->calculateMove(game);
 
-	auto moves = new vector<Move>();
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
-
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e3");
+	EXPECT_EQ(MoveHelper::toString(best.move), "e2e3");
 }
 
 TEST_F(BFEngineTest, Depth4Test) {
@@ -82,13 +70,9 @@ TEST_F(BFEngineTest, Depth4Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(4);
-	engine->setEvaluator(new BasicEvaluator());
+	Evaluation best = engine->calculateMove(game);
 
-	auto moves = new vector<Move>();
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
-
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e3");
+	EXPECT_EQ(MoveHelper::toString(best.move), "e2e3");
 }
 
 TEST_F(BFEngineTest, Depth5Test) {
@@ -98,14 +82,8 @@ TEST_F(BFEngineTest, Depth5Test) {
 	Game game;
 	game.init();
 	auto engine = new BF_Engine(5);
-	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new vector<Move>();
+	Evaluation best = engine->calculateMove(game);
 
-	auto begin = chrono::steady_clock::now();
-
-	MovesGenerator::generateLegalMoves(game, *moves);
-	Evaluation best = engine->calculateMove(game, *moves);
-
-	EXPECT_EQ(MoveHelper::toString(best.first), "e2e4");
+	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
 }
 

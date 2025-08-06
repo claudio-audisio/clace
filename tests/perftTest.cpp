@@ -41,7 +41,7 @@ protected:
 TEST_F(PerftTest, initialPositionBulkPerft) {
     //GTEST_SKIP();
     Perft* perft = new Perft(INITIAL_FEN_POSITION, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(20, DEPTH, 1, *result); 
     checkBulkPerftResult(400, DEPTH, 2, *result);
@@ -57,7 +57,7 @@ TEST_F(PerftTest, position2BulkPerft) {
     GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(48, DEPTH, 1, *result);
     checkBulkPerftResult(2039, DEPTH, 2, *result);
@@ -71,7 +71,7 @@ TEST_F(PerftTest, position3BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(14, DEPTH, 1, *result);
     checkBulkPerftResult(191, DEPTH, 2, *result);
@@ -87,7 +87,7 @@ TEST_F(PerftTest, position4BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(6, DEPTH, 1, *result);
     checkBulkPerftResult(264, DEPTH, 2, *result);
@@ -102,7 +102,7 @@ TEST_F(PerftTest, position5BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_5, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(44, DEPTH, 1, *result);
     checkBulkPerftResult(1486, DEPTH, 2, *result);
@@ -116,7 +116,7 @@ TEST_F(PerftTest, position6BulkPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_6, DEPTH);
-    Result* result = perft->runBulk_new();
+    Result* result = perft->runBulk();
 
     checkBulkPerftResult(46, DEPTH, 1, *result);
     checkBulkPerftResult(2079, DEPTH, 2, *result);
@@ -134,7 +134,7 @@ TEST_F(PerftTest, initialPositionPerft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(INITIAL_FEN_POSITION, DEPTH);
-    Result* result = perft->run();
+    Result* result = perft->runComplete();
 
     checkPerftResult(20, 0, 0, 0, 0, 0, 0, 0, 0, DEPTH, 1, *result);
     checkPerftResult(400, 0, 0, 0, 0, 0, 0, 0, 0, DEPTH, 2, *result);
@@ -152,7 +152,7 @@ TEST_F(PerftTest, Position2Perft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
-    Result* result = perft->run();
+    Result* result = perft->runComplete();
 
     checkPerftResult(48, 8, 0, 2, 0, 0, 0, 0, 0, DEPTH, 1, *result);
     checkPerftResult(2039, 351, 1, 91, 0, 3, 0, 0, 0, DEPTH, 2, *result);
@@ -167,7 +167,7 @@ TEST_F(PerftTest, Position3Perft) {
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
-    Result* result = perft->run();
+    Result* result = perft->runComplete();
 
     checkPerftResult(14, 1, 0, 0, 0, 2, 0, 0, 0, DEPTH, 1, *result);
     checkPerftResult(191, 14, 0, 0, 0, 10, 0, 0, 0, DEPTH, 2, *result);
@@ -186,7 +186,7 @@ TEST_F(PerftTest, Position4Perft) {
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
 	//Perft* perft = new Perft(PERFT_FEN_POSITION_4_MIRRORED, DEPTH);
-    Result* result = perft->run();
+    Result* result = perft->runComplete();
 
     // TODO mancano i discovery e double chacks
 

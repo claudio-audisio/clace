@@ -262,12 +262,25 @@ public:
         return (moveResult & MR_CASTLING_MASK);
     }
 
-	inline static bool isPresent(const Move move, const vector<Move>& moves) {
-		const Position source = MoveHelper::getSourcePosition(move);
-		const Position destination  = MoveHelper::getDestinationPosition(move);
+	static bool isPresent(const Move move, const vector<Move>& moves) {
+		const Position source = getSourcePosition(move);
+		const Position destination  = getDestinationPosition(move);
 
 		for (Move m : moves) {
-			if (MoveHelper::getSourcePosition(m) == source && MoveHelper::getDestinationPosition(m) == destination) {
+			if (getSourcePosition(m) == source && getDestinationPosition(m) == destination) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static bool isPresent(const Move move, const Move* moves, unsigned char amount) {
+		const Position source = getSourcePosition(move);
+		const Position destination  = getDestinationPosition(move);
+
+		for (int i = 0; i < amount; i++) {
+			if (moves[i] && getSourcePosition(moves[i]) == source && getDestinationPosition(moves[i]) == destination) {
 				return true;
 			}
 		}

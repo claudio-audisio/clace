@@ -31,6 +31,10 @@ void Game::initPlayers(Player* white, Player* black) {
 	blackPlayer = black;
 }
 
+Evaluation Game::calculateMove() {
+	return getCurrentPlayer()->engine->calculateMove(*this);
+}
+
 MoveResult Game::finalizeMove(Move& move) {
 	Piece captured = board.move(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move), MoveHelper::getPiece(move), MoveHelper::isCastling(move));
 	board.updateCastlingInfo(MoveHelper::getSourcePosition(move), MoveHelper::getDestinationPosition(move));
@@ -150,20 +154,24 @@ void Game::verifyChecks() {
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
 }
 
-EndGameType Game::checkEndGame(const bool noMoves) {
-	if (noMoves) {
+EndGameType Game::checkEndGame(const unsigned char legalMoves) {
+	if (!legalMoves) {
 		checkStatus.checkmate = checkStatus.check;
-		return checkStatus.check ? EndGameType::CHECKMATE : EndGameType::STALEMATE;
+		return checkStatus.check ? CHECKMATE : STALEMATE;
 	}
 
-	return checkFiftyMoveRule();
+	if (checkFiftyMoveRule()) {
+		return FIFTY_MOVE_RULE;
+	}
+
+	return checkFiveFoldRepetitions() ? FIVEFOLD_REPETITION : NONE;
 }
 
-EndGameType Game::checkFiftyMoveRule() {
-	return halfMoveClock >= 50 ? EndGameType::FIFTY_MOVE_RULE : EndGameType::NONE;
+bool Game::checkFiftyMoveRule() const {
+	return halfMoveClock >= 50;
 }
 
-bool Game::checkFiveFoldRepetitions() {
+bool Game::checkFiveFoldRepetitions() const {
 	// TODO
 	return false;
 }

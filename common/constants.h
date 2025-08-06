@@ -114,3 +114,12 @@ static const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 #define WIN_EVALUATION Evaluation(0, WIN_VALUE)
 #define LOSS_EVALUATION Evaluation(0, LOSS_VALUE)
 #define DRAW_EVALUATION Evaluation(0, DRAW_VALUE)
+
+// end game types
+#define NONE 0
+#define FIFTY_MOVE_RULE 1
+// NOTE While castling is irreversible with respect to the castling rights and resets the position index to determine repetition of positions,
+// castling doesn't reset, but increments the halfmove clock concerning the fifty-move rule [2] [3].
+#define FIVEFOLD_REPETITION 2
+#define STALEMATE 3
+#define CHECKMATE 4

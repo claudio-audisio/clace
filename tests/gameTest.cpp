@@ -82,10 +82,10 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	CheckFiftyMoveRuleTest,
 	::testing::Values(
-		make_tuple(0, EndGameType::NONE),
-		make_tuple(49, EndGameType::NONE),
-		make_tuple(50, EndGameType::FIFTY_MOVE_RULE),
-		make_tuple(51, EndGameType::FIFTY_MOVE_RULE)
+		make_tuple(0, NONE),
+		make_tuple(49, NONE),
+		make_tuple(50, FIFTY_MOVE_RULE),
+		make_tuple(51, FIFTY_MOVE_RULE)
 	)
 );
 
@@ -273,22 +273,23 @@ TEST_P(CheckEndGameTest, checkEndGameTest) {
 	string fenBoard = get<0>(GetParam());
 	EndGameType expectedEndGame = get<1>(GetParam());
 	Game* game = FEN::fenToNewGame(fenBoard);
-	vector<Move> moves;
 	game->verifyChecks();
-	MovesGenerator::generateLegalMoves(*game, moves);
+	Move* moves = new Move[MAX_MOVES];
 
-	EXPECT_EQ(game->checkEndGame(moves.empty()), expectedEndGame);
+	MovesAmount amount = MovesGenerator::generateLegalMoves(*game, moves);
+
+	EXPECT_EQ(game->checkEndGame(amount.second), expectedEndGame);
 }
 
 INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	CheckEndGameTest,
 	::testing::Values(
-		make_tuple(INITIAL_FEN_POSITION, EndGameType::NONE),
-		make_tuple("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25", EndGameType::FIFTY_MOVE_RULE),
-		make_tuple("8/8/8/8/8/8/R7/R6k b - - 50 25", EndGameType::CHECKMATE),
-		make_tuple("8/8/8/8/8/8/r7/r6K/ w - - 50 25", EndGameType::CHECKMATE),
-		make_tuple("k7/2P5/1PP5/8/8/8/8/8 b - - 50 25", EndGameType::STALEMATE)
+		make_tuple(INITIAL_FEN_POSITION, NONE),
+		make_tuple("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25", FIFTY_MOVE_RULE),
+		make_tuple("8/8/8/8/8/8/R7/R6k b - - 50 25", CHECKMATE),
+		make_tuple("8/8/8/8/8/8/r7/r6K/ w - - 50 25", CHECKMATE),
+		make_tuple("k7/2P5/1PP5/8/8/8/8/8 b - - 50 25", STALEMATE)
 	)
 );
 

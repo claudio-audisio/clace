@@ -49,7 +49,8 @@ add_executable (clace
 		evaluation/phase.h
 		board/attackBoards.h
 		common/defines.h
-		utils/arrayPool.h)
+		utils/arrayPool.h
+		engine/abstract_engine.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -71,7 +72,8 @@ add_library(claceLib
 		evaluation/phase.h
 		board/attackBoards.h
 		common/defines.h
-		utils/arrayPool.h)
+		utils/arrayPool.h
+		engine/abstract_engine.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
