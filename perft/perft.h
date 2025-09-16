@@ -7,6 +7,7 @@
 #include "../utils/vectorPool.h"
 #include "../utils/arrayPool.h"
 #include "../move/movesCache.h"
+#include "../utils/logger.h"
 
 using namespace std;
 
@@ -32,4 +33,5 @@ private:
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);
 
+	Logger& logger = Logger::getInstance();
 };

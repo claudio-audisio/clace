@@ -108,8 +108,8 @@ void Clace::manageNextMove() const {
 	}
 
 	const Evaluation evaluation = engine->calculateMove(game);
-	cout << endl << " --> " << MoveHelper::toString(evaluation.move) << endl;
-	processMove(MoveHelper::toString(evaluation.move));
+	cout << endl << " --> " << toString(evaluation.move) << endl;
+	processMove(toString(evaluation.move));
 }
 
 

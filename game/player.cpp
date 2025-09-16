@@ -71,7 +71,7 @@ void Player::startMoveTime() {
 }
 
 void Player::stopMoveTime() {
-	gameTime += Utils::getElapsedMillis(currentMoveTime);
+	gameTime += getElapsedMillis(currentMoveTime);
 }
 
 string Player::getMoveTime() {

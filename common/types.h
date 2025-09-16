@@ -15,6 +15,7 @@ typedef unsigned char CastlingInfo;
 typedef unsigned long long unsLL;
 //typedef bitset<72> PieceAndDest;
 typedef unsigned long long Move;
+typedef unsigned char MoveType;
 typedef unsigned char MoveResult;
 
 typedef pair<unsigned char, unsigned char> MovesAmount;		// total - legal

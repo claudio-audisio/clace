@@ -5,8 +5,17 @@
 
 using namespace std;
 
+class BitwiseTest : public testing::Test {
+protected:
+	BitwiseTest() {
 
-TEST(bitwiseTest, masksTest) {
+	}
+	~BitwiseTest() {
+
+	}
+};
+
+TEST_F(BitwiseTest, masksTest) {
     GTEST_ASSERT_TRUE(checkBoard(lineMask(0), 0, 1, 2, 3, 4, 5, 6, 7));
     GTEST_ASSERT_TRUE(checkBoard(columnMask(0), 0, 8, 16, 24, 32, 40, 48, 56));
     GTEST_ASSERT_TRUE(checkBoard(diagonalMask(0), 0, 9, 18, 27, 36, 45, 54, 63));
@@ -26,9 +35,14 @@ TEST(bitwiseTest, masksTest) {
     GTEST_ASSERT_TRUE(checkBoard(columnMask(63), 7, 15, 23, 31, 39, 47, 55, 63));
     GTEST_ASSERT_TRUE(checkBoard(diagonalMask(63), 0, 9, 18, 27, 36, 45, 54, 63));
     GTEST_ASSERT_TRUE(checkBoard(antiDiagonalMask(63), 63));
+
+	GTEST_ASSERT_TRUE(checkBoard(lineMask(35), 32, 33, 34, 35, 36, 37, 38, 39));
+	GTEST_ASSERT_TRUE(checkBoard(columnMask(35), 3, 11, 19, 27, 35, 43, 51, 59));
+	GTEST_ASSERT_TRUE(checkBoard(diagonalMask(35), 8, 17, 26, 35, 44, 53, 62));
+	GTEST_ASSERT_TRUE(checkBoard(antiDiagonalMask(35), 7, 14, 21, 28, 35, 42, 49, 56));
 }
 
-TEST(bitwiseTest, raysTest) {
+TEST_F(BitwiseTest, raysTest) {
     GTEST_ASSERT_TRUE(checkBoardNoPos(northRay(0)));
     GTEST_ASSERT_TRUE(checkBoardNoPos(noEastRay(0)));
     GTEST_ASSERT_TRUE(checkBoard(eastRay(0), 1, 2, 3, 4, 5, 6, 7));
@@ -64,9 +78,18 @@ TEST(bitwiseTest, raysTest) {
     GTEST_ASSERT_TRUE(checkBoardNoPos(soWestRay(63)));
     GTEST_ASSERT_TRUE(checkBoard(westRay(63), 56, 57, 58, 59, 60, 61, 62));
     GTEST_ASSERT_TRUE(checkBoard(noWestRay(63), 0, 9, 18, 27, 36, 45, 54));
+
+	GTEST_ASSERT_TRUE(checkBoard(northRay(35), 3, 11, 19, 27));
+	GTEST_ASSERT_TRUE(checkBoard(noEastRay(35), 7, 14, 21, 28));
+	GTEST_ASSERT_TRUE(checkBoard(eastRay(35), 36, 37, 38, 39));
+	GTEST_ASSERT_TRUE(checkBoard(soEastRay(35), 44, 53, 62));
+	GTEST_ASSERT_TRUE(checkBoard(southRay(35), 43, 51, 59));
+	GTEST_ASSERT_TRUE(checkBoard(soWestRay(35), 42, 49, 56));
+	GTEST_ASSERT_TRUE(checkBoard(westRay(35), 32, 33, 34));
+	GTEST_ASSERT_TRUE(checkBoard(noWestRay(35), 8, 17, 26));
 }
 
-TEST(bitwiseTest, oneStepTest) {
+TEST_F(BitwiseTest, oneStepTest) {
 	GTEST_ASSERT_TRUE(checkBoardNoPos(northOne(posInd(0))));
 	GTEST_ASSERT_TRUE(checkBoardNoPos(noEastOne(posInd(0))));
 	GTEST_ASSERT_TRUE(checkBoard(eastOne(posInd(0)), 1));
@@ -102,9 +125,18 @@ TEST(bitwiseTest, oneStepTest) {
 	GTEST_ASSERT_TRUE(checkBoardNoPos(soWestOne(posInd(63))));
 	GTEST_ASSERT_TRUE(checkBoard(westOne(posInd(63)), 62));
 	GTEST_ASSERT_TRUE(checkBoard(noWestOne(posInd(63)), 54));
+
+	GTEST_ASSERT_TRUE(checkBoard(northOne(posInd(35)), 27));
+	GTEST_ASSERT_TRUE(checkBoard(noEastOne(posInd(35)), 28));
+	GTEST_ASSERT_TRUE(checkBoard(eastOne(posInd(35)), 36));
+	GTEST_ASSERT_TRUE(checkBoard(soEastOne(posInd(35)), 44));
+	GTEST_ASSERT_TRUE(checkBoard(southOne(posInd(35)), 43));
+	GTEST_ASSERT_TRUE(checkBoard(soWestOne(posInd(35)), 42));
+	GTEST_ASSERT_TRUE(checkBoard(westOne(posInd(35)), 34));
+	GTEST_ASSERT_TRUE(checkBoard(noWestOne(posInd(35)), 26));
 }
 
-TEST(bitwiseTest, knightStepTest) {
+TEST_F(BitwiseTest, knightStepTest) {
 	GTEST_ASSERT_TRUE(checkBoardNoPos(noNoEa(posInd(0))));
 	GTEST_ASSERT_TRUE(checkBoardNoPos(noEaEa(posInd(0))));
 	GTEST_ASSERT_TRUE(checkBoard(soEaEa(posInd(0)), 10));
@@ -140,4 +172,13 @@ TEST(bitwiseTest, knightStepTest) {
 	GTEST_ASSERT_TRUE(checkBoard(noWeWe(posInd(63)), 53));
 	GTEST_ASSERT_TRUE(checkBoardNoPos(soWeWe(posInd(63))));
 	GTEST_ASSERT_TRUE(checkBoardNoPos(soSoWe(posInd(63))));
+
+	GTEST_ASSERT_TRUE(checkBoard(noNoEa(posInd(35)), 20));
+	GTEST_ASSERT_TRUE(checkBoard(noEaEa(posInd(35)), 29));
+	GTEST_ASSERT_TRUE(checkBoard(soEaEa(posInd(35)), 45));
+	GTEST_ASSERT_TRUE(checkBoard(soSoEa(posInd(35)), 52));
+	GTEST_ASSERT_TRUE(checkBoard(noNoWe(posInd(35)), 18));
+	GTEST_ASSERT_TRUE(checkBoard(noWeWe(posInd(35)), 25));
+	GTEST_ASSERT_TRUE(checkBoard(soWeWe(posInd(35)), 41));
+	GTEST_ASSERT_TRUE(checkBoard(soSoWe(posInd(35)), 50));
 }

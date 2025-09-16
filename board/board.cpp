@@ -1,5 +1,6 @@
 #include "board.h"
 #include "../utils/boardUtils.h"
+#include "../utils/positions.h"
 
 Board::Board() {
     reset();
@@ -25,7 +26,7 @@ void Board::reset() {
 #endif
 }
 
-bool Board::equals(const Board& board) {
+bool Board::equals(const Board& board) const {
 	for (RawboardIndex i = 1; i < SIZE; ++i) {
 		if (pieceBoards[i] != board.pieceBoards[i]) {
 			return false;
@@ -58,16 +59,12 @@ void Board::set(const Board& board) {
 #endif
 }
 
-/*bool Board::isUnderCheck(const Position position, const Side side) {
-    return isUnderCheck(getAttacks(BLACK - side), position);
-}*/
-
 Rawboard Board::getPawnMoves(const Side side) {
     Rawboard attacks = 0;
     Rawboard board = pieceBoards[WPawn + side];
 
     while (board) {
-        const Position position = Utils::getFirstPos(board);
+        const Position position = getFirstPos(board);
         attacks |= getPawnMoves(position, side);
         board &= (board - 1);
     }
@@ -143,7 +140,7 @@ Rawboard Board::getKingMoves(const Position position, const Side side) {
 
 Rawboard Board::getKingCastling(const Side side) const {
     const Rawboard board = pieceBoards[WKing + side];
-    const Position position = Utils::getFirstPos(board);
+    const Position position = getFirstPos(board);
     return getKingCastling(position, side);
 }
 
@@ -165,27 +162,6 @@ Rawboard Board::getKingCastling(const Position position, const Side side) const 
         if ((castlingInfo & 0b0100) && isEmpty(59) && isEmpty(57)) {
             positions |= posInd(58) & EMPTY;
         }
-    }
-
-    return positions;
-}
-
-
-Rawboard Board::slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard position, const Rawboard occupiedBoard) const {
-    Rawboard positions = 0;
-    Rawboard newPos = position;
-
-    while (newPos) {
-        const Rawboard attack = direction(newPos);
-        const Rawboard emptyPos = attack & EMPTY;
-
-        if (!emptyPos) {
-            positions |= attack & occupiedBoard;
-            break;
-        }
-
-        positions |= emptyPos;
-        newPos = emptyPos;
     }
 
     return positions;

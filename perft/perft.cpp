@@ -6,6 +6,8 @@
 #include "../common/defines.h"
 
 
+
+
 Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->fenGame = fenGame;
 	this->depth = depth;
@@ -47,14 +49,14 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
 #ifdef PERFT_USE_CACHE
     const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves, amount)) {
-        amount = MovesGenerator::generateLegalMoves(*game, moves);
+        amount = generateLegalMoves(*game, moves);
         cache->add(fenKey, moves, amount.first, amount.second);
         generatorUsage++;
     } else {
         cacheUsage++;
     }
 #else
-    amount = MovesGenerator::generateLegalMoves(*game, moves);
+    amount = generateLegalMoves(*game, moves);
 #endif
 
     if (game->checkStatus.check && amount.second == 0) {
@@ -70,13 +72,21 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
         if (moves[i]) {
             game->save();
             const MoveResult moveResult = game->applyMove(moves[i]);
+            // TODO sta roba serve ancora ? vedere se ho ancora errore in qualche perft
+            if (isCastlingMR(moveResult)) {
+                if (isCapturedMR(moveResult)) {
+                    logger.log("castling & captured");
+                } else {
+                    logger.log("castling " + game->printMovesHistory(0));
+                }
+            }
             result->incrementCounters(moveResult, depth - currentDepth);
             game->verifyChecks();
             result->incrementCounters(game->checkStatus, depth - currentDepth);
             //cout << game->printMovesHistory() << " done " << endl;
             runCompletePerft(currentDepth - 1);
             /*if (currentDepth == 3) {
-                cout << MoveHelper::toString(move) << "\t" << result->getCaptures(2) << endl;
+                cout << toString(move) << "\t" << result->getCaptures(2) << endl;
             }*/
             game->rollbackLastMove();
         }
@@ -102,14 +112,14 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
 #ifdef PERFT_USE_CACHE
     const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves, amount)) {
-        amount = MovesGenerator::generateLegalMoves(*game, moves);
+        amount = generateLegalMoves(*game, moves);
         cache->add(fenKey, moves, amount.first, amount.second);
         generatorUsage++;
     } else {
         cacheUsage++;
     }
 #else
-    amount = MovesGenerator::generateLegalMoves(*game, moves);
+    amount = generateLegalMoves(*game, moves);
 #endif
 
     if (currentDepth == 1) {

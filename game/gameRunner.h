@@ -67,7 +67,7 @@ public:
 		Evaluation evaluation = game->calculateMove();
 
 		if (evaluation.endGameType == NONE) {
-			logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(evaluation.move)));
+			logger.log(format("{}: {}", game->getCurrentPlayer()->name, toString(evaluation.move)));
 			game->applyMove(evaluation.move);
 			game->currentEvaluation = evaluation.value;
 		}
@@ -80,7 +80,7 @@ public:
 	EndGameType processHumanMove() {
 		game->verifyChecks();
 		Move* moves = pool->getArray();
-		MovesAmount amount = MovesGenerator::generateLegalMoves(*game, moves);
+		MovesAmount amount = generateLegalMoves(*game, moves);
 		EndGameType endGame = game->checkEndGame(amount.second);
 
 		if (endGame != NONE) {
@@ -92,24 +92,24 @@ public:
 
 		while (running) {
 			game->getCurrentPlayer()->startMoveTime();
-			string humanMove = waitForHumanMove();
-			move = MoveHelper::getMove(humanMove, game->getCurrentPlayer()->white);
-			MoveHelper::decorate(move, game->board.getPiece(MoveHelper::getSourcePosition(move)), game->board.enPassantPosition, game->isComputerToMove());
+			humanMove = waitForHumanMove();
+			move = createMove(humanMove, game->getCurrentPlayer()->white);
+			decorate(move, game->board.getPiece(getSourcePosition(move)), game->board.enPassantPosition);
 
-			if (MoveHelper::isPawnPromotion(move)) {
-				MoveHelper::setPromotion(move, UI::choosePromotionType(game->isWhiteToMove()));
+			if (isPawnPromotion(move)) {
+				setPromotion(move, UI::choosePromotionType(game->isWhiteToMove()));
 			}
 
 			game->getCurrentPlayer()->stopMoveTime();
 
-			if (MoveHelper::isPresent(move, moves, amount.first)) {
+			if (isPresent(move, moves, amount.first)) {
 				break;
 			}
 
 			UI::printMessage(" invalid move");
 		}
 
-		logger.log(format("{}: {}", game->getCurrentPlayer()->name, MoveHelper::toString(move)));
+		logger.log(format("{}: {}", game->getCurrentPlayer()->name, toString(move)));
 		game->applyMove(move);
 		game->currentEvaluation = game->evaluator->evaluate(*game);
 

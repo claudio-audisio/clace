@@ -28,7 +28,7 @@ public:
 	double negaMax(Game& game, const unsigned int depth) {
 		game.verifyChecks();
 		Move* moves = pool->getArray(depth);
-		MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+		MovesAmount amount = generateLegalMoves(game, moves);
 		EndGameType endGame = game.checkEndGame(amount.second);
 
 		if (endGame != NONE) {

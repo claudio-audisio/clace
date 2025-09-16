@@ -77,7 +77,7 @@ public:
 	}
 
 	void stopTime() {
-		elapsed = Utils::getElapsedMillis(time);
+		elapsed = getElapsedMillis(time);
 	}
 
 	unsLL getElapsed() const {

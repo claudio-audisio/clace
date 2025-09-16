@@ -45,19 +45,19 @@ void Result::incrementCounters(const CheckStatus& checkStatus, const unsigned in
 }
 
 void Result::incrementCounters(const MoveResult moveResult, const unsigned int currentDepth) {
-	if (MoveHelper::isCapturedMR(moveResult)) {
+	if (isCapturedMR(moveResult)) {
 		captures[currentDepth]++;
 	}
 
-	if (MoveHelper::isEnPassantMR(moveResult)) {
+	if (isEnPassantMR(moveResult)) {
 		enPassant[currentDepth]++;
 	}
 
-	if (MoveHelper::isCastlingMR(moveResult)) {
+	if (isCastlingMR(moveResult)) {
 		castling[currentDepth]++;
 	}
 
-	if (MoveHelper::isPromotedMR(moveResult)) {
+	if (isPromotedMR(moveResult)) {
 		promotions[currentDepth]++;
 	}
 }

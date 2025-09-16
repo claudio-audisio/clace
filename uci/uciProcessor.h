@@ -20,6 +20,7 @@ public:
 	bool calculatingMove = false;
 	future<string> move;
 	MovesProcessor movesProcessor;
+	Logger& logger = Logger::getInstance();
 
 	void run() {
 		while (true) {

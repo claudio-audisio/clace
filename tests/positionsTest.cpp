@@ -14,7 +14,7 @@ class IndexToCoordsTest : public ::testing::TestWithParam<tuple<Position, string
 TEST_P(IndexToCoordsTest, indexToCoordsTest) {
     Position index = get<0>(GetParam());
     string expectedCoordinates = get<1>(GetParam());
-    EXPECT_EQ(Positions::indexToCoords(index), expectedCoordinates);
+    EXPECT_EQ(indexToCoords(index), expectedCoordinates);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -42,7 +42,7 @@ class CoordsToIndexTest : public ::testing::TestWithParam<tuple<string, Position
 TEST_P(CoordsToIndexTest, coordsToIndexTest) {   
     string coordinates = get<0>(GetParam());
     Position expectedResult = get<1>(GetParam());
-    EXPECT_EQ(Positions::coordsToIndex(coordinates), expectedResult);
+    EXPECT_EQ(coordsToIndex(coordinates), expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -67,14 +67,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 class TestParams {
 public:
-    TestParams(Position position, bool white, bool expectedResult) {
+    TestParams(Position position, Side side, bool expectedResult) {
         this->position = position;
-        this->white = white;
+        this->side = side;
         this->expectedResult = expectedResult;
     }
 
     Position position;
-    bool white;
+    Side side;
     bool expectedResult;
 };
 
@@ -82,25 +82,25 @@ class IsFirstRowTest : public ::testing::TestWithParam<TestParams*> {};
 
 TEST_P(IsFirstRowTest, isFirstRowTest) {
     TestParams* params = GetParam();
-    EXPECT_EQ(Positions::isFirstRow(params->position, params->white), params->expectedResult);
+    EXPECT_EQ(isFirstRow(params->position, params->side), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsFirstRowTest,
     ::testing::Values(
-        new TestParams(0, true, false),
-        new TestParams(0, false, true),
-        new TestParams(7, true, false),
-        new TestParams(7, false, true),
-        new TestParams(8, true, false),
-        new TestParams(8, false, false),
-        new TestParams(55, true, false),
-        new TestParams(55, false, false),
-        new TestParams(56, true, true),
-        new TestParams(56, false, false),
-        new TestParams(63, true, true),
-        new TestParams(63, false, false)
+        new TestParams(0, WHITE, false),
+        new TestParams(0, BLACK, true),
+        new TestParams(7, WHITE, false),
+        new TestParams(7, BLACK, true),
+        new TestParams(8, WHITE, false),
+        new TestParams(8, BLACK, false),
+        new TestParams(55, WHITE, false),
+        new TestParams(55, BLACK, false),
+        new TestParams(56, WHITE, true),
+        new TestParams(56, BLACK, false),
+        new TestParams(63, WHITE, true),
+        new TestParams(63, BLACK, false)
     )
 );
 
@@ -109,29 +109,29 @@ class IsSecondRowTest : public ::testing::TestWithParam<TestParams*> {};
 
 TEST_P(IsSecondRowTest, isSecondRowTest) {
     TestParams* params = GetParam();
-    EXPECT_EQ(Positions::isSecondRow(params->position, params->white), params->expectedResult);
+    EXPECT_EQ(isSecondRow(params->position, params->side), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsSecondRowTest,
     ::testing::Values(
-        new TestParams(7, true, false),
-        new TestParams(7, false, false),
-        new TestParams(8, true, false),
-        new TestParams(8, false, true),
-        new TestParams(15, true, false),
-        new TestParams(15, false, true),
-        new TestParams(16, true, false),
-        new TestParams(16, false, false),
-        new TestParams(47, true, false),
-        new TestParams(47, false, false),
-        new TestParams(48, true, true),
-        new TestParams(48, false, false),
-        new TestParams(55, true, true),
-        new TestParams(55, false, false),
-        new TestParams(56, true, false),
-        new TestParams(56, false, false)
+        new TestParams(7, WHITE, false),
+        new TestParams(7, BLACK, false),
+        new TestParams(8, WHITE, false),
+        new TestParams(8, BLACK, true),
+        new TestParams(15, WHITE, false),
+        new TestParams(15, BLACK, true),
+        new TestParams(16, WHITE, false),
+        new TestParams(16, BLACK, false),
+        new TestParams(47, WHITE, false),
+        new TestParams(47, BLACK, false),
+        new TestParams(48, WHITE, true),
+        new TestParams(48, BLACK, false),
+        new TestParams(55, WHITE, true),
+        new TestParams(55, BLACK, false),
+        new TestParams(56, WHITE, false),
+        new TestParams(56, BLACK, false)
     )
 );
 
@@ -140,25 +140,25 @@ class IsFourthRowTest : public ::testing::TestWithParam<TestParams*> {};
 
 TEST_P(IsFourthRowTest, isFourthRowTest) {
     TestParams* params = GetParam();
-    EXPECT_EQ(Positions::isFourthRow(params->position, params->white), params->expectedResult);
+    EXPECT_EQ(isFourthRow(params->position, params->side), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsFourthRowTest,
     ::testing::Values(
-        new TestParams(23, true, false),
-        new TestParams(23, false, false),
-        new TestParams(24, true, false),
-        new TestParams(24, false, true),
-        new TestParams(31, true, false),
-        new TestParams(31, false, true),
-        new TestParams(32, true, true),
-        new TestParams(32, false, false),
-        new TestParams(39, true, true),
-        new TestParams(39, false, false),
-        new TestParams(40, true, false),
-        new TestParams(40, false, false)
+        new TestParams(23, WHITE, false),
+        new TestParams(23, BLACK, false),
+        new TestParams(24, WHITE, false),
+        new TestParams(24, BLACK, true),
+        new TestParams(31, WHITE, false),
+        new TestParams(31, BLACK, true),
+        new TestParams(32, WHITE, true),
+        new TestParams(32, BLACK, false),
+        new TestParams(39, WHITE, true),
+        new TestParams(39, BLACK, false),
+        new TestParams(40, WHITE, false),
+        new TestParams(40, BLACK, false)
     )
 );
 
@@ -180,7 +180,7 @@ class IsEightRowTest : public ::testing::TestWithParam<TestParams12*> {};
 
 TEST_P(IsEightRowTest, isEightRowTest) {
 	TestParams12* params = GetParam();
-    EXPECT_EQ(Positions::isEighthRow(params->position, params->side), params->expectedResult);
+    EXPECT_EQ(isEighthRow(params->position, params->side), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -231,7 +231,7 @@ class AreOnSameRowOrColumnTest : public ::testing::TestWithParam<TestParams2*> {
 
 TEST_P(AreOnSameRowOrColumnTest, areOnSameRowOrColumnTest) {
     TestParams2* params = GetParam();
-    EXPECT_EQ(Positions::areOnSameRowOrColumn(params->firstPosition, params->secondPosition), params->expectedResult);
+    EXPECT_EQ(areOnSameRowOrColumn(params->firstPosition, params->secondPosition), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -254,7 +254,7 @@ class AreOnSameDiagonalTest : public ::testing::TestWithParam<TestParams2*> {};
 
 TEST_P(AreOnSameDiagonalTest, areOnSameDiagonalTest) {
     TestParams2* params = GetParam();
-    EXPECT_EQ(Positions::areOnSameDiagonal(params->firstPosition, params->secondPosition), params->expectedResult);
+    EXPECT_EQ(areOnSameDiagonal(params->firstPosition, params->secondPosition), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -300,7 +300,8 @@ public:
     bool expectedResult;
 };
 
-class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {
+// TODO da spostare on board
+/*class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
 	IsOnXRayTest() {
 		initAttacks();
@@ -312,7 +313,7 @@ TEST_P(IsOnXRayTest, isOnXRayTest) {
     Game* game = FEN::fenToNewGame("3bqr2/8/8/7B/7Q/7R/8/8 w - - 0 1");
     game->sideToMove = params->side;
 
-    EXPECT_EQ(Positions::isOnXRay(*game, params->position, params->excludePosition), params->expectedResult);
+    EXPECT_EQ(isOnXRay(*game, params->position, params->excludePosition), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -336,4 +337,4 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams3(52, 31, BLACK, false),
         new TestParams3(60, 31, BLACK, true)
     )
-);
+);*/

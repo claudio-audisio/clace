@@ -3,7 +3,6 @@
 #include <thread>
 
 #include "../game/player.h"
-#include "../board/piece.h"
 
 using namespace std;
 

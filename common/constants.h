@@ -5,8 +5,9 @@
 #include <string>
 #include <unordered_map>
 #include <array>
+#include <list>
+#include <unordered_set>
 
-#include "../board/piece.h"
 #include "types.h"
 
 using namespace std;
@@ -15,6 +16,7 @@ using namespace std;
 #define HvsC 0
 #define CvsC 1
 
+#define SIDE_GAP 1
 #define WHITE 0
 #define BLACK (WHITE + SIDE_GAP)
 #define OPPOSITE(side) (BLACK - side)
@@ -22,7 +24,22 @@ using namespace std;
 #define SIZE 13
 #define MAX_MOVES 218
 
-// masks
+// pieces
+constexpr Piece Empty = 0;
+constexpr Piece WPawn = 1;
+constexpr Piece BPawn = WPawn + SIDE_GAP;
+constexpr Piece WKnight = 3;
+constexpr Piece BKnight = WKnight + SIDE_GAP;
+constexpr Piece WBishop = 5;
+constexpr Piece BBishop = WBishop + SIDE_GAP;
+constexpr Piece WRook = 7;
+constexpr Piece BRook = WRook + SIDE_GAP;
+constexpr Piece WQueen = 9;
+constexpr Piece BQueen = WQueen + SIDE_GAP;
+constexpr Piece WKing = 11;
+constexpr Piece BKing = WKing + SIDE_GAP;
+
+// board masks
 #define EMPTY_BOARD 0xffffffffffffffffLL
 #define NOT_A_COL 0xfefefefefefefefeLL
 #define NOT_AB_COL 0xfcfcfcfcfcfcfcfcLL
@@ -42,14 +59,38 @@ using namespace std;
 #define MAIN_ANTI_DIAG 0x0102040810204080LL
 
 // rays
-#define North 0
-#define NoEast 1
-#define East 2
-#define SoEast 3
-#define South 4
-#define SoWest 5
-#define West 6
-#define NoWest 7
+#define North   0
+#define NoEast  1
+#define East    2
+#define SoEast  3
+#define South   4
+#define SoWest  5
+#define West    6
+#define NoWest  7
+
+// move type
+#define NORMAL      0
+#define CASTLING    1
+#define EN_PASSANT  2
+#define PROMOTION   4
+
+// move mask
+#define SOURCE_POS_MASK	0x00000000000000ffLL
+#define DEST_POS_MASK	0x000000000000ff00LL
+#define PIECE_MASK		0x0000000000ff0000LL
+#define PROMOTION_MASK	0x00000000ff000000LL
+#define CAPTURED_MASK	0x000000ff00000000LL
+#define SIDE_MASK		0x0000010000000000LL
+#define CASTLING_MASK	0x0000020000000000LL
+#define EN_PASSANT_MASK	0x0000040000000000LL
+#define PAWN_PROM_MASK	0x0000080000000000LL
+#define MOVE_TYPE_MASK	0x00000E0000000000LL
+
+// move result mask
+#define MR_CAPTURED_MASK 0x01
+#define MR_PROMOTED_MASK 0x02
+#define MR_PASSANT_MASK  0x04
+#define MR_CASTLING_MASK 0x08
 
 // castling
 #define BQCastling	6
@@ -78,7 +119,10 @@ using namespace std;
 #define WKC_RookAdd 0x2000000000000000
 #define WKC_EmptyRem 0x9fffffffffffffff
 #define WKC_EmptyAdd 0x9000000000000000
-static const CastlingInfo CASTLING_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+inline static const CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+
+// xray pieces
+static unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{WHITE, { WRook, WBishop, WQueen }}, {BLACK, { BRook, BBishop, BQueen }}};
 
 // fen
 static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
@@ -86,23 +130,23 @@ static const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQue
 static const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
 
 // positions
-static const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-static const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
-static const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
-static const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
-static const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
-static const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
-static const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
-static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
-static const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
+inline static const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+inline static const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
+inline static const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+inline static const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
+inline static const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
+inline static const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
+inline static const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+inline static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
+inline static const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 
 // evaluation weights
-#define KING_WT 200.0
-#define QUEEN_WT 9.0
-#define ROOK_WT 5.0
-#define BISHOP_WT 3.5
-#define KNIGHT_WT 3.0
-#define PAWN_WT 1.0
+#define KING_WT     200.0
+#define QUEEN_WT    9.0
+#define ROOK_WT     5.0
+#define BISHOP_WT   3.5
+#define KNIGHT_WT   3.0
+#define PAWN_WT     1.0
 //#define PAWN_WT 1.0	TODO peso per doubled, blocked and isolated pawns
 #define WIN_VALUE (SHRT_MAX / 2.0)
 #define LOSS_VALUE (-WIN_VALUE)

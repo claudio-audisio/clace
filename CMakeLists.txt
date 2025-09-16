@@ -31,7 +31,7 @@ find_package(spdlog REQUIRED)
 add_executable (clace 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
-	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp" 
+	"board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"
 	"engine/iengine.h"
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
@@ -54,7 +54,7 @@ add_executable (clace
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
-	"board/piece.h" "board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"  
+	"board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 

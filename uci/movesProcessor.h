@@ -7,7 +7,6 @@
 
 using namespace std;
 
-Logger& logger = Logger::getInstance();
 
 class MovesProcessor {
 public:
@@ -15,6 +14,7 @@ public:
 	unsigned int movesHistoryIndex = 0;
 	ArrayPool<Move>* pool = new ArrayPool<Move>(1);
 	IEngine* engine = new BF_Engine(2);
+	Logger& logger = Logger::getInstance();
 
 	void processMove(Game& game, string& command) {
 		if (movesHistoryIndex + 1 <= movesHistory.size()) {
@@ -26,21 +26,21 @@ public:
 			return;
 		}
 
-		Move move = MoveHelper::parseUciMove(command);
-		Position sourcePosition = MoveHelper::getSourcePosition(move);
+		Move move = parseUciMove(command);
+		Position sourcePosition = getSourcePosition(move);
 		Side side = game.board.isWhite(sourcePosition) ? WHITE : BLACK;
 
 		if (game.sideToMove != side) {
 			throw runtime_error("uci move side incorrect");
 		}
 
-		MoveHelper::setSide(move, side);
+		setMoveSide(move, side);
 
 		if (side == BLACK) {
-			MoveHelper::setPromotion(move, MoveHelper::getPromotion(move) + SIDE_GAP);
+			setPromotion(move, getPromotion(move) + SIDE_GAP);
 		}
 
-		MoveHelper::decorate(move, game.board.piecePositions[sourcePosition], game.board.enPassantPosition, true);
+		decorate(move, game.board.piecePositions[sourcePosition], game.board.enPassantPosition);
 		game.applyMove(move);
 		movesHistory.push_back(command);
 		++movesHistoryIndex;
@@ -54,7 +54,7 @@ public:
 
 		if (evaluation.move) {
 			game.applyMove(evaluation.move);
-			string uciMove = MoveHelper::toUciMove(evaluation.move);
+			string uciMove = toUciMove(evaluation.move);
 			movesHistory.push_back(uciMove);
 			++movesHistoryIndex;
 			return uciMove;

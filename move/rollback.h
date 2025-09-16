@@ -16,7 +16,7 @@ public:
 
 	unsigned int index = 0;
 	unsigned int size;
-	void save(Game& game);
+	void save(const Game& game);
 	void rollback(Game& game);
 	unsigned int getRollbackSize() const;
 	void reset();
@@ -35,5 +35,5 @@ private:
 		void setBoard(const Board& board);
 	};
 
-	vector<MoveInfo*> boards;
+	MoveInfo** boards;
 };

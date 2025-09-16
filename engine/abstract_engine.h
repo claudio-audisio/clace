@@ -33,7 +33,7 @@ public:
 
         game.verifyChecks();
         Move* moves = pool->getArray(depth);
-        const MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+        const MovesAmount amount = generateLegalMoves(game, moves);
         const EndGameType endGame = game.checkEndGame(amount.second);
         best = {0, LOSS_VALUE, endGame};
 
@@ -41,7 +41,7 @@ public:
             _calculateMove(game, moves, amount);
         }
 
-        logger.log(format("best: {} --> {:.2f} evaluated in {} us", MoveHelper::toString(best.move), best.value, Utils::getElapsedMicros(time)));
+        logger.log(format("best: {} --> {:.2f} evaluated in {} us", toString(best.move), best.value, getElapsedMicros(time)));
 
         return best;
     }

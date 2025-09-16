@@ -125,7 +125,7 @@ private:
             return NO_POS;
         }
 
-        return Positions::coordsToIndex(fenEnPassantPosition);
+        return coordsToIndex(fenEnPassantPosition);
     }
 
     static string chessBoardToFEN(const Board& board) {
@@ -135,7 +135,7 @@ private:
         for (int i = 0; i < 64; i++) {
             const Piece piece = board.getPiece(i);
 
-            if (PieceHelper::isEmpty(piece)) {
+            if (_isEmpty(piece)) {
                 empty++;
             }
             else {
@@ -168,7 +168,7 @@ private:
         for (int i = 0; i < 64; i++) {
             const Piece piece = board.getPiece(i);
 
-            if (PieceHelper::isEmpty(piece)) {
+            if (_isEmpty(piece)) {
                 empty++;
             }
             else {
@@ -219,7 +219,7 @@ public:
             return "-";
         }
 
-        return Positions::indexToCoords(position);
+        return indexToCoords(position);
     }
 
     static string mirrorPositions(const string& fenChessBoard) {

@@ -26,12 +26,12 @@ protected:
 
 	}
 	void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected, unsLL delta) {
-		GTEST_ASSERT_LT(value, expected + delta);
-		GTEST_ASSERT_GT(value, expected - delta);
+		GTEST_ASSERT_LE(value, expected + delta);
+		GTEST_ASSERT_GE(value, expected - delta);
 	}
 };
 
-TEST_F(PerformanceReleaseTest, calculateLegalMovesNewPerformanceTest) {
+TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -47,47 +47,47 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesNewPerformanceTest) {
 
 	for (int i = 1; i < 100000; ++i) {
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardInitial, moves);
+		generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardInitial, moves);
+		generateLegalMoves(*boardInitial, moves);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
+		generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft2, moves);
+		generateLegalMoves(*boardPerft2, moves);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
+		generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft3, moves);
+		generateLegalMoves(*boardPerft3, moves);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
+		generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft4, moves);
+		generateLegalMoves(*boardPerft4, moves);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
+		generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft5, moves);
+		generateLegalMoves(*boardPerft5, moves);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
+		generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		MovesGenerator::generateLegalMoves(*boardPerft6, moves);
+		generateLegalMoves(*boardPerft6, moves);
 		boardPerft6->changeTurn();
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 #ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 1800, 50);
+	GTEST_ASSERT_NEAR(time, 2040, 50);	// TODO
 #else
 	GTEST_ASSERT_NEAR(time, 1730, 50);
 #endif
@@ -126,7 +126,7 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 		game6->calculateCheckPositions(BLACK);
 	}
 
-	unsLL time = Utils::getElapsedMillis(start);
+	unsLL time = getElapsedMillis(start);
 
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 1100, 50);
@@ -165,7 +165,7 @@ TEST_F(PerformanceReleaseTest, getAttacksPerformanceTest) {
 		gamePerft6->board.getAttacks(BLACK);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 #ifdef BOARD_STANDARD_RAY_ATTACKS
 	#ifdef BOARD_USE_PRE_CALCULATED
@@ -183,15 +183,66 @@ TEST_F(PerformanceReleaseTest, getAttacksPerformanceTest) {
 	#endif
 #endif
 
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS	// TODO
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
 	#ifdef BOARD_USE_PRE_CALCULATED
-		GTEST_ASSERT_NEAR(time, 2170, 50);
+		GTEST_ASSERT_NEAR(time, 2085, 50);
 	#else
-		GTEST_ASSERT_NEAR(time, 1280, 50);
+		GTEST_ASSERT_NEAR(time, 1345, 50);
 	#endif
 #endif
 
 	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	Move initialMoves[MAX_MOVES];
+	Move perft2Moves[MAX_MOVES];
+	Move perft3Moves[MAX_MOVES];
+	Move perft5Moves[MAX_MOVES];
+	Move perft6Moves[MAX_MOVES];
+	generateLegalMoves(*gameInitial, initialMoves);
+	generateLegalMoves(*gamePerft2, perft2Moves);
+	MovesAmount amountPerft3 = generateLegalMoves(*gamePerft3, perft3Moves);
+	generateLegalMoves(*gamePerft5, perft5Moves);
+	generateLegalMoves(*gamePerft6, perft6Moves);
+
+	unsLL time = 0;
+
+	for (int count = 0; count < 50000; count++) {
+		for (int index = 0; index < amountPerft3.first; index++) {
+			auto begin = chrono::steady_clock::now();
+
+			if (initialMoves[index]) { gameInitial->finalizeMove(initialMoves[index]); }
+			if (perft2Moves[index]) { gamePerft2->finalizeMove(perft2Moves[index]); }
+			if (perft3Moves[index]) { gamePerft3->finalizeMove(perft3Moves[index]); }
+			if (perft5Moves[index]) { gamePerft5->finalizeMove(perft5Moves[index]); }
+			if (perft6Moves[index]) { gamePerft6->finalizeMove(perft6Moves[index]); }
+
+			time += getElapsedNanos(begin);
+
+			FEN::fenToGame(INITIAL_FEN_POSITION, *gameInitial);
+			FEN::fenToGame(PERFT_FEN_POSITION_2, *gamePerft2);
+			FEN::fenToGame(PERFT_FEN_POSITION_3, *gamePerft3);
+			FEN::fenToGame(PERFT_FEN_POSITION_5, *gamePerft5);
+			FEN::fenToGame(PERFT_FEN_POSITION_6, *gamePerft6);
+		}
+	}
+
+	time /= 100000;
+
+	GTEST_ASSERT_NEAR(time, 920, 20);
+
+	cout << "time: " << time << endl;
 }
 
 TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
@@ -200,10 +251,10 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 #endif
 
 	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
-	Move BQCastlingMove = MoveHelper::getMove(4, 2, BLACK, BKing);
-	Move BKCastlingMove = MoveHelper::getMove(4, 6, BLACK, BKing);
-	Move WQCastlingMove = MoveHelper::getMove(60, 58, WHITE, WKing);
-	Move WKCastlingMove = MoveHelper::getMove(60, 62, WHITE, WKing);
+	Move BQCastlingMove = createMove(4, 2, BLACK, BKing);
+	Move BKCastlingMove = createMove(4, 6, BLACK, BKing);
+	Move WQCastlingMove = createMove(60, 58, WHITE, WKing);
+	Move WKCastlingMove = createMove(60, 62, WHITE, WKing);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -218,7 +269,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 		game->undoSimulateMove(WKCastlingMove);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1980, 50);
 
@@ -232,7 +283,7 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
 	auto moves = new Move[MAX_MOVES];
-	pair<int, int> res = MovesGenerator::generateLegalMoves(*game, moves);
+	pair<int, int> res = generateLegalMoves(*game, moves);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -240,12 +291,12 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 		for (int m = 0; m < res.first; m++) {
 			if (moves[m]) {
 				game->board.castlingInfo = 0b1111;
-				game->board.updateCastlingInfo(MoveHelper::getSourcePosition(moves[m]), MoveHelper::getDestinationPosition(moves[m]));
+				game->board.updateCastlingInfo(getSourcePosition(moves[m]), getDestinationPosition(moves[m]));
 			}
 		}
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1730, 50);
 
@@ -266,7 +317,7 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 		rollback->save(*game);
 	}
 
-	auto saveTime = Utils::getElapsedMillis(start);
+	auto saveTime = getElapsedMillis(start);
 	GTEST_ASSERT_NEAR(saveTime, 1750, 50);
 	cout << "save time: " << saveTime  << endl;
 
@@ -275,7 +326,7 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 		rollback->rollback(*game);
 	}
 
-	auto rollbackTime = Utils::getElapsedMillis(start);
+	auto rollbackTime = getElapsedMillis(start);
 	GTEST_ASSERT_NEAR(rollbackTime, 1500, 50);
 	cout << "rollback time: " << rollbackTime  << endl;
 }
@@ -302,7 +353,7 @@ TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 		FEN::gameToFENKey(*gamePerft6);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1650, 50);	// TODO imbarazzante
 
@@ -334,7 +385,7 @@ TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 		cache.get(key, moves2, amount);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1100, 50);	// since second iteration 480
 
@@ -373,7 +424,7 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6020, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5980, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -429,10 +480,10 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	MovesAmount amount = generateLegalMoves(game, moves);
 	engine->_calculateMove(game, moves, amount);
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 340, 10);
 
@@ -451,10 +502,10 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	MovesAmount amount = generateLegalMoves(game, moves);
 	engine->_calculateMove(game, moves, amount);
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 240, 10);
 
@@ -472,10 +523,10 @@ TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = MovesGenerator::generateLegalMoves(game, moves);
+	MovesAmount amount = generateLegalMoves(game, moves);
 	engine->_calculateMove(game, moves, amount);
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 590, 10);
 

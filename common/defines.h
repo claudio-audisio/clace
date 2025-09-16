@@ -4,9 +4,9 @@
 
 #define BOARD_STANDARD_RAY_ATTACKS
 //#define BOARD_BRANCHLESS_RAY_ATTACKS
-//#define BOARD_ONTHEFLY_RAY_ATTACKS	// TODO gli xray hanno dei problemi (eastRay per esempio) e anche l'uso di sliding attacks
+//#define BOARD_ONTHEFLY_RAY_ATTACKS
 
-//#define VTUNE_PROFILER
+//#define PROFILER
 //#define PERFT_USE_CACHE
 
 #define PERFORMANCE_TESTS

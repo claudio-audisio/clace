@@ -18,7 +18,7 @@ protected:
 };
 
 TEST_F(BFEngineTest, ConstructorTest) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
 	auto engine = new BF_Engine(3);
@@ -28,7 +28,7 @@ TEST_F(BFEngineTest, ConstructorTest) {
 }
 
 TEST_F(BFEngineTest, Depth1Test) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
@@ -36,11 +36,11 @@ TEST_F(BFEngineTest, Depth1Test) {
 	auto engine = new BF_Engine(1);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
+	EXPECT_EQ(toString(best.move), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth2Test) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
@@ -48,11 +48,11 @@ TEST_F(BFEngineTest, Depth2Test) {
 	auto engine = new BF_Engine(2);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
+	EXPECT_EQ(toString(best.move), "e2e4");
 }
 
 TEST_F(BFEngineTest, Depth3Test) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
@@ -60,11 +60,11 @@ TEST_F(BFEngineTest, Depth3Test) {
 	auto engine = new BF_Engine(3);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(MoveHelper::toString(best.move), "e2e3");
+	EXPECT_EQ(toString(best.move), "e2e3");
 }
 
 TEST_F(BFEngineTest, Depth4Test) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
@@ -72,11 +72,11 @@ TEST_F(BFEngineTest, Depth4Test) {
 	auto engine = new BF_Engine(4);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(MoveHelper::toString(best.move), "e2e3");
+	EXPECT_EQ(toString(best.move), "e2e3");
 }
 
 TEST_F(BFEngineTest, Depth5Test) {
-#ifndef VTUNE_PROFILER
+#ifndef PROFILER
 	GTEST_SKIP();
 #endif
 	Game game;
@@ -84,6 +84,6 @@ TEST_F(BFEngineTest, Depth5Test) {
 	auto engine = new BF_Engine(5);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(MoveHelper::toString(best.move), "e2e4");
+	EXPECT_EQ(toString(best.move), "e2e4");
 }
 

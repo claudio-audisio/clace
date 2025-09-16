@@ -23,11 +23,11 @@ public:
 	void initPlayers(Player* white, Player* black);
 	Evaluation calculateMove();
 	MoveResult finalizeMove(Move& move);
-	MoveResult finalizeMoveNew(Move& move);
 	MoveResult applyMove(Move& move);
-	MoveResult applyMoveNew(Move& move);
 	void applyMoves(list<Move>& moves);
 	void simulateMove(Move& move);
+	Piece completeEnPassant(const Move& move);
+	void completePawnPromotion(const Move& move);
     void undoSimulateMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
@@ -35,9 +35,6 @@ public:
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
 	bool checkControl(const Move& move);
-	void updateEnPassantInfo(const Move& move);
-	Piece completeEnPassant(const Move& move);
-	void completePawnPromotion(const Move& move);
 	void changeTurn();
 	Side getSide(Position position) const;
 	void save();
@@ -46,7 +43,7 @@ public:
 	bool isComputerToMove() const;
 	void setLastMove(const Move& move);
 	Game* duplicate();
-    string printMovesHistory(int depth) const;
+    string printMovesHistory(int depth = 0) const;
     string printCastlingInfo() const;
 	string getCapturedList(Side side);
 	void calculateCheckPositions(Side side);
@@ -62,11 +59,11 @@ public:
 	}
 
     Side getOppositeSide() const {
-		return BLACK - sideToMove;
+		return OPPOSITE(sideToMove);
 	}
 
 	Board board;
-	deque<Move> movesHistory;	// TODO renderla thread safe
+	deque<Move> movesHistory;	// TODO renderla thread safe (davvero necessario?)
 	Rollback rollback;
 	CheckStatus checkStatus;
 	Move lastMove = 0;

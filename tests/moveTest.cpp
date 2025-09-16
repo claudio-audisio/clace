@@ -40,14 +40,14 @@ TEST_P(ConstructorTest, decorateTest) {
     TestParams* params = GetParam();
 
     if (params->sourcePosition != NO_POS) {
-        Move move = MoveHelper::getMove(params->stringMove, params->side);
+        Move move = createMove(params->stringMove, params->side);
 
-        EXPECT_EQ(MoveHelper::getSourcePosition(move), params->sourcePosition);
-        EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
-        EXPECT_EQ(MoveHelper::getSide(move), params->side);
+        EXPECT_EQ(getSourcePosition(move), params->sourcePosition);
+        EXPECT_EQ(getDestinationPosition(move), params->destinationPosition);
+        EXPECT_EQ(getMoveSide(move), params->side);
     }
     else {
-    	EXPECT_ANY_THROW(MoveHelper::getMove(params->stringMove, params->side));
+    	EXPECT_ANY_THROW(createMove(params->stringMove, params->side));
     }
 }
 
@@ -90,13 +90,12 @@ class DecorateTest : public ::testing::TestWithParam<TestParams2*> {};
 TEST_P(DecorateTest, decorateTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition), params->piece, game->board.enPassantPosition, game->isComputerToMove());
+    Move move = createMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition), params->piece, game->board.enPassantPosition);
 
-    EXPECT_EQ(MoveHelper::getPiece(move), params->piece);
-    EXPECT_EQ(MoveHelper::isCastling(move), params->isCastling);
-    EXPECT_EQ(MoveHelper::isEnPassant(move), params->isEnPassant);
-    EXPECT_EQ(MoveHelper::isPawnPromotion(move), params->isPawnPromotion);
-    //GTEST_ASSERT_TRUE(MoveHelper::isComputer(move));
+    EXPECT_EQ(getPiece(move), params->piece);
+    EXPECT_EQ(isCastling(move), params->isCastling);
+    EXPECT_EQ(isEnPassant(move), params->isEnPassant);
+    EXPECT_EQ(isPawnPromotion(move), params->isPawnPromotion);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -114,15 +113,112 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
+TEST_F(MoveTest, getTypeTest) {
+	Move move = createMove(60, 52, WHITE, WKing, NO_POS);
+
+	EXPECT_EQ(NORMAL, getType(move));
+
+	setCastling(move, true);
+
+	EXPECT_EQ(CASTLING, getType(move));
+
+	setCastling(move, false);
+	setEnPassant(move, true);
+
+	EXPECT_EQ(EN_PASSANT, getType(move));
+
+	setEnPassant(move, false);
+	setPawnPromotion(move, true);
+
+	EXPECT_EQ(PROMOTION, getType(move));
+}
+
+TEST_F(MoveTest, getMoveResultTest) {
+	Move move = createMove(60, 52, WHITE, WKing, NO_POS);
+
+	EXPECT_EQ(NORMAL, getType(move));
+
+	MoveResult moveResult = getMoveResult(false, getType(move));
+
+	GTEST_ASSERT_FALSE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	moveResult = getMoveResult(true, getType(move));
+
+	GTEST_ASSERT_TRUE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	setCastling(move, true);
+
+	EXPECT_EQ(CASTLING, getType(move));
+
+	moveResult = getMoveResult(false, getType(move));
+
+	GTEST_ASSERT_FALSE(isCapturedMR(moveResult));
+	GTEST_ASSERT_TRUE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	moveResult = getMoveResult(true, getType(move));
+
+	GTEST_ASSERT_TRUE(isCapturedMR(moveResult));
+	GTEST_ASSERT_TRUE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	setCastling(move, false);
+	setEnPassant(move, true);
+
+	EXPECT_EQ(EN_PASSANT, getType(move));
+
+	moveResult = getMoveResult(false, getType(move));
+
+	GTEST_ASSERT_FALSE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_TRUE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	moveResult = getMoveResult(true, getType(move));
+
+	GTEST_ASSERT_TRUE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_TRUE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_FALSE(isPromotedMR(moveResult));
+
+	setEnPassant(move, false);
+	setPawnPromotion(move, true);
+
+	EXPECT_EQ(PROMOTION, getType(move));
+
+	moveResult = getMoveResult(false, getType(move));
+
+	GTEST_ASSERT_FALSE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_TRUE(isPromotedMR(moveResult));
+
+	moveResult = getMoveResult(true, getType(move));
+
+	GTEST_ASSERT_TRUE(isCapturedMR(moveResult));
+	GTEST_ASSERT_FALSE(isCastlingMR(moveResult));
+	GTEST_ASSERT_FALSE(isEnPassantMR(moveResult));
+	GTEST_ASSERT_TRUE(isPromotedMR(moveResult));
+}
+
+
 class PositionsTest : public ::testing::TestWithParam<Position> {};
 
 TEST_P(PositionsTest, positionsTest) {
     Position position = GetParam();
     Move move = 0;
-    MoveHelper::setSourcePosition(move, position);
-    MoveHelper::setDestinationPosition(move, position);
-    EXPECT_EQ(position, MoveHelper::getSourcePosition(move));
-    EXPECT_EQ(position, MoveHelper::getDestinationPosition(move));
+    setSourcePosition(move, position);
+    setDestinationPosition(move, position);
+    EXPECT_EQ(position, getSourcePosition(move));
+    EXPECT_EQ(position, getDestinationPosition(move));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -137,8 +233,8 @@ class PiecesTest : public ::testing::TestWithParam<Piece> {};
 TEST_P(PiecesTest, piecesTest) {
     Piece piece = GetParam();
     Move move = 0;
-    MoveHelper::setPiece(move, piece);
-    EXPECT_EQ(piece, MoveHelper::getPiece(move));
+    setPiece(move, piece);
+    EXPECT_EQ(piece, getPiece(move));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -167,11 +263,11 @@ class ParseUciMoveTest : public ::testing::TestWithParam<TestParams3*> {};
 
 TEST_P(ParseUciMoveTest, parseUciMoveTest) {
 	TestParams3* params = GetParam();
-	Move move = MoveHelper::parseUciMove(params->uciMove);
+	Move move = parseUciMove(params->uciMove);
 
-	EXPECT_EQ(MoveHelper::getSourcePosition(move), params->sourcePosition);
-	EXPECT_EQ(MoveHelper::getDestinationPosition(move), params->destinationPosition);
-	EXPECT_EQ(MoveHelper::getPromotion(move), params->promotion);
+	EXPECT_EQ(getSourcePosition(move), params->sourcePosition);
+	EXPECT_EQ(getDestinationPosition(move), params->destinationPosition);
+	EXPECT_EQ(getPromotion(move), params->promotion);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -189,14 +285,14 @@ class ToUciMoveTest : public ::testing::TestWithParam<TestParams3*> {};
 
 TEST_P(ToUciMoveTest, toUciMoveTest) {
 	TestParams3* params = GetParam();
-	Move move = MoveHelper::getMove(params->sourcePosition, params->destinationPosition, WHITE);
-	MoveHelper::setPromotion(move, params->promotion);
+	Move move = createMove(params->sourcePosition, params->destinationPosition, WHITE);
+	setPromotion(move, params->promotion);
 
 	if (params->promotion != Empty) {
-		MoveHelper::setPawnPromotion(move, true);
+		setPawnPromotion(move, true);
 	}
 
-	EXPECT_EQ(MoveHelper::toUciMove(move), params->uciMove);
+	EXPECT_EQ(toUciMove(move), params->uciMove);
 }
 
 INSTANTIATE_TEST_SUITE_P(

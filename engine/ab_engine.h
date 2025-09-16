@@ -64,7 +64,7 @@ public:
 			game.applyMove(move);
 			moveUnderEvaluation = move;
 			Evaluation evaluation = evaluate(game, depth + 1);
-			const Side side = MoveHelper::getSide(move);
+			const Side side = getMoveSide(move);
 
 			if (isBestEvaluation(side, evaluation.second, best.second)) {
 				best.first = move;
@@ -73,12 +73,12 @@ public:
 				if (side == WHITE) {
 					if (best.second > alpha) {
 						alpha = best.second;
-						logger.log(format("new alpha {} --> {:.2f}", MoveHelper::toString(best.first), best.second));
+						logger.log(format("new alpha {} --> {:.2f}", toString(best.first), best.second));
 					}
 				} else {
 					if (best.second < beta) {
 						beta = best.second;
-						logger.log(format("new beta {} --> {:.2f}", MoveHelper::toString(best.first), best.second));
+						logger.log(format("new beta {} --> {:.2f}", toString(best.first), best.second));
 					}
 				}
 			}
@@ -86,32 +86,32 @@ public:
 			if (depth > 0) {
 				if (side == WHITE) {
 					if (evaluation.second > beta) {
-						logger.log(format("{} --> {:.2f} vs beta {:.2f}: beta-cutoff", MoveHelper::toString(move), evaluation.second, beta));
+						logger.log(format("{} --> {:.2f} vs beta {:.2f}: beta-cutoff", toString(move), evaluation.second, beta));
 						game.rollbackLastMove();
 						return evaluation;
 					}
 				} else {
 					if (evaluation.second < alpha) {
-						logger.log(format("{} --> {:.2f} vs alpha {:.2f}: alpha-cutoff", MoveHelper::toString(move), evaluation.second, alpha));
+						logger.log(format("{} --> {:.2f} vs alpha {:.2f}: alpha-cutoff", toString(move), evaluation.second, alpha));
 						game.rollbackLastMove();
 						return evaluation;
 					}
 				}
 			} else {
-				logger.log(format("{} --> alpha {:.2f} - beta {:.2f}", MoveHelper::toString(move), alpha, beta));
+				logger.log(format("{} --> alpha {:.2f} - beta {:.2f}", toString(move), alpha, beta));
 			}
 
 			game.rollbackLastMove();
 		}
 
-		logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), MoveHelper::toString(best.first), best.second));
+		logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), toString(best.first), best.second));
 		return best;
 	}
 
 	Evaluation evaluate(Game& game, unsigned int currentDepth) {
 		game.verifyChecks();
 		vector<Move>& moves = pool->getVector(currentDepth - 1);
-		MovesGenerator::generateLegalMoves(game, moves);
+		generateLegalMoves(game, moves);
 		EndGameType endGame = game.checkEndGame(moves.empty());
 
 		if (endGame != NONE) {

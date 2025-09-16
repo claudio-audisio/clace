@@ -6,12 +6,13 @@
 #include "../common/types.h"
 #include "../common/constants.h"
 #include "../common/bitwise.h"
-#include "piece.h"
 #include "../utils/utils.h"
 #include "../utils/pieceHelper.h"
 #include "attackBoards.h"
 #include "../common/defines.h"
-
+#include "../utils/boardUtils.h"
+#include "../utils/positions.h"
+#include "../move/move.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ public:
 	Rawboard _OPP_PIECES[2];
 	Rawboard _PIECES[2];
 
-	inline Rawboard PIECES(const Side side) {
+	Rawboard PIECES(const Side side) {
 		// TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
 #ifdef BOARD_USE_PRE_CALCULATED
 		if (!_PIECES[side]) {
@@ -53,7 +54,7 @@ public:
 #endif
 	}
 
-	inline Rawboard OPP_PIECES(const Side side) {
+	Rawboard OPP_PIECES(const Side side) {
 #ifdef BOARD_USE_PRE_CALCULATED
 		if (!_OPP_PIECES[side]) {
 			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
@@ -89,67 +90,70 @@ public:
 #endif
 
     void reset();
-	bool equals(const Board& board);
+	bool equals(const Board& board) const;
 	void set(const Board& board);
-	void toSpaces(list<Position>& spaces);
 
-	int getPieceCount(const Piece piece) const {
+	unsigned int getPieceCount(const Piece piece) const {
 		return popcount(pieceBoards[piece]);
 	}
 
-	inline bool isEmpty(const Position position) const {
+	Side getSide(const Position position) const {
+		return _getSide(piecePositions[position]);
+	}
+
+	bool isEmpty(const Position position) const {
 		return (EMPTY & posInd(position)) != 0L;
 	}
 
-	inline bool isWhite(const Position position) const {
-		return PieceHelper::isWhite(piecePositions[position]);
+	bool isWhite(const Position position) const {
+		return _isWhite(piecePositions[position]);
 	}
 
-	inline bool isBlack(const Position position) const {
-		return PieceHelper::isBlack(piecePositions[position]);
+	bool isBlack(const Position position) const {
+		return _isBlack(piecePositions[position]);
 	}
 
-	inline bool isPawn(const Position position) const {
+	bool isPawn(const Position position) const {
 		return ((pieceBoards[WPawn] | pieceBoards[BPawn]) & posInd(position)) != 0L;
 	}
 
-	inline bool isKnight(const Position position) const {
+	bool isKnight(const Position position) const {
 		return ((pieceBoards[WKnight] | pieceBoards[BKnight]) & posInd(position)) != 0L;
 	}
 
-	inline bool isBishop(const Position position) const {
+	bool isBishop(const Position position) const {
 		return ((pieceBoards[WBishop] | pieceBoards[BBishop]) & posInd(position)) != 0L;
 	}
 
-	inline bool isRook(const Position position) const {
+	bool isRook(const Position position) const {
 		return ((pieceBoards[WRook] | pieceBoards[BRook]) & posInd(position)) != 0L;
 	}
 
-	inline bool isRook(const Position position, const Side side) const {
+	bool isRook(const Position position, const Side side) const {
 		return (pieceBoards[WRook + side] & posInd(position)) != 0;
 	}
 
-	inline bool isQueen(const Position position) const {
+	bool isQueen(const Position position) const {
 		return ((pieceBoards[WQueen] | pieceBoards[BQueen]) & posInd(position)) != 0L;
 	}
 
-	inline bool isKing(const Position position) const {
+	bool isKing(const Position position) const {
 		return ((pieceBoards[WKing] | pieceBoards[BKing]) & posInd(position)) != 0L;
 	}
 
-	inline Position getWhiteKingPosition() const {
-		return Utils::getFirstPos(pieceBoards[WKing]);
+	Position getWhiteKingPosition() const {
+		return getFirstPos(pieceBoards[WKing]);
 	}
 
-	inline Position getBlackKingPosition() const {
-		return Utils::getFirstPos(pieceBoards[BKing]);
+	Position getBlackKingPosition() const {
+		return getFirstPos(pieceBoards[BKing]);
 	}
 
-	inline Piece getPiece(const Position position) const {
+	Piece getPiece(const Position position) const {
 		return piecePositions[position];
 	}
 
-	inline Piece setPiece(const Position position, const Piece piece) {
+	Piece setPiece(const Position position, const Piece piece) {
 		const Piece oldPiece = getPiece(position);
 		const Rawboard posIndex = posInd(position);
 		pieceBoards[oldPiece] &= ~posIndex;
@@ -161,24 +165,20 @@ public:
 		return oldPiece;
 	}
 
-	inline void setEmpty(const Position position, const Piece oldPiece) {
+	void setEmpty(const Position position, const Piece oldPiece) {
 		const Rawboard posIndex = posInd(position);
 		pieceBoards[oldPiece] &= ~posIndex;
 		pieceBoards[Empty] |= posIndex;
 		piecePositions[position] = Empty;
 	}
 
-	inline Piece setEmpty(const Position position) {
+	Piece setEmpty(const Position position) {
 		const Piece oldPiece = getPiece(position);
 		setEmpty(position, oldPiece);
 		return oldPiece;
 	}
 
-	inline Piece move(const Position source, const Position destination, Piece piece) {
-		return move(source, destination, piece, false);
-	}
-
-	inline Piece move(const Position source, const Position destination, Piece piece, const bool isCastling) {
+	Piece simulateMove(const Position source, const Position destination, const Piece piece, const bool isCastling) {
 		if (isCastling) {
 			castlingMove(source, destination);
 #ifdef BOARD_USE_PRE_CALCULATED
@@ -189,16 +189,67 @@ public:
 
 		const Piece oldPiece = setPiece(destination, piece);
 		setEmpty(source, piece);
+
 		return oldPiece;
 	}
 
-	void updateCastlingInfo(const Position source, const Position destination) {
-		castlingInfo &= CASTLING_MASK[source];
-		castlingInfo &= CASTLING_MASK[destination];
+	Piece move(const Position source, const Position destination, Piece piece, const MoveType type = NORMAL, const Piece promotionPiece = Empty) {
+		switch (type) {
+		case NORMAL: {
+				const Piece oldPiece = setPiece(destination, piece);
+				setEmpty(source, piece);
+				updateEnPassantInfo(source, destination, piece);
+				updateCastlingInfo(source, destination);
+				return oldPiece;
+				}
+		case CASTLING: {
+				enPassantPosition = NO_POS;
+				castlingMove(source, destination);
+				updateCastlingInfo(source, destination);
+#ifdef BOARD_USE_PRE_CALCULATED
+				resetCalculated();
+#endif
+				return Empty;
+		}
+		case EN_PASSANT: {
+				enPassantPosition = NO_POS;
+				setPiece(destination, piece);
+				setEmpty(source, piece);
+				return setEmpty(destination + (piece == WPawn ? 8 : -8));
+		}
+		case PROMOTION: {
+				if (promotionPiece == Empty) { throw runtime_error("promotion piece not set"); }
+				enPassantPosition = NO_POS;
+				const Piece oldPiece = setPiece(destination, piece);
+				setPiece(destination, promotionPiece);
+				setEmpty(source, piece);
+				updateCastlingInfo(source, destination);
+				return oldPiece;
+		}
+		default: throw runtime_error("unexpected move type");
+		}
 	}
 
-	inline Position getKingPosition(const Side side) {
-		return Utils::getFirstPos(pieceBoards[WKing + side]);
+	void updateCastlingInfo(const Position source, const Position destination) {
+		castlingInfo &= CASTLING_INFO_MASK[source];
+		castlingInfo &= CASTLING_INFO_MASK[destination];
+	}
+
+	void updateEnPassantInfo(const Position source, const Position destination, const Piece piece) {
+		const Side side = _getSide(piece);
+
+		if (_isPawn(piece) &&
+			isSecondRow(source, side) &&
+			isFourthRow(destination, side)) {
+			enPassantPosition = source - 8 + (16 * side);
+			}
+		else {
+			enPassantPosition = NO_POS;
+		}
+	}
+
+	Position getKingPosition(const Side side) const {
+		return getFirstPos(pieceBoards[WKing + side]);
 	}
 
 	Rawboard getDestinationPositions(const Position position) {
@@ -223,25 +274,25 @@ public:
 		};
 	}
 
-	inline Rawboard getAttacks(const Side side) {
+	Rawboard getAttacks(const Side side) {
 		return getPawnAttacks(side) | getKnightAttacks(side) | getBishopAttacks(side) | getRookAttacks(side) | getQueenAttacks(side) | getKingAttacks(side);
 	}
 
-	inline Rawboard getKingAttacks(const Side side) {
-		const Position position = Utils::getFirstPos(pieceBoards[WKing + side]);
+	Rawboard getKingAttacks(const Side side) {
+		const Position position = getFirstPos(pieceBoards[WKing + side]);
 		return kingAttacks[position] & (EMPTY | OPP_PIECES(side));
 	}
 
-	inline Rawboard kingAttack(const Position position, const Rawboard opposite) {
+	Rawboard kingAttack(const Position position, const Rawboard opposite) {
 		return kingAttacks[position] & (EMPTY | opposite);
 	}
 
-	inline Rawboard getKnightAttacks(const Side side) {
+	Rawboard getKnightAttacks(const Side side) {
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WKnight + side];
 
 		while (board) {
-			const Position position = Utils::getFirstPos(board);
+			const Position position = getFirstPos(board);
 			attacks |= knightAttacks[position];
 			board &= (board - 1);
 		}
@@ -249,18 +300,18 @@ public:
 		return attacks & (EMPTY | OPP_PIECES(side));
 	}
 
-	inline Rawboard knightAttack(const Position position, const Rawboard opposite) {
+	Rawboard knightAttack(const Position position, const Rawboard opposite) const {
 		return knightAttacks[position] & (EMPTY | opposite);
 	}
 
-	inline Rawboard getQueenAttacks(const Side side) {
+	Rawboard getQueenAttacks(const Side side) {
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WQueen + side];
 		const Rawboard occupied = ~EMPTY;
 		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
-			const Position position = Utils::getFirstPos(board);
+			const Position position = getFirstPos(board);
 			attacks |= queenAttacks(position, occupied, notSide);
 			board &= (board - 1);
 		}
@@ -268,19 +319,19 @@ public:
 		return attacks;
 	}
 
-	inline Rawboard queenAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
+	Rawboard queenAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
 		return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position) |
 				noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 	}
 
-	inline Rawboard getRookAttacks(const Side side) {
+	Rawboard getRookAttacks(const Side side) {
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WRook + side];
 		const Rawboard occupied = ~EMPTY;
 		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
-			const Position position = Utils::getFirstPos(board);
+			const Position position = getFirstPos(board);
 			attacks |= rookAttack(position, occupied, notSide);
 			board &= (board - 1);
 		}
@@ -288,18 +339,18 @@ public:
 		return attacks;
 	}
 
-	inline Rawboard rookAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
+	Rawboard rookAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
 		return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position)) & notSide;
 	}
 
-	inline Rawboard getBishopAttacks(const Side side) {
+	Rawboard getBishopAttacks(const Side side) {
 		Rawboard attacks = 0;
 		Rawboard board = pieceBoards[WBishop + side];
 		const Rawboard occupied = ~EMPTY;
 		const Rawboard notSide = ~PIECES(side);
 
 		while (board) {
-			const Position position = Utils::getFirstPos(board);
+			const Position position = getFirstPos(board);
 			attacks |= bishopAttack(position, occupied, notSide);
 			board &= (board - 1);
 		}
@@ -307,11 +358,9 @@ public:
 		return attacks;
 	}
 
-	inline Rawboard bishopAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
+	Rawboard bishopAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
 		return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 	}
-
-	//bool isUnderCheck(Position position, Side side);
 
 	Rawboard getPawnMoves(Side side);
     Rawboard getPawnMoves(Position position, Side side);
@@ -324,76 +373,66 @@ public:
 	Rawboard getKingCastling(Side side) const;
 	Rawboard getKingCastling(Position position, Side side) const;
 
-    Rawboard slidingAttack(Rawboard(*direction)(Rawboard), Rawboard position, Rawboard occupiedBoard) const;
-
-	// rays
-	inline Rawboard noWestAttack(const Rawboard occupied, const Position position) {
+    // rays
+	Rawboard noWestAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(noWestOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, noWestRay, position);
+		return getPositiveRayAttacks(occupied, noWestRay, position);
 #else
 		return getPositiveRayAttacks(occupied, NoWest, position);
 #endif
 	}
 
-	inline Rawboard northAttack(const Rawboard occupied, const Position position) {
+	Rawboard northAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(northOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, northRay, position);
+		return getPositiveRayAttacks(occupied, northRay, position);
 #else
 		return getPositiveRayAttacks(occupied, North, position);
 #endif
 	}
 
-	inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
+	Rawboard noEastAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(noEastOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, noEastRay, position);
+		return getPositiveRayAttacks(occupied, noEastRay, position);
 #else
 		return getPositiveRayAttacks(occupied, NoEast, position);
 #endif
 	}
 
-	inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
+	Rawboard eastAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(eastOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, eastRay, position);
+		return getNegativeRayAttacks(occupied, eastRay, position);
 #else
 		return getNegativeRayAttacks(occupied, East, position);
 #endif
 	}
 
-	inline Rawboard soEastAttack(const Rawboard occupied, const Position position) {
+	Rawboard soEastAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(soEastOne, position, occupied);
-		return getPositiveRayAttacks(occupied, soEastRay, position);
+		return getNegativeRayAttacks(occupied, soEastRay, position);
 #else
 		return getNegativeRayAttacks(occupied, SoEast, position);
 #endif
 	}
 
-	inline Rawboard southAttack(const Rawboard occupied, const Position position) {
+	Rawboard southAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(southOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, southRay, position);
+		return getNegativeRayAttacks(occupied, southRay, position);
 #else
 		return getNegativeRayAttacks(occupied, South, position);
 #endif
 	}
 
-	inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
+	Rawboard soWestAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(soWestOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, soWestRay, position);
+		return getNegativeRayAttacks(occupied, soWestRay, position);
 #else
 		return getNegativeRayAttacks(occupied, SoWest, position);
 #endif
 	}
 
-	inline Rawboard westAttack(const Rawboard occupied, const Position position) {
+	Rawboard westAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return slidingAttack(westOne, position, occupied);
-		//return getPositiveRayAttacks(occupied, westRay, position);
+		return getPositiveRayAttacks(occupied, westRay, position);
 #else
 		return getPositiveRayAttacks(occupied, West, position);
 #endif
@@ -405,7 +444,7 @@ public:
 		Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
-			const Position firstBlockPos = Utils::getFirstPosReverse(blocker);
+			const Position firstBlockPos = getFirstPosReverse(blocker);
 			attacks ^= rayAttacks[direction][firstBlockPos];
 		}
 		return attacks;
@@ -415,7 +454,7 @@ public:
 		Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
-			const Position firstBlockPos = Utils::getFirstPos(blocker);
+			const Position firstBlockPos = getFirstPos(blocker);
 			attacks ^= rayAttacks[direction][firstBlockPos];
 		}
 		return attacks;
@@ -426,68 +465,68 @@ public:
 	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
 		const Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
+		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
 		return attacks ^ rayAttacks[direction][firstBlockPos];
 	}
 
 	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
 		const Rawboard attacks = rayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
 		return attacks ^ rayAttacks[direction][firstBlockPos];
 	}
 #endif
 
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	inline static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+	static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
 		const Rawboard attacks = direction(position);
 		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPosReverse(blocker | 1);
+		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
 		return attacks ^ direction(firstBlockPos);
 	}
 
-	inline static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+	static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
 		const Rawboard attacks = direction(position);
 		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = Utils::getFirstPos(blocker | 0x8000000000000000LL);
+		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
 		return attacks ^ direction(firstBlockPos);
 	}
 #endif
 
 	// One step
-	inline static Rawboard northOne(const Rawboard start) {
+	static Rawboard northOne(const Rawboard start) {
 		return (start >> 8) & SH_8DX_MSK;
 	}
 
-	inline static Rawboard noEastOne(const Rawboard start) {
+	static Rawboard noEastOne(const Rawboard start) {
 		return (start >> 7) & NOT_A_COL & SH_7DX_MSK;
 	}
 
-	inline static Rawboard eastOne(const Rawboard start) {
+	static Rawboard eastOne(const Rawboard start) {
 		return (start << 1) & NOT_A_COL;
 	}
 
-	inline static Rawboard soEastOne(const Rawboard start) {
+	static Rawboard soEastOne(const Rawboard start) {
 		return (start << 9) & NOT_A_COL;
 	}
 
-	inline static Rawboard southOne(const Rawboard start) {
+	static Rawboard southOne(const Rawboard start) {
 		return start << 8;
 	}
 
-	inline static Rawboard soWestOne(const Rawboard start) {
+	static Rawboard soWestOne(const Rawboard start) {
 		return (start << 7) & NOT_H_COL;
 	}
 
-	inline static Rawboard westOne(const Rawboard start) {
+	static Rawboard westOne(const Rawboard start) {
 		return (start >> 1) & NOT_H_COL & SH_1DX_MSK;
 	}
 
-	inline static Rawboard noWestOne(const Rawboard start) {
+	static Rawboard noWestOne(const Rawboard start) {
 		return (start >> 9) & NOT_H_COL & SH_9DX_MSK;
 	}
 
-	inline void castlingMove(const Position source, const Position destination) {
+	void castlingMove(const Position source, const Position destination) {
 		switch (source + destination) {
 			case BQCastling: {
 				pieceBoards[BKing] = BQC_King;
@@ -541,7 +580,7 @@ public:
 		}
 	}
 
-	inline void undoCastlingMove(const Position source, const Position destination) {
+    void undoCastlingMove(const Position source, const Position destination) {
 		switch (source + destination) {
 			case BQCastling: {
 				pieceBoards[BKing] = BC_King;
@@ -593,6 +632,32 @@ public:
 			}
 			default: assert(false);
 		}
+	}
+
+	unordered_set<Position>* getPiecePositions(const unordered_set<Piece>& pieces) const {
+		unordered_set<Position>* positions = new unordered_set<Position>();
+
+		for (Position i = 0; i < 64; i++) {
+			if (pieces.find(getPiece(i)) != pieces.end()) {
+				positions->insert(i);
+			}
+		}
+
+		return positions;
+	}
+
+	bool isOnXRay(const Position sourcePosition, const Position excludePosition) {
+		unordered_set<Position>* positions = getPiecePositions(XRAY_PIECES[OPPOSITE(getSide(sourcePosition))]);
+		positions->erase(excludePosition);
+		Rawboard xRayPositions = 0;
+
+		for (Position position : *positions) {
+			xRayPositions |= getDestinationPositions(position);
+		}
+
+		delete positions;
+
+		return isUnderCheck(xRayPositions, sourcePosition);
 	}
 
 };

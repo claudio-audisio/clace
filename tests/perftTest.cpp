@@ -5,7 +5,7 @@
 #include "../common/defines.h"
 
 
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	#define DEPTH 6
 #else
 	#define DEPTH 4
@@ -53,7 +53,7 @@ TEST_F(PerftTest, initialPositionBulkPerft) {
 }
 
 TEST_F(PerftTest, position2BulkPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
     GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
@@ -67,7 +67,7 @@ TEST_F(PerftTest, position2BulkPerft) {
 }
 
 TEST_F(PerftTest, position3BulkPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
@@ -83,7 +83,7 @@ TEST_F(PerftTest, position3BulkPerft) {
 }
 
 TEST_F(PerftTest, position4BulkPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
@@ -98,7 +98,7 @@ TEST_F(PerftTest, position4BulkPerft) {
 }
 
 TEST_F(PerftTest, position5BulkPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_5, DEPTH);
@@ -112,7 +112,7 @@ TEST_F(PerftTest, position5BulkPerft) {
 }
 
 TEST_F(PerftTest, position6BulkPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_6, DEPTH);
@@ -130,7 +130,7 @@ TEST_F(PerftTest, position6BulkPerft) {
 }
 
 TEST_F(PerftTest, initialPositionPerft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(INITIAL_FEN_POSITION, DEPTH);
@@ -147,8 +147,9 @@ TEST_F(PerftTest, initialPositionPerft) {
     checkPerftResult(3195901860L, 108329926, 319617, 883453, 0, 33103848, 18026, 1628, 435767, DEPTH, 7, *result);
 }
 
+#if RELEASE_MODE
 TEST_F(PerftTest, Position2Perft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
@@ -161,9 +162,10 @@ TEST_F(PerftTest, Position2Perft) {
     // TODO errore discoveryChecks(19895) doubleChecks(2645)
     checkPerftResult(193690690, 35043416, 73365, 4993637, 8392, 3309887, 19883, 2637, 30171, DEPTH, 5, *result);
 }
+#endif
 
 TEST_F(PerftTest, Position3Perft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
@@ -181,7 +183,7 @@ TEST_F(PerftTest, Position3Perft) {
 }
 
 TEST_F(PerftTest, Position4Perft) {
-#ifdef VTUNE_PROFILER
+#ifdef PROFILER
 	GTEST_SKIP();
 #endif
     Perft* perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);

@@ -55,14 +55,10 @@ static int positionsCount(Rawboard board) {
     return popcount(board);
 }
 
-static Side opposite(const Side side) {
-	return (side + SIDE_GAP) % (SIDE_GAP * 2);
-}
-
 static void boardToSpaces(Rawboard board, list<Position>& spaces) {
 	spaces.push_back(popcount(board));
 	while (board) {
-	    const Position space = Utils::getFirstPos(board);
+	    const Position space = getFirstPos(board);
 	    spaces.push_back(space);
 	    board = board >> space + 1;
 	}

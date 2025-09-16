@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "../board/piece.h"
 #include "../board/board.h"
 #include "../game/game.h"
 #include "../utils/fen.h"
@@ -132,7 +131,7 @@ public:
 		while (row <= 56) {
 			cout << " ";
 			for (int i = 0; i < 8; i++) {
-				cout << PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
+				cout << getPieceCode(board.getPiece(row + i)) << " ";
 			}
 			cout << endl;
 
@@ -147,7 +146,7 @@ public:
 		while (row <= 56) {
 			cout << " ";
 			for (int i = 0; i < 8; i++) {
-				cout << PieceHelper::getPieceCode(game.board.getPiece(row + i)) << " ";
+				cout << getPieceCode(game.board.getPiece(row + i)) << " ";
 			}
 
 			switch (row) {
@@ -171,7 +170,7 @@ public:
 				case 40: cout << "\t\tfen: " << FEN::gameToFEN(game); break;
 				case 48: {
 						if (game.lastMove != 0) {
-							cout << "\t\tlast move: " << MoveHelper::toString(game.lastMove);
+							cout << "\t\tlast move: " << toString(game.lastMove);
 						}
 						break;
 					}
@@ -200,7 +199,7 @@ public:
 		cout << " evaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game) << endl;
 
 		if (game.lastMove != 0) {
-			cout << " last move: " << MoveHelper::toString(game.lastMove) << " (" << (MoveHelper::isWhite(game.lastMove) ? "white" : "black") << ")" << endl;
+			cout << " last move: " << toString(game.lastMove) << " (" << (isWhite(game.lastMove) ? "white" : "black") << ")" << endl;
 		}
 
 		cout << " fen: " << FEN::gameToFEN(game) << endl;
@@ -261,7 +260,7 @@ public:
 			cout << "    " << ((64 - row) / 8) << " ║";
 
 			for (int i = 0; i < 8; i++) {
-				cout << " " << (char)PieceHelper::getPieceCode(board.getPiece(row + i)) << " ";
+				cout << " " << (char)getPieceCode(board.getPiece(row + i)) << " ";
 
 				if (i < 7) {
 					cout << "│";

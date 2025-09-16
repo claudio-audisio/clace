@@ -19,7 +19,7 @@ public:
 			++counter;
 			bool found = false;
 			for (Move move : moves) {
-				if (strcmp(MoveHelper::toString(move).c_str(), stringMove.c_str()) == 0) {
+				if (strcmp(toString(move).c_str(), stringMove.c_str()) == 0) {
 					found = true;
 					break;
 				}

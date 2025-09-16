@@ -26,7 +26,7 @@ TEST_P(IsOpponentTest, isOpponentTest) {
 	TestParams* params = GetParam();
 	Game game;
 	
-	EXPECT_EQ(PieceHelper::isOpponent(params->piece, params->opponentWhite), params->expectedResult);
+	EXPECT_EQ(_isOpponent(params->piece, params->opponentWhite), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -49,7 +49,7 @@ TEST_P(IsEmptyOrOpponentTest, isOpponentTest) {
 	TestParams* params = GetParam();
 	Game game;
 
-	EXPECT_EQ(PieceHelper::isEmptyOrOpponent(params->piece, params->opponentWhite), params->expectedResult);
+	EXPECT_EQ(_isEmptyOrOpponent(params->piece, params->opponentWhite), params->expectedResult);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -73,7 +73,7 @@ TEST_P(ValueOfTest, valueOfTest) {
 	Piece piece = get<1>(GetParam());
 	Game game;
 
-	EXPECT_EQ(PieceHelper::valueOf(stringPiece), piece);
+	EXPECT_EQ(valueOf(stringPiece), piece);
 }
 
 INSTANTIATE_TEST_SUITE_P(

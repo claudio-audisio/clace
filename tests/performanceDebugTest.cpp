@@ -61,7 +61,7 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 		gamePerft6->board.getQueenAttacks(BLACK);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1560, 50);	// BOARD_STANDARD_RAY_ATTACKS
 	//GTEST_ASSERT_NEAR(time, 1580, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
@@ -98,7 +98,7 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 		gamePerft6->board.getKnightAttacks(BLACK);
 	}
 
-	unsLL time = Utils::getElapsedMillis(begin);
+	unsLL time = getElapsedMillis(begin);
 
 	GTEST_ASSERT_NEAR(time, 1190, 50);	// BOARD_STANDARD_RAY_ATTACKS
 	//GTEST_ASSERT_NEAR(time, 1200, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
@@ -116,7 +116,7 @@ TEST_F(PerformanceDebugTest, stuffTest) {
 	Position source = 4;
 	Position destination = 2;
 
-	Move move = MoveHelper::getMove(source, destination, WHITE, BKing);
+	Move move = createMove(source, destination, WHITE, BKing);
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
 	Board board = game->getCopyBoard();

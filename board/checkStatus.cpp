@@ -25,7 +25,7 @@ void CheckStatus::addXRayPosition(const Position position, const Rawboard newPos
 
 void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
     if (move) {
-        check = isUnderCheck(checkPositions[MoveHelper::getDestinationPosition(move)], kingPosition);
+        check = isUnderCheck(checkPositions[getDestinationPosition(move)], kingPosition);
         discoveryCheck = isDiscoveryCheck(kingPosition, move);
         adjustChecks();
     }
@@ -35,9 +35,9 @@ void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
 }
 
 bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move& lastMove) const {
-    const Position destination = MoveHelper::getDestinationPosition(lastMove);
+    const Position destination = getDestinationPosition(lastMove);
 
-    if (MoveHelper::isEnPassant(lastMove) && MoveHelper::isCaptured(lastMove)) {
+    if (isEnPassant(lastMove) && isCaptured(lastMove)) {
         for (int pos = 0; pos < 64; pos++) {
             if (pos != destination && isUnderCheck(checkPositions[pos], kingPosition)) {
                 return true;

@@ -4,7 +4,7 @@
 #include "../utils/boardUtils.h"
 
 template <typename... SetOfPosition>
-bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
+static bool containsAll(list<Position> listOfPositions, SetOfPosition... positions) {
 	for (Position positionToCheck : {positions...}) {
 		bool found = false;
 		for (Position position : listOfPositions) {

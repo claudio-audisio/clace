@@ -1,11 +1,11 @@
 #include "rollback.h"
 #include "../game/game.h"
 
-Rollback::Rollback(unsigned int size) {
+Rollback::Rollback(const unsigned int size) {
 	this->size = size;
-	boards.reserve(size);
+	this->boards = static_cast<MoveInfo**>(malloc(size * sizeof(MoveInfo*)));
 	for (int i = 0; i < size; i++) {
-		boards.push_back(new MoveInfo());
+		boards[i] = new MoveInfo();
 	}
 }
 
@@ -13,9 +13,10 @@ Rollback::~Rollback() {
 	for (int i = 0; i < size; i++) {
 		delete boards[i];
 	}
+	free(boards);
 }
 
-void Rollback::save(Game& game) {
+void Rollback::save(const Game& game) {
 	if (index == size) {
 		boards[index] = new MoveInfo();
 		size++;
@@ -33,7 +34,7 @@ void Rollback::rollback(Game& game) {
 		throw runtime_error("asked rollback but here there is no data");
 	}
 
-	MoveInfo* moveInfo = boards[--index];
+	const MoveInfo* moveInfo = boards[--index];
 	game.board.set(moveInfo->board);
 	game.sideToMove = moveInfo->sideToMove;
 	game.fullMoves = moveInfo->fullMoves;
