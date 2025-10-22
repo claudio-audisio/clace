@@ -28,4 +28,8 @@ public:
 		return rand() % upper;
 	}
 
+	string getDescription() override {
+		return "R_Engine";
+	}
+
 };

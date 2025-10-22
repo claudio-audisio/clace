@@ -13,6 +13,11 @@ using namespace std;
 class FEN {
 public:
 
+    static bool isValid(const string& fen) {
+        // TODO
+        return true;
+    }
+
     static Game* fenToNewGame(const string& fenPosition) {
         Game* game = new Game();
         fenToGame(fenPosition, *game);
@@ -23,7 +28,7 @@ public:
     static void fenToGame(const string& fenPosition, Game& game) {
         vector<string>* tokens = tokenize(fenPosition, SEPARATOR, 6);
         fenToChessBoard(tokens->at(0), game);
-        game.sideToMove = (tokens->at(1) == "w" || tokens->at(1) == "W") ? WHITE : BLACK;
+        game.sideToMove = (tokens->at(1) == "w" || tokens->at(1) == "W") ? _WHITE : _BLACK;
         game.board.castlingInfo = fenToCastlingInfo(tokens->at(2));
         game.board.enPassantPosition =fenToEnPassantPosition(tokens->at(3));
         game.halfMoveClock = stoi(tokens->at(4));

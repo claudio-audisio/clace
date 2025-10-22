@@ -25,7 +25,7 @@ public:
 		this->evaluator = new BasicEvaluator();
 	};
 
-	Logger& logger = Logger::getInstance();
+	Messenger& messenger = Messenger::getInstance();
 	unsigned int depth;
 	IEvaluator* evaluator = nullptr;
 	VectorPool<Move>* pool = nullptr;
@@ -70,41 +70,41 @@ public:
 				best.first = move;
 				best.second = evaluation.second;
 
-				if (side == WHITE) {
+				if (side == _WHITE) {
 					if (best.second > alpha) {
 						alpha = best.second;
-						logger.log(format("new alpha {} --> {:.2f}", toString(best.first), best.second));
+						logger.log(format("new alpha {} --> {:.2f}", moveToString(best.first), best.second));
 					}
 				} else {
 					if (best.second < beta) {
 						beta = best.second;
-						logger.log(format("new beta {} --> {:.2f}", toString(best.first), best.second));
+						logger.log(format("new beta {} --> {:.2f}", moveToString(best.first), best.second));
 					}
 				}
 			}
 
 			if (depth > 0) {
-				if (side == WHITE) {
+				if (side == _WHITE) {
 					if (evaluation.second > beta) {
-						logger.log(format("{} --> {:.2f} vs beta {:.2f}: beta-cutoff", toString(move), evaluation.second, beta));
+						logger.log(format("{} --> {:.2f} vs beta {:.2f}: beta-cutoff", moveToString(move), evaluation.second, beta));
 						game.rollbackLastMove();
 						return evaluation;
 					}
 				} else {
 					if (evaluation.second < alpha) {
-						logger.log(format("{} --> {:.2f} vs alpha {:.2f}: alpha-cutoff", toString(move), evaluation.second, alpha));
+						logger.log(format("{} --> {:.2f} vs alpha {:.2f}: alpha-cutoff", moveToString(move), evaluation.second, alpha));
 						game.rollbackLastMove();
 						return evaluation;
 					}
 				}
 			} else {
-				logger.log(format("{} --> alpha {:.2f} - beta {:.2f}", toString(move), alpha, beta));
+				logger.log(format("{} --> alpha {:.2f} - beta {:.2f}", moveToString(move), alpha, beta));
 			}
 
 			game.rollbackLastMove();
 		}
 
-		logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), toString(best.first), best.second));
+		logger.log(format("best ({}): {}, {} --> {:.2f}", depth, game.printMovesHistory(depth - 1), moveToString(best.first), best.second));
 		return best;
 	}
 
@@ -140,7 +140,7 @@ public:
 	}
 
 	bool isBestEvaluation(Side side, double evaluation, double bestEvaluation) {
-		if (side == WHITE) {
+		if (side == _WHITE) {
 			return evaluation > bestEvaluation;
 		}
 

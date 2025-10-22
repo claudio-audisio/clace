@@ -47,9 +47,9 @@ TEST_F(BoardTest, ConstructorTest) {
 TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
-    EXPECT_EQ(~board.EMPTY, board.PIECES(WHITE) | board.PIECES(BLACK));
-	EXPECT_EQ(~board.PIECES(WHITE), board.EMPTY | board.OPP_PIECES(WHITE));
-	EXPECT_EQ(~board.PIECES(BLACK), board.EMPTY | board.OPP_PIECES(BLACK));
+    EXPECT_EQ(~board.EMPTY, board.PIECES(_WHITE) | board.PIECES(_BLACK));
+	EXPECT_EQ(~board.PIECES(_WHITE), board.EMPTY | board.OPP_PIECES(_WHITE));
+	EXPECT_EQ(~board.PIECES(_BLACK), board.EMPTY | board.OPP_PIECES(_BLACK));
     checkPositionCount(board, (unsigned int[]){32, 8, 8, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1});
     delete game;
 }
@@ -62,15 +62,15 @@ TEST_F(BoardTest, equalsTest) {
 
     ASSERT_TRUE(board.equals(board2));
 
-    Move move = createMove(48, 32, WHITE, WPawn, NO_POS);
+    Move move = createMove(48, 32, _WHITE, WPawn, NO_POS);
     game->applyMove(move);
     game2->applyMove(move);
 
     ASSERT_TRUE(board.equals(board2));
 
-    Move move2 = createMove(15, 31, BLACK, BPawn, NO_POS);
+    Move move2 = createMove(15, 31, _BLACK, BPawn, NO_POS);
     game->applyMove(move2);
-    Move move2_2 = createMove(15, 23, BLACK, BPawn, NO_POS);
+    Move move2_2 = createMove(15, 23, _BLACK, BPawn, NO_POS);
     game2->applyMove(move2_2);
 
     ASSERT_FALSE(board.equals(board2));
@@ -196,14 +196,14 @@ TEST_F(BoardTest, isRookWithSideTest) {
         GTEST_ASSERT_FALSE(board.isRook(i));
     }
     EXPECT_EQ(board.setPiece(0, BRook), Empty);
-    GTEST_ASSERT_FALSE(board.isRook(0, WHITE));
-    GTEST_ASSERT_TRUE(board.isRook(0, BLACK));
+    GTEST_ASSERT_FALSE(board.isRook(0, _WHITE));
+    GTEST_ASSERT_TRUE(board.isRook(0, _BLACK));
     EXPECT_EQ(board.setPiece(0, WRook), BRook);
-    GTEST_ASSERT_TRUE(board.isRook(0, WHITE));
-    GTEST_ASSERT_FALSE(board.isRook(0, BLACK));
+    GTEST_ASSERT_TRUE(board.isRook(0, _WHITE));
+    GTEST_ASSERT_FALSE(board.isRook(0, _BLACK));
     EXPECT_EQ(board.setPiece(0, WPawn), WRook);
-    GTEST_ASSERT_FALSE(board.isRook(0, WHITE));
-    GTEST_ASSERT_FALSE(board.isRook(0, BLACK));
+    GTEST_ASSERT_FALSE(board.isRook(0, _WHITE));
+    GTEST_ASSERT_FALSE(board.isRook(0, _BLACK));
 }
 
 TEST_F(BoardTest, isQueenTest) {
@@ -481,12 +481,12 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetKingAttacksTest,
     ::testing::Values(
-        new TestParams("8/8/8/3K4/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 18, 19, 20, 26, 28, 34, 35, 36 }),
-        new TestParams("8/8/8/8/8/5k2/8/8 w - - 0 1", BLACK, new list<Position>{ 36, 37, 38, 44, 46, 52, 53, 54 }),
-        new TestParams("K7/8/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 1, 8, 9 }),
-        new TestParams("8/8/8/8/8/8/6k1/8 w - - 0 1", BLACK, new list<Position>{ 45, 46, 47, 53, 55, 61, 62, 63 }),
-        new TestParams("8/8/1p6/K7/1P6/8/8/8 w - - 0 1", WHITE, new list<Position>{ 16, 17, 25, 32 }),
-        new TestParams("8/8/8/7P/6pk/8/8/8 w - - 0 1", BLACK, new list<Position>{ 30, 31, 46, 47 })
+        new TestParams("8/8/8/3K4/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 18, 19, 20, 26, 28, 34, 35, 36 }),
+        new TestParams("8/8/8/8/8/5k2/8/8 w - - 0 1", _BLACK, new list<Position>{ 36, 37, 38, 44, 46, 52, 53, 54 }),
+        new TestParams("K7/8/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 1, 8, 9 }),
+        new TestParams("8/8/8/8/8/8/6k1/8 w - - 0 1", _BLACK, new list<Position>{ 45, 46, 47, 53, 55, 61, 62, 63 }),
+        new TestParams("8/8/1p6/K7/1P6/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 16, 17, 25, 32 }),
+        new TestParams("8/8/8/7P/6pk/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 30, 31, 46, 47 })
     )
 );
 
@@ -510,20 +510,20 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetKingMovesTest,
     ::testing::Values(
-        new TestParams("8/8/8/3K4/8/8/8/8 w - - 0 1", WHITE, new list<Position>{18, 19, 20, 26, 28, 34, 35, 36}),
-        new TestParams("8/8/8/8/8/5k2/8/8 w - - 0 1", BLACK, new list<Position>{36, 37, 38, 44, 46, 52, 53, 54}),
-        new TestParams("K7/8/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{1, 8, 9}),
-        new TestParams("8/8/8/8/8/8/6k1/8 w - - 0 1", BLACK, new list<Position>{45, 46, 47, 53, 55, 61, 62, 63}),
-        new TestParams("8/8/1p6/K7/1P6/8/8/8 w - - 0 1", WHITE, new list<Position>{16, 17, 25, 32}),
-        new TestParams("8/8/8/7P/6pk/8/8/8 w - - 0 1", BLACK, new list<Position>{30, 31, 46, 47}),
-        new TestParams("4k3/8/8/8/8/8/8/8 w KQkq - 0 1", BLACK, new list<Position>{2, 3, 11, 12, 13, 5, 6}),
-        new TestParams("8/8/8/8/8/8/8/4K3 w KQkq - 0 1", WHITE, new list<Position>{58, 59, 51, 52, 53, 61, 62}),
-        new TestParams("4k3/8/8/8/8/8/8/8 w KQk - 0 1", BLACK, new list<Position>{3, 11, 12, 13, 5, 6}),
-        new TestParams("8/8/8/8/8/8/8/4K3 w Kkq - 0 1", WHITE, new list<Position>{59, 51, 52, 53, 61, 62}),
-        new TestParams("4k3/8/8/8/8/8/8/8 w KQq - 0 1", BLACK, new list<Position>{2, 3, 11, 12, 13, 5}),
-        new TestParams("8/8/8/8/8/8/8/4K3 w Qkq - 0 1", WHITE, new list<Position>{58, 59, 51, 52, 53, 61}),
-        new TestParams("4k3/8/8/8/8/8/8/8 w KQ - 0 1", BLACK, new list<Position>{3, 11, 12, 13, 5}),
-        new TestParams("8/8/8/8/8/8/8/4K3 w kq - 0 1", WHITE, new list<Position>{ 59, 51, 52, 53, 61 })
+        new TestParams("8/8/8/3K4/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{18, 19, 20, 26, 28, 34, 35, 36}),
+        new TestParams("8/8/8/8/8/5k2/8/8 w - - 0 1", _BLACK, new list<Position>{36, 37, 38, 44, 46, 52, 53, 54}),
+        new TestParams("K7/8/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{1, 8, 9}),
+        new TestParams("8/8/8/8/8/8/6k1/8 w - - 0 1", _BLACK, new list<Position>{45, 46, 47, 53, 55, 61, 62, 63}),
+        new TestParams("8/8/1p6/K7/1P6/8/8/8 w - - 0 1", _WHITE, new list<Position>{16, 17, 25, 32}),
+        new TestParams("8/8/8/7P/6pk/8/8/8 w - - 0 1", _BLACK, new list<Position>{30, 31, 46, 47}),
+        new TestParams("4k3/8/8/8/8/8/8/8 w KQkq - 0 1", _BLACK, new list<Position>{2, 3, 11, 12, 13, 5, 6}),
+        new TestParams("8/8/8/8/8/8/8/4K3 w KQkq - 0 1", _WHITE, new list<Position>{58, 59, 51, 52, 53, 61, 62}),
+        new TestParams("4k3/8/8/8/8/8/8/8 w KQk - 0 1", _BLACK, new list<Position>{3, 11, 12, 13, 5, 6}),
+        new TestParams("8/8/8/8/8/8/8/4K3 w Kkq - 0 1", _WHITE, new list<Position>{59, 51, 52, 53, 61, 62}),
+        new TestParams("4k3/8/8/8/8/8/8/8 w KQq - 0 1", _BLACK, new list<Position>{2, 3, 11, 12, 13, 5}),
+        new TestParams("8/8/8/8/8/8/8/4K3 w Qkq - 0 1", _WHITE, new list<Position>{58, 59, 51, 52, 53, 61}),
+        new TestParams("4k3/8/8/8/8/8/8/8 w KQ - 0 1", _BLACK, new list<Position>{3, 11, 12, 13, 5}),
+        new TestParams("8/8/8/8/8/8/8/4K3 w kq - 0 1", _WHITE, new list<Position>{ 59, 51, 52, 53, 61 })
     )
 );
 
@@ -547,12 +547,12 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetQueenAttacksTest,
     ::testing::Values(
-        new TestParams("8/8/8/3Q4/8/8/8/8 w - - 0 1", WHITE, new list<Position>{0, 9, 18, 36, 45, 54, 63, 6, 13, 20, 34, 41, 48, 19, 11, 3, 35, 43, 51, 59, 24, 25, 26, 28, 29, 30, 31}),
-        new TestParams("8/8/8/8/8/5q2/8/8 w - - 0 1", BLACK, new list<Position>{ 0, 9, 18, 27, 36, 54, 63, 38, 31, 52, 59, 37, 29, 21, 13, 5, 53, 61, 40, 41, 42, 43, 44, 46, 47 }),
-        new TestParams("Q7/8/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 9, 18, 27, 36, 45, 54, 63, 8, 16, 24, 32, 40, 48, 56, 1, 2, 3, 4, 5, 6, 7 }),
-        new TestParams("8/8/8/8/8/8/6q1/8 w - - 0 1", BLACK, new list<Position>{ 0, 9, 18, 27, 36, 45, 63, 61, 47, 46, 38, 30, 22, 14, 6, 62, 48, 49, 50, 51, 52, 53, 55 }),
-        new TestParams("8/2p5/8/Q7/8/2P5/P7/8 w - - 0 1", WHITE, new list<Position>{ 33, 17, 10, 25, 26, 27, 28, 29, 30, 31, 32, 40, 0, 8, 16 }),
-        new TestParams("8/8/5P1P/8/7q/8/5p2/8 w - - 0 1", BLACK, new list<Position>{ 46, 30, 21, 32, 33, 34, 35, 36, 37, 38, 63, 55, 47, 31, 23 })
+        new TestParams("8/8/8/3Q4/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{0, 9, 18, 36, 45, 54, 63, 6, 13, 20, 34, 41, 48, 19, 11, 3, 35, 43, 51, 59, 24, 25, 26, 28, 29, 30, 31}),
+        new TestParams("8/8/8/8/8/5q2/8/8 w - - 0 1", _BLACK, new list<Position>{ 0, 9, 18, 27, 36, 54, 63, 38, 31, 52, 59, 37, 29, 21, 13, 5, 53, 61, 40, 41, 42, 43, 44, 46, 47 }),
+        new TestParams("Q7/8/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 9, 18, 27, 36, 45, 54, 63, 8, 16, 24, 32, 40, 48, 56, 1, 2, 3, 4, 5, 6, 7 }),
+        new TestParams("8/8/8/8/8/8/6q1/8 w - - 0 1", _BLACK, new list<Position>{ 0, 9, 18, 27, 36, 45, 63, 61, 47, 46, 38, 30, 22, 14, 6, 62, 48, 49, 50, 51, 52, 53, 55 }),
+        new TestParams("8/2p5/8/Q7/8/2P5/P7/8 w - - 0 1", _WHITE, new list<Position>{ 33, 17, 10, 25, 26, 27, 28, 29, 30, 31, 32, 40, 0, 8, 16 }),
+        new TestParams("8/8/5P1P/8/7q/8/5p2/8 w - - 0 1", _BLACK, new list<Position>{ 46, 30, 21, 32, 33, 34, 35, 36, 37, 38, 63, 55, 47, 31, 23 })
     )
 );
 
@@ -576,12 +576,12 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetRookAttacksTest,
     ::testing::Values(
-        new TestParams("8/8/1R6/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 16, 18, 19, 20, 21, 22, 23, 1, 9, 25, 33, 41, 49, 57 }),
-        new TestParams("8/8/8/8/8/8/6r1/8 w - - 0 1", BLACK, new list<Position>{ 48, 49, 50, 51, 52, 53, 55, 62, 46, 38, 30, 22, 14, 6 }),
-        new TestParams("RP6/P7/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>()),
-        new TestParams("8/8/8/8/8/8/7p/6pr w - - 0 1", BLACK, new list<Position>()),
-        new TestParams("8/8/1R1P4/8/1p6/8/8/8 w - - 0 1", WHITE, new list<Position>{ 16, 18, 1, 9, 25, 33 }),
-        new TestParams("8/8/8/8/6p1/8/4P1r1/8 w - - 0 1", BLACK, new list<Position>{ 52, 53, 55, 62, 46 })
+        new TestParams("8/8/1R6/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 16, 18, 19, 20, 21, 22, 23, 1, 9, 25, 33, 41, 49, 57 }),
+        new TestParams("8/8/8/8/8/8/6r1/8 w - - 0 1", _BLACK, new list<Position>{ 48, 49, 50, 51, 52, 53, 55, 62, 46, 38, 30, 22, 14, 6 }),
+        new TestParams("RP6/P7/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>()),
+        new TestParams("8/8/8/8/8/8/7p/6pr w - - 0 1", _BLACK, new list<Position>()),
+        new TestParams("8/8/1R1P4/8/1p6/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 16, 18, 1, 9, 25, 33 }),
+        new TestParams("8/8/8/8/6p1/8/4P1r1/8 w - - 0 1", _BLACK, new list<Position>{ 52, 53, 55, 62, 46 })
     )
 );
 
@@ -605,12 +605,12 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetBishopAttacksTest,
     ::testing::Values(
-        new TestParams("8/8/8/3B4/8/8/8/8 w - - 0 1", WHITE, new list<Position>{0, 9, 18, 36, 45, 54, 63, 6, 13, 20, 34, 41, 48}),
-        new TestParams("8/8/8/8/8/5b2/8/8 w - - 0 1", BLACK, new list<Position>{0, 9, 18, 27, 36, 54, 63, 38, 31, 52, 59}),
-        new TestParams("B7/8/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{9, 18, 27, 36, 45, 54, 63}),
-        new TestParams("8/8/8/8/8/8/6b1/8 w - - 0 1", BLACK, new list<Position>{0, 9, 18, 27, 36, 45, 63, 61, 47}),
-        new TestParams("8/2p5/8/B7/8/2P5/8/8 w - - 0 1", WHITE, new list<Position>{33, 17, 10}),
-        new TestParams("8/8/5P2/8/7b/8/5p2/8 w - - 0 1", BLACK, new list<Position>{46, 30, 21})
+        new TestParams("8/8/8/3B4/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{0, 9, 18, 36, 45, 54, 63, 6, 13, 20, 34, 41, 48}),
+        new TestParams("8/8/8/8/8/5b2/8/8 w - - 0 1", _BLACK, new list<Position>{0, 9, 18, 27, 36, 54, 63, 38, 31, 52, 59}),
+        new TestParams("B7/8/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{9, 18, 27, 36, 45, 54, 63}),
+        new TestParams("8/8/8/8/8/8/6b1/8 w - - 0 1", _BLACK, new list<Position>{0, 9, 18, 27, 36, 45, 63, 61, 47}),
+        new TestParams("8/2p5/8/B7/8/2P5/8/8 w - - 0 1", _WHITE, new list<Position>{33, 17, 10}),
+        new TestParams("8/8/5P2/8/7b/8/5p2/8 w - - 0 1", _BLACK, new list<Position>{46, 30, 21})
     )
 );
 
@@ -634,12 +634,12 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetKnightAttacksTest,
     ::testing::Values(
-        new TestParams("8/8/2N5/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 1, 8, 24, 33, 35, 28, 3, 12 }),
-        new TestParams("8/8/8/8/3n4/8/8/8 w - - 0 1", BLACK, new list<Position>{ 20, 18, 25, 29, 41, 45, 50, 52 }),
-        new TestParams("N7/8/8/8/8/8/8/8 w - - 0 1", WHITE, new list<Position>{ 10, 17 }),
-        new TestParams("8/8/8/8/8/8/8/n7 w - - 0 1", BLACK, new list<Position>{ 41, 50 }),
-        new TestParams("1P6/P7/2N5/8/1p1p4/8/8/8 w - - 0 1", WHITE, new list<Position>{ 24, 33, 35, 28, 3, 12 }),
-        new TestParams("8/8/8/8/3n4/1P3P2/2p1p3/8 w - - 0 1", BLACK, new list<Position>{ 20, 18, 25, 29, 41, 45 })
+        new TestParams("8/8/2N5/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 1, 8, 24, 33, 35, 28, 3, 12 }),
+        new TestParams("8/8/8/8/3n4/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 20, 18, 25, 29, 41, 45, 50, 52 }),
+        new TestParams("N7/8/8/8/8/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 10, 17 }),
+        new TestParams("8/8/8/8/8/8/8/n7 w - - 0 1", _BLACK, new list<Position>{ 41, 50 }),
+        new TestParams("1P6/P7/2N5/8/1p1p4/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 24, 33, 35, 28, 3, 12 }),
+        new TestParams("8/8/8/8/3n4/1P3P2/2p1p3/8 w - - 0 1", _BLACK, new list<Position>{ 20, 18, 25, 29, 41, 45 })
     )
 );
 
@@ -663,18 +663,18 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetPawnMovesTest,
     ::testing::Values(
-        new TestParams("8/p7/8/8/8/8/8/8 w - - 0 1", BLACK, new list<Position>{ 16, 24 }),
-        new TestParams("8/8/p7/8/8/8/8/8 w - - 0 1", BLACK, new list<Position>{ 24 }),
-        new TestParams("8/8/8/8/8/8/P7/8 w - - 0 1", WHITE, new list<Position>{ 40, 32 }),
-        new TestParams("8/8/8/8/8/P7/8/8 w - - 0 1", WHITE, new list<Position>{ 32 }),
-        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", BLACK, new list<Position>()),
-        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", WHITE, new list<Position>()),
-        new TestParams("8/8/8/3p4/2P1b3/8/8/8 w - - 0 1", BLACK, new list<Position>{ 34, 35 }),
-        new TestParams("8/8/8/2B1p3/3P4/8/8/8 w - - 0 1", WHITE, new list<Position>{ 27, 28 }),
-        new TestParams("8/8/8/pP6/8/8/8/8 w - a6 0 1", WHITE, new list<Position>{ 16, 17 }),
-        new TestParams("8/8/8/pP5P/8/8/8/8 w - a6 0 1", WHITE, new list<Position>{ 16, 17, 23 }),
-        new TestParams("8/8/8/8/6Pp/8/8/8 w - g3 0 1", BLACK, new list<Position>{ 46, 47 }),
-        new TestParams("8/8/8/8/p5Pp/8/8/8 w - g3 0 1", BLACK, new list<Position>{ 40, 46, 47 })
+        new TestParams("8/p7/8/8/8/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 16, 24 }),
+        new TestParams("8/8/p7/8/8/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 24 }),
+        new TestParams("8/8/8/8/8/8/P7/8 w - - 0 1", _WHITE, new list<Position>{ 40, 32 }),
+        new TestParams("8/8/8/8/8/P7/8/8 w - - 0 1", _WHITE, new list<Position>{ 32 }),
+        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", _BLACK, new list<Position>()),
+        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", _WHITE, new list<Position>()),
+        new TestParams("8/8/8/3p4/2P1b3/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 34, 35 }),
+        new TestParams("8/8/8/2B1p3/3P4/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 27, 28 }),
+        new TestParams("8/8/8/pP6/8/8/8/8 w - a6 0 1", _WHITE, new list<Position>{ 16, 17 }),
+        new TestParams("8/8/8/pP5P/8/8/8/8 w - a6 0 1", _WHITE, new list<Position>{ 16, 17, 23 }),
+        new TestParams("8/8/8/8/6Pp/8/8/8 w - g3 0 1", _BLACK, new list<Position>{ 46, 47 }),
+        new TestParams("8/8/8/8/p5Pp/8/8/8 w - g3 0 1", _BLACK, new list<Position>{ 40, 46, 47 })
     )
 );
 
@@ -715,10 +715,10 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetSinglePawnMovesTest,
     ::testing::Values(
-        new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 w - d3 0 1", BLACK, 34, new list<Position>{ 42, 43 }),						// Following from https://www.chessprogramming.org/En_passant
-        new TestParams2("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K w - b3 0 1", BLACK, 32, new list<Position>{ 41 }),
-        new TestParams2("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K w - b3 0 1", BLACK, 34, new list<Position>{ 41 }),
-        new TestParams2("rnbqkbnr/ppppppp1/8/7p/P7/8/1PPPPPPP/RNBQKBNR w - h6 0 1", WHITE, 32, new list<Position>{ 24 })
+        new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 w - d3 0 1", _BLACK, 34, new list<Position>{ 42, 43 }),						// Following from https://www.chessprogramming.org/En_passant
+        new TestParams2("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K w - b3 0 1", _BLACK, 32, new list<Position>{ 41 }),
+        new TestParams2("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K w - b3 0 1", _BLACK, 34, new list<Position>{ 41 }),
+        new TestParams2("rnbqkbnr/ppppppp1/8/7p/P7/8/1PPPPPPP/RNBQKBNR w - h6 0 1", _WHITE, 32, new list<Position>{ 24 })
     )
 );
 
@@ -742,14 +742,14 @@ INSTANTIATE_TEST_SUITE_P(
     BoardTest,
     GetPawnAttacksTest,
     ::testing::Values(
-        new TestParams("8/p7/8/8/8/8/8/8 w - - 0 1", BLACK, new list<Position>{ 17 }),
-        new TestParams("8/8/p7/8/8/8/8/8 w - - 0 1", BLACK, new list<Position>{ 25 }),
-        new TestParams("8/8/8/8/8/8/P7/8 w - - 0 1", WHITE, new list<Position>{ 41 }),
-        new TestParams("8/8/8/8/8/P7/8/8 w - - 0 1", WHITE, new list<Position>{ 33 }),
-        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", BLACK, new list<Position>{ 34, 36 }),
-        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", WHITE, new list<Position>{ 26, 28 }),
-        new TestParams("8/8/8/3p4/2P1b3/8/8/8 w - - 0 1", BLACK, new list<Position>{ 34 }),
-        new TestParams("8/8/8/2B1p3/3P4/8/8/8 w - - 0 1", WHITE, new list<Position>{ 28 })
+        new TestParams("8/p7/8/8/8/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 17 }),
+        new TestParams("8/8/p7/8/8/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 25 }),
+        new TestParams("8/8/8/8/8/8/P7/8 w - - 0 1", _WHITE, new list<Position>{ 41 }),
+        new TestParams("8/8/8/8/8/P7/8/8 w - - 0 1", _WHITE, new list<Position>{ 33 }),
+        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 34, 36 }),
+        new TestParams("8/8/8/3p4/3P4/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 26, 28 }),
+        new TestParams("8/8/8/3p4/2P1b3/8/8/8 w - - 0 1", _BLACK, new list<Position>{ 34 }),
+        new TestParams("8/8/8/2B1p3/3P4/8/8/8 w - - 0 1", _WHITE, new list<Position>{ 28 })
     )
 );
 
@@ -759,78 +759,78 @@ TEST_F(BoardTest, getPawnMovesTest) {
     board.setPiece(49, WPawn);
     board.setPiece(40, BPawn);
     board.setPiece(42, BPawn);
-    GTEST_ASSERT_TRUE(checkBoard(board.getPawnMoves(49, WHITE), 40, 41, 42, 33));
-    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x70200000000LL);
+    GTEST_ASSERT_TRUE(checkBoard(board.getPawnMoves(49, _WHITE), 40, 41, 42, 33));
+    EXPECT_EQ(board.getPawnMoves(49, _WHITE), 0x70200000000LL);
     board.setPiece(33, BPawn);   // disable double push
-    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x70000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, _WHITE), 0x70000000000LL);
     board.setPiece(41, BPawn);
-    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x50000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, _WHITE), 0x50000000000LL);
     board.setPiece(40, WPawn);
-    EXPECT_EQ(board.getPawnMoves(49, WHITE), 0x40000000000LL);
+    EXPECT_EQ(board.getPawnMoves(49, _WHITE), 0x40000000000LL);
 
     board.setPiece(9, BPawn);
     board.setPiece(16, WPawn);
     board.setPiece(18, WPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x2070000LL);
+    EXPECT_EQ(board.getPawnMoves(9, _BLACK), 0x2070000LL);
     board.setPiece(25, WPawn);   // disable double push
-    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x70000LL);
+    EXPECT_EQ(board.getPawnMoves(9, _BLACK), 0x70000LL);
     board.setPiece(17, WPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x50000LL);
+    EXPECT_EQ(board.getPawnMoves(9, _BLACK), 0x50000LL);
     board.setPiece(16, BPawn);
-    EXPECT_EQ(board.getPawnMoves(9, BLACK), 0x40000LL);
+    EXPECT_EQ(board.getPawnMoves(9, _BLACK), 0x40000LL);
 
     board.setPiece(0, WPawn);
-    EXPECT_EQ(board.getPawnMoves(0, WHITE), 0x0LL);
+    EXPECT_EQ(board.getPawnMoves(0, _WHITE), 0x0LL);
     board.setPiece(63, BPawn);
-    GTEST_ASSERT_TRUE(checkBoardNoPos(board.getPawnMoves(63, BLACK)));
-    EXPECT_EQ(board.getPawnMoves(63, BLACK), 0x0LL);
+    GTEST_ASSERT_TRUE(checkBoardNoPos(board.getPawnMoves(63, _BLACK)));
+    EXPECT_EQ(board.getPawnMoves(63, _BLACK), 0x0LL);
 
     board.reset();
 
     // EnPassant
 	board.enPassantPosition = 18;
-    EXPECT_EQ(board.getPawnMoves(24, WHITE), 0x10000LL);
+    EXPECT_EQ(board.getPawnMoves(24, _WHITE), 0x10000LL);
 	board.enPassantPosition = 17;
-    EXPECT_EQ(board.getPawnMoves(24, WHITE), 0x30000LL);
+    EXPECT_EQ(board.getPawnMoves(24, _WHITE), 0x30000LL);
 	board.enPassantPosition = 18;
-    EXPECT_EQ(board.getPawnMoves(25, WHITE), 0x60000LL);
+    EXPECT_EQ(board.getPawnMoves(25, _WHITE), 0x60000LL);
 	board.enPassantPosition = 16;
-    EXPECT_EQ(board.getPawnMoves(25, WHITE), 0x30000LL);
+    EXPECT_EQ(board.getPawnMoves(25, _WHITE), 0x30000LL);
 	board.enPassantPosition = 42;
-    EXPECT_EQ(board.getPawnMoves(32, BLACK), 0x10000000000LL);
+    EXPECT_EQ(board.getPawnMoves(32, _BLACK), 0x10000000000LL);
 	board.enPassantPosition = 41;
-    EXPECT_EQ(board.getPawnMoves(32, BLACK), 0x30000000000LL);
+    EXPECT_EQ(board.getPawnMoves(32, _BLACK), 0x30000000000LL);
 	board.enPassantPosition = 42;
-    EXPECT_EQ(board.getPawnMoves(33, BLACK), 0x60000000000LL);
+    EXPECT_EQ(board.getPawnMoves(33, _BLACK), 0x60000000000LL);
 	board.enPassantPosition = 40;
-    EXPECT_EQ(board.getPawnMoves(33, BLACK), 0x30000000000LL);
+    EXPECT_EQ(board.getPawnMoves(33, _BLACK), 0x30000000000LL);
 }
 
 TEST_F(BoardTest, getKingMovesTest) {
     Board board;
 	board.castlingInfo = 0b1111;
-    EXPECT_EQ(board.getKingMoves(0, BLACK), 0x302LL);
-    EXPECT_EQ(board.getKingMoves(7, BLACK), 0xc040LL);
-    EXPECT_EQ(board.getKingMoves(63, BLACK), 0x40c0000000000000LL);
-    EXPECT_EQ(board.getKingMoves(56, BLACK), 0x203000000000000LL);
-    EXPECT_EQ(board.getKingMoves(54, BLACK), 0xe0a0e00000000000LL);
+    EXPECT_EQ(board.getKingMoves(0, _BLACK), 0x302LL);
+    EXPECT_EQ(board.getKingMoves(7, _BLACK), 0xc040LL);
+    EXPECT_EQ(board.getKingMoves(63, _BLACK), 0x40c0000000000000LL);
+    EXPECT_EQ(board.getKingMoves(56, _BLACK), 0x203000000000000LL);
+    EXPECT_EQ(board.getKingMoves(54, _BLACK), 0xe0a0e00000000000LL);
     board.setPiece(62, BPawn);
-    EXPECT_EQ(board.getKingMoves(54, BLACK), 0xa0a0e00000000000LL);
-    EXPECT_EQ(board.getKingMoves(54, WHITE), 0xe0a0e00000000000LL);
+    EXPECT_EQ(board.getKingMoves(54, _BLACK), 0xa0a0e00000000000LL);
+    EXPECT_EQ(board.getKingMoves(54, _WHITE), 0xe0a0e00000000000LL);
 
     // castling
 	board.castlingInfo = 0b1111;
-    EXPECT_EQ(board.getKingMoves(4, BLACK), 0x386cLL);
+    EXPECT_EQ(board.getKingMoves(4, _BLACK), 0x386cLL);
 	board.castlingInfo = 0b1110;
-    EXPECT_EQ(board.getKingMoves(4, BLACK), 0x3868LL);
+    EXPECT_EQ(board.getKingMoves(4, _BLACK), 0x3868LL);
 	board.castlingInfo = 0b1100;
-    EXPECT_EQ(board.getKingMoves(4, BLACK), 0x3828LL);
+    EXPECT_EQ(board.getKingMoves(4, _BLACK), 0x3828LL);
 	board.castlingInfo = 0b1111;
-    EXPECT_EQ(board.getKingMoves(60, WHITE), 0x2c38000000000000LL);
+    EXPECT_EQ(board.getKingMoves(60, _WHITE), 0x2c38000000000000LL);
 	board.castlingInfo = 0b1011;
-    EXPECT_EQ(board.getKingMoves(60, WHITE), 0x2838000000000000LL);
+    EXPECT_EQ(board.getKingMoves(60, _WHITE), 0x2838000000000000LL);
 	board.castlingInfo = 0b0011;
-    EXPECT_EQ(board.getKingMoves(60, WHITE), 0x2838000000000000LL);
+    EXPECT_EQ(board.getKingMoves(60, _WHITE), 0x2838000000000000LL);
 }
 
 TEST_F(BoardTest, attackTest1) {

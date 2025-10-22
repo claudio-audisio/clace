@@ -110,20 +110,20 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	auto start = chrono::steady_clock::now();
 
 	for (int i = 1; i < 500000; ++i) {
-		game1->calculateCheckPositions(WHITE);
-		game1->calculateCheckPositions(BLACK);
-		game2->calculateCheckPositions(WHITE);
-		game2->calculateCheckPositions(BLACK);
-		game3->calculateCheckPositions(WHITE);
-		game3->calculateCheckPositions(BLACK);
-		game4->calculateCheckPositions(WHITE);
-		game4->calculateCheckPositions(BLACK);
-		game4m->calculateCheckPositions(WHITE);
-		game4m->calculateCheckPositions(BLACK);
-		game5->calculateCheckPositions(WHITE);
-		game5->calculateCheckPositions(BLACK);
-		game6->calculateCheckPositions(WHITE);
-		game6->calculateCheckPositions(BLACK);
+		game1->calculateCheckPositions(_WHITE);
+		game1->calculateCheckPositions(_BLACK);
+		game2->calculateCheckPositions(_WHITE);
+		game2->calculateCheckPositions(_BLACK);
+		game3->calculateCheckPositions(_WHITE);
+		game3->calculateCheckPositions(_BLACK);
+		game4->calculateCheckPositions(_WHITE);
+		game4->calculateCheckPositions(_BLACK);
+		game4m->calculateCheckPositions(_WHITE);
+		game4m->calculateCheckPositions(_BLACK);
+		game5->calculateCheckPositions(_WHITE);
+		game5->calculateCheckPositions(_BLACK);
+		game6->calculateCheckPositions(_WHITE);
+		game6->calculateCheckPositions(_BLACK);
 	}
 
 	unsLL time = getElapsedMillis(start);
@@ -151,18 +151,18 @@ TEST_F(PerformanceReleaseTest, getAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 50000000; ++i) {
-		gameInitial->board.getAttacks(WHITE);
-		gameInitial->board.getAttacks(BLACK);
-		gamePerft2->board.getAttacks(WHITE);
-		gamePerft2->board.getAttacks(BLACK);
-		gamePerft3->board.getAttacks(WHITE);
-		gamePerft3->board.getAttacks(BLACK);
-		gamePerft4->board.getAttacks(WHITE);
-		gamePerft4->board.getAttacks(BLACK);
-		gamePerft5->board.getAttacks(WHITE);
-		gamePerft5->board.getAttacks(BLACK);
-		gamePerft6->board.getAttacks(WHITE);
-		gamePerft6->board.getAttacks(BLACK);
+		gameInitial->board.getAttacks(_WHITE);
+		gameInitial->board.getAttacks(_BLACK);
+		gamePerft2->board.getAttacks(_WHITE);
+		gamePerft2->board.getAttacks(_BLACK);
+		gamePerft3->board.getAttacks(_WHITE);
+		gamePerft3->board.getAttacks(_BLACK);
+		gamePerft4->board.getAttacks(_WHITE);
+		gamePerft4->board.getAttacks(_BLACK);
+		gamePerft5->board.getAttacks(_WHITE);
+		gamePerft5->board.getAttacks(_BLACK);
+		gamePerft6->board.getAttacks(_WHITE);
+		gamePerft6->board.getAttacks(_BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
@@ -251,10 +251,10 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 #endif
 
 	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
-	Move BQCastlingMove = createMove(4, 2, BLACK, BKing);
-	Move BKCastlingMove = createMove(4, 6, BLACK, BKing);
-	Move WQCastlingMove = createMove(60, 58, WHITE, WKing);
-	Move WKCastlingMove = createMove(60, 62, WHITE, WKing);
+	Move BQCastlingMove = createMove(4, 2, _BLACK, BKing);
+	Move BKCastlingMove = createMove(4, 6, _BLACK, BKing);
+	Move WQCastlingMove = createMove(60, 58, _WHITE, WKing);
+	Move WKCastlingMove = createMove(60, 62, _WHITE, WKing);
 
 	auto begin = chrono::steady_clock::now();
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 #include "game.h"
 #include "statistics.h"
 #include "player.h"
@@ -7,13 +9,13 @@
 #include "../engine/r_engine.h"
 #include "../engine/bf_engine.h"
 #include "../ui/userInterface.h"
+#include "../ui/gui/igui.h"
 
 using namespace std;
 
 
 class GameRunner {
 public:
-
 	Game* game;
 	Player* whitePlayer;
 	Player* blackPlayer;
@@ -22,24 +24,27 @@ public:
 	ArrayPool<Move>* pool;
 	string humanMove = "";
 	mutex moveMtx;
-	Logger& logger = Logger::getInstance();
+	Messenger& messenger = Messenger::getInstance();
 	bool running = false;
+	IGui *gui = nullptr;
 
 	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
 		pool = new ArrayPool<Move>(1);
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
-			new Player(true, new BF_Engine(2)) :
-			new Player(true);
+			new Player(_WHITE, new BF_Engine(3)) :
+			new Player(_WHITE);
 
-		blackPlayer = new Player(false, new BF_Engine(3));
+		blackPlayer = new Player(_BLACK, new BF_Engine(3));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
 	}
 
-	void run() {
+	void run(IGui *gui = new IGui) {
+		this->gui = gui;
+
 		if (fenBoard.empty()) {
 			game->init();
 		} else {
@@ -47,17 +52,21 @@ public:
 		}
 
 		game->initPlayers(whitePlayer, blackPlayer);
+		messenger.send(MSG_ALL, "gameRunner", format("new game: {}", game->getDescription()));
 		EndGameType endGame;
 		running = true;
+		gui->onBoardChange();
 
 		do {
 			if (game->getCurrentPlayer()->computer) {
 				endGame = processComputerMove();
+				gui->onBoardChange(true);
 			} else {
 				if (statistics->consoleOutput) {
 					UI::printGame(*game);
 				}
 				endGame = processHumanMove();
+				gui->onBoardChange();
 			}
 		} while (running && !isGameEnded(endGame));
 	}
@@ -65,20 +74,28 @@ public:
 	EndGameType processComputerMove() {
 		game->getCurrentPlayer()->startMoveTime();
 		Evaluation evaluation = game->calculateMove();
+		game->getCurrentPlayer()->stopMoveTime();
 
 		if (evaluation.endGameType == NONE) {
-			logger.log(format("{}: {}", game->getCurrentPlayer()->name, toString(evaluation.move)));
+			messenger.send(MSG_LOG, "gameRunner", format("{}: {}", game->getCurrentPlayer()->name, moveToString(evaluation.move)));
 			game->applyMove(evaluation.move);
-			game->currentEvaluation = evaluation.value;
+			game->currentEvaluation = evaluation.value;	// TODO l'engine mi da valori positivi per il nero e negativi per il bianco
 		}
-
-		game->getCurrentPlayer()->stopMoveTime();
 
 		return evaluation.endGameType;
 	}
 
 	EndGameType processHumanMove() {
 		game->verifyChecks();
+		gui->setGameInfo(game->sideToMove,
+				game->checkStatus.check && !game->checkStatus.checkmate,
+				game->fullMoves,
+				game->currentEvaluation,
+				FEN::gameToFEN(*game),
+				moveToString(game->lastMove),
+				game->whitePlayer->getMoveTime(),
+				game->blackPlayer->getMoveTime());
+
 		Move* moves = pool->getArray();
 		MovesAmount amount = generateLegalMoves(*game, moves);
 		EndGameType endGame = game->checkEndGame(amount.second);
@@ -92,12 +109,19 @@ public:
 
 		while (running) {
 			game->getCurrentPlayer()->startMoveTime();
-			humanMove = waitForHumanMove();
-			move = createMove(humanMove, game->getCurrentPlayer()->white);
+			string newMove = waitForHumanMove();
+			move = createMove(newMove, game->getCurrentPlayer()->side);
 			decorate(move, game->board.getPiece(getSourcePosition(move)), game->board.enPassantPosition);
 
 			if (isPawnPromotion(move)) {
-				setPromotion(move, UI::choosePromotionType(game->isWhiteToMove()));
+				Piece promotion = gui->choosePromotionType();
+
+				if (!promotion) {
+					promotion = UI::choosePromotionType(game->isWhiteToMove());
+				}
+
+				setPromotion(move, promotion);
+				messenger.send(MSG_ALL, "gameRunner", "pawn promoted to " + pieceToString(promotion));
 			}
 
 			game->getCurrentPlayer()->stopMoveTime();
@@ -106,10 +130,12 @@ public:
 				break;
 			}
 
+			gui->onBoardChange();
+			gui->showMessage(" invalid move");
 			UI::printMessage(" invalid move");
 		}
 
-		logger.log(format("{}: {}", game->getCurrentPlayer()->name, toString(move)));
+		messenger.send(MSG_LOG, "gameRunner", format("{}: {}", game->getCurrentPlayer()->name, moveToString(move)));
 		game->applyMove(move);
 		game->currentEvaluation = game->evaluator->evaluate(*game);
 
@@ -141,13 +167,13 @@ public:
 		if (endGame != NONE) {
 			if (endGame == CHECKMATE) {
 				statistics->gameEnded(game->isWhiteToMove() ? -1 : 1);
-				logger.log(format("Game ended: {} WINS ({} moves in {} ms)",
+				messenger.send(MSG_ALL, "gameRunner", format("Game ended: {} WINS ({} moves in {} ms)",
 					game->isWhiteToMove() ? "black" : "white", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
-				logger.log(game->printMovesHistory(0));
-				logger.log(FEN::gameToFEN(*game));
+				messenger.send(MSG_LOG, "gameRunner", game->printMovesHistory(0));
+				messenger.send(MSG_LOG, "gameRunner", FEN::gameToFEN(*game));
 			} else {
 				statistics->gameEnded(0);
-				logger.log(format("Game ended: DRAW{} ({} moves in {} ms)",
+				messenger.send(MSG_ALL, "gameRunner", format("Game ended: DRAW{} ({} moves in {} ms)",
 					endGame == STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
 			}
 
@@ -173,4 +199,5 @@ public:
 		game = nullptr;
 		pool = nullptr;
 	}
+
 };

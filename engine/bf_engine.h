@@ -8,7 +8,7 @@ class BF_Engine : public Abstract_Engine {
 public:
 	explicit BF_Engine(unsigned int depth): Abstract_Engine(depth) {};
 
-	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
+	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
 		for (unsigned int i = 0; i < amount.first; i++) {
 			if (moves[i]) {
 				game.save();
@@ -37,7 +37,7 @@ public:
 
 		if (depth == 0) {
 			const double value = evaluator->evaluate(game);
-			//logger.log(format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
+			//messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
 			return value;
 		}
 
@@ -57,8 +57,12 @@ public:
 			}
 		}
 
-		//logger.log(format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
+	}
+
+	string getDescription() override {
+		return format("BF_Engine({})", depth);
 	}
 
 };

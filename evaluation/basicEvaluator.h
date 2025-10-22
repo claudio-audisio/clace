@@ -3,6 +3,7 @@
 #include "ievaluator.h"
 #include "../common/constants.h"
 #include "../move/move.h"
+#include "../game/game.h"
 
 
 class BasicEvaluator : public IEvaluator {
@@ -18,14 +19,14 @@ public:
 	}
 
 	static double calculateMaterialScore(Game& game) {
-		return QUEEN_WT * (game.board.getPieceCount(WQueen) - game.board.getPieceCount(BQueen)) +
-				ROOK_WT * (game.board.getPieceCount(WRook) - game.board.getPieceCount(BRook)) +
-				BISHOP_WT * (game.board.getPieceCount(WBishop) - game.board.getPieceCount(BBishop)) +
-				KNIGHT_WT * (game.board.getPieceCount(WKnight) - game.board.getPieceCount(BKnight)) +
-				PAWN_WT * (game.board.getPieceCount(WPawn) - game.board.getPieceCount(BPawn));
+		return QUEEN_WT * (static_cast<double>(game.board.getPieceCount(WQueen)) - static_cast<double>(game.board.getPieceCount(BQueen))) +
+				ROOK_WT * (static_cast<double>(game.board.getPieceCount(WRook)) - static_cast<double>(game.board.getPieceCount(BRook))) +
+				BISHOP_WT * (static_cast<double>(game.board.getPieceCount(WBishop)) - static_cast<double>(game.board.getPieceCount(BBishop))) +
+				KNIGHT_WT * (static_cast<double>(game.board.getPieceCount(WKnight)) - static_cast<double>(game.board.getPieceCount(BKnight))) +
+				PAWN_WT * (static_cast<double>(game.board.getPieceCount(WPawn)) - static_cast<double>(game.board.getPieceCount(BPawn)));
 	}
 
 	static int calculateMobility(Game& game) {
-		return game.getAllDestinationQty(WHITE) - game.getAllDestinationQty(BLACK);
+		return game.getAllDestinationQty(_WHITE) - game.getAllDestinationQty(_BLACK);
 	}
 };

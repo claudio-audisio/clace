@@ -40,11 +40,17 @@ TEST_P(ConstructorTest, decorateTest) {
     TestParams* params = GetParam();
 
     if (params->sourcePosition != NO_POS) {
-        Move move = createMove(params->stringMove, params->side);
+        const Move move = createMove(params->stringMove, params->side);
 
         EXPECT_EQ(getSourcePosition(move), params->sourcePosition);
         EXPECT_EQ(getDestinationPosition(move), params->destinationPosition);
         EXPECT_EQ(getMoveSide(move), params->side);
+
+    	if (params->side == _WHITE) {
+    		ASSERT_TRUE(isWhite(move));
+    	} else {
+    		ASSERT_FALSE(isWhite(move));
+    	}
     }
     else {
     	EXPECT_ANY_THROW(createMove(params->stringMove, params->side));
@@ -55,11 +61,11 @@ INSTANTIATE_TEST_SUITE_P(
     MoveTest,
     ConstructorTest,
     ::testing::Values(
-        new TestParams("", true, NO_POS, NO_POS),
-        new TestParams("dasfdfs", true, NO_POS, NO_POS),
-        new TestParams("dasfd", true, NO_POS, NO_POS),
-        new TestParams("a1b1", true, 56, 57),
-        new TestParams("e3h6", false, 44, 23)
+        new TestParams("", _WHITE, NO_POS, NO_POS),
+        new TestParams("dasfdfs", _WHITE, NO_POS, NO_POS),
+        new TestParams("dasfd", _WHITE, NO_POS, NO_POS),
+        new TestParams("a1b1", _WHITE, 56, 57),
+        new TestParams("e3h6", _BLACK, 44, 23)
     )
 );
 
@@ -114,7 +120,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 
 TEST_F(MoveTest, getTypeTest) {
-	Move move = createMove(60, 52, WHITE, WKing, NO_POS);
+	Move move = createMove(60, 52, _WHITE, WKing, NO_POS);
 
 	EXPECT_EQ(NORMAL, getType(move));
 
@@ -134,7 +140,7 @@ TEST_F(MoveTest, getTypeTest) {
 }
 
 TEST_F(MoveTest, getMoveResultTest) {
-	Move move = createMove(60, 52, WHITE, WKing, NO_POS);
+	Move move = createMove(60, 52, _WHITE, WKing, NO_POS);
 
 	EXPECT_EQ(NORMAL, getType(move));
 
@@ -285,7 +291,7 @@ class ToUciMoveTest : public ::testing::TestWithParam<TestParams3*> {};
 
 TEST_P(ToUciMoveTest, toUciMoveTest) {
 	TestParams3* params = GetParam();
-	Move move = createMove(params->sourcePosition, params->destinationPosition, WHITE);
+	Move move = createMove(params->sourcePosition, params->destinationPosition, _WHITE);
 	setPromotion(move, params->promotion);
 
 	if (params->promotion != Empty) {

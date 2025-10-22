@@ -9,21 +9,30 @@ using namespace std;
 
 class Player {
 public:
-	Player(bool white);
-	Player(bool white, IEngine* engine);
+	explicit Player(Side side);
+	Player(Side side, IEngine* engine);
 	~Player();
 
-	void init(bool computer, bool white, IEngine* engine);
+	void init(bool computer, Side side, IEngine* engine);
 	/*string getCapturedList();
 	string& addToCapturedList(string& capturedList, unsigned int times, Piece piece);*/
 	void startMoveTime();
 	void stopMoveTime();
 	string getMoveTime();
 
-	bool white;
+	Side side;
 	bool computer;
 	IEngine* engine = nullptr;
 	unsLL gameTime = 0;
 	chrono::time_point<chrono::steady_clock> currentMoveTime;
 	string name;
+
+	string getDescription() {
+		if (engine) {
+			return engine->getDescription();
+		}
+
+		return "human";
+	}
+
 };

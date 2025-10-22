@@ -77,7 +77,7 @@ static Side getMoveSide(const Move move) {
 }
 
 static bool isWhite(const Move move) {
-	return getMoveSide(move) == WHITE;
+	return getMoveSide(move) == _WHITE;
 }
 
 static void setCastling(Move& move, const bool castling) {
@@ -145,8 +145,8 @@ static Move createMove(const Position sourcePosition, const Position destination
 	if (_isKing(piece)) {
 		// castling
 		setCastling(move,
-					(side == BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-					(side == WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
+					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 	} else if (_isPawn(piece)) {
 		// En passant
 		setEnPassant(move, enPassantPosition == destinationPosition);
@@ -167,8 +167,8 @@ static void decorate(Move& move, const Piece piece, const Position enPassantPosi
 	if (_isKing(piece)) {
 		// castling
 		setCastling(move,
-					(side == BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-					(side == WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
+					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 	} else if (_isPawn(piece)) {
 		// En passant
 		setEnPassant(move, enPassantPosition == destinationPosition);
@@ -179,10 +179,6 @@ static void decorate(Move& move, const Piece piece, const Position enPassantPosi
 
 static Move createMove(const Position sourcePosition, const Position destinationPosition, const Side side, const Piece piece) {
 	return createMove(sourcePosition, destinationPosition, side, piece, NO_POS);
-}
-
-static string toString(const Move& move) {
-	return indexToCoords(getSourcePosition(move)) + indexToCoords(getDestinationPosition(move));
 }
 
 static void setCapturedMR(MoveResult& moveResult, const bool captured) {
@@ -278,7 +274,7 @@ static Move parseUciMove(string& uciMove) {
 		throw runtime_error("uci move malformed");
 	}
 
-	Move move = createMove(coordsToIndex(uciMove.substr(0, 2)), coordsToIndex(uciMove.substr(2, 4)), WHITE);
+	Move move = createMove(coordsToIndex(uciMove.substr(0, 2)), coordsToIndex(uciMove.substr(2, 4)), _WHITE);
 
 	if (uciMove.length() == 5) {
 		const Piece piece = FEN_TO_PIECE.at(uciMove.at(4)) - SIDE_GAP;

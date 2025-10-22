@@ -4,6 +4,7 @@
 
 #include "../common/types.h"
 #include "../board/board.h"
+#include "../utils/messenger.h"
 
 using namespace std;
 
@@ -36,4 +37,5 @@ private:
 	};
 
 	MoveInfo** boards;
+	Messenger& messenger = Messenger::getInstance();
 };

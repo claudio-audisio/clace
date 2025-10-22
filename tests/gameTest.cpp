@@ -6,6 +6,7 @@
 #include "../game/game.h"
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
+#include "../utils/toString.h"
 
 using namespace std;
 
@@ -34,8 +35,8 @@ TEST_F(GameTest, initTest) {
 
 	EXPECT_EQ(game.fullMoves, 1);
 	EXPECT_EQ(game.halfMoveClock, 0);
-	EXPECT_EQ(game.board.getKingPosition(BLACK), 4);
-	EXPECT_EQ(game.board.getKingPosition(WHITE), 60);
+	EXPECT_EQ(game.board.getKingPosition(_BLACK), 4);
+	EXPECT_EQ(game.board.getKingPosition(_WHITE), 60);
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
 	EXPECT_EQ(game.lastMove, 0);
@@ -95,8 +96,8 @@ TEST_F(GameTest, isWhiteTest) {
 	game.board.setPiece(0, WPawn);
 	game.board.setPiece(1, BPawn);
 
-	GTEST_ASSERT_TRUE(game.getSide(0) == WHITE);
-	GTEST_ASSERT_TRUE(game.getSide(1) == BLACK);
+	GTEST_ASSERT_TRUE(game.getSide(0) == _WHITE);
+	GTEST_ASSERT_TRUE(game.getSide(1) == _BLACK);
 }
 
 
@@ -166,16 +167,16 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	Side side = game->getSide(testParams->sourcePos);
 	game->sideToMove = side;
 	Move move = createMove(testParams->sourcePos, testParams->destinationPos, side, game->board.getPiece(testParams->sourcePos), game->board.enPassantPosition);
-	setPromotion(move, side == WHITE ? WQueen : BQueen);
+	setPromotion(move, side == _WHITE ? WQueen : BQueen);
 	const MoveResult moveResult = game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
 
 	EXPECT_EQ(fenBoardAfterMove, testParams->expectedFenBoardAfterMove);
 	EXPECT_EQ(isCapturedMR(moveResult), testParams->expectedCaptured);
 	EXPECT_EQ(isPromotedMR(moveResult), testParams->expectedPromotion);
-	EXPECT_EQ(toString(game->lastMove), testParams->expectedLastMove);
+	EXPECT_EQ(moveToString(game->lastMove), testParams->expectedLastMove);
 	EXPECT_EQ(game->movesHistory.size(), 1);
-	EXPECT_EQ(toString(game->movesHistory.front()), testParams->expectedLastMove);
+	EXPECT_EQ(moveToString(game->movesHistory.front()), testParams->expectedLastMove);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -225,7 +226,7 @@ TEST_P(VerifyChecksTest, verifyChecksTest) {
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
 	
 	if (!testParams->lastMove.empty()) {
-		game->setLastMove(createMove(testParams->lastMove, BLACK));
+		game->setLastMove(createMove(testParams->lastMove, _BLACK));
 	}
 
 	game->verifyChecks();
@@ -250,7 +251,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 	Game* game = FEN::fenToNewGame("k7/8/8/b7/8/1p6/8/4K3 w - - 0 1");
-	Move move = createMove(35, 41, BLACK, BPawn, 41);
+	Move move = createMove(35, 41, _BLACK, BPawn, 41);
 	setCaptured(move, true);
 	game->setLastMove(move);
 
@@ -321,7 +322,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	Game* game = FEN::fenToNewGame(params->fenBoard);
 	Side side = game->getSide(params->kingPosition);
 	game->sideToMove = OPPOSITE(side);
-	Position sourcePosition = params->isCastling ? side == WHITE ? 60 : 4 : 0;
+	Position sourcePosition = params->isCastling ? side == _WHITE ? 60 : 4 : 0;
 	Move move = createMove(sourcePosition, params->kingPosition, side, game->board.getPiece(params->kingPosition), game->board.enPassantPosition);
 
 	EXPECT_EQ(game->checkControl(move), params->expectedResult);
@@ -358,7 +359,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(GameTest, duplicateTest) {
 	const string fenBoard = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25";
 	Game* game = FEN::fenToNewGame(fenBoard);
-	game->setLastMove(createMove("b7a6", BLACK));
+	game->setLastMove(createMove("b7a6", _BLACK));
 	game->verifyChecks();
 
 	Game* newGame = game->duplicate();
@@ -366,7 +367,7 @@ TEST_F(GameTest, duplicateTest) {
 	EXPECT_EQ(FEN::gameToFEN(*newGame), fenBoard);
 	EXPECT_EQ(newGame->movesHistory.size(), 1);
 	GTEST_ASSERT_FALSE(isWhite(newGame->movesHistory.front()));
-	EXPECT_EQ(toString(newGame->movesHistory.front()), "b7a6");
+	EXPECT_EQ(moveToString(newGame->movesHistory.front()), "b7a6");
 	EXPECT_EQ(positionsCount(newGame->checkStatus.allCheckPositions), 25);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.check);
 	GTEST_ASSERT_FALSE(newGame->checkStatus.discoveryCheck);
@@ -447,19 +448,19 @@ TEST_F(GameTest, getCapturedListTest) {
 
 	game.board.move(48, 8, WPawn);
 
-	EXPECT_EQ(game.getCapturedList(WHITE), "");
-	EXPECT_EQ(game.getCapturedList(BLACK), "p ");
+	EXPECT_EQ(game.getCapturedList(_WHITE), "");
+	EXPECT_EQ(game.getCapturedList(_BLACK), "p ");
 
 	game.board.move(1, 57, BKnight);
 
-	EXPECT_EQ(game.getCapturedList(WHITE), "N ");
-	EXPECT_EQ(game.getCapturedList(BLACK), "p ");
+	EXPECT_EQ(game.getCapturedList(_WHITE), "N ");
+	EXPECT_EQ(game.getCapturedList(_BLACK), "p ");
 
 	game.board.move(49, 3, WPawn);
 	game.board.move(57, 50, BKnight);
 
-	EXPECT_EQ(game.getCapturedList(WHITE), "N P ");
-	EXPECT_EQ(game.getCapturedList(BLACK), "q p ");
+	EXPECT_EQ(game.getCapturedList(_WHITE), "N P ");
+	EXPECT_EQ(game.getCapturedList(_BLACK), "q p ");
 }
 
 
@@ -467,21 +468,21 @@ TEST_F(GameTest, getAllDestinationQty) {
 	Game game;
 	FEN::fenToGame(INITIAL_FEN_POSITION, game);
 
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 20);
-	EXPECT_EQ(game.getAllDestinationQty(BLACK), 20);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 20);
+	EXPECT_EQ(game.getAllDestinationQty(_BLACK), 20);
 
 	FEN::fenToGame(PERFT_FEN_POSITION_2, game);
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 48);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 48);
 
 	FEN::fenToGame(PERFT_FEN_POSITION_3, game);
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 16);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 16);
 
 	FEN::fenToGame(PERFT_FEN_POSITION_4, game);
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 38);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 38);
 
 	FEN::fenToGame(PERFT_FEN_POSITION_5, game);
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 41);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 41);
 
 	FEN::fenToGame(PERFT_FEN_POSITION_6, game);
-	EXPECT_EQ(game.getAllDestinationQty(WHITE), 46);
+	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 46);
 }

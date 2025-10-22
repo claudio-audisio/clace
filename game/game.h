@@ -7,6 +7,7 @@
 #include "../move/rollback.h"
 #include "../board/checkStatus.h"
 #include "statistics.h"
+#include "../utils/messenger.h"
 
 using namespace std;
 
@@ -40,7 +41,8 @@ public:
 	void save();
 	void rollbackLastMove();
 	Player* getCurrentPlayer() const;
-	bool isComputerToMove() const;
+    Player* getOtherPlayer() const;
+    bool isComputerToMove() const;
 	void setLastMove(const Move& move);
 	Game* duplicate();
     string printMovesHistory(int depth = 0) const;
@@ -55,14 +57,16 @@ public:
 	}
 
     bool isWhiteToMove() const {
-		return sideToMove == WHITE;
+		return sideToMove == _WHITE;
 	}
 
     Side getOppositeSide() const {
 		return OPPOSITE(sideToMove);
 	}
 
-	Board board;
+    string getDescription() const;
+
+    Board board;
 	deque<Move> movesHistory;	// TODO renderla thread safe (davvero necessario?)
 	Rollback rollback;
 	CheckStatus checkStatus;
@@ -73,6 +77,6 @@ public:
 	Player* whitePlayer = nullptr;
 	Player* blackPlayer = nullptr;
 	IEvaluator* evaluator = nullptr;
-
 	double currentEvaluation = 0;
+	Messenger& messenger = Messenger::getInstance();
 };

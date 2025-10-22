@@ -4,6 +4,8 @@ DA FINIRE
 
 GENERALE
 
+    - aggiungere il log della board (fen?) in caso di assert false
+
     - Ottimizzare uso della cache
         - Per esempio in perft 6 viene usata il 73% delle volte ma
             - la chiave della mappa fa schifo (usare long)
@@ -15,10 +17,11 @@ GENERALE
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
 i
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
-        - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)\
+        - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
             - generateLegalMoves
                 - generatePseudoLegalMoves
                     - getDestinationPositions
+                        per ogni pezzo di chi muove calcolo tutte le possibili destinaizoni
                 - isValid
                     - simulateMove
                     - checkControl

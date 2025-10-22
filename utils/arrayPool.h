@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+#include "../common/constants.h"
 
 using namespace std;
 

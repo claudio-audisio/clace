@@ -1,9 +1,10 @@
 #pragma once
 
 #include "iengine.h"
-#include "../utils/logger.h"
+#include "../utils/messenger.h"
 #include "../evaluation/basicEvaluator.h"
 #include "../move/movesGenerator.h"
+#include "../utils/toString.h"
 
 
 class Abstract_Engine : public IEngine {
@@ -21,14 +22,14 @@ public:
     unsigned int depth;
     IEvaluator* evaluator = nullptr;
     ArrayPool<Move>* pool = nullptr;
-    Logger& logger = Logger::getInstance();
+    Messenger& messenger = Messenger::getInstance();
     Evaluation best;
 
 
     virtual void _calculateMove(Game& game, Move* moves, MovesAmount amount) = 0;
 
     Evaluation calculateMove(Game& game) override {
-        logger.log(format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
+        messenger.send(MSG_LOG, "abstractEngine", format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
         auto time = chrono::steady_clock::now();
 
         game.verifyChecks();
@@ -41,7 +42,15 @@ public:
             _calculateMove(game, moves, amount);
         }
 
-        logger.log(format("best: {} --> {:.2f} evaluated in {} us", toString(best.move), best.value, getElapsedMicros(time)));
+        if (!game.isWhiteToMove()) {
+            best.value = -best.value;
+        }
+
+        if (best.endGameType == NONE) {
+            messenger.send(MSG_ALL, "abstractEngine", format("best: {} --> {:.2f} ({} ms)", moveToString(best.move), best.value, getElapsedMillis(time)));
+        } else {
+            messenger.send(MSG_ALL, "abstractEngine", format("best: --> {} ({} ms)", endGameToString(best.endGameType), getElapsedMillis(time)));
+        }
 
         return best;
     }

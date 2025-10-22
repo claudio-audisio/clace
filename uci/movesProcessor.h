@@ -14,7 +14,7 @@ public:
 	unsigned int movesHistoryIndex = 0;
 	ArrayPool<Move>* pool = new ArrayPool<Move>(1);
 	IEngine* engine = new BF_Engine(2);
-	Logger& logger = Logger::getInstance();
+	Messenger& messenger = Messenger::getInstance();
 
 	void processMove(Game& game, string& command) {
 		if (movesHistoryIndex + 1 <= movesHistory.size()) {
@@ -28,7 +28,7 @@ public:
 
 		Move move = parseUciMove(command);
 		Position sourcePosition = getSourcePosition(move);
-		Side side = game.board.isWhite(sourcePosition) ? WHITE : BLACK;
+		Side side = game.board.isWhite(sourcePosition) ? _WHITE : _BLACK;
 
 		if (game.sideToMove != side) {
 			throw runtime_error("uci move side incorrect");
@@ -36,7 +36,7 @@ public:
 
 		setMoveSide(move, side);
 
-		if (side == BLACK) {
+		if (side == _BLACK) {
 			setPromotion(move, getPromotion(move) + SIDE_GAP);
 		}
 
@@ -47,7 +47,7 @@ public:
 	}
 
 	string calculateMove(Game& game) {
-		logger.log("calculating best move...");
+		messenger.send(MSG_LOG, "movesProcessor", "calculating best move...");
 		Evaluation evaluation = engine->calculateMove(game);
 
 		this_thread::sleep_for(chrono::milliseconds (200));

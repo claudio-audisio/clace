@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../move/move.h"
+#include "../utils/toString.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ public:
 			++counter;
 			bool found = false;
 			for (Move move : moves) {
-				if (strcmp(toString(move).c_str(), stringMove.c_str()) == 0) {
+				if (strcmp(moveToString(move).c_str(), stringMove.c_str()) == 0) {
 					found = true;
 					break;
 				}

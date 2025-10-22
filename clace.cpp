@@ -1,7 +1,4 @@
-﻿// clace.cpp : Defines the entry point for the application.
-//
-
-#include "clace.h"
+﻿#include "clace.h"
 
 #include <ranges>
 
@@ -9,12 +6,27 @@
 #include "engine/bf_engine.h"
 #include "perft/perft.h"
 #include "uci/uciProcessor.h"
+#include "ui/gui/gui.h"
 
 using namespace std;
 
+unsigned int getMode(char* mode) {
+	if (strcmp(mode, "console") == 0) {
+		return 1;
+	}
+
+	if (strcmp(mode, "gui") == 0) {
+		return 2;
+	}
+
+	cout << "Usage: clace [|console|gui]" << endl;
+
+	exit(0);
+}
 
 int main(int argc, char* argv[]) {
-	Clace clace(argc == 1);
+	const unsigned int mode = argc == 1 ? 0 : getMode(argv[1]);
+	Clace clace(mode);
 
 	auto future = async(launch::async, [&]() {
 		clace.run();
@@ -25,28 +37,38 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-Clace::Clace(bool uciMode) {
+/* mode: 0 -> uci, 1 -> console, 2 -> gui */
+Clace::Clace(const unsigned int mode) {
 	initAttacks();
-	this->engine = new BF_Engine(4);
-	this->uciMode = uciMode;
+	this->uciMode = mode == 0;
+	this->guiMode = mode == 2;
 }
 
 Clace::~Clace() {
 	stopGame();
-	delete engine;
 };
 
 void Clace::run() {
 	if (uciMode) {
 		// uci mode
-		logger.log("=================================================");
-		logger.log("started application in uci mode");
+		messenger.send(MSG_LOG, "clace", "=================================================");
+		messenger.send(MSG_LOG, "clace", "started application in uci mode");
 		UciProcessor processor;
 		processor.run();
-	} else {
+	 } else if (guiMode) {
+	 	// gui mode
+	 	messenger.send(MSG_LOG, "clace", "=================================================");
+	 	messenger.send(MSG_LOG, "clace", "started application in gui mode");
+	 	gui = new Gui();
+	 	messenger.registerGui(*gui);
+		auto guiFuture = async(launch::async, [&]() {
+	 		return gui->run();
+		});
+	 	messenger.send(MSG_LOG, "clace", "gui started successfully");
+	 } else {
 		// console mode
-		logger.log("=================================================");
-		logger.log("started application in console mode");
+		messenger.send(MSG_LOG, "clace", "=================================================");
+		messenger.send(MSG_LOG, "clace", "started application in console mode");
 		bool run = true;
 		UI::clearScreen();
 		UI::printLogo();
@@ -62,7 +84,7 @@ bool Clace::processCommand(const string& command) {
 	if (strcmp(command.c_str(), "new") == 0) {
 		newHumanGame("");
 	} else if (strcmp(command.c_str(), "next") == 0) {
-		manageNextMove();
+		manageNextMove(gameRunner, gui);
 	} else if (strncmp(command.c_str(), "load ", 5) == 0) {
 		newHumanGame(command.substr(5));
 	} else if (strncmp(command.c_str(), "cpu ", 4) == 0) {
@@ -78,7 +100,7 @@ bool Clace::processCommand(const string& command) {
 	} else if (strcmp(command.c_str(), "quit") == 0) {
 		return false;
 	} else {
-		processMove(command);
+		processMove(gameRunner, gui, command);
 	}
 
 	return true;
@@ -94,9 +116,10 @@ pair<int, int> Clace::parsePerftParams(const string& params) {
 	return make_pair(stoi(params.substr(0, pos)), stoi(params.substr(pos + 1)));
 }
 
-void Clace::manageNextMove() const {
+void Clace::manageNextMove(GameRunner *gameRunner, IGui *gui) {
 	if (!gameRunner) {
 		UI::printMessage("no game running");
+		gui->showMessage("no game running");
 		return;
 	}
 
@@ -104,24 +127,27 @@ void Clace::manageNextMove() const {
 
 	if (game.getCurrentPlayer()->computer) {
 		UI::printMessage("wait your turn");
+		gui->showMessage("no game running");
 		return;
 	}
 
-	const Evaluation evaluation = engine->calculateMove(game);
-	cout << endl << " --> " << toString(evaluation.move) << endl;
-	processMove(toString(evaluation.move));
+	const Evaluation evaluation = game.getOtherPlayer()->engine->calculateMove(game);
+	cout << endl << " --> " << moveToString(evaluation.move) << endl;
+	//processMove(gameRunner, gui, moveToString(evaluation.move));
 }
 
 
-void Clace::processMove(const string& move) const {
+void Clace::processMove(GameRunner *gameRunner, IGui *gui, const string& move) {
 	if (gameRunner) {
 		if (move.length() == 4 && isValidMove(move)) {
 			gameRunner->setHumanMove(move);
 		} else {
 			UI::printMessage("invalid move");
+			gui->showMessage("invalid move");
 		}
 	} else {
 		UI::printMessage("no game running");
+		gui->showMessage("no game running");
 	}
 }
 
@@ -156,7 +182,7 @@ void Clace::newCpuGame(int gamesAmount) {
 	stopGame();
 
 	if (gamesAmount > 1) {
-		logger.off();
+		messenger.stopLogger();
 	}
 
 	statistics = new Statistics(gamesAmount);
@@ -189,7 +215,7 @@ void Clace::newCpuGame(int gamesAmount) {
 	statistics = nullptr;
 
 	if (gamesAmount > 1) {
-		logger.on();
+		messenger.startLogger();
 	}
 }
 
@@ -222,29 +248,6 @@ void Clace::managePerftComplete(pair<int, int> params) {
 
 	UI::addLines(1);
 }
-
-/*void Clace::managePerftComplete() {
-	const unsigned int type = UI::readPerftType();
-    const unsigned int index = UI::readPerftIndex();
-	const unsigned int depth = UI::readDepth();
-	unsigned int runs = UI::readPerftQuantity();
-
-	while (runs != 0) {
-        auto perft = new Perft(getFenPerft(index), depth);
-
-		if (type == 1) {
-            perft->run(true);
-		}
-		else {
-			perft->runBulk();
-		}
-
-		--runs;
-		delete perft;
-	}
-	
-	UI::addLines(2);
-}*/
 
 string Clace::getFenPerft(const unsigned int index) {
     switch (index) {

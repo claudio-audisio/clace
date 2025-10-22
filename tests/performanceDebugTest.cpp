@@ -47,18 +47,18 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (long i = 1; i < 2500000; ++i) {
-		gameInitial->board.getQueenAttacks(WHITE);
-		gameInitial->board.getQueenAttacks(BLACK);
-		gamePerft2->board.getQueenAttacks(WHITE);
-		gamePerft2->board.getQueenAttacks(BLACK);
-		gamePerft3->board.getQueenAttacks(WHITE);
-		gamePerft3->board.getQueenAttacks(BLACK);
-		gamePerft4->board.getQueenAttacks(WHITE);
-		gamePerft4->board.getQueenAttacks(BLACK);
-		gamePerft5->board.getQueenAttacks(WHITE);
-		gamePerft5->board.getQueenAttacks(BLACK);
-		gamePerft6->board.getQueenAttacks(WHITE);
-		gamePerft6->board.getQueenAttacks(BLACK);
+		gameInitial->board.getQueenAttacks(_WHITE);
+		gameInitial->board.getQueenAttacks(_BLACK);
+		gamePerft2->board.getQueenAttacks(_WHITE);
+		gamePerft2->board.getQueenAttacks(_BLACK);
+		gamePerft3->board.getQueenAttacks(_WHITE);
+		gamePerft3->board.getQueenAttacks(_BLACK);
+		gamePerft4->board.getQueenAttacks(_WHITE);
+		gamePerft4->board.getQueenAttacks(_BLACK);
+		gamePerft5->board.getQueenAttacks(_WHITE);
+		gamePerft5->board.getQueenAttacks(_BLACK);
+		gamePerft6->board.getQueenAttacks(_WHITE);
+		gamePerft6->board.getQueenAttacks(_BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
@@ -84,18 +84,18 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (long i = 1; i < 10000000; ++i) {
-		gameInitial->board.getKnightAttacks(WHITE);
-		gameInitial->board.getKnightAttacks(BLACK);
-		gamePerft2->board.getKnightAttacks(WHITE);
-		gamePerft2->board.getKnightAttacks(BLACK);
-		gamePerft3->board.getKnightAttacks(WHITE);
-		gamePerft3->board.getKnightAttacks(BLACK);
-		gamePerft4->board.getKnightAttacks(WHITE);
-		gamePerft4->board.getKnightAttacks(BLACK);
-		gamePerft5->board.getKnightAttacks(WHITE);
-		gamePerft5->board.getKnightAttacks(BLACK);
-		gamePerft6->board.getKnightAttacks(WHITE);
-		gamePerft6->board.getKnightAttacks(BLACK);
+		gameInitial->board.getKnightAttacks(_WHITE);
+		gameInitial->board.getKnightAttacks(_BLACK);
+		gamePerft2->board.getKnightAttacks(_WHITE);
+		gamePerft2->board.getKnightAttacks(_BLACK);
+		gamePerft3->board.getKnightAttacks(_WHITE);
+		gamePerft3->board.getKnightAttacks(_BLACK);
+		gamePerft4->board.getKnightAttacks(_WHITE);
+		gamePerft4->board.getKnightAttacks(_BLACK);
+		gamePerft5->board.getKnightAttacks(_WHITE);
+		gamePerft5->board.getKnightAttacks(_BLACK);
+		gamePerft6->board.getKnightAttacks(_WHITE);
+		gamePerft6->board.getKnightAttacks(_BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
@@ -109,26 +109,13 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 
 
 
-TEST_F(PerformanceDebugTest, stuffTest) {
-//#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-//#endif
-	Position source = 4;
-	Position destination = 2;
-
-	Move move = createMove(source, destination, WHITE, BKing);
-
-	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
-	Board board = game->getCopyBoard();
-
-	game->simulateMove(move);
-	game->undoSimulateMove(move);
-
-	/*printBoard(game->board.BOARD(WHITE));
-	printBoard(game->board.PIECES(BLACK));
-	printBoard(game->board.EMPTY);*/
-
-	GTEST_ASSERT_TRUE(game->board.equals(board));
+TEST_F(PerformanceDebugTest, bugOfTheDayTest) {
+	//GTEST_SKIP();
+	Game game;
+	game.initFromFEN("1nb1kbnQ/pppp1pp1/4p3/8/4P3/8/PPPP1PPP/RNB1KBNR b KQ - 0 1");
+	auto engine = new BF_Engine(3);
+	Evaluation best = engine->calculateMove(game);
+	cout << "best: " << moveToString(best.move) << " --> " << best.value << endl;
 }
 
 

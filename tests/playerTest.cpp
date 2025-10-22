@@ -7,7 +7,7 @@
 using namespace std;
 
 TEST(PlayerTest, moveTimeTest) {
-	Player* player = new Player(true);
+	Player* player = new Player(_WHITE);
 	player->startMoveTime();
 	this_thread::sleep_for(chrono::milliseconds(100));
 	player->stopMoveTime();

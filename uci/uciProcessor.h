@@ -20,13 +20,13 @@ public:
 	bool calculatingMove = false;
 	future<string> move;
 	MovesProcessor movesProcessor;
-	Logger& logger = Logger::getInstance();
+	Messenger& messenger = Messenger::getInstance();
 
 	void run() {
 		while (true) {
 			string command = UI::readString();
 
-			logger.log("received command: " + command);
+			messenger.send(MSG_LOG, "uciProcessor", "received command: " + command);
 
 			if (isQuit(command)) {
 				break;
@@ -109,12 +109,12 @@ public:
 	}
 
 	void sendCommand(string command) {
-		logger.log("sending command: " + command);
+		messenger.send(MSG_LOG, "uciProcessor", "sending command: " + command);
 		cout << command << endl;
 	}
 
 	void createNewGame() {
-		logger.log("creating new game");
+		messenger.send(MSG_LOG, "uciProcessor", "creating new game");
 		game.init();
 	}
 

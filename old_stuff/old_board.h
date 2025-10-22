@@ -26,11 +26,11 @@ inline Rawboard slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard pos
 /*TEST_F(BoardTest, slidingAttackTest) {
     Board board;
     Rawboard posInd = Board::posInd(36);
-    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x8040200000000000LL);
+    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(_WHITE)), 0x8040200000000000LL);
     board.setPiece(54, WPawn);
-    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x40200000000000LL);
+    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(_WHITE)), 0x40200000000000LL);
     board.setPiece(54, BPawn);
-    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(WHITE)), 0x200000000000LL);
+    EXPECT_EQ(board.slidingAttack(Board::soEastOne, posInd, board.BOARD(_WHITE)), 0x200000000000LL);
     board.setPiece(29, WPawn);
-    GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.PIECES(WHITE)), 29));
+    GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.PIECES(_WHITE)), 29));
 }*/

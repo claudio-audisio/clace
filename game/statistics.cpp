@@ -6,9 +6,9 @@
 #include <format>
 #include <thread>
 
-Statistics::Statistics(const unsigned int gamesAmount) :
+Statistics::Statistics(const unsigned int gamesAmount, const bool gui /*= false*/) :
 running(gamesAmount) {
-	consoleOutput = gamesAmount == 1;
+	consoleOutput = gamesAmount == 1 && !gui;
 	whiteWins.store(0);
 	blackWins.store(0);
 	draws.store(0);

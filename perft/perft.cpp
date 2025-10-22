@@ -72,21 +72,13 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
         if (moves[i]) {
             game->save();
             const MoveResult moveResult = game->applyMove(moves[i]);
-            // TODO sta roba serve ancora ? vedere se ho ancora errore in qualche perft
-            if (isCastlingMR(moveResult)) {
-                if (isCapturedMR(moveResult)) {
-                    logger.log("castling & captured");
-                } else {
-                    logger.log("castling " + game->printMovesHistory(0));
-                }
-            }
             result->incrementCounters(moveResult, depth - currentDepth);
             game->verifyChecks();
             result->incrementCounters(game->checkStatus, depth - currentDepth);
             //cout << game->printMovesHistory() << " done " << endl;
             runCompletePerft(currentDepth - 1);
             /*if (currentDepth == 3) {
-                cout << toString(move) << "\t" << result->getCaptures(2) << endl;
+                cout << moveToString(move) << "\t" << result->getCaptures(2) << endl;
             }*/
             game->rollbackLastMove();
         }

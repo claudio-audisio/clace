@@ -89,18 +89,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsFirstRowTest,
     ::testing::Values(
-        new TestParams(0, WHITE, false),
-        new TestParams(0, BLACK, true),
-        new TestParams(7, WHITE, false),
-        new TestParams(7, BLACK, true),
-        new TestParams(8, WHITE, false),
-        new TestParams(8, BLACK, false),
-        new TestParams(55, WHITE, false),
-        new TestParams(55, BLACK, false),
-        new TestParams(56, WHITE, true),
-        new TestParams(56, BLACK, false),
-        new TestParams(63, WHITE, true),
-        new TestParams(63, BLACK, false)
+        new TestParams(0, _WHITE, false),
+        new TestParams(0, _BLACK, true),
+        new TestParams(7, _WHITE, false),
+        new TestParams(7, _BLACK, true),
+        new TestParams(8, _WHITE, false),
+        new TestParams(8, _BLACK, false),
+        new TestParams(55, _WHITE, false),
+        new TestParams(55, _BLACK, false),
+        new TestParams(56, _WHITE, true),
+        new TestParams(56, _BLACK, false),
+        new TestParams(63, _WHITE, true),
+        new TestParams(63, _BLACK, false)
     )
 );
 
@@ -116,22 +116,22 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsSecondRowTest,
     ::testing::Values(
-        new TestParams(7, WHITE, false),
-        new TestParams(7, BLACK, false),
-        new TestParams(8, WHITE, false),
-        new TestParams(8, BLACK, true),
-        new TestParams(15, WHITE, false),
-        new TestParams(15, BLACK, true),
-        new TestParams(16, WHITE, false),
-        new TestParams(16, BLACK, false),
-        new TestParams(47, WHITE, false),
-        new TestParams(47, BLACK, false),
-        new TestParams(48, WHITE, true),
-        new TestParams(48, BLACK, false),
-        new TestParams(55, WHITE, true),
-        new TestParams(55, BLACK, false),
-        new TestParams(56, WHITE, false),
-        new TestParams(56, BLACK, false)
+        new TestParams(7, _WHITE, false),
+        new TestParams(7, _BLACK, false),
+        new TestParams(8, _WHITE, false),
+        new TestParams(8, _BLACK, true),
+        new TestParams(15, _WHITE, false),
+        new TestParams(15, _BLACK, true),
+        new TestParams(16, _WHITE, false),
+        new TestParams(16, _BLACK, false),
+        new TestParams(47, _WHITE, false),
+        new TestParams(47, _BLACK, false),
+        new TestParams(48, _WHITE, true),
+        new TestParams(48, _BLACK, false),
+        new TestParams(55, _WHITE, true),
+        new TestParams(55, _BLACK, false),
+        new TestParams(56, _WHITE, false),
+        new TestParams(56, _BLACK, false)
     )
 );
 
@@ -147,18 +147,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsFourthRowTest,
     ::testing::Values(
-        new TestParams(23, WHITE, false),
-        new TestParams(23, BLACK, false),
-        new TestParams(24, WHITE, false),
-        new TestParams(24, BLACK, true),
-        new TestParams(31, WHITE, false),
-        new TestParams(31, BLACK, true),
-        new TestParams(32, WHITE, true),
-        new TestParams(32, BLACK, false),
-        new TestParams(39, WHITE, true),
-        new TestParams(39, BLACK, false),
-        new TestParams(40, WHITE, false),
-        new TestParams(40, BLACK, false)
+        new TestParams(23, _WHITE, false),
+        new TestParams(23, _BLACK, false),
+        new TestParams(24, _WHITE, false),
+        new TestParams(24, _BLACK, true),
+        new TestParams(31, _WHITE, false),
+        new TestParams(31, _BLACK, true),
+        new TestParams(32, _WHITE, true),
+        new TestParams(32, _BLACK, false),
+        new TestParams(39, _WHITE, true),
+        new TestParams(39, _BLACK, false),
+        new TestParams(40, _WHITE, false),
+        new TestParams(40, _BLACK, false)
     )
 );
 
@@ -187,18 +187,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsEightRowTest,
     ::testing::Values(
-        new TestParams12(0, WHITE, true),
-        new TestParams12(0, BLACK, false),
-        new TestParams12(7, WHITE, true),
-        new TestParams12(7, BLACK, false),
-        new TestParams12(8, WHITE, false),
-        new TestParams12(8, BLACK, false),
-        new TestParams12(55, WHITE, false),
-        new TestParams12(55, BLACK, false),
-        new TestParams12(56, WHITE, false),
-        new TestParams12(56, BLACK, true),
-        new TestParams12(63, WHITE, false),
-        new TestParams12(63, BLACK, true)
+        new TestParams12(0, _WHITE, true),
+        new TestParams12(0, _BLACK, false),
+        new TestParams12(7, _WHITE, true),
+        new TestParams12(7, _BLACK, false),
+        new TestParams12(8, _WHITE, false),
+        new TestParams12(8, _BLACK, false),
+        new TestParams12(55, _WHITE, false),
+        new TestParams12(55, _BLACK, false),
+        new TestParams12(56, _WHITE, false),
+        new TestParams12(56, _BLACK, true),
+        new TestParams12(63, _WHITE, false),
+        new TestParams12(63, _BLACK, true)
     )
 );
 
@@ -320,21 +320,21 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsOnXRayTest,
     ::testing::Values(
-        new TestParams3(24, 3, WHITE, false),
-        new TestParams3(25, 3, WHITE, true),
-        new TestParams3(26, 3, WHITE, false),
-        new TestParams3(27, 3, WHITE, false),
-        new TestParams3(28, 3, WHITE, true),
-        new TestParams3(29, 3, WHITE, true),
-        new TestParams3(30, 3, WHITE, false),
-        new TestParams3(31, 3, WHITE, true),
-        new TestParams3(4, 31, BLACK, false),
-        new TestParams3(12, 31, BLACK, true),
-        new TestParams3(20, 31, BLACK, false),
-        new TestParams3(28, 31, BLACK, false),
-        new TestParams3(36, 31, BLACK, true),
-        new TestParams3(44, 31, BLACK, true),
-        new TestParams3(52, 31, BLACK, false),
-        new TestParams3(60, 31, BLACK, true)
+        new TestParams3(24, 3, _WHITE, false),
+        new TestParams3(25, 3, _WHITE, true),
+        new TestParams3(26, 3, _WHITE, false),
+        new TestParams3(27, 3, _WHITE, false),
+        new TestParams3(28, 3, _WHITE, true),
+        new TestParams3(29, 3, _WHITE, true),
+        new TestParams3(30, 3, _WHITE, false),
+        new TestParams3(31, 3, _WHITE, true),
+        new TestParams3(4, 31, _BLACK, false),
+        new TestParams3(12, 31, _BLACK, true),
+        new TestParams3(20, 31, _BLACK, false),
+        new TestParams3(28, 31, _BLACK, false),
+        new TestParams3(36, 31, _BLACK, true),
+        new TestParams3(44, 31, _BLACK, true),
+        new TestParams3(52, 31, _BLACK, false),
+        new TestParams3(60, 31, _BLACK, true)
     )
 );*/

@@ -15,6 +15,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer")
 
+set(RAYLIB_INCLUDE_DIR "/home/claudio/Projects/raylib/src")
+set(RAYLIB_LIB_DIR "/home/claudio/Projects/raylib/src")
+
+include_directories(${RAYLIB_INCLUDE_DIR})
+
 project ("clace")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -50,7 +55,17 @@ add_executable (clace
 		board/attackBoards.h
 		common/defines.h
 		utils/arrayPool.h
-		engine/abstract_engine.h)
+		engine/abstract_engine.h
+		ui/gui/gui.cpp
+		ui/gui/gui.h
+		ui/gui/guiConstants.h
+		ui/gui/button.cpp
+		ui/gui/button.h
+		ui/gui/panel.cpp
+		ui/gui/panel.h
+		utils/messenger.h
+		ui/gui/igui.h
+		utils/toString.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -73,7 +88,15 @@ add_library(claceLib
 		board/attackBoards.h
 		common/defines.h
 		utils/arrayPool.h
-		engine/abstract_engine.h)
+		engine/abstract_engine.h
+		ui/gui/guiConstants.h
+		ui/gui/button.cpp
+		ui/gui/button.h
+		ui/gui/panel.cpp
+		ui/gui/panel.h
+		utils/messenger.h
+		ui/gui/igui.h
+		utils/toString.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -81,7 +104,13 @@ else()
     message(STATUS "C++ standard version is not set explicitly.")
 endif()
 
-target_link_libraries(clace PRIVATE spdlog::spdlog)
+target_link_libraries(clace PRIVATE spdlog::spdlog ${RAYLIB_LIB_DIR}/libraylib.a
+		-lm -lpthread -ldl -lrt -lX11)
+
+#[[target_link_libraries(clace
+		${RAYLIB_LIB_DIR}/libraylib.a
+		-lm -lpthread -ldl -lrt -lX11
+)]]
 
 ############ TESTS ###################################################################################################################################################
 

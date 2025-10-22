@@ -79,8 +79,8 @@ public:
 
 #ifdef BOARD_USE_PRE_CALCULATED
 	void resetCalculated() {
-		resetCalculated(WHITE);
-		resetCalculated(BLACK);
+		resetCalculated(_WHITE);
+		resetCalculated(_BLACK);
 	}
 
 	void resetCalculated(Side side) {
@@ -102,7 +102,7 @@ public:
 	}
 
 	bool isEmpty(const Position position) const {
-		return (EMPTY & posInd(position)) != 0L;
+		return EMPTY & posInd(position);
 	}
 
 	bool isWhite(const Position position) const {
@@ -114,31 +114,31 @@ public:
 	}
 
 	bool isPawn(const Position position) const {
-		return ((pieceBoards[WPawn] | pieceBoards[BPawn]) & posInd(position)) != 0L;
+		return (pieceBoards[WPawn] | pieceBoards[BPawn]) & posInd(position);
 	}
 
 	bool isKnight(const Position position) const {
-		return ((pieceBoards[WKnight] | pieceBoards[BKnight]) & posInd(position)) != 0L;
+		return (pieceBoards[WKnight] | pieceBoards[BKnight]) & posInd(position);
 	}
 
 	bool isBishop(const Position position) const {
-		return ((pieceBoards[WBishop] | pieceBoards[BBishop]) & posInd(position)) != 0L;
+		return (pieceBoards[WBishop] | pieceBoards[BBishop]) & posInd(position);
 	}
 
 	bool isRook(const Position position) const {
-		return ((pieceBoards[WRook] | pieceBoards[BRook]) & posInd(position)) != 0L;
+		return (pieceBoards[WRook] | pieceBoards[BRook]) & posInd(position);
 	}
 
 	bool isRook(const Position position, const Side side) const {
-		return (pieceBoards[WRook + side] & posInd(position)) != 0;
+		return pieceBoards[WRook + side] & posInd(position);
 	}
 
 	bool isQueen(const Position position) const {
-		return ((pieceBoards[WQueen] | pieceBoards[BQueen]) & posInd(position)) != 0L;
+		return (pieceBoards[WQueen] | pieceBoards[BQueen]) & posInd(position);
 	}
 
 	bool isKing(const Position position) const {
-		return ((pieceBoards[WKing] | pieceBoards[BKing]) & posInd(position)) != 0L;
+		return (pieceBoards[WKing] | pieceBoards[BKing]) & posInd(position);
 	}
 
 	Position getWhiteKingPosition() const {
@@ -257,19 +257,20 @@ public:
 	}
 
 	Rawboard getDestinationPositions(const Position position, const Piece piece) {
+		// TODO eliminare lo switch con un array di puntatori a funzione
 		switch (piece) {
-			case WPawn: return getPawnMoves(position, WHITE);
-			case BPawn: return getPawnMoves(position, BLACK);
-			case WRook: return rookAttack(position, ~EMPTY, ~PIECES(WHITE));
-			case BRook: return rookAttack(position, ~EMPTY, ~PIECES(BLACK));
-			case WKnight: return knightAttack(position, OPP_PIECES(WHITE));
-			case BKnight: return knightAttack(position, OPP_PIECES(BLACK));
-			case WBishop: return bishopAttack(position, ~EMPTY, ~PIECES(WHITE));
-			case BBishop: return bishopAttack(position, ~EMPTY, ~PIECES(BLACK));
-			case WQueen: return queenAttacks(position, ~EMPTY, ~PIECES(WHITE));
-			case BQueen: return queenAttacks(position, ~EMPTY, ~PIECES(BLACK));
-			case WKing: return getKingMoves(position, WHITE);
-			case BKing: return getKingMoves(position, BLACK);
+			case WPawn: return getPawnMoves(position, _WHITE);
+			case BPawn: return getPawnMoves(position, _BLACK);
+			case WRook: return rookAttack(position, ~EMPTY, ~PIECES(_WHITE));
+			case BRook: return rookAttack(position, ~EMPTY, ~PIECES(_BLACK));
+			case WKnight: return knightAttack(position, OPP_PIECES(_WHITE));
+			case BKnight: return knightAttack(position, OPP_PIECES(_BLACK));
+			case WBishop: return bishopAttack(position, ~EMPTY, ~PIECES(_WHITE));
+			case BBishop: return bishopAttack(position, ~EMPTY, ~PIECES(_BLACK));
+			case WQueen: return queenAttacks(position, ~EMPTY, ~PIECES(_WHITE));
+			case BQueen: return queenAttacks(position, ~EMPTY, ~PIECES(_BLACK));
+			case WKing: return getKingMoves(position, _WHITE);
+			case BKing: return getKingMoves(position, _BLACK);
 			default: return 0;
 		};
 	}
@@ -576,7 +577,7 @@ public:
 				piecePositions[63] = Empty;
 				break;
 			}
-			default: assert(false);
+			default: throw runtime_error("wrong castling move");
 		}
 	}
 
@@ -630,7 +631,7 @@ public:
 				piecePositions[62] = Empty;
 				break;
 			}
-			default: assert(false);
+		default: throw runtime_error("wrong undo castling move");
 		}
 	}
 

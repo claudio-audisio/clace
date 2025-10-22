@@ -8,7 +8,7 @@ using namespace std;
 
 class Statistics {
 public:
-	explicit Statistics(unsigned int gamesAmount);
+	explicit Statistics(unsigned int gamesAmount, bool gui = false);
 	~Statistics();
 
 	void gameEnded(int gameResult);
@@ -16,10 +16,9 @@ public:
 	void print();
 	string percentage(unsigned int value);
 
-	bool consoleOutput;
 	latch running;
 	atomic<unsigned int> blackWins;
 	atomic<unsigned int> whiteWins;
 	atomic<unsigned int> draws;
-
+	bool consoleOutput;
 };

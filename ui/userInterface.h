@@ -157,11 +157,11 @@ public:
 						break;
 					}
 				case 8: cout << "\t\tmoves: " << game.fullMoves; break;
-				case 16: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game); break;
+				case 16: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.currentEvaluation; break;
 				case 24: cout << "\t\ttimes: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime(); break;
 				case 32: {
-						const string& whiteCaptured = game.getCapturedList(WHITE);
-						const string& blackCaptured = game.getCapturedList(BLACK);
+						const string& whiteCaptured = game.getCapturedList(_WHITE);
+						const string& blackCaptured = game.getCapturedList(_BLACK);
 						if (!whiteCaptured.empty() || !blackCaptured.empty()) {
 							cout << "\t\tcaptured: " << whiteCaptured << "- " << blackCaptured;
 						}
@@ -170,7 +170,7 @@ public:
 				case 40: cout << "\t\tfen: " << FEN::gameToFEN(game); break;
 				case 48: {
 						if (game.lastMove != 0) {
-							cout << "\t\tlast move: " << toString(game.lastMove);
+							cout << "\t\tlast move: " << moveToString(game.lastMove);
 						}
 						break;
 					}
@@ -189,24 +189,24 @@ public:
 		cout << " moves: " << game.fullMoves << endl;
 		cout << " times: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime() << endl;
 
-		const string whiteCaptured = game.getCapturedList(WHITE);
-		const string blackCaptured = game.getCapturedList(BLACK);
+		const string whiteCaptured = game.getCapturedList(_WHITE);
+		const string blackCaptured = game.getCapturedList(_BLACK);
 
 		if (!whiteCaptured.empty() || !blackCaptured.empty()) {
 			cout << " captured: " << whiteCaptured << "- " << blackCaptured << endl;
 		}
 
-		cout << " evaluation: " << fixed << setprecision(2) << game.evaluator->evaluate(game) << endl;
+		cout << " evaluation: " << fixed << setprecision(2) << game.currentEvaluation << endl;
 
 		if (game.lastMove != 0) {
-			cout << " last move: " << toString(game.lastMove) << " (" << (isWhite(game.lastMove) ? "white" : "black") << ")" << endl;
+			cout << " last move: " << moveToString(game.lastMove) << " (" << (isWhite(game.lastMove) ? "white" : "black") << ")" << endl;
 		}
 
 		cout << " fen: " << FEN::gameToFEN(game) << endl;
 		cout << endl;
 	}
 
-	static void printFENGame(Game game) {
+	static void printFENGame(Game& game) {
 		cout << "  " << FEN::gameToFEN(game) << endl;
 	}
 

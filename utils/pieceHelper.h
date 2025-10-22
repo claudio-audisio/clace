@@ -24,7 +24,7 @@ static Side _getSide(const Piece piece) {
 		return OPPOSITE(piece % 2);
 	}
 
-	assert(false);
+	throw runtime_error("get side on empty cell");
 }
 
 static Side _getOppositeSide(const Piece piece) {
@@ -32,7 +32,7 @@ static Side _getOppositeSide(const Piece piece) {
 		return piece % 2;
 	}
 
-	assert(false);
+	throw runtime_error("get side on empty cell");
 }
 
 static bool _isEmpty(const Piece piece) {
@@ -118,21 +118,6 @@ static Piece valueOf(const string& stringPiece) {
 	return 0;
 }
 
-static char getPieceCode(Piece piece) {
-	// TODO use a map
-	switch (piece) {
-		case WPawn: return 0x0050;
-		case BPawn: return 0x0070;
-		case WRook: return 0x0052;
-		case BRook: return 0x0072;
-		case WKnight: return 0x004E;
-		case BKnight: return 0x006E;
-		case WBishop: return 0x0042;
-		case BBishop: return 0x0062;
-		case WQueen: return 0x0051;
-		case BQueen: return 0x0071;
-		case WKing: return 0x004B;
-		case BKing: return 0x006B;
-		default: return 0x002E;
-	}
+static char getPieceCode(const Piece piece) {
+	return PIECE_TO_CODE.at(piece);
 }

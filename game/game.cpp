@@ -6,6 +6,7 @@
 #include "../move/movesGenerator.h"
 #include "../game/player.h"
 #include "../evaluation/basicEvaluator.h"
+#include "../utils/toString.h"
 
 Game::Game() :
 	rollback(10), sideToMove(0), fullMoves(0), halfMoveClock(0) {
@@ -198,10 +199,10 @@ Side Game::getSide(Position position) const {
 	}
 
 	if (board.isWhite(position)) {
-		return WHITE;
+		return _WHITE;
 	}
 
-	return BLACK;
+	return _BLACK;
 }
 
 void Game::save() {
@@ -217,6 +218,10 @@ void Game::rollbackLastMove() {
 
 Player* Game::getCurrentPlayer() const {
 	return isWhiteToMove() ? whitePlayer : blackPlayer;
+}
+
+Player* Game::getOtherPlayer() const {
+	return isWhiteToMove() ? blackPlayer : whitePlayer;
 }
 
 bool Game::isComputerToMove() const {
@@ -252,7 +257,7 @@ string Game::printMovesHistory(const int depth) const {
     string moves;
 	int i = 0;
     for (Move move : movesHistory) {
-        moves = toString(move) + ", " + moves;
+        moves = moveToString(move) + ", " + moves;
     	if (depth > 0 && ++i == depth) {
     		break;
     	}
@@ -346,6 +351,10 @@ int Game::getAllDestinationQty(const Side side) {
 	}
 
 	return count;
+}
+
+string Game::getDescription() const {
+	return format("{} vs {}", whitePlayer->getDescription(), blackPlayer->getDescription());
 }
 
 /*

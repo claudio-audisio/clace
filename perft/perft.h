@@ -33,5 +33,5 @@ private:
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);
 
-	Logger& logger = Logger::getInstance();
+	Messenger& messenger = Messenger::getInstance();
 };

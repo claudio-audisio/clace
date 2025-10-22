@@ -17,9 +17,9 @@ using namespace std;
 #define CvsC 1
 
 #define SIDE_GAP 1
-#define WHITE 0
-#define BLACK (WHITE + SIDE_GAP)
-#define OPPOSITE(side) (BLACK - side)
+#define _WHITE 0
+#define _BLACK (_WHITE + SIDE_GAP)
+#define OPPOSITE(side) (_BLACK - side)
 #define NO_POS 64
 #define SIZE 13
 #define MAX_MOVES 218
@@ -38,6 +38,8 @@ constexpr Piece WQueen = 9;
 constexpr Piece BQueen = WQueen + SIDE_GAP;
 constexpr Piece WKing = 11;
 constexpr Piece BKing = WKing + SIDE_GAP;
+static const unordered_map<Piece, string> PIECE_TO_STRING = {{WKing, "King"}, {WQueen, "Queen"}, {WRook, "Rook"}, {WKnight, "Knight"}, {WBishop, "Bishop"}, {WPawn, "Pawn"}, {BKing, "King"}, {BQueen, "Queen"}, {BRook, "Rook"}, {BKnight, "Knight"}, {BBishop, "Bishop"}, {BPawn, "Pawn"}};
+static const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQueen, 0x0051}, {WRook, 0x0052}, {WKnight, 0x004E}, {WBishop, 0x0062}, {WPawn, 0x0050}, {BKing, 0x006B}, {BQueen, 0x0071}, {BRook, 0x0072}, {BKnight, 0x006E}, {BBishop, 0x0062}, {BPawn, 0x0070}, {Empty, 0x002E}};
 
 // board masks
 #define EMPTY_BOARD 0xffffffffffffffffLL
@@ -122,7 +124,7 @@ constexpr Piece BKing = WKing + SIDE_GAP;
 inline static const CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
 
 // xray pieces
-static unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{WHITE, { WRook, WBishop, WQueen }}, {BLACK, { BRook, BBishop, BQueen }}};
+static unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{_WHITE, { WRook, WBishop, WQueen }}, {_BLACK, { BRook, BBishop, BQueen }}};
 
 // fen
 static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
@@ -167,3 +169,8 @@ inline static const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 #define FIVEFOLD_REPETITION 2
 #define STALEMATE 3
 #define CHECKMATE 4
+
+// messaging types
+#define MSG_ALL 0
+#define MSG_LOG 1
+#define MSG_GUI 2
