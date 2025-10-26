@@ -34,8 +34,9 @@ public:
 
         game.verifyChecks();
         Move* moves = pool->getArray(depth);
-        const MovesAmount amount = generateLegalMoves(game, moves);
-        const EndGameType endGame = game.checkEndGame(amount.second);
+        MovesAmount amount;
+        generateLegalMoves(game, moves, &amount);
+        const EndGameType endGame = game.checkEndGame(amount.legal);
         best = {0, LOSS_VALUE, endGame};
 
         if (!endGame) {

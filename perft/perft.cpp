@@ -49,17 +49,17 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
 #ifdef PERFT_USE_CACHE
     const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves, amount)) {
-        amount = generateLegalMoves(*game, moves);
-        cache->add(fenKey, moves, amount.first, amount.second);
+        generateLegalMoves(*game, moves, &amount);
+        cache->add(fenKey, moves, amount.total, amount.legal);
         generatorUsage++;
     } else {
         cacheUsage++;
     }
 #else
-    amount = generateLegalMoves(*game, moves);
+    generateLegalMoves(*game, moves, &amount);
 #endif
 
-    if (game->checkStatus.check && amount.second == 0) {
+    if (game->checkStatus.check && amount.legal == 0) {
         result->incrementCheckmates((depth - currentDepth) - 1);
         return;
     }
@@ -68,7 +68,7 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
         return;
     }
 
-    for (unsigned int i = 0; i < amount.first; i++) {
+    for (unsigned int i = 0; i < amount.total; i++) {
         if (moves[i]) {
             game->save();
             const MoveResult moveResult = game->applyMove(moves[i]);
@@ -104,23 +104,23 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
 #ifdef PERFT_USE_CACHE
     const string fenKey = FEN::gameToFENKey(*game);
     if (!cache->get(fenKey, moves, amount)) {
-        amount = generateLegalMoves(*game, moves);
-        cache->add(fenKey, moves, amount.first, amount.second);
+        generateLegalMoves(*game, moves, &amount);
+        cache->add(fenKey, moves, amount.total, amount.legal);
         generatorUsage++;
     } else {
         cacheUsage++;
     }
 #else
-    amount = generateLegalMoves(*game, moves);
+    generateLegalMoves(*game, moves, &amount);
 #endif
 
     if (currentDepth == 1) {
-        return amount.second;
+        return amount.legal;
     }
 
     unsLL nodes = 0;
 
-    for (unsigned int i = 0; i < amount.first; i++) {
+    for (unsigned int i = 0; i < amount.total; i++) {
         if (moves[i]) {
             game->save();
             game->applyMove(moves[i]);

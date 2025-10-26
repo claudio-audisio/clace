@@ -1,6 +1,6 @@
 DA FINIRE
 
-    - Completare il refactoring sulla board aggiornando i test
+    - Migrare la classe Board ad una struct per facilitare save/rollback (memset?)
     - Completare test unita'
 
 GENERALE

@@ -33,7 +33,6 @@ static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
 
 		const Piece piece = game.board.getPiece(position);
 		Rawboard destinations = s_getDestinationPositions(game.board, position, piece, game.sideToMove);
-		//Rawboard destinations = game.board.getDestinationPositions(position, piece, game.sideToMove);
 
 		while (destinations) {
 			const Position destination = getFirstPos(destinations);
@@ -62,7 +61,7 @@ static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
 	return count;
 }
 
-static MovesAmount generateLegalMoves(Game& game, Move* moves) {
+static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {
 	const unsigned char tot = generatePseudoLegalMoves(game, moves);
 	unsigned char removed = 0;
 
@@ -73,10 +72,11 @@ static MovesAmount generateLegalMoves(Game& game, Move* moves) {
 		}
 	}
 
-	return make_pair(tot,tot - removed);
+	legalMoves->total = tot;
+	legalMoves->legal = tot - removed;
 }
 
-/*static MovesAmount generateLegalMoves(Game& game, Move* moves) {
+/*static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {
 	Rawboard sources = game.board.PIECES(game.sideToMove);
 	unsigned char count = 0;
 
@@ -116,5 +116,6 @@ static MovesAmount generateLegalMoves(Game& game, Move* moves) {
 		sources &= (sources - 1);
 	}
 
-	return make_pair(count, count);
+	legalMoves->total = count;
+	legalMoves->legal = count;
 }*/

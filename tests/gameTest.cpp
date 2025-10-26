@@ -280,9 +280,10 @@ TEST_P(CheckEndGameTest, checkEndGameTest) {
 	game->verifyChecks();
 	Move* moves = new Move[MAX_MOVES];
 
-	MovesAmount amount = generateLegalMoves(*game, moves);
+	MovesAmount amount;
+	generateLegalMoves(*game, moves, &amount);
 
-	EXPECT_EQ(game->checkEndGame(amount.second), expectedEndGame);
+	EXPECT_EQ(game->checkEndGame(amount.legal), expectedEndGame);
 }
 
 INSTANTIATE_TEST_SUITE_P(

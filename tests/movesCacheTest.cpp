@@ -44,9 +44,9 @@ TEST(MovesCacheTest, cacheTest) {
     EXPECT_EQ(cache.get("game2", cacheMoves2, amount2), true);
     EXPECT_NE(cacheMoves, cacheMoves2);
     EXPECT_EQ(cacheMoves[4], 4);
-    EXPECT_EQ(amount.first, 5);
-    EXPECT_EQ(amount.second, 1);
+    EXPECT_EQ(amount.total, 5);
+    EXPECT_EQ(amount.legal, 1);
     EXPECT_EQ(cacheMoves2[4], 4);
-    EXPECT_EQ(amount2.first, 5);
-    EXPECT_EQ(amount2.second, 1);
+    EXPECT_EQ(amount2.total, 5);
+    EXPECT_EQ(amount2.legal, 1);
 }

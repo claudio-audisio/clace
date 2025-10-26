@@ -18,7 +18,10 @@ typedef unsigned long long Move;
 typedef unsigned char MoveType;
 typedef unsigned char MoveResult;
 
-typedef pair<unsigned char, unsigned char> MovesAmount;		// total - legal		// TODO trasformare in struct
+typedef struct {
+	unsigned char total;
+	unsigned char legal;
+} MovesAmount;
 
 typedef struct {
 	Move move;

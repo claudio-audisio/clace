@@ -97,8 +97,9 @@ public:
 				game->blackPlayer->getMoveTime());
 
 		Move* moves = pool->getArray();
-		MovesAmount amount = generateLegalMoves(*game, moves);
-		EndGameType endGame = game->checkEndGame(amount.second);
+		MovesAmount amount;
+		generateLegalMoves(*game, moves, &amount);
+		EndGameType endGame = game->checkEndGame(amount.legal);
 
 		if (endGame != NONE) {
 			game->getCurrentPlayer()->stopMoveTime();
@@ -126,7 +127,7 @@ public:
 
 			game->getCurrentPlayer()->stopMoveTime();
 
-			if (isPresent(move, moves, amount.first)) {
+			if (isPresent(move, moves, amount.total)) {
 				break;
 			}
 

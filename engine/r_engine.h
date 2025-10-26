@@ -18,7 +18,7 @@ public:
 		int index;
 
 		do {
-			index = getRandom(amount.first);
+			index = getRandom(amount.total);
 		} while (moves[index] == 0);
 
 		best.move = moves[index];

@@ -38,6 +38,7 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
 	GTEST_SKIP();
 #endif
 	Move moves[MAX_MOVES];
+	MovesAmount movesAmount;
 	Game* boardInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* boardPerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* boardPerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -49,40 +50,40 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
 
 	for (int i = 1; i < 100000; ++i) {
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardInitial, moves);
+		generateLegalMoves(*boardInitial, moves, &movesAmount);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardInitial, moves);
+		generateLegalMoves(*boardInitial, moves, &movesAmount);
 		boardInitial->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft2, moves);
+		generateLegalMoves(*boardPerft2, moves, &movesAmount);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft2, moves);
+		generateLegalMoves(*boardPerft2, moves, &movesAmount);
 		boardPerft2->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft3, moves);
+		generateLegalMoves(*boardPerft3, moves, &movesAmount);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft3, moves);
+		generateLegalMoves(*boardPerft3, moves, &movesAmount);
 		boardPerft3->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft4, moves);
+		generateLegalMoves(*boardPerft4, moves, &movesAmount);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft4, moves);
+		generateLegalMoves(*boardPerft4, moves, &movesAmount);
 		boardPerft4->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft5, moves);
+		generateLegalMoves(*boardPerft5, moves, &movesAmount);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft5, moves);
+		generateLegalMoves(*boardPerft5, moves, &movesAmount);
 		boardPerft5->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft6, moves);
+		generateLegalMoves(*boardPerft6, moves, &movesAmount);
 		boardPerft6->changeTurn();
 		memset(moves, 0, sizeof(moves));
-		generateLegalMoves(*boardPerft6, moves);
+		generateLegalMoves(*boardPerft6, moves, &movesAmount);
 		boardPerft6->changeTurn();
 	}
 
@@ -155,16 +156,19 @@ TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 	Move perft3Moves[MAX_MOVES];
 	Move perft5Moves[MAX_MOVES];
 	Move perft6Moves[MAX_MOVES];
-	generateLegalMoves(*gameInitial, initialMoves);
-	generateLegalMoves(*gamePerft2, perft2Moves);
-	MovesAmount amountPerft3 = generateLegalMoves(*gamePerft3, perft3Moves);
-	generateLegalMoves(*gamePerft5, perft5Moves);
-	generateLegalMoves(*gamePerft6, perft6Moves);
+
+	MovesAmount mockAmount;
+	MovesAmount amountPerft3;
+	generateLegalMoves(*gameInitial, initialMoves, &mockAmount);
+	generateLegalMoves(*gamePerft2, perft2Moves, &mockAmount);
+	generateLegalMoves(*gamePerft3, perft3Moves, &amountPerft3);
+	generateLegalMoves(*gamePerft5, perft5Moves, &mockAmount);
+	generateLegalMoves(*gamePerft6, perft6Moves, &mockAmount);
 
 	unsLL time = 0;
 
 	for (int count = 0; count < 50000; count++) {
-		for (int index = 0; index < amountPerft3.first; index++) {
+		for (int index = 0; index < amountPerft3.total; index++) {
 			auto begin = chrono::steady_clock::now();
 
 			if (initialMoves[index]) { gameInitial->finalizeMove(initialMoves[index]); }
@@ -228,12 +232,13 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 
 	Game* game = FEN::fenToNewGame(CASTLING_FEN_POSITION);
 	auto moves = new Move[MAX_MOVES];
-	pair<int, int> res = generateLegalMoves(*game, moves);
+	MovesAmount amount;
+	generateLegalMoves(*game, moves, &amount);
 
 	auto begin = chrono::steady_clock::now();
 
 	for (long count = 0; count < 100000000; count++) {
-		for (int m = 0; m < res.first; m++) {
+		for (int m = 0; m < amount.total; m++) {
 			if (moves[m]) {
 				game->board.castlingInfo = 0b1111;
 				game->board.updateCastlingInfo(getSourcePosition(moves[m]), getDestinationPosition(moves[m]));
@@ -422,10 +427,11 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 	auto engine = new BF_Engine(4);
 	engine->setEvaluator(new BasicEvaluator());
 	auto moves = new Move[MAX_MOVES];
+	MovesAmount amount;
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = generateLegalMoves(game, moves);
+	generateLegalMoves(game, moves, &amount);
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);
@@ -444,10 +450,11 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 	auto engine = new BF_Engine(3);
 	engine->setEvaluator(new BasicEvaluator());
 	auto moves = new Move[MAX_MOVES];
+	MovesAmount amount;
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = generateLegalMoves(game, moves);
+	generateLegalMoves(game, moves, &amount);
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);
@@ -465,10 +472,11 @@ TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 	game.initFromFEN(PERFT_FEN_POSITION_3);
 	auto engine = new BF_Engine(5);
 	auto moves = new Move[MAX_MOVES];
+	MovesAmount amount;
 
 	auto begin = chrono::steady_clock::now();
 
-	MovesAmount amount = generateLegalMoves(game, moves);
+	generateLegalMoves(game, moves, &amount);
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);

@@ -29,8 +29,8 @@ public:
         Moves* cacheEntry = static_cast<Moves*>(malloc(sizeof(Moves)));
         cacheEntry->movesList = new Move[total];;
         memcpy(cacheEntry->movesList, moves, total * sizeof(Move));
-        cacheEntry->amount.first = total;
-        cacheEntry->amount.second = valid;
+        cacheEntry->amount.total = total;
+        cacheEntry->amount.legal = valid;
         cache.insert(make_pair(game, cacheEntry));
     }
 
@@ -46,8 +46,8 @@ public:
         }
 
         moves = it->second->movesList;
-        amount.first = it->second->amount.first;
-        amount.second = it->second->amount.second;
+        amount.total = it->second->amount.total;
+        amount.legal = it->second->amount.legal;
 
         return true;
     }
