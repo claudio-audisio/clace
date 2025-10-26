@@ -4,6 +4,7 @@
 #include "testUtils.h"
 #include "../board/board.h"
 #include "../utils/boardUtils.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ class BoardUtilsTest : public testing::Test {
 protected:
 	BoardUtilsTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~BoardUtilsTest() {
 

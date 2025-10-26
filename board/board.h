@@ -2,13 +2,14 @@
 
 #include <vector>
 #include <bit>
+#include <functional>
 
 #include "../common/types.h"
 #include "../common/constants.h"
 #include "../common/bitwise.h"
 #include "../utils/utils.h"
 #include "../utils/pieceHelper.h"
-#include "attackBoards.h"
+#include "../movesCalculation/staticAttacks.h"
 #include "../common/defines.h"
 #include "../utils/boardUtils.h"
 #include "../utils/positions.h"
@@ -30,7 +31,8 @@ public:
 	Rawboard _OPP_PIECES[2];
 	Rawboard _PIECES[2];
 
-	Rawboard PIECES(const Side side) {
+
+	Rawboard PIECES(const Side side) const {
 		// TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
 #ifdef BOARD_USE_PRE_CALCULATED
 		if (!_PIECES[side]) {
@@ -54,7 +56,7 @@ public:
 #endif
 	}
 
-	Rawboard OPP_PIECES(const Side side) {
+	Rawboard OPP_PIECES(const Side side) const {
 #ifdef BOARD_USE_PRE_CALCULATED
 		if (!_OPP_PIECES[side]) {
 			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
@@ -252,281 +254,6 @@ public:
 		return getFirstPos(pieceBoards[WKing + side]);
 	}
 
-	Rawboard getDestinationPositions(const Position position) {
-		return getDestinationPositions(position, piecePositions[position]);
-	}
-
-	Rawboard getDestinationPositions(const Position position, const Piece piece) {
-		// TODO eliminare lo switch con un array di puntatori a funzione
-		switch (piece) {
-			case WPawn: return getPawnMoves(position, _WHITE);
-			case BPawn: return getPawnMoves(position, _BLACK);
-			case WRook: return rookAttack(position, ~EMPTY, ~PIECES(_WHITE));
-			case BRook: return rookAttack(position, ~EMPTY, ~PIECES(_BLACK));
-			case WKnight: return knightAttack(position, OPP_PIECES(_WHITE));
-			case BKnight: return knightAttack(position, OPP_PIECES(_BLACK));
-			case WBishop: return bishopAttack(position, ~EMPTY, ~PIECES(_WHITE));
-			case BBishop: return bishopAttack(position, ~EMPTY, ~PIECES(_BLACK));
-			case WQueen: return queenAttacks(position, ~EMPTY, ~PIECES(_WHITE));
-			case BQueen: return queenAttacks(position, ~EMPTY, ~PIECES(_BLACK));
-			case WKing: return getKingMoves(position, _WHITE);
-			case BKing: return getKingMoves(position, _BLACK);
-			default: return 0;
-		};
-	}
-
-	Rawboard getAttacks(const Side side) {
-		return getPawnAttacks(side) | getKnightAttacks(side) | getBishopAttacks(side) | getRookAttacks(side) | getQueenAttacks(side) | getKingAttacks(side);
-	}
-
-	Rawboard getKingAttacks(const Side side) {
-		const Position position = getFirstPos(pieceBoards[WKing + side]);
-		return kingAttacks[position] & (EMPTY | OPP_PIECES(side));
-	}
-
-	Rawboard kingAttack(const Position position, const Rawboard opposite) {
-		return kingAttacks[position] & (EMPTY | opposite);
-	}
-
-	Rawboard getKnightAttacks(const Side side) {
-		Rawboard attacks = 0;
-		Rawboard board = pieceBoards[WKnight + side];
-
-		while (board) {
-			const Position position = getFirstPos(board);
-			attacks |= knightAttacks[position];
-			board &= (board - 1);
-		}
-
-		return attacks & (EMPTY | OPP_PIECES(side));
-	}
-
-	Rawboard knightAttack(const Position position, const Rawboard opposite) const {
-		return knightAttacks[position] & (EMPTY | opposite);
-	}
-
-	Rawboard getQueenAttacks(const Side side) {
-		Rawboard attacks = 0;
-		Rawboard board = pieceBoards[WQueen + side];
-		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~PIECES(side);
-
-		while (board) {
-			const Position position = getFirstPos(board);
-			attacks |= queenAttacks(position, occupied, notSide);
-			board &= (board - 1);
-		}
-
-		return attacks;
-	}
-
-	Rawboard queenAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
-		return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position) |
-				noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
-	}
-
-	Rawboard getRookAttacks(const Side side) {
-		Rawboard attacks = 0;
-		Rawboard board = pieceBoards[WRook + side];
-		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~PIECES(side);
-
-		while (board) {
-			const Position position = getFirstPos(board);
-			attacks |= rookAttack(position, occupied, notSide);
-			board &= (board - 1);
-		}
-
-		return attacks;
-	}
-
-	Rawboard rookAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
-		return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position)) & notSide;
-	}
-
-	Rawboard getBishopAttacks(const Side side) {
-		Rawboard attacks = 0;
-		Rawboard board = pieceBoards[WBishop + side];
-		const Rawboard occupied = ~EMPTY;
-		const Rawboard notSide = ~PIECES(side);
-
-		while (board) {
-			const Position position = getFirstPos(board);
-			attacks |= bishopAttack(position, occupied, notSide);
-			board &= (board - 1);
-		}
-
-		return attacks;
-	}
-
-	Rawboard bishopAttack(const Position position, const Rawboard occupied, const Rawboard notSide) {
-		return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
-	}
-
-	Rawboard getPawnMoves(Side side);
-    Rawboard getPawnMoves(Position position, Side side);
-    Rawboard getPawnAttacks(Side side);
-    Rawboard getPawnAttacks(Position position, Side side);
-	Rawboard getEnPassantMove(const Rawboard position, Side side) ;
-
-	Rawboard getKingMoves(Side side);
-    Rawboard getKingMoves(Position position, Side side);
-	Rawboard getKingCastling(Side side) const;
-	Rawboard getKingCastling(Position position, Side side) const;
-
-    // rays
-	Rawboard noWestAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getPositiveRayAttacks(occupied, noWestRay, position);
-#else
-		return getPositiveRayAttacks(occupied, NoWest, position);
-#endif
-	}
-
-	Rawboard northAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getPositiveRayAttacks(occupied, northRay, position);
-#else
-		return getPositiveRayAttacks(occupied, North, position);
-#endif
-	}
-
-	Rawboard noEastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getPositiveRayAttacks(occupied, noEastRay, position);
-#else
-		return getPositiveRayAttacks(occupied, NoEast, position);
-#endif
-	}
-
-	Rawboard eastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getNegativeRayAttacks(occupied, eastRay, position);
-#else
-		return getNegativeRayAttacks(occupied, East, position);
-#endif
-	}
-
-	Rawboard soEastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getNegativeRayAttacks(occupied, soEastRay, position);
-#else
-		return getNegativeRayAttacks(occupied, SoEast, position);
-#endif
-	}
-
-	Rawboard southAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getNegativeRayAttacks(occupied, southRay, position);
-#else
-		return getNegativeRayAttacks(occupied, South, position);
-#endif
-	}
-
-	Rawboard soWestAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getNegativeRayAttacks(occupied, soWestRay, position);
-#else
-		return getNegativeRayAttacks(occupied, SoWest, position);
-#endif
-	}
-
-	Rawboard westAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-		return getPositiveRayAttacks(occupied, westRay, position);
-#else
-		return getPositiveRayAttacks(occupied, West, position);
-#endif
-	}
-
-    // ray attacks
-#ifdef BOARD_STANDARD_RAY_ATTACKS
-	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		if (blocker) {
-			const Position firstBlockPos = getFirstPosReverse(blocker);
-			attacks ^= rayAttacks[direction][firstBlockPos];
-		}
-		return attacks;
-	}
-
-	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		if (blocker) {
-			const Position firstBlockPos = getFirstPos(blocker);
-			attacks ^= rayAttacks[direction][firstBlockPos];
-		}
-		return attacks;
-	}
-#endif
-
-#ifdef BOARD_BRANCHLESS_RAY_ATTACKS
-	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		const Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
-		return attacks ^ rayAttacks[direction][firstBlockPos];
-	}
-
-	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
-		const Rawboard attacks = rayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
-		return attacks ^ rayAttacks[direction][firstBlockPos];
-	}
-#endif
-
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
-		return attacks ^ direction(firstBlockPos);
-	}
-
-	static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
-		return attacks ^ direction(firstBlockPos);
-	}
-#endif
-
-	// One step
-	static Rawboard northOne(const Rawboard start) {
-		return (start >> 8) & SH_8DX_MSK;
-	}
-
-	static Rawboard noEastOne(const Rawboard start) {
-		return (start >> 7) & NOT_A_COL & SH_7DX_MSK;
-	}
-
-	static Rawboard eastOne(const Rawboard start) {
-		return (start << 1) & NOT_A_COL;
-	}
-
-	static Rawboard soEastOne(const Rawboard start) {
-		return (start << 9) & NOT_A_COL;
-	}
-
-	static Rawboard southOne(const Rawboard start) {
-		return start << 8;
-	}
-
-	static Rawboard soWestOne(const Rawboard start) {
-		return (start << 7) & NOT_H_COL;
-	}
-
-	static Rawboard westOne(const Rawboard start) {
-		return (start >> 1) & NOT_H_COL & SH_1DX_MSK;
-	}
-
-	static Rawboard noWestOne(const Rawboard start) {
-		return (start >> 9) & NOT_H_COL & SH_9DX_MSK;
-	}
-
 	void castlingMove(const Position source, const Position destination) {
 		switch (source + destination) {
 			case BQCastling: {
@@ -633,32 +360,6 @@ public:
 			}
 		default: throw runtime_error("wrong undo castling move");
 		}
-	}
-
-	unordered_set<Position>* getPiecePositions(const unordered_set<Piece>& pieces) const {
-		unordered_set<Position>* positions = new unordered_set<Position>();
-
-		for (Position i = 0; i < 64; i++) {
-			if (pieces.find(getPiece(i)) != pieces.end()) {
-				positions->insert(i);
-			}
-		}
-
-		return positions;
-	}
-
-	bool isOnXRay(const Position sourcePosition, const Position excludePosition) {
-		unordered_set<Position>* positions = getPiecePositions(XRAY_PIECES[OPPOSITE(getSide(sourcePosition))]);
-		positions->erase(excludePosition);
-		Rawboard xRayPositions = 0;
-
-		for (Position position : *positions) {
-			xRayPositions |= getDestinationPositions(position);
-		}
-
-		delete positions;
-
-		return isUnderCheck(xRayPositions, sourcePosition);
 	}
 
 };

@@ -13,6 +13,7 @@ class MovesGeneratorTest : public testing::Test {
 protected:
 	MovesGeneratorTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~MovesGeneratorTest() {
 
@@ -50,6 +51,7 @@ class GetLegalMovesTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetLegalMovesTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 };
 

@@ -11,6 +11,7 @@ class BFEngineTest : public testing::Test {
 protected:
 	BFEngineTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~BFEngineTest() {
 

@@ -3,6 +3,7 @@
 #include "../perft/perft.h"
 #include "../utils/positions.h"
 #include "../common/defines.h"
+#include "../movesCalculation/movesCalculation.h"
 
 
 #ifdef PROFILER
@@ -15,6 +16,7 @@ class PerftTest : public testing::Test {
 protected:
 	PerftTest() {
 		initAttacks();
+	    initDestPosProviders();
 	}
 
     void checkBulkPerftResult(const unsLL nodes, const unsigned int depth, const unsigned int currentDepth, const Result& result) {

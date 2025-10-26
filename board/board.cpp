@@ -8,6 +8,7 @@ Board::Board() {
 
 Board::~Board() = default;
 
+
 void Board::reset() {
     for (RawboardIndex i = 1; i < SIZE; ++i) {
         pieceBoards[i] = 0;
@@ -57,112 +58,4 @@ void Board::set(const Board& board) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	resetCalculated();
 #endif
-}
-
-Rawboard Board::getPawnMoves(const Side side) {
-    Rawboard attacks = 0;
-    Rawboard board = pieceBoards[WPawn + side];
-
-    while (board) {
-        const Position position = getFirstPos(board);
-        attacks |= getPawnMoves(position, side);
-        board &= (board - 1);
-    }
-
-    return attacks;
-}
-
-Rawboard Board::getPawnAttacks(const Side side) {
-	Rawboard board = pieceBoards[WPawn + side];
-
-	if (!side) {
-		return (noWestOne(board) | noEastOne(board)) & (EMPTY | OPP_PIECES(side));
-	}
-	else {
-		return (soWestOne(board) | soEastOne(board)) & (EMPTY | OPP_PIECES(side));
-	}
-}
-
-Rawboard Board::getPawnAttacks(const Position position, const Side side) {
-	const Rawboard posIndex = posInd(position);
-
-	if (!side) {
-		return (noWestOne(posIndex) | noEastOne(posIndex)) & (EMPTY | OPP_PIECES(side));
-	}
-	else {
-		return (soWestOne(posIndex) | soEastOne(posIndex)) & (EMPTY | OPP_PIECES(side));
-	}
-}
-
-Rawboard Board::getPawnMoves(const Position position, const Side side) {
-    const Rawboard posIndex = posInd(position);
-
-    if (!side) {
-        const Rawboard onePush = northOne(posIndex) & EMPTY;
-        return onePush | (northOne(onePush) & EMPTY & ROW_4) |
-			   ((noWestOne(posIndex) | noEastOne(posIndex)) & OPP_PIECES(side)) |
-				getEnPassantMove(posIndex, side);
-    }
-    else {
-        const Rawboard onePush = southOne(posIndex) & EMPTY;
-        return onePush | (southOne(onePush) & EMPTY & ROW_5) |
-			   ((soWestOne(posIndex) | soEastOne(posIndex)) & OPP_PIECES(side)) |
-				getEnPassantMove(posIndex, side);
-    }
-}
-
-Rawboard Board::getEnPassantMove(const Rawboard position, const Side side) {
-    if (enPassantPosition != NO_POS) {
-        if (!side && (position & ROW_5) != 0) {
-			const Rawboard passantPos = posInd(enPassantPosition);
-            if (passantPos == noEastOne(position) || passantPos == noWestOne(position)) {
-                return passantPos;
-            }
-        }
-        else if (side && (position & ROW_4) != 0) {
-			const Rawboard passantPos = posInd(enPassantPosition);
-            if (passantPos == soEastOne(position) || passantPos == soWestOne(position)) {
-                return passantPos;
-            }
-        }
-    }
-
-    return 0;
-}
-
-Rawboard Board::getKingMoves(const Side side) {
-	return getKingAttacks(side) | getKingCastling(side);
-}
-
-Rawboard Board::getKingMoves(const Position position, const Side side) {
-    return kingAttack(position, OPP_PIECES(side)) | getKingCastling(position, side);
-}
-
-Rawboard Board::getKingCastling(const Side side) const {
-    const Rawboard board = pieceBoards[WKing + side];
-    const Position position = getFirstPos(board);
-    return getKingCastling(position, side);
-}
-
-Rawboard Board::getKingCastling(const Position position, const Side side) const {
-    Rawboard positions = 0L;
-
-    if (position == 4 && side) {
-        if ((castlingInfo & 0b0010) && isEmpty(5)) {
-            positions |= posInd(6) & EMPTY;
-        }
-        if ((castlingInfo & 0b0001) && isEmpty(3) && isEmpty(1)) {
-            positions |= posInd(2) & EMPTY;
-        }
-    }
-    else if (position == 60 && !side) {
-        if ((castlingInfo & 0b1000) && isEmpty(61)) {
-            positions |= posInd(62) & EMPTY;
-        }
-        if ((castlingInfo & 0b0100) && isEmpty(59) && isEmpty(57)) {
-            positions |= posInd(58) & EMPTY;
-        }
-    }
-
-    return positions;
 }

@@ -4,6 +4,7 @@
 #include "../move/move.h"
 #include "../utils/positions.h"
 #include "../utils/fen.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ class MoveTest : public testing::Test {
 protected:
 	MoveTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~MoveTest() {
 

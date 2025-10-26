@@ -3,6 +3,7 @@
 #include "../utils/fen.h"
 #include "../game/game.h"
 #include "../common/constants.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ class fenTest : public testing::Test {
 protected:
 	fenTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~fenTest() {
 

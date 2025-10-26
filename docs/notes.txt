@@ -1,5 +1,6 @@
 DA FINIRE
 
+    - Completare il refactoring sulla board aggiornando i test
     - Completare test unita'
 
 GENERALE

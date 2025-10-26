@@ -3,11 +3,24 @@
 #include "../evaluation/basicEvaluator.h"
 #include "../utils/fen.h"
 #include "testUtils.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
 
-TEST(evaluationTest, test) {
+class EvaluationTest : public testing::Test
+{
+protected:
+	EvaluationTest() {
+		initAttacks();
+		initDestPosProviders();
+	}
+	~EvaluationTest() {
+
+	}
+};
+
+TEST_F(EvaluationTest, noMovesEvaluationTest) {
 	Game game;
 	game.init();
 

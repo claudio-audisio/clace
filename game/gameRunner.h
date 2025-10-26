@@ -79,7 +79,7 @@ public:
 		if (evaluation.endGameType == NONE) {
 			messenger.send(MSG_LOG, "gameRunner", format("{}: {}", game->getCurrentPlayer()->name, moveToString(evaluation.move)));
 			game->applyMove(evaluation.move);
-			game->currentEvaluation = evaluation.value;	// TODO l'engine mi da valori positivi per il nero e negativi per il bianco
+			game->currentEvaluation = evaluation.value;
 		}
 
 		return evaluation.endGameType;

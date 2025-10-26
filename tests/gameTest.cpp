@@ -15,6 +15,7 @@ class GameTest : public testing::Test {
 protected:
 	GameTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~GameTest() {
 
@@ -218,6 +219,7 @@ class VerifyChecksTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
 	VerifyChecksTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 };
 
@@ -267,6 +269,7 @@ class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameTy
 protected:
 	CheckEndGameTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 };
 
@@ -314,6 +317,7 @@ class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {
 protected:
 	CheckControlTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 };
 

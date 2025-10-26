@@ -7,6 +7,7 @@
 #include "../utils/fen.h"
 #include "../utils/utils.h"
 #include "../move/move.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ class RollbackTest : public testing::Test {
 protected:
 	RollbackTest() {
 		initAttacks();
+		initDestPosProviders();
 	}
 	~RollbackTest() {
 

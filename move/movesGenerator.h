@@ -6,6 +6,7 @@
 #include "../game/game.h"
 #include "../utils/positions.h"
 #include "../utils/pieceHelper.h"
+#include "../movesCalculation/movesCalculation.h"
 
 using namespace std;
 
@@ -31,7 +32,8 @@ static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
 		}
 
 		const Piece piece = game.board.getPiece(position);
-		Rawboard destinations = game.board.getDestinationPositions(position, piece);
+		Rawboard destinations = s_getDestinationPositions(game.board, position, piece, game.sideToMove);
+		//Rawboard destinations = game.board.getDestinationPositions(position, piece, game.sideToMove);
 
 		while (destinations) {
 			const Position destination = getFirstPos(destinations);

@@ -76,8 +76,8 @@ void CheckStatus::reset() {
         checkPositions[i] = 0;
         xRayPositions[i] = 0;
     }*/
-    memset(checkPositions, 0, sizeof(checkPositions));
-    memset(xRayPositions, 0, sizeof(xRayPositions));
+    memset(checkPositions, 0L, sizeof(checkPositions));
+    memset(xRayPositions, 0L, sizeof(xRayPositions));
 }
 
 void CheckStatus::set(const CheckStatus& checkStatus) {

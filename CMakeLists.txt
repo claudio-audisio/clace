@@ -52,7 +52,7 @@ add_executable (clace
 		utils/logger.h
 		uci/movesProcessor.h
 		evaluation/phase.h
-		board/attackBoards.h
+		movesCalculation/staticAttacks.h
 		common/defines.h
 		utils/arrayPool.h
 		engine/abstract_engine.h
@@ -65,7 +65,9 @@ add_executable (clace
 		ui/gui/panel.h
 		utils/messenger.h
 		ui/gui/igui.h
-		utils/toString.h)
+		utils/toString.h
+		movesCalculation/movesCalculation.h
+		movesCalculation/rayAttacks.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -85,7 +87,7 @@ add_library(claceLib
 		utils/logger.h
 		uci/movesProcessor.h
 		evaluation/phase.h
-		board/attackBoards.h
+		movesCalculation/staticAttacks.h
 		common/defines.h
 		utils/arrayPool.h
 		engine/abstract_engine.h
@@ -96,7 +98,9 @@ add_library(claceLib
 		ui/gui/panel.h
 		utils/messenger.h
 		ui/gui/igui.h
-		utils/toString.h)
+		utils/toString.h
+		movesCalculation/movesCalculation.h
+		movesCalculation/rayAttacks.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -214,6 +218,16 @@ add_executable(
 	"tests/bfEngineTest.cpp"
 )
 
+add_executable(
+	rayAttacksTest
+	"tests/rayAttacksTest.cpp"
+)
+
+add_executable(
+	movesCalculationTest
+	"tests/movesCalculationTest.cpp"
+)
+
 target_link_libraries(
 	phaseTest
 	GTest::gtest_main
@@ -322,6 +336,18 @@ target_link_libraries(
 	claceLib
 )
 
+target_link_libraries(
+	rayAttacksTest
+	GTest::gtest_main
+	claceLib
+)
+
+target_link_libraries(
+	movesCalculationTest
+	GTest::gtest_main
+	claceLib
+)
+
 include(GoogleTest)
 gtest_discover_tests(phaseTest)
 gtest_discover_tests(bitwiseTest)
@@ -341,3 +367,5 @@ gtest_discover_tests(perftTest)
 gtest_discover_tests(movesCacheTest)
 gtest_discover_tests(evaluationTest)
 gtest_discover_tests(bfEngineTest)
+gtest_discover_tests(rayAttacksTest)
+gtest_discover_tests(movesCalculationTest)
