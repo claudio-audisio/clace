@@ -33,6 +33,51 @@ protected:
 	}
 };
 
+TEST_F(PerformanceDebugTest, movePerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Move move;
+	Position pos = 14;
+	Piece piece = WQueen;
+	Side side = _WHITE;
+	bool bParam = false;
+	MoveType movetype;
+
+	auto begin = chrono::steady_clock::now();
+
+	for (long i = 0; i < 20000000; i++) {
+		setSourcePosition(move, pos);
+		pos = getSourcePosition(move);
+		setDestinationPosition(move, pos);
+		pos = getDestinationPosition(move);
+		setPiece(move, piece);
+		piece = getPiece(move);
+		setPromotion(move, piece);
+		piece = getPromotion(move);
+		setCaptured(move, piece);
+		piece = getCaptured(move);
+		setMoveSide(move, side);
+		side = getMoveSide(move);
+		setCastling(move, true);
+		setCastling(move, bParam);
+		bParam = isCastling(move);
+		setEnPassant(move, true);
+		setEnPassant(move, bParam);
+		bParam = isEnPassant(move);
+		setPawnPromotion(move, true);
+		setPawnPromotion(move, bParam);
+		bParam = isPawnPromotion(move);
+		movetype = getType(move);
+	}
+
+
+	unsLL time = getElapsedMillis(begin);
+
+	GTEST_ASSERT_NEAR(time, 1000, 50);
+
+	cout << "time: " << time  << endl;
+}
 
 TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 #ifndef PERFORMANCE_TESTS

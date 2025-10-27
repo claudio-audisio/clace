@@ -279,6 +279,8 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 	auto rollbackTime = getElapsedMillis(start);
 	GTEST_ASSERT_NEAR(rollbackTime, 1500, 50);
 	cout << "rollback time: " << rollbackTime  << endl;
+
+	delete rollback;
 }
 
 TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {

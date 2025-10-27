@@ -19,8 +19,7 @@ using namespace std;
 // bool pawnPromotion = false;		43
 
 static void setSourcePosition(Move& move, const Position sourcePosition) {
-	move &= ~SOURCE_POS_MASK;
-	move |= sourcePosition;
+	move = (move & ~SOURCE_POS_MASK) | sourcePosition;
 }
 
 static Position getSourcePosition(const Move move) {
@@ -28,8 +27,7 @@ static Position getSourcePosition(const Move move) {
 }
 
 static void setDestinationPosition(Move& move, const Position destinationPosition) {
-	move &= ~DEST_POS_MASK;
-	move |= (Move)destinationPosition << 8;
+	move = (move & ~DEST_POS_MASK) | (static_cast<Move>(destinationPosition) << 8);
 }
 
 static Position getDestinationPosition(const Move move) {
@@ -37,8 +35,7 @@ static Position getDestinationPosition(const Move move) {
 }
 
 static void setPiece(Move& move, const Piece piece) {
-	move &= ~PIECE_MASK;
-	move |= (Move)piece << 16;
+	move = (move & ~PIECE_MASK) | (static_cast<Move>(piece) << 16);
 }
 
 static Piece getPiece(const Move move) {
@@ -46,8 +43,7 @@ static Piece getPiece(const Move move) {
 }
 
 static void setPromotion(Move& move, const Piece promotion) {
-	move &= ~PROMOTION_MASK;
-	move |= (Move)promotion << 24;
+	move = (move & ~PROMOTION_MASK) | (static_cast<Move>(promotion) << 24);
 }
 
 static Piece getPromotion(const Move move) {
@@ -55,8 +51,7 @@ static Piece getPromotion(const Move move) {
 }
 
 static void setCaptured(Move& move, const Piece captured) {
-    move &= ~CAPTURED_MASK;
-    move |= (Move)captured << 32;
+	move = (move & ~CAPTURED_MASK) | (static_cast<Move>(captured) << 32);
 }
 
 static Piece getCaptured(const Move move) {
@@ -68,8 +63,7 @@ static bool isCaptured(const Move move) {
 }
 
 static void setMoveSide(Move& move, const Side side) {
-	move &= ~SIDE_MASK;
-	move |= (Move)side << 40;
+	move = (move & ~SIDE_MASK) | (static_cast<Move>(side) << 40);
 }
 
 static Side getMoveSide(const Move move) {
@@ -81,12 +75,7 @@ static bool isWhite(const Move move) {
 }
 
 static void setCastling(Move& move, const bool castling) {
-	if (castling) {
-		move |= CASTLING_MASK;
-	}
-	else {
-		move &= ~CASTLING_MASK;
-	}
+	move = (move & ~CASTLING_MASK) | (-castling & CASTLING_MASK);
 }
 
 static bool isCastling(const Move move) {
@@ -94,12 +83,7 @@ static bool isCastling(const Move move) {
 }
 
 static void setEnPassant(Move& move, const bool enPassant) {
-	if (enPassant) {
-		move |= EN_PASSANT_MASK;
-	}
-	else {
-		move &= ~EN_PASSANT_MASK;
-	}
+	move = (move & ~EN_PASSANT_MASK) | (-enPassant & EN_PASSANT_MASK);
 }
 
 static bool isEnPassant(const Move move) {
@@ -107,12 +91,7 @@ static bool isEnPassant(const Move move) {
 }
 
 static void setPawnPromotion(Move& move, const bool pawnPromotion) {
-	if (pawnPromotion) {
-		move |= PAWN_PROM_MASK;
-	}
-	else {
-		move &= ~PAWN_PROM_MASK;
-	}
+	move = (move & ~PAWN_PROM_MASK) | (-pawnPromotion & PAWN_PROM_MASK);
 }
 
 static bool isPawnPromotion(const Move move) {
@@ -142,16 +121,17 @@ static Move createMove(const Position sourcePosition, const Position destination
 	setMoveSide(move, side);
 	setPiece(move, piece);
 
-	if (_isKing(piece)) {
-		// castling
-		setCastling(move,
-					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
-	} else if (_isPawn(piece)) {
+	if (_isPawn(piece)) {
 		// En passant
 		setEnPassant(move, enPassantPosition == destinationPosition);
 		// Pawn promotion
 		setPawnPromotion(move, isEighthRow(destinationPosition, side));
+	}
+	else if (_isKing(piece)) {
+		// castling
+		setCastling(move,
+					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 	}
 
 	return move;
@@ -164,16 +144,16 @@ static void decorate(Move& move, const Piece piece, const Position enPassantPosi
 
 	setPiece(move, piece);
 
-	if (_isKing(piece)) {
-		// castling
-		setCastling(move,
-					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
-	} else if (_isPawn(piece)) {
+	if (_isPawn(piece)) {
 		// En passant
 		setEnPassant(move, enPassantPosition == destinationPosition);
 		// Pawn promotion
 		setPawnPromotion(move, isEighthRow(destinationPosition, side));
+	} else if (_isKing(piece)) {
+		// castling
+		setCastling(move,
+					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 	}
 }
 

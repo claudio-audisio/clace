@@ -120,6 +120,22 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
+TEST_F(MoveTest, capturedTest) {
+	Move move = createMove(60, 52, _WHITE, WKing, NO_POS);
+
+	ASSERT_FALSE(isCaptured(move));
+
+	setCaptured(move, BPawn);
+
+	ASSERT_TRUE(isCaptured(move));
+	EXPECT_EQ(BPawn, getCaptured(move));
+
+	setCaptured(move, Empty);
+
+	ASSERT_FALSE(isCaptured(move));
+	EXPECT_EQ(Empty, getCaptured(move));
+}
+
 
 TEST_F(MoveTest, getTypeTest) {
 	Move move = createMove(60, 52, _WHITE, WKing, NO_POS);
