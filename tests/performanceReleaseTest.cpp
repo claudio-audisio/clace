@@ -100,9 +100,9 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 
 	for (int j = 1; j < 1000000; ++j) {
 		for (int i = 0; i < tot; i++) {
-			//game->simulateMove(moves[i]);
+			game->simulateMove(moves[i]);
 			game->checkControl(moves[i]);
-			//game->undoSimulateMove(moves[i]);
+			game->undoSimulateMove(moves[i]);
 		}
 	}
 
@@ -111,7 +111,7 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1630, 50);
+	GTEST_ASSERT_NEAR(time, 1530, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -164,7 +164,7 @@ TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1750, 50);
+	GTEST_ASSERT_NEAR(time, 1600, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -261,7 +261,7 @@ TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 
 	time /= 100000;
 
-	GTEST_ASSERT_NEAR(time, 920, 20);
+	GTEST_ASSERT_NEAR(time, 860, 20);
 
 	cout << "time: " << time << endl;
 }
@@ -325,6 +325,7 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	cout << "time: " << time  << endl;
 }
 
+// TODO da vedere, dopo il cambio da char a int e' esploso il tempo, fare refactoring (class -> struct)
 TEST_F(PerformanceReleaseTest, rollbackTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
@@ -427,7 +428,7 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 225, 10);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 215, 10);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -446,7 +447,7 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5900, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5700, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -465,7 +466,7 @@ TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 280, 10);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 260, 10);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -484,7 +485,7 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 7150, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6950, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -508,7 +509,7 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 330, 10);
+	GTEST_ASSERT_NEAR(time, 320, 10);
 
 	cout << "time: " << time  << endl;
 }
@@ -531,7 +532,7 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 240, 10);
+	GTEST_ASSERT_NEAR(time, 230, 10);
 
 	cout << "time: " << time  << endl;
 }

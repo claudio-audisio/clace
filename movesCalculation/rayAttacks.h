@@ -9,7 +9,7 @@
 
 // ray attacks
 #ifdef BOARD_STANDARD_RAY_ATTACKS
-	inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+	inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
 		Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
@@ -19,7 +19,7 @@
 		return attacks;
 	}
 
-	inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+	inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
 		Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
@@ -31,14 +31,14 @@
 #endif
 
 #ifdef BOARD_BRANCHLESS_RAY_ATTACKS
-	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
 		const Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
 		return attacks ^ staticRayAttacks[direction][firstBlockPos];
 	}
 
-	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned char direction, const Position position) {
+	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
 		const Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);

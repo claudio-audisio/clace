@@ -4,23 +4,23 @@
 
 using namespace std;
 
-typedef unsigned char EndGameType;
-typedef unsigned char GameType;
-typedef unsigned char Side;
-typedef unsigned char Position;
-typedef unsigned char RawboardIndex;
+typedef unsigned int EndGameType;
+typedef unsigned int GameType;
+typedef unsigned int Side;
+typedef unsigned int Position;
+typedef unsigned int RawboardIndex;
 typedef unsigned long long Rawboard;
-typedef unsigned char Piece;
-typedef unsigned char CastlingInfo;
+typedef unsigned int Piece;
+typedef unsigned int CastlingInfo;
 typedef unsigned long long unsLL;
 //typedef bitset<72> PieceAndDest;
 typedef unsigned long long Move;
-typedef unsigned char MoveType;
-typedef unsigned char MoveResult;
+typedef unsigned int MoveType;
+typedef unsigned int MoveResult;
 
 typedef struct {
-	unsigned char total;
-	unsigned char legal;
+	unsigned int total;
+	unsigned int legal;
 } MovesAmount;
 
 typedef struct {

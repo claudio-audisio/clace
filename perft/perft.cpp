@@ -142,11 +142,11 @@ unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
     }
 
     Move* moves = pool->getArray(currentDepth - 1);
-    const unsigned char tot = generatePseudoLegalMoves(*game, moves);
+    const unsigned int tot = generatePseudoLegalMoves(*game, moves);
 
     unsLL nodes = 0;
 
-    for (unsigned char i = 0; i < tot; i++) {
+    for (unsigned int i = 0; i < tot; i++) {
         game->save();
         game->applyMove(moves[i]);
 

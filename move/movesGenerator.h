@@ -19,9 +19,9 @@ static bool isValid(Game& game, Move& move) {
 	return checkControl;
 }
 
-static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
+static unsigned int generatePseudoLegalMoves(Game& game, Move* moves) {
 	Rawboard sources = PIECES(game.board, game.sideToMove);
-	unsigned char count = 0;
+	unsigned int count = 0;
 
 	while (sources) {
 		const Position position = getFirstPos(sources);
@@ -62,8 +62,8 @@ static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
 }
 
 static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {
-	const unsigned char tot = generatePseudoLegalMoves(game, moves);
-	unsigned char removed = 0;
+	const unsigned int tot = generatePseudoLegalMoves(game, moves);
+	unsigned int removed = 0;
 
 	for (unsigned int i = 0; i < tot; ++i) {
 		if (!isValid(game, moves[i])) {
@@ -78,7 +78,7 @@ static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves)
 
 /*static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {
 	Rawboard sources = game.board.PIECES(game.sideToMove);
-	unsigned char count = 0;
+	unsigned int count = 0;
 
 	while (sources) {
 		const Position position = getFirstPos(sources);

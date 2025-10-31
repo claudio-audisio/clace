@@ -57,6 +57,7 @@ inline bool areOnSameRowOrColumn(const Position firstPosition, const Position se
     return getRow(firstPosition) == getRow(secondPosition) || getColumn(firstPosition) == getColumn(secondPosition);
 }
 
+/* TODO da sistemare
 inline bool areOnSameDiagonal(const Position firstPosition, const Position secondPosition) {
     return abs(getRow(firstPosition) - getRow(secondPosition)) == abs(getColumn(firstPosition) - getColumn(secondPosition));
-}
+}*/

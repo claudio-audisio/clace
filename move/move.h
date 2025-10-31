@@ -236,7 +236,7 @@ inline bool isPresent(const Move move, const vector<Move>& moves) {
 	return false;
 }
 
-inline bool isPresent(const Move move, const Move* moves, unsigned char amount) {
+inline bool isPresent(const Move move, const Move* moves, unsigned int amount) {
 	const Position source = getSourcePosition(move);
 	const Position destination  = getDestinationPosition(move);
 

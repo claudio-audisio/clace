@@ -144,7 +144,7 @@ void Game::verifyChecks() {
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
 }
 
-EndGameType Game::checkEndGame(const unsigned char legalMoves) {
+EndGameType Game::checkEndGame(const unsigned int legalMoves) {
 	if (!legalMoves) {
 		checkStatus.checkmate = checkStatus.check;
 		return checkStatus.check ? CHECKMATE : STALEMATE;

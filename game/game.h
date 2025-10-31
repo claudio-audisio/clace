@@ -32,7 +32,7 @@ public:
     void undoSimulateMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
-	EndGameType checkEndGame(unsigned char legalMoves);
+	EndGameType checkEndGame(unsigned int legalMoves);
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
 	bool checkControl(Move move);
