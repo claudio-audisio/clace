@@ -20,19 +20,19 @@ static bool isValid(Game& game, Move& move) {
 }
 
 static unsigned char generatePseudoLegalMoves(Game& game, Move* moves) {
-	Rawboard sources = game.board.PIECES(game.sideToMove);
+	Rawboard sources = PIECES(game.board, game.sideToMove);
 	unsigned char count = 0;
 
 	while (sources) {
 		const Position position = getFirstPos(sources);
 
-		if (game.checkStatus.doubleCheck && !game.board.isKing(position)) {
+		if (game.checkStatus.doubleCheck && !isKing(game.board, position)) {
 			sources &= (sources - 1);
 			continue;
 		}
 
-		const Piece piece = game.board.getPiece(position);
-		Rawboard destinations = s_getDestinationPositions(game.board, position, piece, game.sideToMove);
+		const Piece piece = getPiece(game.board, position);
+		Rawboard destinations = getDestinationPositions(game.board, position, piece, game.sideToMove);
 
 		while (destinations) {
 			const Position destination = getFirstPos(destinations);

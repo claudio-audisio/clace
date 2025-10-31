@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <assert.h>
+#include <stdexcept>
 
 #include "../common/constants.h"
 

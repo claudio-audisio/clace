@@ -4,6 +4,7 @@
 #include "../utils/fen.h"
 #include "testUtils.h"
 #include "../movesCalculation/movesCalculation.h"
+#include "../move/move.h"
 
 using namespace std;
 
@@ -19,24 +20,25 @@ protected:
 	}
 
     static void checkPositionCount(const Board& board, unsigned int counts[]) {
-	    EXPECT_EQ(board.getPieceCount(Empty), counts[Empty]);
-	    EXPECT_EQ(board.getPieceCount(WPawn), counts[WPawn]);
-	    EXPECT_EQ(board.getPieceCount(BPawn), counts[BPawn]);
-	    EXPECT_EQ(board.getPieceCount(WKnight), counts[WKnight]);
-	    EXPECT_EQ(board.getPieceCount(BKnight), counts[BKnight]);
-	    EXPECT_EQ(board.getPieceCount(WBishop), counts[WBishop]);
-	    EXPECT_EQ(board.getPieceCount(BBishop), counts[BBishop]);
-	    EXPECT_EQ(board.getPieceCount(WRook), counts[WRook]);
-	    EXPECT_EQ(board.getPieceCount(BRook), counts[BRook]);
-	    EXPECT_EQ(board.getPieceCount(WQueen), counts[WQueen]);
-	    EXPECT_EQ(board.getPieceCount(BQueen), counts[BQueen]);
-	    EXPECT_EQ(board.getPieceCount(WKing), counts[WKing]);
-	    EXPECT_EQ(board.getPieceCount(BKing), counts[BKing]);
+	    EXPECT_EQ(getPieceCount(board, Empty), counts[Empty]);
+	    EXPECT_EQ(getPieceCount(board, WPawn), counts[WPawn]);
+	    EXPECT_EQ(getPieceCount(board, BPawn), counts[BPawn]);
+	    EXPECT_EQ(getPieceCount(board, WKnight), counts[WKnight]);
+	    EXPECT_EQ(getPieceCount(board, BKnight), counts[BKnight]);
+	    EXPECT_EQ(getPieceCount(board, WBishop), counts[WBishop]);
+	    EXPECT_EQ(getPieceCount(board, BBishop), counts[BBishop]);
+	    EXPECT_EQ(getPieceCount(board, WRook), counts[WRook]);
+	    EXPECT_EQ(getPieceCount(board, BRook), counts[BRook]);
+	    EXPECT_EQ(getPieceCount(board, WQueen), counts[WQueen]);
+	    EXPECT_EQ(getPieceCount(board, BQueen), counts[BQueen]);
+	    EXPECT_EQ(getPieceCount(board, WKing), counts[WKing]);
+	    EXPECT_EQ(getPieceCount(board, BKing), counts[BKing]);
 	}
 };
 
 TEST_F(BoardTest, ConstructorTest) {
 	Board board;
+    reset(board);
 	EXPECT_EQ(board.pieceBoards[0], 0xffffffffffffffff);
 	for (RawboardIndex i = 1; i < SIZE; i++) {
 		EXPECT_EQ(board.pieceBoards[i], Empty);
@@ -49,9 +51,9 @@ TEST_F(BoardTest, ConstructorTest) {
 TEST_F(BoardTest, allBoardsTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
-    EXPECT_EQ(~board.EMPTY, board.PIECES(_WHITE) | board.PIECES(_BLACK));
-	EXPECT_EQ(~board.PIECES(_WHITE), board.EMPTY | board.OPP_PIECES(_WHITE));
-	EXPECT_EQ(~board.PIECES(_BLACK), board.EMPTY | board.OPP_PIECES(_BLACK));
+    EXPECT_EQ(~board.pieceBoards[Empty], PIECES(board, _WHITE) | PIECES(board, _BLACK));
+	EXPECT_EQ(~PIECES(board, _WHITE), board.pieceBoards[Empty] | OPP_PIECES(board, _WHITE));
+	EXPECT_EQ(~PIECES(board, _BLACK), board.pieceBoards[Empty] | OPP_PIECES(board, _BLACK));
     checkPositionCount(board, (unsigned int[]){32, 8, 8, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1});
     delete game;
 }
@@ -62,225 +64,238 @@ TEST_F(BoardTest, equalsTest) {
     Game* game2 = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     const Board& board2 = game2->board;
 
-    ASSERT_TRUE(board.equals(board2));
+    ASSERT_TRUE(equals(board, board2));
 
     Move move = createMove(48, 32, _WHITE, WPawn, NO_POS);
     game->applyMove(move);
     game2->applyMove(move);
 
-    ASSERT_TRUE(board.equals(board2));
+    ASSERT_TRUE(equals(board, board2));
 
     Move move2 = createMove(15, 31, _BLACK, BPawn, NO_POS);
     game->applyMove(move2);
     Move move2_2 = createMove(15, 23, _BLACK, BPawn, NO_POS);
     game2->applyMove(move2_2);
 
-    ASSERT_FALSE(board.equals(board2));
+    ASSERT_FALSE(equals(board, board2));
 }
 
 TEST_F(BoardTest, getPieceCountTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
-    EXPECT_EQ(board.getPieceCount(Empty), 32);
-    EXPECT_EQ(board.getPieceCount(WPawn), 8);
-    EXPECT_EQ(board.getPieceCount(WBishop), 2);
-    EXPECT_EQ(board.getPieceCount(WKnight), 2);
-    EXPECT_EQ(board.getPieceCount(WRook), 2);
-    EXPECT_EQ(board.getPieceCount(WQueen), 1);
-    EXPECT_EQ(board.getPieceCount(WKing), 1);
-    EXPECT_EQ(board.getPieceCount(BPawn), 8);
-    EXPECT_EQ(board.getPieceCount(BBishop), 2);
-    EXPECT_EQ(board.getPieceCount(BKnight), 2);
-    EXPECT_EQ(board.getPieceCount(BRook), 2);
-    EXPECT_EQ(board.getPieceCount(BQueen), 1);
-    EXPECT_EQ(board.getPieceCount(BKing), 1);
+    EXPECT_EQ(getPieceCount(board, Empty), 32);
+    EXPECT_EQ(getPieceCount(board, WPawn), 8);
+    EXPECT_EQ(getPieceCount(board, WBishop), 2);
+    EXPECT_EQ(getPieceCount(board, WKnight), 2);
+    EXPECT_EQ(getPieceCount(board, WRook), 2);
+    EXPECT_EQ(getPieceCount(board, WQueen), 1);
+    EXPECT_EQ(getPieceCount(board, WKing), 1);
+    EXPECT_EQ(getPieceCount(board, BPawn), 8);
+    EXPECT_EQ(getPieceCount(board, BBishop), 2);
+    EXPECT_EQ(getPieceCount(board, BKnight), 2);
+    EXPECT_EQ(getPieceCount(board, BRook), 2);
+    EXPECT_EQ(getPieceCount(board, BQueen), 1);
+    EXPECT_EQ(getPieceCount(board, BKing), 1);
     delete game;
 }
 
 TEST_F(BoardTest, isEmptyTest) {
 	Board board;
+    reset(board);
 	for (Position i = 0; i < 64; ++i) {
-		GTEST_ASSERT_TRUE(board.isEmpty(i));
+		GTEST_ASSERT_TRUE(isEmpty(board, i));
 	}
-	board.setPiece(5, WPawn);
-	GTEST_ASSERT_FALSE(board.isEmpty(5));
-	board.setEmpty(5);
-	GTEST_ASSERT_TRUE(board.isEmpty(5));
+	setPiece(board, 5, WPawn);
+	GTEST_ASSERT_FALSE(isEmpty(board, 5));
+	setEmpty(board, 5);
+	GTEST_ASSERT_TRUE(isEmpty(board, 5));
 }
 
 TEST_F(BoardTest, isWhiteTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isWhite(i));
+        GTEST_ASSERT_FALSE(isWhite(board, i));
     }
-    board.setPiece(0, WPawn);
-    board.setPiece(7, BPawn);
-    board.setPiece(56, BPawn);
-    board.setPiece(63, WPawn);
+    setPiece(board, 0, WPawn);
+    setPiece(board, 7, BPawn);
+    setPiece(board, 56, BPawn);
+    setPiece(board, 63, WPawn);
 
-    GTEST_ASSERT_TRUE(board.isWhite(0));
-    GTEST_ASSERT_FALSE(board.isWhite(7));
-    GTEST_ASSERT_FALSE(board.isWhite(56));
-    GTEST_ASSERT_TRUE(board.isWhite(63));
+    GTEST_ASSERT_TRUE(isWhite(board, 0));
+    GTEST_ASSERT_FALSE(isWhite(board, 7));
+    GTEST_ASSERT_FALSE(isWhite(board, 56));
+    GTEST_ASSERT_TRUE(isWhite(board, 63));
 }
 
 TEST_F(BoardTest, isBlackTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isBlack(i));
+        GTEST_ASSERT_FALSE(isBlack(board, i));
     }
-    board.setPiece(0, WPawn);
-    board.setPiece(7, BPawn);
-    board.setPiece(56, BPawn);
-    board.setPiece(63, WPawn);
+    setPiece(board, 0, WPawn);
+    setPiece(board, 7, BPawn);
+    setPiece(board, 56, BPawn);
+    setPiece(board, 63, WPawn);
 
-    GTEST_ASSERT_FALSE(board.isBlack(0));
-    GTEST_ASSERT_TRUE(board.isBlack(7));
-    GTEST_ASSERT_TRUE(board.isBlack(56));
-    GTEST_ASSERT_FALSE(board.isBlack(63));
+    GTEST_ASSERT_FALSE(isBlack(board, 0));
+    GTEST_ASSERT_TRUE(isBlack(board, 7));
+    GTEST_ASSERT_TRUE(isBlack(board, 56));
+    GTEST_ASSERT_FALSE(isBlack(board, 63));
 }
 
 TEST_F(BoardTest, isPawnTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isPawn(i));
+        GTEST_ASSERT_FALSE(isPawn(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BPawn), Empty);
-    GTEST_ASSERT_TRUE(board.isPawn(0));
-    EXPECT_EQ(board.setPiece(0, WPawn), BPawn);
-    GTEST_ASSERT_TRUE(board.isPawn(0));
-    EXPECT_EQ(board.setPiece(0, WRook), WPawn);
-    GTEST_ASSERT_FALSE(board.isPawn(0));
+    EXPECT_EQ(setPiece(board, 0, BPawn), Empty);
+    GTEST_ASSERT_TRUE(isPawn(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WPawn), BPawn);
+    GTEST_ASSERT_TRUE(isPawn(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WRook), WPawn);
+    GTEST_ASSERT_FALSE(isPawn(board, 0));
 }
 
 TEST_F(BoardTest, isKnightTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isKnight(i));
+        GTEST_ASSERT_FALSE(isKnight(board, i));
     }
-    EXPECT_EQ(board.setPiece(7, BKnight), Empty);
-    GTEST_ASSERT_TRUE(board.isKnight(7));
-    EXPECT_EQ(board.setPiece(7, WKnight), BKnight);
-    GTEST_ASSERT_TRUE(board.isKnight(7));
-    EXPECT_EQ(board.setPiece(7, WRook), WKnight);
-    GTEST_ASSERT_FALSE(board.isKnight(7));
+    EXPECT_EQ(setPiece(board, 7, BKnight), Empty);
+    GTEST_ASSERT_TRUE(isKnight(board, 7));
+    EXPECT_EQ(setPiece(board, 7, WKnight), BKnight);
+    GTEST_ASSERT_TRUE(isKnight(board, 7));
+    EXPECT_EQ(setPiece(board, 7, WRook), WKnight);
+    GTEST_ASSERT_FALSE(isKnight(board, 7));
 }
 
 TEST_F(BoardTest, isBishopTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isBishop(i));
+        GTEST_ASSERT_FALSE(isBishop(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BBishop), Empty);
-    GTEST_ASSERT_TRUE(board.isBishop(0));
-    EXPECT_EQ(board.setPiece(0, WBishop), BBishop);
-    GTEST_ASSERT_TRUE(board.isBishop(0));
-    EXPECT_EQ(board.setPiece(0, WRook), WBishop);
-    GTEST_ASSERT_FALSE(board.isBishop(0));
+    EXPECT_EQ(setPiece(board, 0, BBishop), Empty);
+    GTEST_ASSERT_TRUE(isBishop(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WBishop), BBishop);
+    GTEST_ASSERT_TRUE(isBishop(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WRook), WBishop);
+    GTEST_ASSERT_FALSE(isBishop(board, 0));
 }
 
 TEST_F(BoardTest, isRookTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isRook(i));
+        GTEST_ASSERT_FALSE(isRook(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BRook), Empty);
-    GTEST_ASSERT_TRUE(board.isRook(0));
-    EXPECT_EQ(board.setPiece(0, WRook), BRook);
-    GTEST_ASSERT_TRUE(board.isRook(0));
-    EXPECT_EQ(board.setPiece(0, WPawn), WRook);
-    GTEST_ASSERT_FALSE(board.isRook(0));
+    EXPECT_EQ(setPiece(board, 0, BRook), Empty);
+    GTEST_ASSERT_TRUE(isRook(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WRook), BRook);
+    GTEST_ASSERT_TRUE(isRook(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WPawn), WRook);
+    GTEST_ASSERT_FALSE(isRook(board, 0));
 }
 
 TEST_F(BoardTest, isRookWithSideTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isRook(i));
+        GTEST_ASSERT_FALSE(isRook(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BRook), Empty);
-    GTEST_ASSERT_FALSE(board.isRook(0, _WHITE));
-    GTEST_ASSERT_TRUE(board.isRook(0, _BLACK));
-    EXPECT_EQ(board.setPiece(0, WRook), BRook);
-    GTEST_ASSERT_TRUE(board.isRook(0, _WHITE));
-    GTEST_ASSERT_FALSE(board.isRook(0, _BLACK));
-    EXPECT_EQ(board.setPiece(0, WPawn), WRook);
-    GTEST_ASSERT_FALSE(board.isRook(0, _WHITE));
-    GTEST_ASSERT_FALSE(board.isRook(0, _BLACK));
+    EXPECT_EQ(setPiece(board, 0, BRook), Empty);
+    GTEST_ASSERT_FALSE(isRook(board, 0, _WHITE));
+    GTEST_ASSERT_TRUE(isRook(board, 0, _BLACK));
+    EXPECT_EQ(setPiece(board, 0, WRook), BRook);
+    GTEST_ASSERT_TRUE(isRook(board, 0, _WHITE));
+    GTEST_ASSERT_FALSE(isRook(board, 0, _BLACK));
+    EXPECT_EQ(setPiece(board, 0, WPawn), WRook);
+    GTEST_ASSERT_FALSE(isRook(board, 0, _WHITE));
+    GTEST_ASSERT_FALSE(isRook(board, 0, _BLACK));
 }
 
 TEST_F(BoardTest, isQueenTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isQueen(i));
+        GTEST_ASSERT_FALSE(isQueen(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BQueen), Empty);
-    GTEST_ASSERT_TRUE(board.isQueen(0));
-    EXPECT_EQ(board.setPiece(0, WQueen), BQueen);
-    GTEST_ASSERT_TRUE(board.isQueen(0));
-    EXPECT_EQ(board.setPiece(0, WRook), WQueen);
-    GTEST_ASSERT_FALSE(board.isQueen(0));
+    EXPECT_EQ(setPiece(board, 0, BQueen), Empty);
+    GTEST_ASSERT_TRUE(isQueen(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WQueen), BQueen);
+    GTEST_ASSERT_TRUE(isQueen(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WRook), WQueen);
+    GTEST_ASSERT_FALSE(isQueen(board, 0));
 }
 
 TEST_F(BoardTest, isKingTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        GTEST_ASSERT_FALSE(board.isKing(i));
+        GTEST_ASSERT_FALSE(isKing(board, i));
     }
-    EXPECT_EQ(board.setPiece(0, BKing), Empty);
-    GTEST_ASSERT_TRUE(board.isKing(0));
-    EXPECT_EQ(board.setPiece(0, WKing), BKing);
-    GTEST_ASSERT_TRUE(board.isKing(0));
-    EXPECT_EQ(board.setPiece(0, WRook), WKing);
-    GTEST_ASSERT_FALSE(board.isKing(0));
+    EXPECT_EQ(setPiece(board, 0, BKing), Empty);
+    GTEST_ASSERT_TRUE(isKing(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WKing), BKing);
+    GTEST_ASSERT_TRUE(isKing(board, 0));
+    EXPECT_EQ(setPiece(board, 0, WRook), WKing);
+    GTEST_ASSERT_FALSE(isKing(board, 0));
 }
 
 TEST_F(BoardTest, getKingPositionTest) {
     Game* game = FEN::fenToNewGame(INITIAL_FEN_POSITION);
     Board& board = game->board;
-    EXPECT_EQ(board.getWhiteKingPosition(), 60);
-    EXPECT_EQ(board.getBlackKingPosition(), 4);
+    EXPECT_EQ(getWhiteKingPosition(board), 60);
+    EXPECT_EQ(getBlackKingPosition(board), 4);
     delete game;
 }
 
 TEST_F(BoardTest, getPieceTest) {
     Board board;
+    reset(board);
     for (Position i = 0; i < 63; ++i) {
-        EXPECT_EQ(board.getPiece(i), Empty);
+        EXPECT_EQ(getPiece(board, i), Empty);
     }
-	board.setPiece(0, WPawn);
-	board.setPiece(1, BPawn);
-	board.setPiece(63, WRook);
-    EXPECT_EQ(board.getPiece(0), WPawn);
-    EXPECT_EQ(board.getPiece(1), BPawn);
-    EXPECT_EQ(board.getPiece(63), WRook);
+	setPiece(board, 0, WPawn);
+	setPiece(board, 1, BPawn);
+	setPiece(board, 63, WRook);
+    EXPECT_EQ(getPiece(board, 0), WPawn);
+    EXPECT_EQ(getPiece(board, 1), BPawn);
+    EXPECT_EQ(getPiece(board, 63), WRook);
 }
 
 TEST_F(BoardTest, setPieceTest) {
     Board board;
-    Piece oldPiece = board.setPiece(4, BKing);
+    reset(board);
+    Piece oldPiece = setPiece(board, 4, BKing);
     EXPECT_EQ(oldPiece, Empty);
 	EXPECT_EQ(board.piecePositions[4], BKing);
 	EXPECT_EQ(board.pieceBoards[BKing], 0x10);
-	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFEF);
+	EXPECT_EQ(board.pieceBoards[Empty], 0xFFFFFFFFFFFFFFEF);
     checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
-    oldPiece = board.setPiece(4, WQueen);
+    oldPiece = setPiece(board, 4, WQueen);
     EXPECT_EQ(oldPiece, BKing);
 	EXPECT_EQ(board.piecePositions[4], WQueen);
 	EXPECT_EQ(board.pieceBoards[WQueen], 0x10);
 	EXPECT_EQ(board.pieceBoards[BKing], 0);
-	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFEF);
+	EXPECT_EQ(board.pieceBoards[Empty], 0xFFFFFFFFFFFFFFEF);
     checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0});
 }
 
 TEST_F(BoardTest, setEmptyTest) {
 	Board board;
-	Piece oldPiece = board.setPiece(4, BKing);
+    reset(board);
+	Piece oldPiece = setPiece(board, 4, BKing);
 	EXPECT_EQ(oldPiece, Empty);
-	oldPiece = board.setEmpty(4);
+	oldPiece = setEmpty(board, 4);
 	EXPECT_EQ(oldPiece, BKing);
 	EXPECT_EQ(board.piecePositions[4], Empty);
 	EXPECT_EQ(board.pieceBoards[BKing], 0);
-	EXPECT_EQ(board.EMPTY, 0xFFFFFFFFFFFFFFFF);
+	EXPECT_EQ(board.pieceBoards[Empty], 0xFFFFFFFFFFFFFFFF);
     checkPositionCount(board, (unsigned int[]){64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 }
 
@@ -288,52 +303,54 @@ TEST_F(BoardTest, setEmptyTest) {
 
 TEST_F(BoardTest, moveTest) {
     Board board;
+    reset(board);
     board.enPassantPosition = 40;
     board.castlingInfo = 0b1100;
-    board.setPiece(4, BKing);
-    Piece oldPiece = board.move(4, 12, BKing);
+    setPiece(board, 4, BKing);
+    Piece oldPiece = movePiece(board, 4, 12, BKing);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(4));
-    EXPECT_EQ(board.getPiece(12), BKing);
+    GTEST_ASSERT_TRUE(isEmpty(board, 4));
+    EXPECT_EQ(getPiece(board, 12), BKing);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     EXPECT_EQ(board.castlingInfo, 0b1100);
     checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
 
-    board.setPiece(19, WPawn);
-    oldPiece = board.move(19, 12, WPawn);
+    setPiece(board, 19, WPawn);
+    oldPiece = movePiece(board, 19, 12, WPawn);
 
     EXPECT_EQ(oldPiece, BKing);
-    GTEST_ASSERT_TRUE(board.isEmpty(19));
-    EXPECT_EQ(board.getPiece(12), WPawn);
+    GTEST_ASSERT_TRUE(isEmpty(board, 19));
+    EXPECT_EQ(getPiece(board, 12), WPawn);
     checkPositionCount(board, (unsigned int[]){63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
-    board.setPiece(48, WPawn);
-    oldPiece = board.move(48, 32, WPawn);
+    setPiece(board, 48, WPawn);
+    oldPiece = movePiece(board, 48, 32, WPawn);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(48));
-    EXPECT_EQ(board.getPiece(32), WPawn);
+    GTEST_ASSERT_TRUE(isEmpty(board, 48));
+    EXPECT_EQ(getPiece(board, 32), WPawn);
     EXPECT_EQ(board.enPassantPosition, 40);
     checkPositionCount(board, (unsigned int[]){62, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(BoardTest, moveWithBQCastlingTest) {
     Board board;
+    reset(board);
     board.enPassantPosition = 40;
     board.castlingInfo = 0b1111;
 
-    board.setPiece(4, BKing);
-    board.setPiece(0, BRook);
-    board.setPiece(7, BRook);
-    Piece oldPiece = board.move(4, 2, BKing, CASTLING);
+    setPiece(board, 4, BKing);
+    setPiece(board, 0, BRook);
+    setPiece(board, 7, BRook);
+    Piece oldPiece = movePiece(board, 4, 2, BKing, CASTLING);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(0));
-    GTEST_ASSERT_TRUE(board.isEmpty(1));
-    GTEST_ASSERT_TRUE(board.isEmpty(4));
-    EXPECT_EQ(board.getPiece(2), BKing);
-    EXPECT_EQ(board.getPiece(3), BRook);
+    GTEST_ASSERT_TRUE(isEmpty(board, 0));
+    GTEST_ASSERT_TRUE(isEmpty(board, 1));
+    GTEST_ASSERT_TRUE(isEmpty(board, 4));
+    EXPECT_EQ(getPiece(board, 2), BKing);
+    EXPECT_EQ(getPiece(board, 3), BRook);
     EXPECT_EQ(board.castlingInfo, 0b1100);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1});
@@ -341,19 +358,20 @@ TEST_F(BoardTest, moveWithBQCastlingTest) {
 
 TEST_F(BoardTest, moveWithBKCastlingTest) {
     Board board;
+    reset(board);
     board.enPassantPosition = 40;
     board.castlingInfo = 0b1111;
 
-    board.setPiece(4, BKing);
-    board.setPiece(0, BRook);
-    board.setPiece(7, BRook);
-    Piece oldPiece = board.move(4, 6, BKing, CASTLING);
+    setPiece(board, 4, BKing);
+    setPiece(board, 0, BRook);
+    setPiece(board, 7, BRook);
+    Piece oldPiece = movePiece(board, 4, 6, BKing, CASTLING);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(4));
-    GTEST_ASSERT_TRUE(board.isEmpty(7));
-    EXPECT_EQ(board.getPiece(6), BKing);
-    EXPECT_EQ(board.getPiece(5), BRook);
+    GTEST_ASSERT_TRUE(isEmpty(board, 4));
+    GTEST_ASSERT_TRUE(isEmpty(board, 7));
+    EXPECT_EQ(getPiece(board, 6), BKing);
+    EXPECT_EQ(getPiece(board, 5), BRook);
     EXPECT_EQ(board.castlingInfo, 0b1100);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1});
@@ -361,20 +379,21 @@ TEST_F(BoardTest, moveWithBKCastlingTest) {
 
 TEST_F(BoardTest, moveWithWQCastlingTest) {
     Board board;
+    reset(board);
     board.enPassantPosition = 40;
     board.castlingInfo = 0b1111;
 
-    board.setPiece(60, WKing);
-    board.setPiece(56, WRook);
-    board.setPiece(63, WRook);
-    Piece oldPiece = board.move(60, 58, WKing, CASTLING);
+    setPiece(board, 60, WKing);
+    setPiece(board, 56, WRook);
+    setPiece(board, 63, WRook);
+    Piece oldPiece = movePiece(board, 60, 58, WKing, CASTLING);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(56));
-    GTEST_ASSERT_TRUE(board.isEmpty(57));
-    GTEST_ASSERT_TRUE(board.isEmpty(60));
-    EXPECT_EQ(board.getPiece(58), WKing);
-    EXPECT_EQ(board.getPiece(59), WRook);
+    GTEST_ASSERT_TRUE(isEmpty(board, 56));
+    GTEST_ASSERT_TRUE(isEmpty(board, 57));
+    GTEST_ASSERT_TRUE(isEmpty(board, 60));
+    EXPECT_EQ(getPiece(board, 58), WKing);
+    EXPECT_EQ(getPiece(board, 59), WRook);
     EXPECT_EQ(board.castlingInfo, 0b0011);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0});
@@ -382,19 +401,20 @@ TEST_F(BoardTest, moveWithWQCastlingTest) {
 
 TEST_F(BoardTest, moveWithWKCastlingTest) {
     Board board;
+    reset(board);
     board.enPassantPosition = 40;
     board.castlingInfo = 0b1111;
 
-    board.setPiece(60, WKing);
-    board.setPiece(56, WRook);
-    board.setPiece(63, WRook);
-    Piece oldPiece = board.move(60, 62, WKing, CASTLING);
+    setPiece(board, 60, WKing);
+    setPiece(board, 56, WRook);
+    setPiece(board, 63, WRook);
+    Piece oldPiece = movePiece(board, 60, 62, WKing, CASTLING);
 
     EXPECT_EQ(oldPiece, Empty);
-    GTEST_ASSERT_TRUE(board.isEmpty(63));
-    GTEST_ASSERT_TRUE(board.isEmpty(60));
-    EXPECT_EQ(board.getPiece(62), WKing);
-    EXPECT_EQ(board.getPiece(61), WRook);
+    GTEST_ASSERT_TRUE(isEmpty(board, 63));
+    GTEST_ASSERT_TRUE(isEmpty(board, 60));
+    EXPECT_EQ(getPiece(board, 62), WKing);
+    EXPECT_EQ(getPiece(board, 61), WRook);
     EXPECT_EQ(board.castlingInfo, 0b0011);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0});
@@ -402,17 +422,18 @@ TEST_F(BoardTest, moveWithWKCastlingTest) {
 
 TEST_F(BoardTest, moveEnPassant) {
     Board board;
+    reset(board);
     board.castlingInfo = 0b1111;
     board.enPassantPosition = 41;
 
-    board.setPiece(32, BPawn);
-    board.setPiece(33, WPawn);
-    Piece oldPiece = board.move(32, 41, BPawn, EN_PASSANT);
+    setPiece(board, 32, BPawn);
+    setPiece(board, 33, WPawn);
+    Piece oldPiece = movePiece(board, 32, 41, BPawn, EN_PASSANT);
 
     EXPECT_EQ(oldPiece, WPawn);
-    GTEST_ASSERT_TRUE(board.isEmpty(32));
-    GTEST_ASSERT_TRUE(board.isEmpty(33));
-    EXPECT_EQ(board.getPiece(41), BPawn);
+    GTEST_ASSERT_TRUE(isEmpty(board, 32));
+    GTEST_ASSERT_TRUE(isEmpty(board, 33));
+    EXPECT_EQ(getPiece(board, 41), BPawn);
     EXPECT_EQ(board.castlingInfo, 0b1111);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){63, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
@@ -420,33 +441,36 @@ TEST_F(BoardTest, moveEnPassant) {
 
 TEST_F(BoardTest, movePawnPromotion) {
     Board board;
+    reset(board);
     board.castlingInfo = 0b1111;
     board.enPassantPosition = 40;
 
-    board.setPiece(8, WPawn);
-    board.setPiece(1, BPawn);
-    EXPECT_THROW(board.move(8, 1, WPawn, PROMOTION), runtime_error);
+    setPiece(board, 8, WPawn);
+    setPiece(board, 1, BPawn);
+    EXPECT_THROW(movePiece(board, 8, 1, WPawn, PROMOTION), runtime_error);
 
-    Piece oldPiece = board.move(8, 1, WPawn, PROMOTION, WQueen);
+    Piece oldPiece = movePiece(board, 8, 1, WPawn, PROMOTION, WQueen);
 
     EXPECT_EQ(oldPiece, BPawn);
-    GTEST_ASSERT_TRUE(board.isEmpty(8));
-    EXPECT_EQ(board.getPiece(1), WQueen);
+    GTEST_ASSERT_TRUE(isEmpty(board, 8));
+    EXPECT_EQ(getPiece(board, 1), WQueen);
     EXPECT_EQ(board.castlingInfo, 0b1111);
     EXPECT_EQ(board.enPassantPosition, NO_POS);
     checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0});
 }
 
-TEST_F(BoardTest, setTest) {
+TEST_F(BoardTest, copyTest) {
     Board board;
+    reset(board);
     Board newboard;
-    newboard.setPiece(63, WPawn);
-    board.set(newboard);
+    reset(newboard);
+    setPiece(newboard, 63, WPawn);
+    copy(&newboard, &board);
 
-    GTEST_ASSERT_FALSE(board.isEmpty(63));
-    GTEST_ASSERT_TRUE(board.isWhite(63));
-    GTEST_ASSERT_FALSE(board.isBlack(63));
-    GTEST_ASSERT_TRUE(board.isPawn(63));
+    GTEST_ASSERT_FALSE(isEmpty(board, 63));
+    GTEST_ASSERT_TRUE(isWhite(board, 63));
+    GTEST_ASSERT_FALSE(isBlack(board, 63));
+    GTEST_ASSERT_TRUE(isPawn(board, 63));
     checkPositionCount(newboard, (unsigned int[]){63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 }
 

@@ -28,7 +28,7 @@ public:
 
 		Move move = parseUciMove(command);
 		Position sourcePosition = getSourcePosition(move);
-		Side side = game.board.isWhite(sourcePosition) ? _WHITE : _BLACK;
+		Side side = isWhite(game.board, sourcePosition) ? _WHITE : _BLACK;
 
 		if (game.sideToMove != side) {
 			throw runtime_error("uci move side incorrect");

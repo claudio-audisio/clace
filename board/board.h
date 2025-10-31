@@ -1,366 +1,387 @@
 #pragma once
 
-#include <vector>
-#include <bit>
-#include <functional>
-
+#include "../common/defines.h"
 #include "../common/types.h"
 #include "../common/constants.h"
+#include "../utils/pieceHelper.h"
 #include "../common/bitwise.h"
 #include "../utils/utils.h"
-#include "../utils/pieceHelper.h"
-#include "../movesCalculation/staticAttacks.h"
-#include "../common/defines.h"
-#include "../utils/boardUtils.h"
 #include "../utils/positions.h"
-#include "../move/move.h"
 
-using namespace std;
-
-
-class Board {
-public:
-    Board();
-    ~Board();
-
-	Rawboard pieceBoards[SIZE];
-	Piece piecePositions[64];
-	Rawboard& EMPTY = pieceBoards[Empty];
-	CastlingInfo castlingInfo;
-	Position enPassantPosition;
-	Rawboard _OPP_PIECES[2];
-	Rawboard _PIECES[2];
-
-
-	Rawboard PIECES(const Side side) const {
-		// TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
+typedef struct {
+    Rawboard pieceBoards[SIZE];
 #ifdef BOARD_USE_PRE_CALCULATED
-		if (!_PIECES[side]) {
-			_PIECES[side] = pieceBoards[WPawn + side] |
-				   pieceBoards[WBishop + side] |
-				   pieceBoards[WQueen + side] |
-				   pieceBoards[WKnight + side] |
-				   pieceBoards[WKing + side] |
-				   pieceBoards[WRook + side];
-		}
+    /*Rawboard _OPP_PIECES[2];
+    Rawboard _PIECES[2];*/
+#endif
+    Piece piecePositions[64];
+    CastlingInfo castlingInfo;
+    Position enPassantPosition;
+} Board;
 
-		return _PIECES[side];
+inline Rawboard PIECES(const Board& board, const Side side) {
+    // TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
+#ifdef BOARD_USE_PRE_CALCULATED
+    if (!board._PIECES[side]) {
+        board._PIECES[side] = board.pieceBoards[WPawn + side] |
+               board.pieceBoards[WBishop + side] |
+               board.pieceBoards[WQueen + side] |
+               board.pieceBoards[WKnight + side] |
+               board.pieceBoards[WKing + side] |
+               board.pieceBoards[WRook + side];
+    }
+
+    return board._PIECES[side];
 #else
-		// Usare per test di performance sui metodi della board
-		return pieceBoards[WPawn + side] |
-			   pieceBoards[WBishop + side] |
-			   pieceBoards[WQueen + side] |
-			   pieceBoards[WKnight + side] |
-			   pieceBoards[WKing + side] |
-			   pieceBoards[WRook + side];
+    // Usare per test di performance sui metodi della board
+    return board.pieceBoards[WPawn + side] |
+           board.pieceBoards[WBishop + side] |
+           board.pieceBoards[WQueen + side] |
+           board.pieceBoards[WKnight + side] |
+           board.pieceBoards[WKing + side] |
+           board.pieceBoards[WRook + side];
 #endif
-	}
+}
 
-	Rawboard OPP_PIECES(const Side side) const {
+inline Rawboard OPP_PIECES(const Board& board, const Side side) {
 #ifdef BOARD_USE_PRE_CALCULATED
-		if (!_OPP_PIECES[side]) {
-			_OPP_PIECES[side] = pieceBoards[BPawn - side] |
-					pieceBoards[BBishop - side] |
-					pieceBoards[BQueen - side] |
-					pieceBoards[BKnight - side] |
-					pieceBoards[BKing - side] |
-					pieceBoards[BRook - side];
-		}
+    if (!board._OPP_PIECES[side]) {
+        board._OPP_PIECES[side] = board.pieceBoards[BPawn - side] |
+                board.pieceBoards[BBishop - side] |
+                board.pieceBoards[BQueen - side] |
+                board.pieceBoards[BKnight - side] |
+                board.pieceBoards[BKing - side] |
+                board.pieceBoards[BRook - side];
+    }
 
-		return _OPP_PIECES[side];
+    return board._OPP_PIECES[side];
 #else
-		// Usare per test di performance sui metodi della board
-		return pieceBoards[BPawn - side] |
-			   pieceBoards[BBishop - side] |
-			   pieceBoards[BQueen - side] |
-			   pieceBoards[BKnight - side] |
-			   pieceBoards[BKing - side] |
-			   pieceBoards[BRook - side];
+    // Usare per test di performance sui metodi della board
+    return board.pieceBoards[BPawn - side] |
+           board.pieceBoards[BBishop - side] |
+           board.pieceBoards[BQueen - side] |
+           board.pieceBoards[BKnight - side] |
+           board.pieceBoards[BKing - side] |
+           board.pieceBoards[BRook - side];
 #endif
-	}
+}
 
 #ifdef BOARD_USE_PRE_CALCULATED
-	void resetCalculated() {
-		resetCalculated(_WHITE);
-		resetCalculated(_BLACK);
-	}
+inline void resetCalculated(Board& board, const Side side) {
+    board._PIECES[side] = 0;
+    board._OPP_PIECES[side] = 0;
+}
 
-	void resetCalculated(Side side) {
-		_PIECES[side] = 0;
-		_OPP_PIECES[side] = 0;
-	}
+inline void resetCalculated(Board& board) {
+    resetCalculated(board, _WHITE);
+    resetCalculated(board, _BLACK);
+}
 #endif
 
-    void reset();
-	bool equals(const Board& board) const;
-	void set(const Board& board);
+inline void reset(Board& board) {
+    for (RawboardIndex i = 1; i < SIZE; ++i) {
+        board.pieceBoards[i] = 0;
+    }
 
-	unsigned int getPieceCount(const Piece piece) const {
-		return popcount(pieceBoards[piece]);
-	}
+    board.pieceBoards[Empty] = EMPTY_BOARD;
 
-	Side getSide(const Position position) const {
-		return _getSide(piecePositions[position]);
-	}
+    for (Piece& piece : board.piecePositions) {
+        piece = Empty;
+    }
 
-	bool isEmpty(const Position position) const {
-		return EMPTY & posInd(position);
-	}
-
-	bool isWhite(const Position position) const {
-		return _isWhite(piecePositions[position]);
-	}
-
-	bool isBlack(const Position position) const {
-		return _isBlack(piecePositions[position]);
-	}
-
-	bool isPawn(const Position position) const {
-		return (pieceBoards[WPawn] | pieceBoards[BPawn]) & posInd(position);
-	}
-
-	bool isKnight(const Position position) const {
-		return (pieceBoards[WKnight] | pieceBoards[BKnight]) & posInd(position);
-	}
-
-	bool isBishop(const Position position) const {
-		return (pieceBoards[WBishop] | pieceBoards[BBishop]) & posInd(position);
-	}
-
-	bool isRook(const Position position) const {
-		return (pieceBoards[WRook] | pieceBoards[BRook]) & posInd(position);
-	}
-
-	bool isRook(const Position position, const Side side) const {
-		return pieceBoards[WRook + side] & posInd(position);
-	}
-
-	bool isQueen(const Position position) const {
-		return (pieceBoards[WQueen] | pieceBoards[BQueen]) & posInd(position);
-	}
-
-	bool isKing(const Position position) const {
-		return (pieceBoards[WKing] | pieceBoards[BKing]) & posInd(position);
-	}
-
-	Position getWhiteKingPosition() const {
-		return getFirstPos(pieceBoards[WKing]);
-	}
-
-	Position getBlackKingPosition() const {
-		return getFirstPos(pieceBoards[BKing]);
-	}
-
-	Piece getPiece(const Position position) const {
-		return piecePositions[position];
-	}
-
-	Piece setPiece(const Position position, const Piece piece) {
-		const Piece oldPiece = getPiece(position);
-		const Rawboard posIndex = posInd(position);
-		pieceBoards[oldPiece] &= ~posIndex;
-		pieceBoards[piece] |= posIndex;
-		piecePositions[position] = piece;
+    board.castlingInfo = 0;
+    board.enPassantPosition = NO_POS;
 #ifdef BOARD_USE_PRE_CALCULATED
-		resetCalculated();
+    resetCalculated(board);
 #endif
-		return oldPiece;
-	}
+}
 
-	void setEmpty(const Position position, const Piece oldPiece) {
-		const Rawboard posIndex = posInd(position);
-		pieceBoards[oldPiece] &= ~posIndex;
-		pieceBoards[Empty] |= posIndex;
-		piecePositions[position] = Empty;
-	}
+inline bool equals(const Board& board1, const Board& board2) {
+    for (RawboardIndex i = 1; i < SIZE; ++i) {
+        if (board1.pieceBoards[i] != board2.pieceBoards[i]) {
+            return false;
+        }
+    }
 
-	Piece setEmpty(const Position position) {
-		const Piece oldPiece = getPiece(position);
-		setEmpty(position, oldPiece);
-		return oldPiece;
-	}
+    for (Position i = 0; i < 64; i++) {
+        if (board1.piecePositions[i] != board2.piecePositions[i]) {
+            return false;
+        }
+    }
 
-	Piece simulateMove(const Position source, const Position destination, const Piece piece, const bool isCastling) {
-		if (isCastling) {
-			castlingMove(source, destination);
+    return true;
+}
+
+inline void copy(const Board* source, Board* destination) {
+    memcpy(destination, source, sizeof(Board));
 #ifdef BOARD_USE_PRE_CALCULATED
-			resetCalculated();
+    resetCalculated(destination);
 #endif
-			return Empty;
-		}
+}
 
-		const Piece oldPiece = setPiece(destination, piece);
-		setEmpty(source, piece);
+inline unsigned int getPieceCount(const Board& board, const Piece piece) {
+    return popcount(board.pieceBoards[piece]);
+}
 
-		return oldPiece;
-	}
+inline Side getSide(const Board& board, const Position position) {
+    return _getSide(board.piecePositions[position]);
+}
 
-	Piece move(const Position source, const Position destination, Piece piece, const MoveType type = NORMAL, const Piece promotionPiece = Empty) {
-		switch (type) {
-		case NORMAL: {
-				const Piece oldPiece = setPiece(destination, piece);
-				setEmpty(source, piece);
-				updateEnPassantInfo(source, destination, piece);
-				updateCastlingInfo(source, destination);
-				return oldPiece;
-				}
-		case CASTLING: {
-				enPassantPosition = NO_POS;
-				castlingMove(source, destination);
-				updateCastlingInfo(source, destination);
+inline bool isEmpty(const Board& board, const Position position) {
+    return board.pieceBoards[Empty] & posInd(position);
+}
+
+inline bool isWhite(const Board& board, const Position position) {
+    return _isWhite(board.piecePositions[position]);
+}
+
+inline bool isBlack(const Board& board, const Position position) {
+    return _isBlack(board.piecePositions[position]);
+}
+
+inline bool isPawn(const Board& board, const Position position) {
+    return (board.pieceBoards[WPawn] | board.pieceBoards[BPawn]) & posInd(position);
+}
+
+inline bool isKnight(const Board& board, const Position position) {
+    return (board.pieceBoards[WKnight] | board.pieceBoards[BKnight]) & posInd(position);
+}
+
+inline bool isBishop(const Board& board, const Position position) {
+    return (board.pieceBoards[WBishop] | board.pieceBoards[BBishop]) & posInd(position);
+}
+
+inline bool isRook(const Board& board, const Position position) {
+    return (board.pieceBoards[WRook] | board.pieceBoards[BRook]) & posInd(position);
+}
+
+inline bool isRook(const Board& board, const Position position, const Side side) {
+    return board.pieceBoards[WRook + side] & posInd(position);
+}
+
+inline bool isQueen(const Board& board, const Position position) {
+    return (board.pieceBoards[WQueen] | board.pieceBoards[BQueen]) & posInd(position);
+}
+
+inline bool isKing(const Board& board, const Position position) {
+    return (board.pieceBoards[WKing] | board.pieceBoards[BKing]) & posInd(position);
+}
+
+inline Position getKingPosition(const Board& board, const Side side) {
+    return getFirstPos(board.pieceBoards[WKing + side]);
+}
+
+inline Position getWhiteKingPosition(const Board& board) {
+    return getFirstPos(board.pieceBoards[WKing]);
+}
+
+inline Position getBlackKingPosition(const Board& board) {
+    return getFirstPos(board.pieceBoards[BKing]);
+}
+
+inline Piece getPiece(const Board& board, const Position position) {
+    return board.piecePositions[position];
+}
+
+inline Piece setPiece(Board& board, const Position position, const Piece piece) {
+    const Piece oldPiece = getPiece(board, position);
+    const Rawboard posIndex = posInd(position);
+    board.pieceBoards[oldPiece] &= ~posIndex;
+    board.pieceBoards[piece] |= posIndex;
+    board.piecePositions[position] = piece;
 #ifdef BOARD_USE_PRE_CALCULATED
-				resetCalculated();
+    resetCalculated(board);
 #endif
-				return Empty;
-		}
-		case EN_PASSANT: {
-				enPassantPosition = NO_POS;
-				setPiece(destination, piece);
-				setEmpty(source, piece);
-				return setEmpty(destination + (piece == WPawn ? 8 : -8));
-		}
-		case PROMOTION: {
-				if (promotionPiece == Empty) { throw runtime_error("promotion piece not set"); }
-				enPassantPosition = NO_POS;
-				const Piece oldPiece = setPiece(destination, piece);
-				setPiece(destination, promotionPiece);
-				setEmpty(source, piece);
-				updateCastlingInfo(source, destination);
-				return oldPiece;
-		}
-		default: throw runtime_error("unexpected move type");
-		}
-	}
+    return oldPiece;
+}
 
-	void updateCastlingInfo(const Position source, const Position destination) {
-		castlingInfo &= CASTLING_INFO_MASK[source];
-		castlingInfo &= CASTLING_INFO_MASK[destination];
-	}
+inline void setEmpty(Board& board, const Position position, const Piece oldPiece) {
+    const Rawboard posIndex = posInd(position);
+    board.pieceBoards[oldPiece] &= ~posIndex;
+    board.pieceBoards[Empty] |= posIndex;
+    board.piecePositions[position] = Empty;
+}
 
-	void updateEnPassantInfo(const Position source, const Position destination, const Piece piece) {
-		const Side side = _getSide(piece);
+inline Piece setEmpty(Board& board, const Position position) {
+    const Piece oldPiece = getPiece(board, position);
+    setEmpty(board, position, oldPiece);
+    return oldPiece;
+}
 
-		if (_isPawn(piece) &&
-			isSecondRow(source, side) &&
-			isFourthRow(destination, side)) {
-			enPassantPosition = source - 8 + (16 * side);
-			}
-		else {
-			enPassantPosition = NO_POS;
-		}
-	}
+inline void updateCastlingInfo(Board& board, const Position source, const Position destination) {
+    board.castlingInfo &= CASTLING_INFO_MASK[source];
+    board.castlingInfo &= CASTLING_INFO_MASK[destination];
+}
 
-	Position getKingPosition(const Side side) const {
-		return getFirstPos(pieceBoards[WKing + side]);
-	}
+inline void updateEnPassantInfo(Board& board, const Position source, const Position destination, const Piece piece) {
+    const Side side = _getSide(piece);
 
-	void castlingMove(const Position source, const Position destination) {
-		switch (source + destination) {
-			case BQCastling: {
-				pieceBoards[BKing] = BQC_King;
-				pieceBoards[BRook] &= BQC_RookRem;
-				pieceBoards[BRook] |= BQC_RookAdd;
-				pieceBoards[Empty] &= BQC_EmptyRem;
-				pieceBoards[Empty] |= BQC_EmptyAdd;
-				piecePositions[0] = Empty;
-				piecePositions[2] = BKing;
-				piecePositions[3] = BRook;
-				piecePositions[4] = Empty;
-				break;
-			}
-			case BKCastling: {
-				pieceBoards[BKing] = BKC_King;
-				pieceBoards[BRook] &= BKC_RookRem;
-				pieceBoards[BRook] |= BKC_RookAdd;
-				pieceBoards[Empty] &= BKC_EmptyRem;
-				pieceBoards[Empty] |= BKC_EmptyAdd;
-				piecePositions[4] = Empty;
-				piecePositions[6] = BKing;
-				piecePositions[5] = BRook;
-				piecePositions[7] = Empty;
-				break;
-			}
-			case WQCastling: {
-				pieceBoards[WKing] = WQC_King;
-				pieceBoards[WRook] &= WQC_RookRem;
-				pieceBoards[WRook] |= WQC_RookAdd;
-				pieceBoards[Empty] &= WQC_EmptyRem;
-				pieceBoards[Empty] |= WQC_EmptyAdd;
-				piecePositions[56] = Empty;
-				piecePositions[58] = WKing;
-				piecePositions[59] = WRook;
-				piecePositions[60] = Empty;
-				break;
-			}
-			case WKCastling: {
-				pieceBoards[WKing] = WKC_King;
-				pieceBoards[WRook] &= WKC_RookRem;
-				pieceBoards[WRook] |= WKC_RookAdd;
-				pieceBoards[Empty] &= WKC_EmptyRem;
-				pieceBoards[Empty] |= WKC_EmptyAdd;
-				piecePositions[60] = Empty;
-				piecePositions[62] = WKing;
-				piecePositions[61] = WRook;
-				piecePositions[63] = Empty;
-				break;
-			}
-			default: throw runtime_error("wrong castling move");
-		}
-	}
+    if (_isPawn(piece) &&
+        isSecondRow(source, side) &&
+        isFourthRow(destination, side)) {
+        board.enPassantPosition = source - 8 + (16 * side);
+        }
+    else {
+        board.enPassantPosition = NO_POS;
+    }
+}
 
-    void undoCastlingMove(const Position source, const Position destination) {
-		switch (source + destination) {
-			case BQCastling: {
-				pieceBoards[BKing] = BC_King;
-				pieceBoards[BRook] |= ~BQC_RookRem;
-				pieceBoards[BRook] &= ~BQC_RookAdd;
-				pieceBoards[Empty] |= ~BQC_EmptyRem;
-				pieceBoards[Empty] &= ~BQC_EmptyAdd;
-				piecePositions[2] = Empty;
-				piecePositions[4] = BKing;
-				piecePositions[0] = BRook;
-				piecePositions[3] = Empty;
-				break;
-			}
-			case BKCastling: {
-				pieceBoards[BKing] = BC_King;
-				pieceBoards[BRook] |= ~BKC_RookRem;
-				pieceBoards[BRook] &= ~BKC_RookAdd;
-				pieceBoards[Empty] |= ~BKC_EmptyRem;
-				pieceBoards[Empty] &= ~BKC_EmptyAdd;
-				piecePositions[5] = Empty;
-				piecePositions[7] = BRook;
-				piecePositions[4] = BKing;
-				piecePositions[6] = Empty;
-				break;
-			}
-			case WQCastling: {
-				pieceBoards[WKing] = WC_King;
-				pieceBoards[WRook] |= ~WQC_RookRem;
-				pieceBoards[WRook] &= ~WQC_RookAdd;
-				pieceBoards[Empty] |= ~WQC_EmptyRem;
-				pieceBoards[Empty] &= ~WQC_EmptyAdd;
-				piecePositions[58] = Empty;
-				piecePositions[60] = WKing;
-				piecePositions[56] = WRook;
-				piecePositions[59] = Empty;
-				break;
-			}
-			case WKCastling: {
-				pieceBoards[WKing] = WC_King;
-				pieceBoards[WRook] |= ~WKC_RookRem;
-				pieceBoards[WRook] &= ~WKC_RookAdd;
-				pieceBoards[Empty] |= ~WKC_EmptyRem;
-				pieceBoards[Empty] &= ~WKC_EmptyAdd;
-				piecePositions[61] = Empty;
-				piecePositions[63] = WRook;
-				piecePositions[60] = WKing;
-				piecePositions[62] = Empty;
-				break;
-			}
-		default: throw runtime_error("wrong undo castling move");
-		}
-	}
+inline void castlingMove(Board& board, const Position source, const Position destination) {
+    switch (source + destination) {
+    case BQCastling: {
+            board.pieceBoards[BKing] = BQC_King;
+            board.pieceBoards[BRook] &= BQC_RookRem;
+            board.pieceBoards[BRook] |= BQC_RookAdd;
+            board.pieceBoards[Empty] &= BQC_EmptyRem;
+            board.pieceBoards[Empty] |= BQC_EmptyAdd;
+            board.piecePositions[0] = Empty;
+            board.piecePositions[2] = BKing;
+            board.piecePositions[3] = BRook;
+            board.piecePositions[4] = Empty;
+            break;
+    }
+    case BKCastling: {
+            board.pieceBoards[BKing] = BKC_King;
+            board.pieceBoards[BRook] &= BKC_RookRem;
+            board.pieceBoards[BRook] |= BKC_RookAdd;
+            board.pieceBoards[Empty] &= BKC_EmptyRem;
+            board.pieceBoards[Empty] |= BKC_EmptyAdd;
+            board.piecePositions[4] = Empty;
+            board.piecePositions[6] = BKing;
+            board.piecePositions[5] = BRook;
+            board.piecePositions[7] = Empty;
+            break;
+    }
+    case WQCastling: {
+            board.pieceBoards[WKing] = WQC_King;
+            board.pieceBoards[WRook] &= WQC_RookRem;
+            board.pieceBoards[WRook] |= WQC_RookAdd;
+            board.pieceBoards[Empty] &= WQC_EmptyRem;
+            board.pieceBoards[Empty] |= WQC_EmptyAdd;
+            board.piecePositions[56] = Empty;
+            board.piecePositions[58] = WKing;
+            board.piecePositions[59] = WRook;
+            board.piecePositions[60] = Empty;
+            break;
+    }
+    case WKCastling: {
+            board.pieceBoards[WKing] = WKC_King;
+            board.pieceBoards[WRook] &= WKC_RookRem;
+            board.pieceBoards[WRook] |= WKC_RookAdd;
+            board.pieceBoards[Empty] &= WKC_EmptyRem;
+            board.pieceBoards[Empty] |= WKC_EmptyAdd;
+            board.piecePositions[60] = Empty;
+            board.piecePositions[62] = WKing;
+            board.piecePositions[61] = WRook;
+            board.piecePositions[63] = Empty;
+            break;
+    }
+    default: throw runtime_error("wrong castling move");
+    }
+}
 
-};
+inline Piece simulateMovePiece(Board& board, const Position source, const Position destination, const Piece piece, const bool isCastling) {
+    if (isCastling) {
+        castlingMove(board, source, destination);
+#ifdef BOARD_USE_PRE_CALCULATED
+        resetCalculated(board);
+#endif
+        return Empty;
+    }
 
+    const Piece oldPiece = setPiece(board, destination, piece);
+    setEmpty(board, source, piece);
+
+    return oldPiece;
+}
+
+inline Piece movePiece(Board& board, const Position source, const Position destination, Piece piece, const MoveType type = NORMAL, const Piece promotionPiece = Empty) {
+    switch (type) {
+    case NORMAL: {
+            const Piece oldPiece = setPiece(board, destination, piece);
+            setEmpty(board, source, piece);
+            updateEnPassantInfo(board, source, destination, piece);
+            updateCastlingInfo(board, source, destination);
+            return oldPiece;
+    }
+    case CASTLING: {
+            board.enPassantPosition = NO_POS;
+            castlingMove(board, source, destination);
+            updateCastlingInfo(board, source, destination);
+#ifdef BOARD_USE_PRE_CALCULATED
+            resetCalculated(board);
+#endif
+            return Empty;
+    }
+    case EN_PASSANT: {
+            board.enPassantPosition = NO_POS;
+            setPiece(board, destination, piece);
+            setEmpty(board, source, piece);
+            return setEmpty(board, destination + (piece == WPawn ? 8 : -8));
+    }
+    case PROMOTION: {
+            if (promotionPiece == Empty) { throw runtime_error("promotion piece not set"); }
+            board.enPassantPosition = NO_POS;
+            const Piece oldPiece = setPiece(board, destination, piece);
+            setPiece(board, destination, promotionPiece);
+            setEmpty(board, source, piece);
+            updateCastlingInfo(board, source, destination);
+            return oldPiece;
+    }
+    default: throw runtime_error("unexpected move type");
+    }
+}
+
+inline void undoCastlingMove(Board& board, const Position source, const Position destination) {
+    switch (source + destination) {
+    case BQCastling: {
+            board.pieceBoards[BKing] = BC_King;
+            board.pieceBoards[BRook] |= ~BQC_RookRem;
+            board.pieceBoards[BRook] &= ~BQC_RookAdd;
+            board.pieceBoards[Empty] |= ~BQC_EmptyRem;
+            board.pieceBoards[Empty] &= ~BQC_EmptyAdd;
+            board.piecePositions[2] = Empty;
+            board.piecePositions[4] = BKing;
+            board.piecePositions[0] = BRook;
+            board.piecePositions[3] = Empty;
+            break;
+    }
+    case BKCastling: {
+            board.pieceBoards[BKing] = BC_King;
+            board.pieceBoards[BRook] |= ~BKC_RookRem;
+            board.pieceBoards[BRook] &= ~BKC_RookAdd;
+            board.pieceBoards[Empty] |= ~BKC_EmptyRem;
+            board.pieceBoards[Empty] &= ~BKC_EmptyAdd;
+            board.piecePositions[5] = Empty;
+            board.piecePositions[7] = BRook;
+            board.piecePositions[4] = BKing;
+            board.piecePositions[6] = Empty;
+            break;
+    }
+    case WQCastling: {
+            board.pieceBoards[WKing] = WC_King;
+            board.pieceBoards[WRook] |= ~WQC_RookRem;
+            board.pieceBoards[WRook] &= ~WQC_RookAdd;
+            board.pieceBoards[Empty] |= ~WQC_EmptyRem;
+            board.pieceBoards[Empty] &= ~WQC_EmptyAdd;
+            board.piecePositions[58] = Empty;
+            board.piecePositions[60] = WKing;
+            board.piecePositions[56] = WRook;
+            board.piecePositions[59] = Empty;
+            break;
+    }
+    case WKCastling: {
+            board.pieceBoards[WKing] = WC_King;
+            board.pieceBoards[WRook] |= ~WKC_RookRem;
+            board.pieceBoards[WRook] &= ~WKC_RookAdd;
+            board.pieceBoards[Empty] |= ~WKC_EmptyRem;
+            board.pieceBoards[Empty] &= ~WKC_EmptyAdd;
+            board.piecePositions[61] = Empty;
+            board.piecePositions[63] = WRook;
+            board.piecePositions[60] = WKing;
+            board.piecePositions[62] = Empty;
+            break;
+    }
+    default: throw runtime_error("wrong undo castling move");
+    }
+}

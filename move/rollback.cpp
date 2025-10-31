@@ -35,7 +35,7 @@ void Rollback::rollback(Game& game) {
 	}
 
 	const MoveInfo* moveInfo = boards[--index];
-	game.board.set(moveInfo->board);
+	copy(&moveInfo->board, &game.board);
 	game.sideToMove = moveInfo->sideToMove;
 	game.fullMoves = moveInfo->fullMoves;
 	game.halfMoveClock = moveInfo->halfMoveClock;
@@ -56,5 +56,5 @@ Rollback::MoveInfo::~MoveInfo() {
 }
 
 void Rollback::MoveInfo::setBoard(const Board& board) {
-	this->board.set(board);
+	copy(&board, &this->board);
 }

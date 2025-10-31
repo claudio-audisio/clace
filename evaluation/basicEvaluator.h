@@ -19,11 +19,11 @@ public:
 	}
 
 	static double calculateMaterialScore(Game& game) {
-		return QUEEN_WT * (static_cast<double>(game.board.getPieceCount(WQueen)) - static_cast<double>(game.board.getPieceCount(BQueen))) +
-				ROOK_WT * (static_cast<double>(game.board.getPieceCount(WRook)) - static_cast<double>(game.board.getPieceCount(BRook))) +
-				BISHOP_WT * (static_cast<double>(game.board.getPieceCount(WBishop)) - static_cast<double>(game.board.getPieceCount(BBishop))) +
-				KNIGHT_WT * (static_cast<double>(game.board.getPieceCount(WKnight)) - static_cast<double>(game.board.getPieceCount(BKnight))) +
-				PAWN_WT * (static_cast<double>(game.board.getPieceCount(WPawn)) - static_cast<double>(game.board.getPieceCount(BPawn)));
+		return QUEEN_WT * (static_cast<double>(getPieceCount(game.board, WQueen)) - static_cast<double>(getPieceCount(game.board, BQueen))) +
+				ROOK_WT * (static_cast<double>(getPieceCount(game.board, WRook)) - static_cast<double>(getPieceCount(game.board, BRook))) +
+				BISHOP_WT * (static_cast<double>(getPieceCount(game.board, WBishop)) - static_cast<double>(getPieceCount(game.board, BBishop))) +
+				KNIGHT_WT * (static_cast<double>(getPieceCount(game.board, WKnight)) - static_cast<double>(getPieceCount(game.board, BKnight))) +
+				PAWN_WT * (static_cast<double>(getPieceCount(game.board, WPawn)) - static_cast<double>(getPieceCount(game.board, BPawn)));
 	}
 
 	static int calculateMobility(Game& game) {

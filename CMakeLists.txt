@@ -36,7 +36,7 @@ find_package(spdlog REQUIRED)
 add_executable (clace 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
-	"board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"
+	"board/board.h" "board/checkStatus.h" "board/checkStatus.cpp"
 	"engine/iengine.h"
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
@@ -67,11 +67,12 @@ add_executable (clace
 		ui/gui/igui.h
 		utils/toString.h
 		movesCalculation/movesCalculation.h
-		movesCalculation/rayAttacks.h)
+		movesCalculation/rayAttacks.h
+        board/board.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
-	"board/board.h" "board/board.cpp" "board/checkStatus.h" "board/checkStatus.cpp"
+	"board/board.h" "board/checkStatus.h" "board/checkStatus.cpp"
 	"engine/iengine.h" 
 	"game/game.h" "game/game.cpp" "game/player.cpp" "game/player.h" 
 	"move/move.h" "move/rollback.h"  "move/rollback.cpp" 
@@ -100,7 +101,8 @@ add_library(claceLib
 		ui/gui/igui.h
 		utils/toString.h
 		movesCalculation/movesCalculation.h
-		movesCalculation/rayAttacks.h)
+		movesCalculation/rayAttacks.h
+        board/board.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")

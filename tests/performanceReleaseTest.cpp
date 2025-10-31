@@ -33,7 +33,7 @@ protected:
 	}
 };
 
-TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
+TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -49,40 +49,111 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 100000; ++i) {
-		memset(moves, 0, sizeof(moves));
+		generatePseudoLegalMoves(*boardInitial, moves);
+		boardInitial->changeTurn();
+		generatePseudoLegalMoves(*boardInitial, moves);
+		boardInitial->changeTurn();
+		generatePseudoLegalMoves(*boardPerft2, moves);
+		boardPerft2->changeTurn();
+		generatePseudoLegalMoves(*boardPerft2, moves);
+		boardPerft2->changeTurn();
+		generatePseudoLegalMoves(*boardPerft3, moves);
+		boardPerft3->changeTurn();
+		generatePseudoLegalMoves(*boardPerft3, moves);
+		boardPerft3->changeTurn();
+		generatePseudoLegalMoves(*boardPerft4, moves);
+		boardPerft4->changeTurn();
+		generatePseudoLegalMoves(*boardPerft4, moves);
+		boardPerft4->changeTurn();
+		generatePseudoLegalMoves(*boardPerft5, moves);
+		boardPerft5->changeTurn();
+		generatePseudoLegalMoves(*boardPerft5, moves);
+		boardPerft5->changeTurn();
+		generatePseudoLegalMoves(*boardPerft6, moves);
+		boardPerft6->changeTurn();
+		generatePseudoLegalMoves(*boardPerft6, moves);
+		boardPerft6->changeTurn();
+	}
+
+	unsLL time = getElapsedMillis(begin);
+
+#ifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(time, 2040, 50);
+#else
+	GTEST_ASSERT_NEAR(time, 155, 10);
+#endif
+
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, isValidPerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Move moves[MAX_MOVES];
+	MovesAmount movesAmount;
+	Game* game = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	auto tot = generatePseudoLegalMoves(*game, moves);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (int j = 1; j < 1000000; ++j) {
+		for (int i = 0; i < tot; i++) {
+			game->simulateMove(moves[i]);
+			game->checkControl(moves[i]);
+			game->undoSimulateMove(moves[i]);
+		}
+	}
+
+	unsLL time = getElapsedMillis(begin);
+
+#ifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(time, 2040, 50);
+#else
+	GTEST_ASSERT_NEAR(time, 1650, 50);
+#endif
+
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Move moves[MAX_MOVES];
+	MovesAmount movesAmount;
+	Game* boardInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* boardPerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* boardPerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* boardPerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* boardPerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* boardPerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (int i = 1; i < 100000; ++i) {
 		generateLegalMoves(*boardInitial, moves, &movesAmount);
 		boardInitial->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardInitial, moves, &movesAmount);
 		boardInitial->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft2, moves, &movesAmount);
 		boardPerft2->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft2, moves, &movesAmount);
 		boardPerft2->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft3, moves, &movesAmount);
 		boardPerft3->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft3, moves, &movesAmount);
 		boardPerft3->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft4, moves, &movesAmount);
 		boardPerft4->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft4, moves, &movesAmount);
 		boardPerft4->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft5, moves, &movesAmount);
 		boardPerft5->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft5, moves, &movesAmount);
 		boardPerft5->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft6, moves, &movesAmount);
 		boardPerft6->changeTurn();
-		memset(moves, 0, sizeof(moves));
 		generateLegalMoves(*boardPerft6, moves, &movesAmount);
 		boardPerft6->changeTurn();
 	}
@@ -92,7 +163,7 @@ TEST_F(PerformanceReleaseTest, calculateLegalMovesPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1730, 50);
+	GTEST_ASSERT_NEAR(time, 1750, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -134,7 +205,7 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 1100, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 970, 50);
+	GTEST_ASSERT_NEAR(time, 1000, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -241,7 +312,7 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 		for (int m = 0; m < amount.total; m++) {
 			if (moves[m]) {
 				game->board.castlingInfo = 0b1111;
-				game->board.updateCastlingInfo(getSourcePosition(moves[m]), getDestinationPosition(moves[m]));
+				updateCastlingInfo(game->board, getSourcePosition(moves[m]), getDestinationPosition(moves[m]));
 			}
 		}
 	}
@@ -268,7 +339,7 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 	}
 
 	auto saveTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(saveTime, 1750, 50);
+	GTEST_ASSERT_NEAR(saveTime, 1550, 50);
 	cout << "save time: " << saveTime  << endl;
 
 	start = chrono::steady_clock::now();
@@ -277,7 +348,7 @@ TEST_F(PerformanceReleaseTest, rollbackTest) {
 	}
 
 	auto rollbackTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(rollbackTime, 1500, 50);
+	GTEST_ASSERT_NEAR(rollbackTime, 1350, 50);
 	cout << "rollback time: " << rollbackTime  << endl;
 
 	delete rollback;
@@ -312,8 +383,6 @@ TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 	cout << "time: " << time  << endl;
 }
 
-// TODO questo test e il prossimo alla prima iterazione il tempo e' doppio, capire il perche'
-// (non e' ottimizzazione release, forse ottimizzazione cpu ?)
 TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
@@ -339,7 +408,7 @@ TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1100, 50);	// since second iteration 480
+	GTEST_ASSERT_NEAR(time, 500, 50);
 
 	cout << "time: " << time  << endl;
 }
@@ -376,7 +445,7 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5860, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5900, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -438,7 +507,7 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 360, 10);
+	GTEST_ASSERT_NEAR(time, 330, 10);
 
 	cout << "time: " << time  << endl;
 }
@@ -483,7 +552,7 @@ TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 700, 10);
+	GTEST_ASSERT_NEAR(time, 550, 20);
 
 	cout << "time: " << time  << endl;
 }

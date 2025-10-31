@@ -8,7 +8,6 @@
 #include "guiConstants.h"
 #include "igui.h"
 #include "panel.h"
-#include "../../board/board.h"
 #include "../../game/gameRunner.h"
 #include "../../game/statistics.h"
 

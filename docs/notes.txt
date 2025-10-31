@@ -19,10 +19,10 @@ GENERALE
 i
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
         - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
-            - generateLegalMoves
-                - generatePseudoLegalMoves
+            - generateLegalMoves    (1700)
+                - generatePseudoLegalMoves  (155)
                     - getDestinationPositions
-                        per ogni pezzo di chi muove calcolo tutte le possibili destinaizoni
+                        per ogni pezzo di chi muove calcolo tutte le possibili destinazioni
                 - isValid
                     - simulateMove
                     - checkControl

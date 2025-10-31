@@ -7,9 +7,11 @@
 #include "../game/player.h"
 #include "../evaluation/basicEvaluator.h"
 #include "../utils/toString.h"
+#include "../utils/boardUtils.h"
 
 Game::Game() :
 	rollback(10), sideToMove(0), fullMoves(0), halfMoveClock(0) {
+	reset(board);
 	evaluator = new BasicEvaluator();
 }
 
@@ -37,7 +39,8 @@ Evaluation Game::calculateMove() {
 }
 
 MoveResult Game::finalizeMove(Move& move) {
-	const Piece captured = board.move(
+	const Piece captured = movePiece(
+		board,
 		getSourcePosition(move),
 		getDestinationPosition(move),
 		getPiece(move),
@@ -76,7 +79,12 @@ void Game::applyMoves(list<Move>& moves) {
 }
 
 void Game::simulateMove(Move& move) {
-	Piece captured = board.simulateMove(getSourcePosition(move), getDestinationPosition(move), getPiece(move), isCastling(move));
+	Piece captured = simulateMovePiece(
+		board,
+		getSourcePosition(move),
+		getDestinationPosition(move),
+		getPiece(move),
+		isCastling(move));
 
 	if (isPawnPromotion(move)) {
 		completePawnPromotion(move);
@@ -91,7 +99,7 @@ void Game::simulateMove(Move& move) {
 
 Piece Game::completeEnPassant(const Move& move) {
 	const Position destination = getDestinationPosition(move) + (isWhite(move) ? 8 : -8);
-	return board.setEmpty(destination);
+	return setEmpty(board, destination);
 }
 
 void Game::completePawnPromotion(const Move& move) {
@@ -102,22 +110,22 @@ void Game::completePawnPromotion(const Move& move) {
 	}
 
 	//System.out.print("Pawn promotion --> " + getPieceTypeForPawnPromotion().name());
-	board.setPiece(getDestinationPosition(move), promotionPiece);
+	setPiece(board, getDestinationPosition(move), promotionPiece);
 }
 
 void Game::undoSimulateMove(Move& move) {
 	if (isCastling(move)) {
-		board.undoCastlingMove(getSourcePosition(move), getDestinationPosition(move));
+		undoCastlingMove(board, getSourcePosition(move), getDestinationPosition(move));
 	} else {
-		board.setPiece(getSourcePosition(move), getPiece(move));
-		board.setEmpty(getDestinationPosition(move));
+		setPiece(board, getSourcePosition(move), getPiece(move));
+		setEmpty(board, getDestinationPosition(move));
 		const Piece captured = getCaptured(move);
 
 		if (captured != Empty) {
 			if (isEnPassant(move)) {
 				undoEnPassant(move);
 			} else {
-				board.setPiece(getDestinationPosition(move), captured);
+				setPiece(board, getDestinationPosition(move), captured);
 			}
 		}
 	}
@@ -127,12 +135,12 @@ void Game::undoSimulateMove(Move& move) {
 
 void Game::undoEnPassant(Move& move) {
     const Position destination = getDestinationPosition(move) + (isWhite(move) ? 8 : -8);
-    board.setPiece(destination, isWhite(move) ? BPawn : WPawn);
+    setPiece(board, destination, isWhite(move) ? BPawn : WPawn);
 }
 
 void Game::verifyChecks() {
 	calculateCheckPositions(getOppositeSide());
-	const Position kingPosition = board.getKingPosition(sideToMove);
+	const Position kingPosition = getKingPosition(board, sideToMove);
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
 }
 
@@ -160,8 +168,8 @@ bool Game::checkFiveFoldRepetitions() const {
 
 bool Game::checkControl(const Move& move) {
 	const Side side = getMoveSide(move);
-	const Rawboard checkBoard = s_allAttacks(board, OPPOSITE(side));
-	const Position kingPosition = board.getKingPosition(side);
+	const Rawboard checkBoard = allAttacks(board, OPPOSITE(side));
+	const Position kingPosition = getKingPosition(board, side);
 
 	if (isUnderCheck(checkBoard, kingPosition)) {
 		return false;
@@ -194,11 +202,11 @@ void Game::changeTurn() {
 }
 
 Side Game::getSide(Position position) const {
-	if (board.isEmpty(position)) {
+	if (isEmpty(board, position)) {
 		assert(false);
 	}
 
-	if (board.isWhite(position)) {
+	if (isWhite(board, position)) {
 		return _WHITE;
 	}
 
@@ -242,7 +250,7 @@ void Game::setLastMove(const Move& move) {
 Game* Game::duplicate() {
 	Game* newGame = new Game();
 	newGame->init();
-	newGame->board.set(board);
+	copy(&board, &newGame->board);
 	newGame->board.castlingInfo = board.castlingInfo;
 	newGame->sideToMove = sideToMove;
 	newGame->board.enPassantPosition = board.enPassantPosition;
@@ -301,37 +309,37 @@ string Game::getCapturedList(const Side side) {
 
 void Game::calculateCheckPositions(const Side side) {
 	checkStatus.reset();
-	Rawboard positions = board.PIECES(side);
+	Rawboard positions = PIECES(board, side);
 
 	while(positions) {
 		const Position position = getFirstPos(positions);
-		const Piece piece = board.getPiece(position);
+		const Piece piece = getPiece(board, position);
 
 		if (_isPawn(piece)) {
-			const Rawboard attacks = s_pawnAttacks(board, position, side);
+			const Rawboard attacks = pawnAttacks(board, position, side);
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		} else if (_isRook(piece)) {
-			const Rawboard attacks = s__rookAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+			const Rawboard attacks = _rookAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
 		} else if (_isKnight(piece)) {
-			const Rawboard attacks = s__knightAttacks(board, position, board.OPP_PIECES(side));
+			const Rawboard attacks = _knightAttacks(board, position, OPP_PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		} else if (_isBishop(piece)) {
-			const Rawboard attacks = s__bishopAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+			const Rawboard attacks = _bishopAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
 		} else if (_isQueen(piece)) {
-			const Rawboard attacks = s__queenAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+			const Rawboard attacks = _queenAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
 		} else if (_isKing(piece)) {
-			const Rawboard attacks = s_kingMoves(board, position, side);
+			const Rawboard attacks = kingMoves(board, position, side);
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		}
@@ -342,10 +350,10 @@ void Game::calculateCheckPositions(const Side side) {
 
 int Game::getAllDestinationQty(const Side side) {
 	int count = 0;
-	Rawboard pieces = board.PIECES(side);
+	Rawboard pieces = PIECES(board, side);
 
 	while(pieces) {
-		const Rawboard destinations = s_getDestinationPositions(board, getFirstPos(pieces));
+		const Rawboard destinations = getDestinationPositions(board, getFirstPos(pieces));
 		count += positionsCount(destinations);
 		pieces &= (pieces - 1);
 	}

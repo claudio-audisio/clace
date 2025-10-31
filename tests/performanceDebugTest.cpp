@@ -93,18 +93,18 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (long i = 1; i < 2500000; ++i) {
-		s_allQueenAttacks(gameInitial->board, _WHITE);
-		s_allQueenAttacks(gameInitial->board, _BLACK);
-		s_allQueenAttacks(gamePerft2->board, _WHITE);
-		s_allQueenAttacks(gamePerft2->board, _BLACK);
-		s_allQueenAttacks(gamePerft3->board, _WHITE);
-		s_allQueenAttacks(gamePerft3->board, _BLACK);
-		s_allQueenAttacks(gamePerft4->board, _WHITE);
-		s_allQueenAttacks(gamePerft4->board, _BLACK);
-		s_allQueenAttacks(gamePerft5->board, _WHITE);
-		s_allQueenAttacks(gamePerft5->board, _BLACK);
-		s_allQueenAttacks(gamePerft6->board, _WHITE);
-		s_allQueenAttacks(gamePerft6->board, _BLACK);
+		allQueenAttacks(gameInitial->board, _WHITE);
+		allQueenAttacks(gameInitial->board, _BLACK);
+		allQueenAttacks(gamePerft2->board, _WHITE);
+		allQueenAttacks(gamePerft2->board, _BLACK);
+		allQueenAttacks(gamePerft3->board, _WHITE);
+		allQueenAttacks(gamePerft3->board, _BLACK);
+		allQueenAttacks(gamePerft4->board, _WHITE);
+		allQueenAttacks(gamePerft4->board, _BLACK);
+		allQueenAttacks(gamePerft5->board, _WHITE);
+		allQueenAttacks(gamePerft5->board, _BLACK);
+		allQueenAttacks(gamePerft6->board, _WHITE);
+		allQueenAttacks(gamePerft6->board, _BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
@@ -130,18 +130,18 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (long i = 1; i < 10000000; ++i) {
-		s_allKnightAttacks(gameInitial->board, _WHITE);
-		s_allKnightAttacks(gameInitial->board, _BLACK);
-		s_allKnightAttacks(gamePerft2->board, _WHITE);
-		s_allKnightAttacks(gamePerft2->board, _BLACK);
-		s_allKnightAttacks(gamePerft3->board, _WHITE);
-		s_allKnightAttacks(gamePerft3->board, _BLACK);
-		s_allKnightAttacks(gamePerft4->board, _WHITE);
-		s_allKnightAttacks(gamePerft4->board, _BLACK);
-		s_allKnightAttacks(gamePerft5->board, _WHITE);
-		s_allKnightAttacks(gamePerft5->board, _BLACK);
-		s_allKnightAttacks(gamePerft6->board, _WHITE);
-		s_allKnightAttacks(gamePerft6->board, _BLACK);
+		allKnightAttacks(gameInitial->board, _WHITE);
+		allKnightAttacks(gameInitial->board, _BLACK);
+		allKnightAttacks(gamePerft2->board, _WHITE);
+		allKnightAttacks(gamePerft2->board, _BLACK);
+		allKnightAttacks(gamePerft3->board, _WHITE);
+		allKnightAttacks(gamePerft3->board, _BLACK);
+		allKnightAttacks(gamePerft4->board, _WHITE);
+		allKnightAttacks(gamePerft4->board, _BLACK);
+		allKnightAttacks(gamePerft5->board, _WHITE);
+		allKnightAttacks(gamePerft5->board, _BLACK);
+		allKnightAttacks(gamePerft6->board, _WHITE);
+		allKnightAttacks(gamePerft6->board, _BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
@@ -167,18 +167,18 @@ TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (int i = 1; i < 500000; ++i) {
-		s_allAttacks(gameInitial->board, _WHITE);
-		s_allAttacks(gameInitial->board, _BLACK);
-		s_allAttacks(gamePerft2->board, _WHITE);
-		s_allAttacks(gamePerft2->board, _BLACK);
-		s_allAttacks(gamePerft3->board, _WHITE);
-		s_allAttacks(gamePerft3->board, _BLACK);
-		s_allAttacks(gamePerft4->board, _WHITE);
-		s_allAttacks(gamePerft4->board, _BLACK);
-		s_allAttacks(gamePerft5->board, _WHITE);
-		s_allAttacks(gamePerft5->board, _BLACK);
-		s_allAttacks(gamePerft6->board, _WHITE);
-		s_allAttacks(gamePerft6->board, _BLACK);
+		allAttacks(gameInitial->board, _WHITE);
+		allAttacks(gameInitial->board, _BLACK);
+		allAttacks(gamePerft2->board, _WHITE);
+		allAttacks(gamePerft2->board, _BLACK);
+		allAttacks(gamePerft3->board, _WHITE);
+		allAttacks(gamePerft3->board, _BLACK);
+		allAttacks(gamePerft4->board, _WHITE);
+		allAttacks(gamePerft4->board, _BLACK);
+		allAttacks(gamePerft5->board, _WHITE);
+		allAttacks(gamePerft5->board, _BLACK);
+		allAttacks(gamePerft6->board, _WHITE);
+		allAttacks(gamePerft6->board, _BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);

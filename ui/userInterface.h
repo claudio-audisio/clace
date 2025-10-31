@@ -131,7 +131,7 @@ public:
 		while (row <= 56) {
 			cout << " ";
 			for (int i = 0; i < 8; i++) {
-				cout << getPieceCode(board.getPiece(row + i)) << " ";
+				cout << getPieceCode(getPiece(board, row + i)) << " ";
 			}
 			cout << endl;
 
@@ -146,7 +146,7 @@ public:
 		while (row <= 56) {
 			cout << " ";
 			for (int i = 0; i < 8; i++) {
-				cout << getPieceCode(game.board.getPiece(row + i)) << " ";
+				cout << getPieceCode(getPiece(game.board, row + i)) << " ";
 			}
 
 			switch (row) {
@@ -260,7 +260,7 @@ public:
 			cout << "    " << ((64 - row) / 8) << " ║";
 
 			for (int i = 0; i < 8; i++) {
-				cout << " " << (char)getPieceCode(board.getPiece(row + i)) << " ";
+				cout << " " << getPieceCode(getPiece(board, row + i)) << " ";
 
 				if (i < 7) {
 					cout << "│";

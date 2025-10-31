@@ -23,14 +23,14 @@ TEST_F(fenTest, fenToGameTest) {
 	Game game;
 	FEN::fenToGame(PERFT_FEN_POSITION_4, game);
 
-	EXPECT_EQ(game.board.getPiece(0), BRook);
-	EXPECT_EQ(game.board.getPiece(1), Empty);
+	EXPECT_EQ(getPiece(game.board, 0), BRook);
+	EXPECT_EQ(getPiece(game.board, 1), Empty);
 	//...
-	EXPECT_EQ(game.board.getPiece(62), WKing);
-	EXPECT_EQ(game.board.getPiece(63), Empty);
+	EXPECT_EQ(getPiece(game.board, 62), WKing);
+	EXPECT_EQ(getPiece(game.board, 63), Empty);
 
-	EXPECT_EQ(game.board.getKingPosition(_WHITE), 62);
-	EXPECT_EQ(game.board.getKingPosition(_BLACK), 4);
+	EXPECT_EQ(getKingPosition(game.board, _WHITE), 62);
+	EXPECT_EQ(getKingPosition(game.board, _BLACK), 4);
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 

@@ -58,7 +58,7 @@ public:
 			}
 		}
 
-		messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		//messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
 	}
 

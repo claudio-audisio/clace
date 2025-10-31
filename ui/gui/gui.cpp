@@ -238,7 +238,7 @@ void Gui::dragAndDropPiece() {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             const int selection = getCell(GetMousePosition());
 
-            if (gameRunner->game->board.isWhite(selection)) {
+            if (isWhite(gameRunner->game->board, selection)) {
                 cellSelected = selection;
             }
         } else {

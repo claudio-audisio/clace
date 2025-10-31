@@ -5,8 +5,10 @@
 #include "../common/constants.h"
 #include "../common/bitwise.h"
 #include "rayAttacks.h"
+#include "../utils/boardUtils.h"
 
-inline Rawboard s_whiteEnPassantMove(const Board& board, const Rawboard position) {
+
+inline Rawboard whiteEnPassantMove(const Board& board, const Rawboard position) {
     if (board.enPassantPosition != NO_POS && (position & ROW_5) != 0) {
         const Rawboard passantPos = posInd(board.enPassantPosition);
 
@@ -18,7 +20,7 @@ inline Rawboard s_whiteEnPassantMove(const Board& board, const Rawboard position
     return 0;
 }
 
-inline Rawboard s_blackEnPassantMove(const Board& board, const Rawboard position) {
+inline Rawboard blackEnPassantMove(const Board& board, const Rawboard position) {
     if (board.enPassantPosition != NO_POS && (position & ROW_4) != 0) {
         const Rawboard passantPos = posInd(board.enPassantPosition);
 
@@ -30,38 +32,38 @@ inline Rawboard s_blackEnPassantMove(const Board& board, const Rawboard position
     return 0;
 }
 
-inline Rawboard s_whitePawnMoves(const Board& board, const Position position, const Side side) {
+inline Rawboard whitePawnMoves(const Board& board, const Position position, const Side side) {
     const Rawboard posIndex = posInd(position);
-    const Rawboard onePush = northOne(posIndex) & board.EMPTY;
+    const Rawboard onePush = northOne(posIndex) & board.pieceBoards[Empty];
 
-    return onePush | (northOne(onePush) & board.EMPTY & ROW_4) |
-           ((noWestOne(posIndex) | noEastOne(posIndex)) & board.OPP_PIECES(_WHITE)) |
-                s_whiteEnPassantMove(board, posIndex);
+    return onePush | (northOne(onePush) & board.pieceBoards[Empty] & ROW_4) |
+           ((noWestOne(posIndex) | noEastOne(posIndex)) & OPP_PIECES(board, _WHITE)) |
+                whiteEnPassantMove(board, posIndex);
 }
 
-inline Rawboard s_blackPawnMoves(const Board& board, const Position position, const Side side) {
+inline Rawboard blackPawnMoves(const Board& board, const Position position, const Side side) {
     const Rawboard posIndex = posInd(position);
-    const Rawboard onePush = southOne(posIndex) & board.EMPTY;
+    const Rawboard onePush = southOne(posIndex) & board.pieceBoards[Empty];
 
-    return onePush | (southOne(onePush) & board.EMPTY & ROW_5) |
-           ((soWestOne(posIndex) | soEastOne(posIndex)) & board.OPP_PIECES(_BLACK)) |
-               s_blackEnPassantMove(board, posIndex);
+    return onePush | (southOne(onePush) & board.pieceBoards[Empty] & ROW_5) |
+           ((soWestOne(posIndex) | soEastOne(posIndex)) & OPP_PIECES(board, _BLACK)) |
+               blackEnPassantMove(board, posIndex);
 }
 
-inline Rawboard s_allPawnMoves(const Board& board, const Side side) {
+inline Rawboard allPawnMoves(const Board& board, const Side side) {
     Rawboard attacks = 0;
     Rawboard pieces = board.pieceBoards[WPawn + side];
 
     if (side) {
         while (pieces) {
             const Position position = getFirstPos(pieces);
-            attacks |= s_blackPawnMoves(board, position, side);
+            attacks |= blackPawnMoves(board, position, side);
             pieces &= (pieces - 1);
         }
     } else {
         while (pieces) {
             const Position position = getFirstPos(pieces);
-            attacks |= s_whitePawnMoves(board, position, side);
+            attacks |= whitePawnMoves(board, position, side);
             pieces &= (pieces - 1);
         }
     }
@@ -69,60 +71,60 @@ inline Rawboard s_allPawnMoves(const Board& board, const Side side) {
     return attacks;
 }
 
-inline Rawboard s_allPawnAttacks(const Board& board, const Side side) {
+inline Rawboard allPawnAttacks(const Board& board, const Side side) {
     const Rawboard pieces = board.pieceBoards[WPawn + side];
 
     if (!side) {
-        return (noWestOne(pieces) | noEastOne(pieces)) & (board.EMPTY | board.OPP_PIECES(side));
+        return (noWestOne(pieces) | noEastOne(pieces)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
     }
     else {
-        return (soWestOne(pieces) | soEastOne(pieces)) & (board.EMPTY | board.OPP_PIECES(side));
+        return (soWestOne(pieces) | soEastOne(pieces)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
     }
 }
 
-inline Rawboard s_pawnAttacks(const Board& board, const Position position, const Side side) {
+inline Rawboard pawnAttacks(const Board& board, const Position position, const Side side) {
     const Rawboard posIndex = posInd(position);
 
     if (!side) {
-        return (noWestOne(posIndex) | noEastOne(posIndex)) & (board.EMPTY | board.OPP_PIECES(side));
+        return (noWestOne(posIndex) | noEastOne(posIndex)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
     }
     else {
-        return (soWestOne(posIndex) | soEastOne(posIndex)) & (board.EMPTY | board.OPP_PIECES(side));
+        return (soWestOne(posIndex) | soEastOne(posIndex)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
     }
 }
 
-inline Rawboard s__rookAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {
-	return (s_northAttack(occupied, position) | s_eastAttack(occupied, position) | s_southAttack(occupied, position) | s_westAttack(occupied, position)) & notPieces;
+inline Rawboard _rookAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {
+	return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position)) & notPieces;
 }
 
-inline Rawboard s_rookAttacks(const Board& board, const Position position, const Side side) {
-    return s__rookAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+inline Rawboard rookAttacks(const Board& board, const Position position, const Side side) {
+    return _rookAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 }
 
-inline Rawboard s_allRookAttacks(const Board& board, const Side side) {
+inline Rawboard allRookAttacks(const Board& board, const Side side) {
     Rawboard attacks = 0;
     Rawboard pieces = board.pieceBoards[WRook + side];
-    const Rawboard occupied = ~board.EMPTY;
-    const Rawboard notPieces = ~board.PIECES(side);
+    const Rawboard occupied = ~board.pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
 
     while (pieces) {
         const Position position = getFirstPos(pieces);
-        attacks |= s__rookAttacks(position, occupied, notPieces);
+        attacks |= _rookAttacks(position, occupied, notPieces);
         pieces &= (pieces - 1);
     }
 
     return attacks;
 }
 
-inline Rawboard s__knightAttacks(const Board& board, const Position position, const Rawboard opposite) {
-    return staticKnightAttacks[position] & (board.EMPTY | opposite);
+inline Rawboard _knightAttacks(const Board& board, const Position position, const Rawboard opposite) {
+    return staticKnightAttacks[position] & (board.pieceBoards[Empty] | opposite);
 }
 
-inline Rawboard s_knightAttacks(const Board& board, const Position position, const Side side) {
-	return s__knightAttacks(board, position, board.OPP_PIECES(side));
+inline Rawboard knightAttacks(const Board& board, const Position position, const Side side) {
+	return _knightAttacks(board, position, OPP_PIECES(board, side));
 }
 
-inline Rawboard s_allKnightAttacks(const Board& board, const Side side) {
+inline Rawboard allKnightAttacks(const Board& board, const Side side) {
     Rawboard attacks = 0;
     Rawboard pieces = board.pieceBoards[WKnight + side];
 
@@ -132,149 +134,149 @@ inline Rawboard s_allKnightAttacks(const Board& board, const Side side) {
         pieces &= (pieces - 1);
     }
 
-    return attacks & (board.EMPTY | board.OPP_PIECES(side));
+    return attacks & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
 }
 
-inline Rawboard s__bishopAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
-    return (s_noEastAttack(occupied, position) | s_soEastAttack(occupied, position) | s_soWestAttack(occupied, position) | s_noWestAttack(occupied, position)) & notSide;
+inline Rawboard _bishopAttacks(const Position position, const Rawboard occupied, const Rawboard notSide) {
+    return (noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notSide;
 }
 
-inline Rawboard s_bishopAttacks(const Board& board, const Position position, const Side side) {
-    return s__bishopAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+inline Rawboard bishopAttacks(const Board& board, const Position position, const Side side) {
+    return _bishopAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 }
 
-inline Rawboard s_allBishopAttacks(const Board& board, const Side side) {
+inline Rawboard allBishopAttacks(const Board& board, const Side side) {
     Rawboard attacks = 0;
     Rawboard pieces = board.pieceBoards[WBishop + side];
-    const Rawboard occupied = ~board.EMPTY;
-    const Rawboard notPieces = ~board.PIECES(side);
+    const Rawboard occupied = ~board.pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
 
     while (pieces) {
         const Position position = getFirstPos(pieces);
-        attacks |= s__bishopAttacks(position, occupied, notPieces);
+        attacks |= _bishopAttacks(position, occupied, notPieces);
         pieces &= (pieces - 1);
     }
 
     return attacks;
 }
 
-inline Rawboard s__queenAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {
-    return (s_northAttack(occupied, position) | s_eastAttack(occupied, position) | s_southAttack(occupied, position) | s_westAttack(occupied, position) |
-            s_noEastAttack(occupied, position) | s_soEastAttack(occupied, position) | s_soWestAttack(occupied, position) | s_noWestAttack(occupied, position)) & notPieces;
+inline Rawboard _queenAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {
+    return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position) |
+            noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notPieces;
 }
 
-inline Rawboard s_queenAttacks(const Board& board, const Position position, const Side side) {
-    return s__queenAttacks(position, ~board.EMPTY, ~board.PIECES(side));
+inline Rawboard queenAttacks(const Board& board, const Position position, const Side side) {
+    return _queenAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
 }
 
-inline Rawboard s_allQueenAttacks(const Board& board, const Side side) {
+inline Rawboard allQueenAttacks(const Board& board, const Side side) {
     Rawboard attacks = 0;
     Rawboard pieces = board.pieceBoards[WQueen + side];
-    const Rawboard occupied = ~board.EMPTY;
-    const Rawboard notPieces = ~board.PIECES(side);
+    const Rawboard occupied = ~board.pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
 
     while (pieces) {
         const Position position = getFirstPos(pieces);
-        attacks |= s__queenAttacks(position, occupied, notPieces);
+        attacks |= _queenAttacks(position, occupied, notPieces);
         pieces &= (pieces - 1);
     }
 
     return attacks;
 }
 
-inline Rawboard s_whiteKingCastling(const Board& board, const Position position) {
+inline Rawboard whiteKingCastling(const Board& board, const Position position) {
     Rawboard positions = 0L;
 
     if (position == 60) {
-        if ((board.castlingInfo & 0b1000) && board.isEmpty(61)) {
-            positions |= posInd(62) & board.EMPTY;
+        if ((board.castlingInfo & 0b1000) && isEmpty(board, 61)) {
+            positions |= posInd(62) & board.pieceBoards[Empty];
         }
-        if ((board.castlingInfo & 0b0100) && board.isEmpty(59) && board.isEmpty(57)) {
-            positions |= posInd(58) & board.EMPTY;
+        if ((board.castlingInfo & 0b0100) && isEmpty(board, 59) && isEmpty(board, 57)) {
+            positions |= posInd(58) & board.pieceBoards[Empty];
         }
     }
 
     return positions;
 }
 
-inline Rawboard s_blackKingCastling(const Board& board, const Position position) {
+inline Rawboard blackKingCastling(const Board& board, const Position position) {
     Rawboard positions = 0L;
 
     if (position == 4) {
-        if ((board.castlingInfo & 0b0010) && board.isEmpty(5)) {
-            positions |= posInd(6) & board.EMPTY;
+        if ((board.castlingInfo & 0b0010) && isEmpty(board, 5)) {
+            positions |= posInd(6) & board.pieceBoards[Empty];
         }
-        if ((board.castlingInfo & 0b0001) && board.isEmpty(3) && board.isEmpty(1)) {
-            positions |= posInd(2) & board.EMPTY;
+        if ((board.castlingInfo & 0b0001) && isEmpty(board, 3) && isEmpty(board, 1)) {
+            positions |= posInd(2) & board.pieceBoards[Empty];
         }
     }
 
     return positions;
 }
 
-inline Rawboard s_allKingAttacks(const Board& board, const Side side) {
+inline Rawboard allKingAttacks(const Board& board, const Side side) {
     const Position position = getFirstPos(board.pieceBoards[WKing + side]);
-    return staticKingAttacks[position] & (board.EMPTY | board.OPP_PIECES(side));
+    return staticKingAttacks[position] & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
 }
 
-inline Rawboard s_kingAttacks(const Board& board, const Position position, const Rawboard opposite) {
-    return staticKingAttacks[position] & (board.EMPTY | opposite);
+inline Rawboard kingAttacks(const Board& board, const Position position, const Rawboard opposite) {
+    return staticKingAttacks[position] & (board.pieceBoards[Empty] | opposite);
 }
 
-inline Rawboard s_whiteKingMoves(const Board& board, const Position position, const Side side) {
-    return s_kingAttacks(board, position, board.OPP_PIECES(side)) | s_whiteKingCastling(board, position);
+inline Rawboard whiteKingMoves(const Board& board, const Position position, const Side side) {
+    return kingAttacks(board, position, OPP_PIECES(board, side)) | whiteKingCastling(board, position);
 }
 
-inline Rawboard s_blackKingMoves(const Board& board, const Position position, const Side side) {
-    return s_kingAttacks(board, position, board.OPP_PIECES(side)) | s_blackKingCastling(board, position);
+inline Rawboard blackKingMoves(const Board& board, const Position position, const Side side) {
+    return kingAttacks(board, position, OPP_PIECES(board, side)) | blackKingCastling(board, position);
 }
 
-inline Rawboard s_kingMoves(const Board& board, const Position position, const Side side) {
-    return side ? s_blackKingMoves(board, position, side) : s_whiteKingMoves(board, position, side);
+inline Rawboard kingMoves(const Board& board, const Position position, const Side side) {
+    return side ? blackKingMoves(board, position, side) : whiteKingMoves(board, position, side);
 }
 
-inline Rawboard s_allKingMoves(const Board& board, const Side side) {
+inline Rawboard allKingMoves(const Board& board, const Side side) {
     const Position position = getFirstPos(board.pieceBoards[WKing + side]);
-    return s_allKingAttacks(board, side) | (side ? s_blackKingCastling(board, position) : s_whiteKingCastling(board, position));
+    return allKingAttacks(board, side) | (side ? blackKingCastling(board, position) : whiteKingCastling(board, position));
 }
 
-inline Rawboard s_allAttacks(const Board& board, const Side side) {
-    return s_allPawnAttacks(board, side) | s_allKnightAttacks(board, side) |
-        s_allBishopAttacks(board, side) | s_allRookAttacks(board, side) |
-            s_allQueenAttacks(board, side) | s_allKingAttacks(board, side);
+inline Rawboard allAttacks(const Board& board, const Side side) {
+    return allPawnAttacks(board, side) | allKnightAttacks(board, side) |
+        allBishopAttacks(board, side) | allRookAttacks(board, side) |
+            allQueenAttacks(board, side) | allKingAttacks(board, side);
 }
 
 inline Rawboard(*destPosProviders[13])(const Board&, Position, Side);
 
 inline void initDestPosProviders() {
-    destPosProviders[WPawn] = s_whitePawnMoves;
-    destPosProviders[BPawn] = s_blackPawnMoves;
-    destPosProviders[WRook] = s_rookAttacks;
-    destPosProviders[BRook] = s_rookAttacks;
-    destPosProviders[WKnight] = s_knightAttacks;
-    destPosProviders[BKnight] = s_knightAttacks;
-    destPosProviders[WBishop] = s_bishopAttacks;
-    destPosProviders[BBishop] = s_bishopAttacks;
-    destPosProviders[WQueen] = s_queenAttacks;
-    destPosProviders[BQueen] = s_queenAttacks;
-    destPosProviders[WKing] = s_whiteKingMoves;
-    destPosProviders[BKing] = s_blackKingMoves;
+    destPosProviders[WPawn] = whitePawnMoves;
+    destPosProviders[BPawn] = blackPawnMoves;
+    destPosProviders[WRook] = rookAttacks;
+    destPosProviders[BRook] = rookAttacks;
+    destPosProviders[WKnight] = knightAttacks;
+    destPosProviders[BKnight] = knightAttacks;
+    destPosProviders[WBishop] = bishopAttacks;
+    destPosProviders[BBishop] = bishopAttacks;
+    destPosProviders[WQueen] = queenAttacks;
+    destPosProviders[BQueen] = queenAttacks;
+    destPosProviders[WKing] = whiteKingMoves;
+    destPosProviders[BKing] = blackKingMoves;
 }
 
-inline Rawboard s_getDestinationPositions(const Board& board, const Position position, const Piece piece, const Side side) {
+inline Rawboard getDestinationPositions(const Board& board, const Position position, const Piece piece, const Side side) {
     return (destPosProviders[piece])(board, position, side);
 }
 
-inline Rawboard s_getDestinationPositions(const Board& board, const Position position) {
+inline Rawboard getDestinationPositions(const Board& board, const Position position) {
     const Piece piece = board.piecePositions[position];
-    return s_getDestinationPositions(board, position, piece, _getSide(piece));
+    return getDestinationPositions(board, position, piece, _getSide(piece));
 }
 
-inline unordered_set<Position>* getPiecePositions(const unordered_set<Piece>& pieces) {
+inline unordered_set<Position>* getPiecePositions(const Board& board, const unordered_set<Piece>& pieces) {
     unordered_set<Position>* positions = new unordered_set<Position>();
 
     for (Position i = 0; i < 64; i++) {
-        if (pieces.find(getPiece(i)) != pieces.end()) {
+        if (pieces.contains(getPiece(board, i))) {
             positions->insert(i);
         }
     }
@@ -283,12 +285,12 @@ inline unordered_set<Position>* getPiecePositions(const unordered_set<Piece>& pi
 }
 
 inline bool isOnXRay(const Board& board, const Position sourcePosition, const Position excludePosition) {
-    unordered_set<Position>* positions = getPiecePositions(XRAY_PIECES[OPPOSITE(board.getSide(sourcePosition))]);
+    unordered_set<Position>* positions = getPiecePositions(board, XRAY_PIECES[OPPOSITE(getSide(board, sourcePosition))]);
     positions->erase(excludePosition);
     Rawboard xRayPositions = 0;
 
     for (Position position : *positions) {
-        xRayPositions |= s_getDestinationPositions(board, position);
+        xRayPositions |= getDestinationPositions(board, position);
     }
 
     delete positions;

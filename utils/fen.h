@@ -102,12 +102,12 @@ private:
 
             if (c > 48 && c < 58) {
                 for (int j = 0; j < (c - 48); j++) {
-                    game.board.setEmpty(start++);
+                    setEmpty(game.board, start++);
                 }
             }
             else {
                 const Piece piece = FEN_TO_PIECE.at(c);
-                game.board.setPiece(start++, piece);
+                setPiece(game.board, start++, piece);
             }
         }
     }
@@ -138,7 +138,7 @@ private:
         int empty = 0;
 
         for (int i = 0; i < 64; i++) {
-            const Piece piece = board.getPiece(i);
+            const Piece piece = getPiece(board, i);
 
             if (_isEmpty(piece)) {
                 empty++;
@@ -171,7 +171,7 @@ private:
         int empty = 0;
 
         for (int i = 0; i < 64; i++) {
-            const Piece piece = board.getPiece(i);
+            const Piece piece = getPiece(board, i);
 
             if (_isEmpty(piece)) {
                 empty++;

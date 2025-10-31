@@ -132,3 +132,31 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
 
     return nodes;
 }
+
+// TODO qua viene fatta una iterazione in piu' (come per complete)
+// ma la simulate/uindoSimulate della mossa non viene fatta
+// eppure i tempi sono duplicati
+unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
+    if (currentDepth == 0) {
+        return 1LL;
+    }
+
+    Move* moves = pool->getArray(currentDepth - 1);
+    const unsigned char tot = generatePseudoLegalMoves(*game, moves);
+
+    unsLL nodes = 0;
+
+    for (unsigned char i = 0; i < tot; i++) {
+        game->save();
+        game->applyMove(moves[i]);
+
+        if (game->checkControl(moves[i])) {
+            const unsLL newNodes = runBulkPerft_NEW(currentDepth - 1);
+            nodes += newNodes;
+        }
+
+        game->rollbackLastMove();
+    }
+
+    return nodes;
+}

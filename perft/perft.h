@@ -32,6 +32,7 @@ private:
 
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);
+	unsLL runBulkPerft_NEW(unsigned int depth);
 
 	Messenger& messenger = Messenger::getInstance();
 };
