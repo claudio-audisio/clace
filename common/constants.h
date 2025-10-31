@@ -16,9 +16,8 @@ using namespace std;
 #define HvsC 0
 #define CvsC 1
 
-#define SIDE_GAP 1
 #define _WHITE 0
-#define _BLACK (_WHITE + SIDE_GAP)
+#define _BLACK 1
 #define OPPOSITE(side) (_BLACK - side)
 #define NO_POS 64
 #define SIZE 13
@@ -27,19 +26,19 @@ using namespace std;
 // pieces
 constexpr Piece Empty = 0;
 constexpr Piece WPawn = 1;
-constexpr Piece BPawn = WPawn + SIDE_GAP;
+constexpr Piece BPawn = 2;
 constexpr Piece WKnight = 3;
-constexpr Piece BKnight = WKnight + SIDE_GAP;
+constexpr Piece BKnight = 4;
 constexpr Piece WBishop = 5;
-constexpr Piece BBishop = WBishop + SIDE_GAP;
+constexpr Piece BBishop = 6;
 constexpr Piece WRook = 7;
-constexpr Piece BRook = WRook + SIDE_GAP;
+constexpr Piece BRook = 8;
 constexpr Piece WQueen = 9;
-constexpr Piece BQueen = WQueen + SIDE_GAP;
+constexpr Piece BQueen = 10;
 constexpr Piece WKing = 11;
-constexpr Piece BKing = WKing + SIDE_GAP;
-static const unordered_map<Piece, string> PIECE_TO_STRING = {{WKing, "King"}, {WQueen, "Queen"}, {WRook, "Rook"}, {WKnight, "Knight"}, {WBishop, "Bishop"}, {WPawn, "Pawn"}, {BKing, "King"}, {BQueen, "Queen"}, {BRook, "Rook"}, {BKnight, "Knight"}, {BBishop, "Bishop"}, {BPawn, "Pawn"}};
-static const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQueen, 0x0051}, {WRook, 0x0052}, {WKnight, 0x004E}, {WBishop, 0x0062}, {WPawn, 0x0050}, {BKing, 0x006B}, {BQueen, 0x0071}, {BRook, 0x0072}, {BKnight, 0x006E}, {BBishop, 0x0062}, {BPawn, 0x0070}, {Empty, 0x002E}};
+constexpr Piece BKing = 12;
+inline const unordered_map<Piece, string> PIECE_TO_STRING = {{WKing, "King"}, {WQueen, "Queen"}, {WRook, "Rook"}, {WKnight, "Knight"}, {WBishop, "Bishop"}, {WPawn, "Pawn"}, {BKing, "King"}, {BQueen, "Queen"}, {BRook, "Rook"}, {BKnight, "Knight"}, {BBishop, "Bishop"}, {BPawn, "Pawn"}};
+inline const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQueen, 0x0051}, {WRook, 0x0052}, {WKnight, 0x004E}, {WBishop, 0x0062}, {WPawn, 0x0050}, {BKing, 0x006B}, {BQueen, 0x0071}, {BRook, 0x0072}, {BKnight, 0x006E}, {BBishop, 0x0062}, {BPawn, 0x0070}, {Empty, 0x002E}};
 
 // board masks
 #define EMPTY_BOARD 0xffffffffffffffffLL
@@ -121,26 +120,26 @@ static const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQuee
 #define WKC_RookAdd 0x2000000000000000
 #define WKC_EmptyRem 0x9fffffffffffffff
 #define WKC_EmptyAdd 0x9000000000000000
-inline static const CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+inline const CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
 
 // xray pieces
-static unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{_WHITE, { WRook, WBishop, WQueen }}, {_BLACK, { BRook, BBishop, BQueen }}};
+inline unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{_WHITE, { WRook, WBishop, WQueen }}, {_BLACK, { BRook, BBishop, BQueen }}};
 
 // fen
-static const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
-static const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQueen}, {'R', WRook}, {'N', WKnight}, {'B', WBishop}, {'P', WPawn}, {'k', BKing}, {'q', BQueen}, {'r', BRook}, {'n', BKnight}, {'b', BBishop}, {'p', BPawn}};
-static const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
+inline const vector<string> PIECE_TO_FEN = {"", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"};
+inline const unordered_map<char, Piece> FEN_TO_PIECE = {{'K', WKing}, {'Q', WQueen}, {'R', WRook}, {'N', WKnight}, {'B', WBishop}, {'P', WPawn}, {'k', BKing}, {'q', BQueen}, {'r', BRook}, {'n', BKnight}, {'b', BBishop}, {'p', BPawn}};
+inline const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
 
 // positions
-inline static const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-inline static const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
-inline static const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
-inline static const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
-inline static const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
-inline static const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
-inline static const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
-inline static const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
-inline static const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
+inline const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+inline const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
+inline const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+inline const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
+inline const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
+inline const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
+inline const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+inline const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
+inline const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 
 // evaluation weights
 #define KING_WT     200.0

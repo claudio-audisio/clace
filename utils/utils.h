@@ -11,29 +11,29 @@ using namespace std;
 
 
 template <class T>
-static void dequeAddAll(const deque<T>& source, deque<T>& destination) {
+void dequeAddAll(const deque<T>& source, deque<T>& destination) {
 	for (auto const& move : source) {
 		destination.push_back(move);
 	}
 }
 
-static unsLL getElapsedNanos(const chrono::time_point<chrono::steady_clock> start) {
+inline unsLL getElapsedNanos(const chrono::time_point<chrono::steady_clock> start) {
 	return chrono::duration_cast<chrono::nanoseconds>(chrono::steady_clock::now() - start).count();
 }
 
-static unsLL getElapsedMicros(const chrono::time_point<chrono::steady_clock> start) {
+inline unsLL getElapsedMicros(const chrono::time_point<chrono::steady_clock> start) {
 	return chrono::duration_cast<chrono::microseconds>(chrono::steady_clock::now() - start).count();
 }
 
-static unsLL getElapsedMillis(const chrono::time_point<chrono::steady_clock> start) {
+inline unsLL getElapsedMillis(const chrono::time_point<chrono::steady_clock> start) {
 	return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start).count();
 }
 
-static unsLL getElapsedSeconds(const chrono::time_point<chrono::steady_clock> start) {
+inline unsLL getElapsedSeconds(const chrono::time_point<chrono::steady_clock> start) {
 	return chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
 }
 
-static Position getFirstPos(const Rawboard board) {
+inline Position getFirstPos(const Rawboard board) {
     #ifdef __GNUC__
         return __builtin_ctzll(board);
     #elif defined(_MSC_VER)
@@ -43,7 +43,7 @@ static Position getFirstPos(const Rawboard board) {
     #endif
 }
 
-static Position getFirstPosReverse(const Rawboard board) {
+inline Position getFirstPosReverse(const Rawboard board) {
     #ifdef __GNUC__
         return 63 - __builtin_clzll(board);
     #elif defined(_MSC_VER)

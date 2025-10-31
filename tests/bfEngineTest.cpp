@@ -12,6 +12,7 @@ protected:
 	BFEngineTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~BFEngineTest() {
 

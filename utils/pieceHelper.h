@@ -12,15 +12,15 @@
 using namespace std;
 
 
-static bool _isWhite(const Piece piece) {
+inline bool _isWhite(const Piece piece) {
 	return piece > Empty && piece % 2;
 }
 
-static bool _isBlack(const Piece piece) {
+inline bool _isBlack(const Piece piece) {
 	return piece > Empty && (piece % 2 == 0);
 }
 
-static Side _getSide(const Piece piece) {
+inline Side _getSide(const Piece piece) {
 	if (piece > 0) {
 		return OPPOSITE(piece % 2);
 	}
@@ -28,7 +28,7 @@ static Side _getSide(const Piece piece) {
 	throw runtime_error("get side on empty cell");
 }
 
-static Side _getOppositeSide(const Piece piece) {
+inline Side _getOppositeSide(const Piece piece) {
 	if (piece > 0) {
 		return piece % 2;
 	}
@@ -36,48 +36,48 @@ static Side _getOppositeSide(const Piece piece) {
 	throw runtime_error("get side on empty cell");
 }
 
-static bool _isEmpty(const Piece piece) {
+inline bool _isEmpty(const Piece piece) {
 	return piece == Empty;
 }
 
-static bool _isPawn(const Piece piece) {
+inline bool _isPawn(const Piece piece) {
 	return piece == WPawn || piece == BPawn;
 }
 
-static bool _isRook(const Piece piece) {
+inline bool _isRook(const Piece piece) {
 	return piece == WRook || piece == BRook;
 }
 
-static bool _isKnight(const Piece piece) {
+inline bool _isKnight(const Piece piece) {
 	return piece == WKnight || piece == BKnight;
 }
 
-static bool _isBishop(const Piece piece) {
+inline bool _isBishop(const Piece piece) {
 	return piece == WBishop || piece == BBishop;
 }
 
-static bool _isQueen(const Piece piece) {
+inline bool _isQueen(const Piece piece) {
 	return piece == WQueen || piece == BQueen;
 }
 
-static bool _isKing(const Piece piece) {
+inline bool _isKing(const Piece piece) {
 	return piece == WKing || piece == BKing;
 }
 
-static bool _isOpponent(const Piece piece, const bool white) {
+inline bool _isOpponent(const Piece piece, const bool white) {
 	return !_isEmpty(piece) && _isWhite(piece) != white;
 }
 
-static bool _isEmptyOrOpponent(const Piece piece, const bool white) {
+inline bool _isEmptyOrOpponent(const Piece piece, const bool white) {
 	return _isEmpty(piece) || _isOpponent(piece, white);
 }
 
-static const unordered_set<Piece>& getXRayTypes(const Side side) {
+inline const unordered_set<Piece>& getXRayTypes(const Side side) {
 	return XRAY_PIECES[side];
 }
 
 /*
-static bool contains(Piece[] pieces, const Piece piece) {
+inline bool contains(Piece[] pieces, const Piece piece) {
 	for (Piece pt : pieces) {
 		if (pt == piece) {
 			return true;
@@ -88,7 +88,7 @@ static bool contains(Piece[] pieces, const Piece piece) {
 }
 */
 
-static Piece valueOf(const string& stringPiece) {
+inline Piece valueOf(const string& stringPiece) {
 	const string type = stringPiece.substr(1);
 	const Side side = stringPiece.at(0) == 'W' ? 0 : 1;
 
@@ -119,6 +119,6 @@ static Piece valueOf(const string& stringPiece) {
 	return 0;
 }
 
-static char getPieceCode(const Piece piece) {
+inline char getPieceCode(const Piece piece) {
 	return PIECE_TO_CODE.at(piece);
 }

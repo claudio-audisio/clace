@@ -14,6 +14,7 @@ protected:
 	MovesGeneratorTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~MovesGeneratorTest() {
 
@@ -54,6 +55,7 @@ protected:
 	GetLegalMovesTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 };
 

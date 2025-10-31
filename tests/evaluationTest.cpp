@@ -14,6 +14,7 @@ protected:
 	EvaluationTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~EvaluationTest() {
 

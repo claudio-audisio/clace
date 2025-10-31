@@ -71,26 +71,27 @@ inline Rawboard allPawnMoves(const Board& board, const Side side) {
     return attacks;
 }
 
-inline Rawboard allPawnAttacks(const Board& board, const Side side) {
-    const Rawboard pieces = board.pieceBoards[WPawn + side];
+inline Rawboard whitePawnAttacks(const Rawboard pawns) {
+    return noWestOne(pawns) | noEastOne(pawns);
+}
 
-    if (!side) {
-        return (noWestOne(pieces) | noEastOne(pieces)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
-    }
-    else {
-        return (soWestOne(pieces) | soEastOne(pieces)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
-    }
+inline Rawboard blackPawnAttacks(const Rawboard pawns) {
+    return soWestOne(pawns) | soEastOne(pawns);
+}
+
+inline Rawboard(*pawnAttacksProviders[2])(Rawboard);
+
+inline void initPawnAttacksProviders() {
+    pawnAttacksProviders[_WHITE] = whitePawnAttacks;
+    pawnAttacksProviders[_BLACK] = blackPawnAttacks;
+}
+
+inline Rawboard allPawnAttacks(const Board& board, const Side side) {
+    return pawnAttacksProviders[side](board.pieceBoards[WPawn + side]) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
 }
 
 inline Rawboard pawnAttacks(const Board& board, const Position position, const Side side) {
-    const Rawboard posIndex = posInd(position);
-
-    if (!side) {
-        return (noWestOne(posIndex) | noEastOne(posIndex)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
-    }
-    else {
-        return (soWestOne(posIndex) | soEastOne(posIndex)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
-    }
+    return pawnAttacksProviders[side](posInd(position)) & (board.pieceBoards[Empty] | OPP_PIECES(board, side));
 }
 
 inline Rawboard _rookAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {

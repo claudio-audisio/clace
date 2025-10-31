@@ -14,6 +14,7 @@ protected:
 	MoveTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~MoveTest() {
 

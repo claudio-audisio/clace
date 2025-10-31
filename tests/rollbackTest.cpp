@@ -16,6 +16,7 @@ protected:
 	RollbackTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~RollbackTest() {
 

@@ -37,7 +37,7 @@ public:
 		setMoveSide(move, side);
 
 		if (side == _BLACK) {
-			setPromotion(move, getPromotion(move) + SIDE_GAP);
+			setPromotion(move, getPromotion(move) + 1);
 		}
 
 		decorate(move, game.board.piecePositions[sourcePosition], game.board.enPassantPosition);

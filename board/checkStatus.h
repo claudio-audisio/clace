@@ -31,6 +31,6 @@ public:
     bool doubleCheck;
     bool checkmate;
 
-    bool isDiscoveryCheck(Position kingPosition, const Move& lastMove) const;
+    bool isDiscoveryCheck(Position kingPosition, Move lastMove) const;
     void adjustChecks();
 };

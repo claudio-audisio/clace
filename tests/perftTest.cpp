@@ -17,6 +17,7 @@ protected:
 	PerftTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 
     void checkBulkPerftResult(const unsLL nodes, const unsigned int depth, const unsigned int currentDepth, const Result& result) {

@@ -9,7 +9,7 @@
 #include "../common/bitwise.h"
 
 
-static void printBoard(const Rawboard board) {
+inline void printBoard(const Rawboard board) {
     for (int i = 0; i < 64; ++i) {
         if (i % 8 == 0) {
             std::cout << " ";
@@ -26,7 +26,7 @@ static void printBoard(const Rawboard board) {
     }
 }
 
-static void boardToList(Rawboard board, list<Position>& positions) {
+inline void boardToList(Rawboard board, list<Position>& positions) {
     positions.clear();
     for (Position i = 0; i < 64 && (board != 0); ++i) {
         if ((board & 1L) != 0) {
@@ -37,7 +37,7 @@ static void boardToList(Rawboard board, list<Position>& positions) {
 }
 
 template <typename... SetOfPosition>
-static Rawboard listToBoard(const SetOfPosition... positions) {
+Rawboard listToBoard(const SetOfPosition... positions) {
     Rawboard board = 0;
 
     for (Position position : {positions...}) {
@@ -47,15 +47,15 @@ static Rawboard listToBoard(const SetOfPosition... positions) {
     return board;
 }
 
-static bool isUnderCheck(const Rawboard board, const Position position) {
+inline bool isUnderCheck(const Rawboard board, const Position position) {
     return (board & posInd(position)) != 0;
 }
 
-static int positionsCount(Rawboard board) {
+inline int positionsCount(Rawboard board) {
     return popcount(board);
 }
 
-static void boardToSpaces(Rawboard board, list<Position>& spaces) {
+inline void boardToSpaces(Rawboard board, list<Position>& spaces) {
 	spaces.push_back(popcount(board));
 	while (board) {
 	    const Position space = getFirstPos(board);

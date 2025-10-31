@@ -14,6 +14,7 @@ protected:
 	BoardUtilsTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~BoardUtilsTest() {
 

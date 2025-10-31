@@ -34,7 +34,7 @@ void CheckStatus::updateStatus(const Position kingPosition, const Move move) {
     }
 }
 
-bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move& lastMove) const {
+bool CheckStatus::isDiscoveryCheck(const Position kingPosition, const Move lastMove) const {
     const Position destination = getDestinationPosition(lastMove);
 
     if (isEnPassant(lastMove) && isCaptured(lastMove)) {

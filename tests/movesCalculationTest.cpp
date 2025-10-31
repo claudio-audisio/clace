@@ -13,6 +13,7 @@ protected:
     MovesCalculationTest() {
         initAttacks();
         initDestPosProviders();
+        initPawnAttacksProviders();
     }
     ~MovesCalculationTest() {
 
@@ -37,6 +38,7 @@ protected:
     GetKingAttacksTest() {
         initAttacks();
         initDestPosProviders();
+        initPawnAttacksProviders();
     }
 };
 
@@ -67,6 +69,7 @@ protected:
     GetKingMovesTest() {
         initAttacks();
         initDestPosProviders();
+        initPawnAttacksProviders();
     }
 };
 
@@ -107,6 +110,7 @@ protected:
 	GetQueenAttacksTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -137,6 +141,7 @@ protected:
 	GetRookAttacksTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -167,6 +172,7 @@ protected:
 	GetBishopAttacksTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -197,6 +203,7 @@ protected:
 	GetKnightAttacksTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -227,6 +234,7 @@ protected:
 	GetPawnMovesTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -280,6 +288,7 @@ protected:
 	GetSinglePawnMovesTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -314,6 +323,7 @@ protected:
 	GetPawnAttacksTest() {
 		initAttacks();
 	    initDestPosProviders();
+	    initPawnAttacksProviders();
 	}
 };
 
@@ -443,6 +453,7 @@ protected:
     IsOnXRayTest() {
         initAttacks();
         initDestPosProviders();
+        initPawnAttacksProviders();
     }
 };
 

@@ -5,7 +5,7 @@
 #include "../move/move.h"
 
 
-static std::string moveToString(const Move& move) {
+static std::string moveToString(const Move move) {
     if (!move) {
         return "--";
     }

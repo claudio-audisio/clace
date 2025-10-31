@@ -13,6 +13,7 @@ protected:
     RayAttacksTest() {
         initAttacks();
         initDestPosProviders();
+        initPawnAttacksProviders();
     }
     ~RayAttacksTest() {
 

@@ -13,6 +13,7 @@ protected:
 	fenTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~fenTest() {
 

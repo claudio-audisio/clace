@@ -97,12 +97,12 @@ void Game::simulateMove(Move& move) {
 	setCaptured(move, captured);
 }
 
-Piece Game::completeEnPassant(const Move& move) {
+Piece Game::completeEnPassant(const Move move) {
 	const Position destination = getDestinationPosition(move) + (isWhite(move) ? 8 : -8);
 	return setEmpty(board, destination);
 }
 
-void Game::completePawnPromotion(const Move& move) {
+void Game::completePawnPromotion(const Move move) {
 	const Piece promotionPiece = getPromotion(move);
 
 	if (promotionPiece == Empty) {
@@ -166,7 +166,7 @@ bool Game::checkFiveFoldRepetitions() const {
 	return false;
 }
 
-bool Game::checkControl(const Move& move) {
+bool Game::checkControl(const Move move) {
 	const Side side = getMoveSide(move);
 	const Rawboard checkBoard = allAttacks(board, OPPOSITE(side));
 	const Position kingPosition = getKingPosition(board, side);
@@ -242,7 +242,7 @@ bool Game::isComputerToMove() const {
 	return player->computer;
 }
 
-void Game::setLastMove(const Move& move) {
+void Game::setLastMove(const Move move) {
 	movesHistory.push_front(move);
 	lastMove = move;
 }

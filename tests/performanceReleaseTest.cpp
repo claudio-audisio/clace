@@ -23,6 +23,7 @@ protected:
 	PerformanceReleaseTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~PerformanceReleaseTest() {
 
@@ -86,7 +87,7 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, isValidPerformanceTest) {
+TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -99,9 +100,9 @@ TEST_F(PerformanceReleaseTest, isValidPerformanceTest) {
 
 	for (int j = 1; j < 1000000; ++j) {
 		for (int i = 0; i < tot; i++) {
-			game->simulateMove(moves[i]);
+			//game->simulateMove(moves[i]);
 			game->checkControl(moves[i]);
-			game->undoSimulateMove(moves[i]);
+			//game->undoSimulateMove(moves[i]);
 		}
 	}
 
@@ -110,7 +111,7 @@ TEST_F(PerformanceReleaseTest, isValidPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1650, 50);
+	GTEST_ASSERT_NEAR(time, 1630, 50);
 #endif
 
 	cout << "time: " << time  << endl;

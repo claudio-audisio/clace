@@ -27,15 +27,15 @@ public:
 	MoveResult applyMove(Move& move);
 	void applyMoves(list<Move>& moves);
 	void simulateMove(Move& move);
-	Piece completeEnPassant(const Move& move);
-	void completePawnPromotion(const Move& move);
+	Piece completeEnPassant(Move move);
+	void completePawnPromotion(Move move);
     void undoSimulateMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
 	EndGameType checkEndGame(unsigned char legalMoves);
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
-	bool checkControl(const Move& move);
+	bool checkControl(Move move);
 	void changeTurn();
 	Side getSide(Position position) const;
 	void save();
@@ -43,7 +43,7 @@ public:
 	Player* getCurrentPlayer() const;
     Player* getOtherPlayer() const;
     bool isComputerToMove() const;
-	void setLastMove(const Move& move);
+	void setLastMove(Move move);
 	Game* duplicate();
     string printMovesHistory(int depth = 0) const;
     string printCastlingInfo() const;

@@ -16,6 +16,7 @@ protected:
 	GameTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~GameTest() {
 
@@ -220,6 +221,7 @@ protected:
 	VerifyChecksTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 };
 
@@ -270,6 +272,7 @@ protected:
 	CheckEndGameTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 };
 
@@ -319,6 +322,7 @@ protected:
 	CheckControlTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 };
 

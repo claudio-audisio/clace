@@ -23,6 +23,7 @@ protected:
 	PerformanceDebugTest() {
 		initAttacks();
 		initDestPosProviders();
+		initPawnAttacksProviders();
 	}
 	~PerformanceDebugTest() {
 
@@ -142,6 +143,43 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 		allKnightAttacks(gamePerft5->board, _BLACK);
 		allKnightAttacks(gamePerft6->board, _WHITE);
 		allKnightAttacks(gamePerft6->board, _BLACK);
+	}
+
+	unsLL time = getElapsedMillis(begin);
+
+	GTEST_ASSERT_NEAR(time, 1220, 50);	// BOARD_STANDARD_RAY_ATTACKS
+	//GTEST_ASSERT_NEAR(time, 1200, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
+	//GTEST_ASSERT_NEAR(time, 1200, 50);	// BOARD_ONTHEFLY_RAY_ATTACKS
+
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceDebugTest, getKnightAttacks_NEWPerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (long i = 1; i < 10000000; ++i) {
+		allKnightAttacks_NEW(gameInitial->board, _WHITE);
+		allKnightAttacks_NEW(gameInitial->board, _BLACK);
+		allKnightAttacks_NEW(gamePerft2->board, _WHITE);
+		allKnightAttacks_NEW(gamePerft2->board, _BLACK);
+		allKnightAttacks_NEW(gamePerft3->board, _WHITE);
+		allKnightAttacks_NEW(gamePerft3->board, _BLACK);
+		allKnightAttacks_NEW(gamePerft4->board, _WHITE);
+		allKnightAttacks_NEW(gamePerft4->board, _BLACK);
+		allKnightAttacks_NEW(gamePerft5->board, _WHITE);
+		allKnightAttacks_NEW(gamePerft5->board, _BLACK);
+		allKnightAttacks_NEW(gamePerft6->board, _WHITE);
+		allKnightAttacks_NEW(gamePerft6->board, _BLACK);
 	}
 
 	unsLL time = getElapsedMillis(begin);
