@@ -99,7 +99,7 @@ class DecorateTest : public ::testing::TestWithParam<TestParams2*> {};
 TEST_P(DecorateTest, decorateTest) {
     TestParams2* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenGame);
-    Move move = createMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition), params->piece, game->board.enPassantPosition);
+    Move move = createMove(params->sourcePosition, params->destinationPosition, game->getSide(params->sourcePosition), params->piece, game->board->enPassantPosition);
 
     EXPECT_EQ(getPiece(move), params->piece);
     EXPECT_EQ(isCastling(move), params->isCastling);

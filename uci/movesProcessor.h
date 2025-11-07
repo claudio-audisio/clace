@@ -40,7 +40,7 @@ public:
 			setPromotion(move, getPromotion(move) + 1);
 		}
 
-		decorate(move, game.board.piecePositions[sourcePosition], game.board.enPassantPosition);
+		decorate(move, game.board->piecePositions[sourcePosition], game.board->enPassantPosition);
 		game.applyMove(move);
 		movesHistory.push_back(command);
 		++movesHistoryIndex;

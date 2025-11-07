@@ -36,7 +36,7 @@ static unsigned int generatePseudoLegalMoves(Game& game, Move* moves) {
 
 		while (destinations) {
 			const Position destination = getFirstPos(destinations);
-			Move move = createMove(position, destination, game.sideToMove, piece, game.board.enPassantPosition);
+			Move move = createMove(position, destination, game.sideToMove, piece, game.board->enPassantPosition);
 
 			if (isPawnPromotion(move)) {
 				setPromotion(move, WRook + game.sideToMove);

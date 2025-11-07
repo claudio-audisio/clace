@@ -213,7 +213,7 @@ void Gui::onBoardChange(const bool isComputerMove /* = false */) {
         // quando a forza di aggiugnere i delta arrivo a destinazione ho finito di fare il movimento
     }*/
 
-    memcpy(piecePositions, gameRunner->game->board.piecePositions, sizeof(Piece) * 64);
+    memcpy(piecePositions, gameRunner->game->board->piecePositions, sizeof(Piece) * 64);
 }
 
 void Gui::newGame(const string& fenGame /*= ""*/) {

@@ -1,41 +1,45 @@
 #pragma once
 
-#include <deque>
 
-#include "../common/types.h"
 #include "../board/board.h"
-#include "../utils/messenger.h"
 
-using namespace std;
+typedef struct {
+    Board board;
+    Side sideToMove;
+    unsigned int fullMoves;
+    unsigned int halfMoveClock;
+} GameSnapshot;
 
-class Game;
+inline GameSnapshot** allocateSnapshots(const unsigned int size) {
+    const auto snapshots = static_cast<GameSnapshot**>(malloc(sizeof(GameSnapshot*) * size));
 
-class Rollback {
-public:
-	explicit Rollback(unsigned int size);
-	~Rollback();
+    for (int i = 0; i < size; i++) {
+        snapshots[i] = static_cast<GameSnapshot*>(malloc(sizeof(GameSnapshot)));
+    }
 
-	unsigned int index = 0;
-	unsigned int size;
-	void save(const Game& game);
-	void rollback(Game& game);
-	unsigned int getRollbackSize() const;
-	void reset();
+    return snapshots;
+}
 
-private:
-	class MoveInfo {
-	public:
-		MoveInfo();
-		~MoveInfo();
+inline void deallocateSnapshots(GameSnapshot** snapshots, const unsigned int size) {
+    for (int i = 0; i < size; i++) {
+        free(snapshots[i]);
+    }
 
-		Board board;
-		Side sideToMove;
-		unsigned int fullMoves;
-		unsigned int halfMoveClock;
+    free(snapshots);
+}
 
-		void setBoard(const Board& board);
-	};
+inline void saveSnapshot(const Board* board, const unsigned int sideToMove, const unsigned int fullMoves, const unsigned int halfMoveClock, GameSnapshot** snapshots, const unsigned int index) {
+    GameSnapshot *snapshot = snapshots[index];
+    copy(board, &snapshot->board);
+    snapshot->sideToMove = sideToMove;
+    snapshot->fullMoves = fullMoves;
+    snapshot->halfMoveClock = halfMoveClock;
+}
 
-	MoveInfo** boards;
-	Messenger& messenger = Messenger::getInstance();
-};
+inline void loadSnapshot(Board *board, unsigned int &sideToMove, unsigned int &fullMoves, unsigned int &halfMoveClock, GameSnapshot** snapshots, const unsigned int index) {
+    const GameSnapshot *snapshot = snapshots[index];
+    copy(&snapshot->board, board);
+    sideToMove = snapshot->sideToMove;
+    fullMoves = snapshot->fullMoves;
+    halfMoveClock = snapshot->halfMoveClock;
+}

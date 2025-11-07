@@ -124,7 +124,7 @@ public:
         }
     }
 
-	static void printBoard(const Board& board) {
+	static void printBoard(const Board *board) {
 		cout << endl;
 		int row = 0;
 
@@ -250,7 +250,7 @@ public:
 		}
 	}
 
-	static void printBoard_old(const Board& board) {
+	static void printBoard_old(const Board *board) {
 		int row = 0;
 
 		cout << "        a   b   c   d   e   f   g   h      " << endl;

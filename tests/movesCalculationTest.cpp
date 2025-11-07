@@ -352,7 +352,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 
 TEST_F(MovesCalculationTest, getPawnMovesTest) {
-    Board board;
+    Board *board = new Board();
     reset(board);
     setPiece(board, 49, WPawn);
     setPiece(board, 40, BPawn);
@@ -386,28 +386,28 @@ TEST_F(MovesCalculationTest, getPawnMovesTest) {
     reset(board);
 
     // EnPassant
-	board.enPassantPosition = 18;
+	board->enPassantPosition = 18;
     EXPECT_EQ(whitePawnMoves(board, 24, _WHITE), 0x10000LL);
-	board.enPassantPosition = 17;
+	board->enPassantPosition = 17;
     EXPECT_EQ(whitePawnMoves(board, 24, _WHITE), 0x30000LL);
-	board.enPassantPosition = 18;
+	board->enPassantPosition = 18;
     EXPECT_EQ(whitePawnMoves(board, 25, _WHITE), 0x60000LL);
-	board.enPassantPosition = 16;
+	board->enPassantPosition = 16;
     EXPECT_EQ(whitePawnMoves(board, 25, _WHITE), 0x30000LL);
-	board.enPassantPosition = 42;
+	board->enPassantPosition = 42;
     EXPECT_EQ(blackPawnMoves(board, 32, _BLACK), 0x10000000000LL);
-	board.enPassantPosition = 41;
+	board->enPassantPosition = 41;
     EXPECT_EQ(blackPawnMoves(board, 32, _BLACK), 0x30000000000LL);
-	board.enPassantPosition = 42;
+	board->enPassantPosition = 42;
     EXPECT_EQ(blackPawnMoves(board, 33, _BLACK), 0x60000000000LL);
-	board.enPassantPosition = 40;
+	board->enPassantPosition = 40;
     EXPECT_EQ(blackPawnMoves(board, 33, _BLACK), 0x30000000000LL);
 }
 
 TEST_F(MovesCalculationTest, getKingMovesTest) {
-    Board board;
+    Board *board = new Board();
     reset(board);
-	board.castlingInfo = 0b1111;
+	board->castlingInfo = 0b1111;
     EXPECT_EQ(blackKingMoves(board, 0, _BLACK), 0x302LL);
     EXPECT_EQ(blackKingMoves(board, 7, _BLACK), 0xc040LL);
     EXPECT_EQ(blackKingMoves(board, 63, _BLACK), 0x40c0000000000000LL);
@@ -418,17 +418,17 @@ TEST_F(MovesCalculationTest, getKingMovesTest) {
     EXPECT_EQ(whiteKingMoves(board, 54, _WHITE), 0xe0a0e00000000000LL);
 
     // castling
-	board.castlingInfo = 0b1111;
+	board->castlingInfo = 0b1111;
     EXPECT_EQ(blackKingMoves(board, 4, _BLACK), 0x386cLL);
-	board.castlingInfo = 0b1110;
+	board->castlingInfo = 0b1110;
     EXPECT_EQ(blackKingMoves(board, 4, _BLACK), 0x3868LL);
-	board.castlingInfo = 0b1100;
+	board->castlingInfo = 0b1100;
     EXPECT_EQ(blackKingMoves(board, 4, _BLACK), 0x3828LL);
-	board.castlingInfo = 0b1111;
+	board->castlingInfo = 0b1111;
     EXPECT_EQ(whiteKingMoves(board, 60, _WHITE), 0x2c38000000000000LL);
-	board.castlingInfo = 0b1011;
+	board->castlingInfo = 0b1011;
     EXPECT_EQ(whiteKingMoves(board, 60, _WHITE), 0x2838000000000000LL);
-	board.castlingInfo = 0b0011;
+	board->castlingInfo = 0b0011;
     EXPECT_EQ(whiteKingMoves(board, 60, _WHITE), 0x2838000000000000LL);
 }
 

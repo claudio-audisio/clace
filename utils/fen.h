@@ -29,8 +29,8 @@ public:
         vector<string>* tokens = tokenize(fenPosition, SEPARATOR, 6);
         fenToChessBoard(tokens->at(0), game);
         game.sideToMove = (tokens->at(1) == "w" || tokens->at(1) == "W") ? _WHITE : _BLACK;
-        game.board.castlingInfo = fenToCastlingInfo(tokens->at(2));
-        game.board.enPassantPosition =fenToEnPassantPosition(tokens->at(3));
+        game.board->castlingInfo = fenToCastlingInfo(tokens->at(2));
+        game.board->enPassantPosition =fenToEnPassantPosition(tokens->at(3));
         game.halfMoveClock = stoi(tokens->at(4));
         game.fullMoves = stoi(tokens->at(5));
         delete tokens;
@@ -42,9 +42,9 @@ public:
         fenBoard.append(string(1, SEPARATOR));
         fenBoard.append(game.isWhiteToMove() ? "w" : "b");
         fenBoard.append(string(1, SEPARATOR));
-        fenBoard.append(castlingInfoToFEN(game.board.castlingInfo));
+        fenBoard.append(castlingInfoToFEN(game.board->castlingInfo));
         fenBoard.append(string(1, SEPARATOR));
-        fenBoard.append(enPassantToFEN(game.board.enPassantPosition));
+        fenBoard.append(enPassantToFEN(game.board->enPassantPosition));
         fenBoard.append(string(1, SEPARATOR));
         fenBoard.append(to_string(game.halfMoveClock));
         fenBoard.append(string(1, SEPARATOR));
@@ -56,8 +56,8 @@ public:
         string fenKey;
         fenKey.append(chessBoardToFENKey(game.board));
         fenKey.append(game.isWhiteToMove() ? "w" : "b");
-        fenKey.append(castlingInfoToFEN(game.board.castlingInfo));
-        fenKey.append(enPassantToFEN(game.board.enPassantPosition));
+        fenKey.append(castlingInfoToFEN(game.board->castlingInfo));
+        fenKey.append(enPassantToFEN(game.board->enPassantPosition));
         return fenKey;
     }
 
@@ -133,7 +133,7 @@ private:
         return coordsToIndex(fenEnPassantPosition);
     }
 
-    static string chessBoardToFEN(const Board& board) {
+    static string chessBoardToFEN(const Board *board) {
         string fenBoard;
         int empty = 0;
 
@@ -166,7 +166,7 @@ private:
         return fenBoard;
     }
 
-    static string chessBoardToFENKey(const Board& board) {
+    static string chessBoardToFENKey(const Board *board) {
         string fenKey;
         int empty = 0;
 

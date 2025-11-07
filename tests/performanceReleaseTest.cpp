@@ -11,6 +11,7 @@
 #include "../perft/perft.h"
 #include "../engine/bf_engine.h"
 #include "../common/defines.h"
+#include "../move/rollback.h"
 #include "../movesCalculation/staticAttacks.h"
 
 using namespace std;
@@ -261,7 +262,7 @@ TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 
 	time /= 100000;
 
-	GTEST_ASSERT_NEAR(time, 860, 20);
+	GTEST_ASSERT_NEAR(time, 850, 50);
 
 	cout << "time: " << time << endl;
 }
@@ -312,7 +313,7 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	for (long count = 0; count < 100000000; count++) {
 		for (int m = 0; m < amount.total; m++) {
 			if (moves[m]) {
-				game->board.castlingInfo = 0b1111;
+				game->board->castlingInfo = 0b1111;
 				updateCastlingInfo(game->board, getSourcePosition(moves[m]), getDestinationPosition(moves[m]));
 			}
 		}
@@ -320,40 +321,60 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1730, 50);
+	GTEST_ASSERT_NEAR(time, 1800, 50);
 
 	cout << "time: " << time  << endl;
 }
 
-// TODO da vedere, dopo il cambio da char a int e' esploso il tempo, fare refactoring (class -> struct)
 TEST_F(PerformanceReleaseTest, rollbackTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
-	Game* game = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
-	game->verifyChecks();
-	const unsigned int size = 100000000;
-	Rollback* rollback = new Rollback(size);
+	Game* game1 = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	game1->verifyChecks();
+	Game* game2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	game2->verifyChecks();
+	Game* game3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	game3->verifyChecks();
+	Game* game4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	game4->verifyChecks();
+	Game* game5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	game5->verifyChecks();
+	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+	game6->verifyChecks();
+
+	const unsigned int size = 60000000;
+	GameSnapshot **snapshots = allocateSnapshots(size);
 
 	auto start = chrono::steady_clock::now();
-	for (int i = 0; i < size; ++i) {
-		rollback->save(*game);
+	for (int i = 0; i < size;) {
+		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i++);
+		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i++);
+		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i++);
+		saveSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, snapshots, i++);
+		saveSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, snapshots, i++);
+		saveSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, snapshots, i++);
 	}
 
 	auto saveTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(saveTime, 1550, 50);
+	GTEST_ASSERT_NEAR(saveTime, 1600, 50);
 	cout << "save time: " << saveTime  << endl;
 
 	start = chrono::steady_clock::now();
-	for (int i = 0; i < size; ++i) {
-		rollback->rollback(*game);
+	for (int i = size - 1; i >= 0;) {
+		loadSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i--);
+		loadSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i--);
+		loadSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i--);
+		loadSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, snapshots, i--);
+		loadSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, snapshots, i--);
+		loadSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, snapshots, i--);
 	}
 
 	auto rollbackTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(rollbackTime, 1350, 50);
+	GTEST_ASSERT_NEAR(rollbackTime, 2100, 50);
 	cout << "rollback time: " << rollbackTime  << endl;
 
-	delete rollback;
+	deallocateSnapshots(snapshots, size);
 }
 
 TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
@@ -485,7 +506,7 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6950, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 6850, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;

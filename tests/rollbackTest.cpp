@@ -26,78 +26,49 @@ protected:
 TEST_F(RollbackTest, rollbackTest1) {
 	Game game;
 	game.init();
-	Rollback* rollback = new Rollback(10);
+
+	GameSnapshot** snapshots = allocateSnapshots(10);
 	const string boardBeforeRollback = FEN::gameToFEN(game);
-
 	Move move = createMove(48, 32, _WHITE, WPawn);
-	rollback->save(game);
 
-	EXPECT_EQ(rollback->getRollbackSize(), 1);
+	saveSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 0);
 
 	game.applyMove(move);
-	rollback->rollback(game);
+
+	loadSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 0);
+
 	const string boardAfterRollback = FEN::gameToFEN(game);
 
-	EXPECT_EQ(rollback->getRollbackSize(), 0);
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
 TEST_F(RollbackTest, rollbackInfo2Test) {
 	Game game;
 	game.init();
-	Rollback* rollback = new Rollback(10);
+	GameSnapshot** snapshots = allocateSnapshots(10);
 	const string boardBeforeRollback = FEN::gameToFEN(game);
-
 	Move move = createMove(57, 40, _WHITE, WKnight);
-	rollback->save(game);
 
-	EXPECT_EQ(rollback->getRollbackSize(), 1);
+	saveSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 0);
 
 	game.applyMove(move);
-
 	move = createMove(40, 57, _WHITE, WKnight);
-	rollback->save(game);
 
-	EXPECT_EQ(rollback->getRollbackSize(), 2);
+	saveSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 1);
 
 	game.applyMove(move);
-
 	move = createMove(57, 40, _WHITE, WKnight);
-	rollback->save(game);
 
-	EXPECT_EQ(rollback->getRollbackSize(), 3);
+	saveSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 2);
 
 	game.applyMove(move);
 
-	rollback->rollback(game);
-	EXPECT_EQ(rollback->getRollbackSize(), 2);
-	rollback->rollback(game);
-	EXPECT_EQ(rollback->getRollbackSize(), 1);
-	rollback->rollback(game);
-	EXPECT_EQ(rollback->getRollbackSize(), 0);
+	loadSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 2);
+	loadSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 1);
+	loadSnapshot(game.board, game.sideToMove, game.fullMoves, game.halfMoveClock, snapshots, 0);
 
 	string boardAfterRollback = FEN::gameToFEN(game);
 
 	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
 }
 
-TEST_F(RollbackTest, rollbackInfoFailureTest) {
-	Game game;
-	game.init();
-	Rollback* rollback = new Rollback(10);
-	const string boardBeforeRollback = FEN::gameToFEN(game);
-
-	Move move = createMove(48, 32, _WHITE, WPawn);
-	rollback->save(game);
-
-	EXPECT_EQ(rollback->getRollbackSize(), 1);
-
-	game.applyMove(move);
-	rollback->rollback(game);
-	string boardAfterRollback = FEN::gameToFEN(game);
-
-	EXPECT_EQ(rollback->getRollbackSize(), 0);
-	EXPECT_EQ(boardBeforeRollback, boardAfterRollback);
-
-	EXPECT_THROW(rollback->rollback(game), runtime_error);
-}

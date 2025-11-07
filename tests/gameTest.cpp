@@ -40,12 +40,12 @@ TEST_F(GameTest, initTest) {
 	EXPECT_EQ(getKingPosition(game.board, _BLACK), 4);
 	EXPECT_EQ(getKingPosition(game.board, _WHITE), 60);
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
-	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
+	EXPECT_EQ(game.board->enPassantPosition, NO_POS);
 	EXPECT_EQ(game.lastMove, 0);
-	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.board.castlingInfo));
-	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.board.castlingInfo));
-	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board.castlingInfo));
-	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isWhiteQueenCastling(game.board->castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isWhiteKingCastling(game.board->castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board->castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board->castlingInfo));
 	GTEST_ASSERT_TRUE(game.movesHistory.empty());
 	EXPECT_EQ(FEN::gameToFEN(game), INITIAL_FEN_POSITION);
 }
@@ -168,7 +168,7 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	Game* game = FEN::fenToNewGame(testParams->fenBoard);
 	Side side = game->getSide(testParams->sourcePos);
 	game->sideToMove = side;
-	Move move = createMove(testParams->sourcePos, testParams->destinationPos, side, getPiece(game->board, testParams->sourcePos), game->board.enPassantPosition);
+	Move move = createMove(testParams->sourcePos, testParams->destinationPos, side, getPiece(game->board, testParams->sourcePos), game->board->enPassantPosition);
 	setPromotion(move, side == _WHITE ? WQueen : BQueen);
 	const MoveResult moveResult = game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
@@ -332,7 +332,7 @@ TEST_P(CheckControlTest, checkControlTest) {
 	Side side = game->getSide(params->kingPosition);
 	game->sideToMove = OPPOSITE(side);
 	Position sourcePosition = params->isCastling ? side == _WHITE ? 60 : 4 : 0;
-	Move move = createMove(sourcePosition, params->kingPosition, side, getPiece(game->board, params->kingPosition), game->board.enPassantPosition);
+	Move move = createMove(sourcePosition, params->kingPosition, side, getPiece(game->board, params->kingPosition), game->board->enPassantPosition);
 
 	EXPECT_EQ(game->checkControl(move), params->expectedResult);
 }
@@ -417,21 +417,21 @@ class SimulateAndUndoMoveTest : public ::testing::TestWithParam<TestParams5*> {}
 TEST_P(SimulateAndUndoMoveTest, checkControlTest) {
     TestParams5* params = GetParam();
     Game* game = FEN::fenToNewGame(params->fenBoard);
-    Move move = createMove(params->sourcePosition, params->destinationPosition, game->sideToMove, getPiece(game->board, params->sourcePosition), game->board.enPassantPosition);
+    Move move = createMove(params->sourcePosition, params->destinationPosition, game->sideToMove, getPiece(game->board, params->sourcePosition), game->board->enPassantPosition);
 	setPromotion(move, WQueen);
-    Board board;
-	copy(&game->board, &board);
+    Board *board = new Board();
+	copy(game->board, board);
     game->simulateMove(move);
     game->undoSimulateMove(move);
 
     EXPECT_EQ(params->fenBoard, FEN::gameToFEN(*game));
 
     for (int i = 0; i < SIZE; ++i) {
-        EXPECT_EQ(board.pieceBoards[i], game->board.pieceBoards[i]);
+        EXPECT_EQ(board->pieceBoards[i], game->board->pieceBoards[i]);
     }
 
     for (int i = 0; i < 64; ++i) {
-        EXPECT_EQ(board.piecePositions[i], game->board.piecePositions[i]);
+        EXPECT_EQ(board->piecePositions[i], game->board->piecePositions[i]);
     }
 }
 

@@ -4,9 +4,9 @@
 #include <deque>
 
 #include "../board/board.h"
-#include "../move/rollback.h"
 #include "../board/checkStatus.h"
 #include "statistics.h"
+#include "../move/rollback.h"
 #include "../utils/messenger.h"
 
 using namespace std;
@@ -53,7 +53,7 @@ public:
 
 	// Only for testing
 	Board getCopyBoard() {
-		return board;
+		return *board;
 	}
 
     bool isWhiteToMove() const {
@@ -66,9 +66,10 @@ public:
 
     string getDescription() const;
 
-    Board board;
+    Board *board;
 	deque<Move> movesHistory;	// TODO renderla thread safe (davvero necessario?)
-	Rollback rollback;
+	GameSnapshot **snapshots;
+	unsigned int snapshotIndex = 0;
 	CheckStatus checkStatus;
 	Move lastMove = 0;
 	Side sideToMove;

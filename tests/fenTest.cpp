@@ -35,12 +35,12 @@ TEST_F(fenTest, fenToGameTest) {
 
 	GTEST_ASSERT_TRUE(game.isWhiteToMove());
 
-	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board.castlingInfo));
-	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board.castlingInfo));
-	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.board.castlingInfo));
-	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.board.castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackKingCastling(game.board->castlingInfo));
+	GTEST_ASSERT_TRUE(FEN::isBlackQueenCastling(game.board->castlingInfo));
+	GTEST_ASSERT_FALSE(FEN::isWhiteKingCastling(game.board->castlingInfo));
+	GTEST_ASSERT_FALSE(FEN::isWhiteQueenCastling(game.board->castlingInfo));
 
-	EXPECT_EQ(game.board.enPassantPosition, NO_POS);
+	EXPECT_EQ(game.board->enPassantPosition, NO_POS);
 
 	EXPECT_EQ(game.halfMoveClock, 0);
 	EXPECT_EQ(game.fullMoves, 1);

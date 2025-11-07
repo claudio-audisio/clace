@@ -112,7 +112,7 @@ public:
 			game->getCurrentPlayer()->startMoveTime();
 			string newMove = waitForHumanMove();
 			move = createMove(newMove, game->getCurrentPlayer()->side);
-			decorate(move, getPiece(game->board, getSourcePosition(move)), game->board.enPassantPosition);
+			decorate(move, getPiece(game->board, getSourcePosition(move)), game->board->enPassantPosition);
 
 			if (isPawnPromotion(move)) {
 				Piece promotion = gui->choosePromotionType();

@@ -1,6 +1,5 @@
 DA FINIRE
 
-    - Migrare la classe Board ad una struct per facilitare save/rollback (memset?)
     - Completare test unita'
 
 GENERALE

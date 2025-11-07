@@ -11,7 +11,7 @@
 
 class Phase {
 public:
-    double static calculate(const Board& board) {
+    double static calculate(const Board *board) {
         double phase = TOTAL_PHASE;
 
         phase -= PAWN_PHASE * getPieceCount(board, WPawn);
@@ -28,7 +28,7 @@ public:
         return (phase * 256 + (TOTAL_PHASE / 2)) / TOTAL_PHASE;
     }
 
-    double static taperedEval(const Board& board, const double mgEvaluation, const double egEvaluation) {
+    double static taperedEval(const Board *board, const double mgEvaluation, const double egEvaluation) {
         const double phase = calculate(board);
         return ((mgEvaluation * (256 - phase)) + (egEvaluation * phase)) / 256;
     }

@@ -8,14 +8,18 @@
 #include "../evaluation/basicEvaluator.h"
 #include "../utils/toString.h"
 #include "../utils/boardUtils.h"
+#include "../move/rollback.h"
 
 Game::Game() :
-	rollback(10), sideToMove(0), fullMoves(0), halfMoveClock(0) {
+	sideToMove(0), fullMoves(0), halfMoveClock(0) {
+	snapshots = allocateSnapshots(10);
+	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
 	evaluator = new BasicEvaluator();
 }
 
 Game::~Game() {
+	deallocateSnapshots(snapshots, 10);
 	delete whitePlayer;
 	delete blackPlayer;
 	delete evaluator;
@@ -46,7 +50,7 @@ MoveResult Game::finalizeMove(Move& move) {
 		getPiece(move),
 		getType(move),
 		getPromotion(move));
-	//const Piece captured = board.move(move);
+
 	setCaptured(move, captured);
 
 	if (captured || getPiece(move) < WKnight) {
@@ -214,14 +218,14 @@ Side Game::getSide(Position position) const {
 }
 
 void Game::save() {
-	rollback.save(*this);
+	saveSnapshot(board, sideToMove, fullMoves, halfMoveClock, snapshots, snapshotIndex++);
 }
 
 void Game::rollbackLastMove() {
 	checkStatus.reset();
 	movesHistory.pop_front();
 	lastMove = movesHistory.empty() ? 0 : movesHistory.front();
-	rollback.rollback(*this);
+	loadSnapshot(this->board, sideToMove, fullMoves, halfMoveClock, snapshots, --snapshotIndex);
 }
 
 Player* Game::getCurrentPlayer() const {
@@ -250,10 +254,10 @@ void Game::setLastMove(const Move move) {
 Game* Game::duplicate() {
 	Game* newGame = new Game();
 	newGame->init();
-	copy(&board, &newGame->board);
-	newGame->board.castlingInfo = board.castlingInfo;
+	copy(board, newGame->board);
+	newGame->board->castlingInfo = board->castlingInfo;
 	newGame->sideToMove = sideToMove;
-	newGame->board.enPassantPosition = board.enPassantPosition;
+	newGame->board->enPassantPosition = board->enPassantPosition;
 	newGame->fullMoves = fullMoves;
 	newGame->halfMoveClock = halfMoveClock;
 	dequeAddAll(movesHistory, newGame->movesHistory);
@@ -274,32 +278,32 @@ string Game::printMovesHistory(const int depth) const {
 }
 
 string Game::printCastlingInfo() const {
-    return FEN::castlingInfoToFEN(board.castlingInfo);
+    return FEN::castlingInfoToFEN(board->castlingInfo);
 }
 
 string Game::getCapturedList(const Side side) {
 	string captured;
-	for (int i = 0; i < 1 - positionsCount(board.pieceBoards[WQueen + side]); ++i) {
+	for (int i = 0; i < 1 - positionsCount(board->pieceBoards[WQueen + side]); ++i) {
 		captured += getPieceCode(WQueen + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WRook + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board->pieceBoards[WRook + side]); ++i) {
 		captured += getPieceCode(WRook + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WBishop + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board->pieceBoards[WBishop + side]); ++i) {
 		captured += getPieceCode(WBishop + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 2 - positionsCount(board.pieceBoards[WKnight + side]); ++i) {
+	for (int i = 0; i < 2 - positionsCount(board->pieceBoards[WKnight + side]); ++i) {
 		captured += getPieceCode(WKnight + side);
 		captured.append(" ");
 	}
 
-	for (int i = 0; i < 8 - positionsCount(board.pieceBoards[WPawn + side]); ++i) {
+	for (int i = 0; i < 8 - positionsCount(board->pieceBoards[WPawn + side]); ++i) {
 		captured += getPieceCode(WPawn + side);
 		captured.append(" ");
 	}
@@ -320,7 +324,7 @@ void Game::calculateCheckPositions(const Side side) {
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		} else if (_isRook(piece)) {
-			const Rawboard attacks = _rookAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
+			const Rawboard attacks = _rookAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
@@ -329,12 +333,12 @@ void Game::calculateCheckPositions(const Side side) {
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		} else if (_isBishop(piece)) {
-			const Rawboard attacks = _bishopAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
+			const Rawboard attacks = _bishopAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
 		} else if (_isQueen(piece)) {
-			const Rawboard attacks = _queenAttacks(position, ~board.pieceBoards[Empty], ~PIECES(board, side));
+			const Rawboard attacks = _queenAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 			checkStatus.addXRayPosition(position, attacks);
