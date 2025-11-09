@@ -249,7 +249,6 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-/* TODO da sistemare
 class AreOnSameDiagonalTest : public ::testing::TestWithParam<TestParams2*> {};
 
 TEST_P(AreOnSameDiagonalTest, areOnSameDiagonalTest) {
@@ -282,4 +281,47 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams2(49, 3, false),
         new TestParams2(49, 39, false)
     )
-);*/
+);
+
+class AreOnSameRowOrColumnOrDiagonalTest : public ::testing::TestWithParam<TestParams2*> {};
+
+TEST_P(AreOnSameRowOrColumnOrDiagonalTest, areOnSameRowOrColumnOrDiagonalTest) {
+    TestParams2* params = GetParam();
+    EXPECT_EQ(areOnSameRowOrColumnOrDiagonal(params->firstPosition, params->secondPosition), params->expectedResult);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    positionsTest,
+    AreOnSameRowOrColumnOrDiagonalTest,
+    ::testing::Values(
+        new TestParams2(0, 4, true),
+        new TestParams2(0, 7 , true),
+        new TestParams2(0, 32, true),
+        new TestParams2(0, 56, true),
+        new TestParams2(0, 36, true),
+        new TestParams2(0, 63, true),
+        new TestParams2(0, 50, false),
+        new TestParams2(0, 21, false),
+        new TestParams2(0, 36, true),
+        new TestParams2(0, 63, true),
+        new TestParams2(0, 56, true),
+        new TestParams2(0, 7, true),
+        new TestParams2(7, 35, true),
+        new TestParams2(7, 56, true),
+        new TestParams2(7, 4, true),
+        new TestParams2(7, 39, true),
+        new TestParams2(14, 5, true),
+        new TestParams2(14, 23, true),
+        new TestParams2(14, 7, true),
+        new TestParams2(14, 21, true),
+        new TestParams2(14, 24, false),
+        new TestParams2(14, 60, false),
+        new TestParams2(49, 40, true),
+        new TestParams2(49, 58, true),
+        new TestParams2(49, 42, true),
+        new TestParams2(49, 56, true),
+        new TestParams2(49, 3, false),
+        new TestParams2(49, 39, false)
+    )
+);
+

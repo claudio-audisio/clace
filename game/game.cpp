@@ -148,6 +148,12 @@ void Game::verifyChecks() {
 	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
 }
 
+/*void Game::fastVerifyChecks() {
+	const Position kingPosition = getKingPosition(board, sideToMove);
+	fastCalculateCheckPositions(getOppositeSide(), kingPosition);
+	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
+}*/
+
 EndGameType Game::checkEndGame(const unsigned int legalMoves) {
 	if (!legalMoves) {
 		checkStatus.checkmate = checkStatus.check;
@@ -172,8 +178,8 @@ bool Game::checkFiveFoldRepetitions() const {
 
 bool Game::checkControl(const Move move) {
 	const Side side = getMoveSide(move);
-	const Rawboard checkBoard = allAttacks(board, OPPOSITE(side));
 	const Position kingPosition = getKingPosition(board, side);
+	Rawboard checkBoard = allAttacks(board, OPPOSITE(side), kingPosition);
 
 	if (isUnderCheck(checkBoard, kingPosition)) {
 		return false;
@@ -182,6 +188,8 @@ bool Game::checkControl(const Move move) {
 	bool castlingNotValid = false;
 
 	if (isCastling(move)) {
+		checkBoard |= allRayAttacks(board, OPPOSITE(side));
+
 		if (side) {
 			switch (getDestinationPosition(move)) {
 				case 2: castlingNotValid = isUnderCheck(checkBoard, 4) || isUnderCheck(checkBoard, 3); break;
@@ -351,6 +359,53 @@ void Game::calculateCheckPositions(const Side side) {
 		positions &= (positions - 1);
 	}
 }
+
+/*void Game::fastCalculateCheckPositions(const Side side, const Position kingPosition) {
+	checkStatus.reset();
+	Rawboard positions = PIECES(board, side);
+
+	while(positions) {
+		const Position position = getFirstPos(positions);
+		const Piece piece = getPiece(board, position);
+
+		if (_isPawn(piece)) {
+			const Rawboard attacks = pawnAttacks(board, position, side);
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		} else if (_isRook(piece)) {
+			if (areOnSameRowOrColumn(position, kingPosition)) {
+				const Rawboard attacks = _rookAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
+				checkStatus.updateAllCheckPositions(attacks);
+				checkStatus.addCheckPosition(position, attacks);
+				checkStatus.addXRayPosition(position, attacks);
+			}
+		} else if (_isKnight(piece)) {
+			const Rawboard attacks = _knightAttacks(board, position, OPP_PIECES(board, side));
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		} else if (_isBishop(piece)) {
+			if (areOnSameDiagonal(position, kingPosition)) {
+				const Rawboard attacks = _bishopAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
+				checkStatus.updateAllCheckPositions(attacks);
+				checkStatus.addCheckPosition(position, attacks);
+				checkStatus.addXRayPosition(position, attacks);
+			}
+		} else if (_isQueen(piece)) {
+			if (areOnSameRowOrColumnOrDiagonal(position, kingPosition)) {
+				const Rawboard attacks = _queenAttacks(position, ~board->pieceBoards[Empty], ~PIECES(board, side));
+				checkStatus.updateAllCheckPositions(attacks);
+				checkStatus.addCheckPosition(position, attacks);
+				checkStatus.addXRayPosition(position, attacks);
+			}
+		} else if (_isKing(piece)) {
+			const Rawboard attacks = kingMoves(board, position, side);
+			checkStatus.updateAllCheckPositions(attacks);
+			checkStatus.addCheckPosition(position, attacks);
+		}
+
+		positions &= (positions - 1);
+	}
+}*/
 
 int Game::getAllDestinationQty(const Side side) {
 	int count = 0;

@@ -21,12 +21,12 @@ public:
         clear();
     }
 
-    void add(Game& game, Move moves[], int total, int valid) {
+    void add(Game& game, Move moves[], const unsigned int total, const unsigned int valid) {
         add(FEN::gameToFENKey(game), moves, total, valid);
     }
 
-    void add(const string& game, Move moves[], int total, int valid) {
-        Moves* cacheEntry = static_cast<Moves*>(malloc(sizeof(Moves)));
+    void add(const string& game, Move moves[], const unsigned int total, const unsigned int valid) {
+        auto cacheEntry = static_cast<Moves*>(malloc(sizeof(Moves)));
         cacheEntry->movesList = new Move[total];;
         memcpy(cacheEntry->movesList, moves, total * sizeof(Move));
         cacheEntry->amount.total = total;
@@ -39,7 +39,7 @@ public:
     }
 
     bool get(const string& game, Move*& moves, MovesAmount& amount) {
-        auto it = cache.find(game);
+        const auto it = cache.find(game);
 
         if (it == cache.end()) {
             return false;

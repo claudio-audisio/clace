@@ -6,8 +6,6 @@
 #include "../common/defines.h"
 
 
-
-
 Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->fenGame = fenGame;
 	this->depth = depth;

@@ -112,7 +112,7 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1530, 50);
+	GTEST_ASSERT_NEAR(time, 1300, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -165,7 +165,7 @@ TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1600, 50);
+	GTEST_ASSERT_NEAR(time, 1250, 50);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -207,11 +207,53 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 1100, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1000, 50);
+	GTEST_ASSERT_NEAR(time, 1050, 50);
 #endif
 
 	cout << "time: " << time  << endl;
 }
+
+/*TEST_F(PerformanceReleaseTest, calculateCheckPositions2PerformanceTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Game* game1 = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* game2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* game3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* game4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* game4m = FEN::fenToNewGame(PERFT_FEN_POSITION_4_MIRRORED);
+	Game* game5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	auto start = chrono::steady_clock::now();
+
+	for (int i = 1; i < 500000; ++i) {
+		game1->fastCalculateCheckPositions(_WHITE, 4);
+		game1->fastCalculateCheckPositions(_BLACK, 60);
+		game2->fastCalculateCheckPositions(_WHITE, 4);
+		game2->fastCalculateCheckPositions(_BLACK, 60);
+		game3->fastCalculateCheckPositions(_WHITE, 39);
+		game3->fastCalculateCheckPositions(_BLACK, 24);
+		game4->fastCalculateCheckPositions(_WHITE, 4);
+		game4->fastCalculateCheckPositions(_BLACK, 62);
+		game4m->fastCalculateCheckPositions(_WHITE, 6);
+		game4m->fastCalculateCheckPositions(_BLACK, 60);
+		game5->fastCalculateCheckPositions(_WHITE, 5);
+		game5->fastCalculateCheckPositions(_BLACK, 60);
+		game6->fastCalculateCheckPositions(_WHITE, 6);
+		game6->fastCalculateCheckPositions(_BLACK, 62);
+	}
+
+	unsLL time = getElapsedMillis(start);
+
+#ifdef BOARD_USE_PRE_CALCULATED
+	GTEST_ASSERT_NEAR(time, 1100, 50);
+#else
+	GTEST_ASSERT_NEAR(time, 1000, 50);
+#endif
+
+	cout << "time: " << time  << endl;
+}*/
 
 TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 #ifndef PERFORMANCE_TESTS
@@ -293,7 +335,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1980, 50);
+	GTEST_ASSERT_NEAR(time, 2100, 50);
 
 	cout << "time: " << time  << endl;
 }
@@ -449,7 +491,7 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 215, 10);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 160, 10);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -468,7 +510,7 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5700, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 3950, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -487,7 +529,7 @@ TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 260, 10);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 210, 10);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -506,7 +548,7 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6850, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5100, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -530,7 +572,7 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 320, 10);
+	GTEST_ASSERT_NEAR(time, 260, 10);
 
 	cout << "time: " << time  << endl;
 }
@@ -553,7 +595,7 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 230, 10);
+	GTEST_ASSERT_NEAR(time, 170, 10);
 
 	cout << "time: " << time  << endl;
 }
@@ -575,7 +617,7 @@ TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 550, 20);
+	GTEST_ASSERT_NEAR(time, 530, 20);
 
 	cout << "time: " << time  << endl;
 }

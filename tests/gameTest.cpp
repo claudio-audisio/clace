@@ -199,6 +199,8 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 
+// TODO aggiungere test per fast verify check
+
 class TestParams3 {
 public:
 	TestParams3(string fenBoard, string lastMove, bool check, bool discoveryCheck, bool doubleCheck) {

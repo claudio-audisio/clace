@@ -117,6 +117,25 @@ inline Rawboard allRookAttacks(const Board *board, const Side side) {
     return attacks;
 }
 
+inline Rawboard allRookAttacks(const Board *board, const Side side, const Position kingPosition) {
+    Rawboard attacks = 0;
+    Rawboard pieces = board->pieceBoards[WRook + side];
+    const Rawboard occupied = ~board->pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
+
+    while (pieces) {
+        const Position position = getFirstPos(pieces);
+
+        if (areOnSameRowOrColumn(position, kingPosition)) {
+            attacks |= _rookAttacks(position, occupied, notPieces);
+        }
+
+        pieces &= (pieces - 1);
+    }
+
+    return attacks;
+}
+
 inline Rawboard _knightAttacks(const Board *board, const Position position, const Rawboard opposite) {
     return staticKnightAttacks[position] & (board->pieceBoards[Empty] | opposite);
 }
@@ -161,6 +180,25 @@ inline Rawboard allBishopAttacks(const Board *board, const Side side) {
     return attacks;
 }
 
+inline Rawboard allBishopAttacks(const Board *board, const Side side, const Position kingPosition) {
+    Rawboard attacks = 0;
+    Rawboard pieces = board->pieceBoards[WBishop + side];
+    const Rawboard occupied = ~board->pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
+
+    while (pieces) {
+        const Position position = getFirstPos(pieces);
+
+        if (areOnSameDiagonal(position, kingPosition)) {
+            attacks |= _bishopAttacks(position, occupied, notPieces);
+        }
+
+        pieces &= (pieces - 1);
+    }
+
+    return attacks;
+}
+
 inline Rawboard _queenAttacks(const Position position, const Rawboard occupied, const Rawboard notPieces) {
     return (northAttack(occupied, position) | eastAttack(occupied, position) | southAttack(occupied, position) | westAttack(occupied, position) |
             noEastAttack(occupied, position) | soEastAttack(occupied, position) | soWestAttack(occupied, position) | noWestAttack(occupied, position)) & notPieces;
@@ -179,6 +217,25 @@ inline Rawboard allQueenAttacks(const Board *board, const Side side) {
     while (pieces) {
         const Position position = getFirstPos(pieces);
         attacks |= _queenAttacks(position, occupied, notPieces);
+        pieces &= (pieces - 1);
+    }
+
+    return attacks;
+}
+
+inline Rawboard allQueenAttacks(const Board *board, const Side side, const Position kingPosition) {
+    Rawboard attacks = 0;
+    Rawboard pieces = board->pieceBoards[WQueen + side];
+    const Rawboard occupied = ~board->pieceBoards[Empty];
+    const Rawboard notPieces = ~PIECES(board, side);
+
+    while (pieces) {
+        const Position position = getFirstPos(pieces);
+
+        if (areOnSameRowOrColumnOrDiagonal(position, kingPosition)) {
+            attacks |= _queenAttacks(position, occupied, notPieces);
+        }
+
         pieces &= (pieces - 1);
     }
 
@@ -245,6 +302,16 @@ inline Rawboard allAttacks(const Board *board, const Side side) {
     return allPawnAttacks(board, side) | allKnightAttacks(board, side) |
         allBishopAttacks(board, side) | allRookAttacks(board, side) |
             allQueenAttacks(board, side) | allKingAttacks(board, side);
+}
+
+inline Rawboard allAttacks(const Board *board, const Side side, const Position kingPosition) {
+    return allPawnAttacks(board, side) | allKnightAttacks(board, side) |
+        allBishopAttacks(board, side, kingPosition) | allRookAttacks(board, side, kingPosition) |
+            allQueenAttacks(board, side, kingPosition) | allKingAttacks(board, side);
+}
+
+inline Rawboard allRayAttacks(const Board *board, const Side side) {
+    return allBishopAttacks(board, side) | allRookAttacks(board, side) | allQueenAttacks(board, side);
 }
 
 inline Rawboard(*destPosProviders[13])(const Board*, Position, Side);

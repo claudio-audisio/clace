@@ -4,6 +4,8 @@ DA FINIRE
 
 GENERALE
 
+    - vedere xche' abilitando la fastverifyChecks perft peggiora le performance di 200ms anche se no nla usa (depth 6)
+
     - aggiungere il log della board (fen?) in caso di assert false
 
     - Ottimizzare uso della cache
@@ -21,15 +23,17 @@ i
             - generateLegalMoves    (1700)
                 - generatePseudoLegalMoves  (155)
                     - getDestinationPositions
-                        per ogni pezzo di chi muove calcolo tutte le possibili destinazioni
                 - isValid
-                    - simulateMove
-                    - checkControl
-                        - getAttacks
-                            - getPawnAttacks
-                            - getKnightAttacks
-                            - ...
-                    - undoSimulateMove
+                    - simulateMove (170)
+                    - checkControl (1200)
+                        - allAttacks    (questi li calcolo ogni volta, proviamo a calcolarli prima della chiamata)
+                            - pawn      OPP_PIECES
+                            - knight    OPP_PIECES
+                            - bishop    ~EMPTY  ~PIECES
+                            - rook      ~EMPTY  ~PIECES
+                            - queen     ~EMPTY  ~PIECES
+                            - king      OPP_PIECES
+                    - undoSimulateMove (170)
 
 
 

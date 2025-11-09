@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils.h"
 #include "../common/types.h"
 
 using namespace std;
@@ -57,7 +58,14 @@ inline bool areOnSameRowOrColumn(const Position firstPosition, const Position se
     return getRow(firstPosition) == getRow(secondPosition) || getColumn(firstPosition) == getColumn(secondPosition);
 }
 
-/* TODO da sistemare
 inline bool areOnSameDiagonal(const Position firstPosition, const Position secondPosition) {
-    return abs(getRow(firstPosition) - getRow(secondPosition)) == abs(getColumn(firstPosition) - getColumn(secondPosition));
-}*/
+    return fastAbs(getRow(firstPosition) - getRow(secondPosition)) == fastAbs(getColumn(firstPosition) - getColumn(secondPosition));
+}
+
+inline bool areOnSameRowOrColumnOrDiagonal(const Position firstPosition, const Position secondPosition) {
+    const Position row_1 = getRow(firstPosition);
+    const Position col_1 = getColumn(firstPosition);
+    const Position row_2 = getRow(secondPosition);
+    const Position col_2 = getColumn(secondPosition);
+    return row_1 == row_2 || col_1 == col_2 || fastAbs(row_1 - row_2) == fastAbs(col_1 - col_2);
+}

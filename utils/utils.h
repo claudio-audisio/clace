@@ -9,6 +9,12 @@
 
 using namespace std;
 
+inline unsigned int fastAbs(int value) {
+    int s = value >> 31; // cdq, signed shift, -1 if negative, else 0
+    value ^= s;  // ones' complement if negative
+    value -= s;  // plus one if negative -> two's complement if negative
+    return value;
+}
 
 template <class T>
 void dequeAddAll(const deque<T>& source, deque<T>& destination) {

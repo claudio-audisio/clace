@@ -32,6 +32,7 @@ public:
     void undoSimulateMove(Move& move);
     void undoEnPassant(Move& move);
 	void verifyChecks();
+	//void fastVerifyChecks();
 	EndGameType checkEndGame(unsigned int legalMoves);
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
@@ -49,6 +50,7 @@ public:
     string printCastlingInfo() const;
 	string getCapturedList(Side side);
 	void calculateCheckPositions(Side side);
+	//void fastCalculateCheckPositions(Side side, Position kingPosition);
 	int getAllDestinationQty(Side side);
 
 	// Only for testing
