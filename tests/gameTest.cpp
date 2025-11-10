@@ -366,7 +366,6 @@ INSTANTIATE_TEST_SUITE_P(
 	)
 );
 
-
 TEST_F(GameTest, duplicateTest) {
 	const string fenBoard = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 50 25";
 	Game* game = FEN::fenToNewGame(fenBoard);
@@ -379,25 +378,16 @@ TEST_F(GameTest, duplicateTest) {
 	EXPECT_EQ(newGame->movesHistory.size(), 1);
 	GTEST_ASSERT_FALSE(isWhite(newGame->movesHistory.front()));
 	EXPECT_EQ(moveToString(newGame->movesHistory.front()), "b7a6");
-	EXPECT_EQ(positionsCount(newGame->checkStatus.allCheckPositions), 25);
-	GTEST_ASSERT_FALSE(newGame->checkStatus.check);
-	GTEST_ASSERT_FALSE(newGame->checkStatus.discoveryCheck);
-	GTEST_ASSERT_FALSE(newGame->checkStatus.doubleCheck);
-	GTEST_ASSERT_FALSE(newGame->checkStatus.checkmate);
+	EXPECT_EQ(positionsCount(game->checkStatus.allCheckPositions), positionsCount(newGame->checkStatus.allCheckPositions));
+	EXPECT_EQ(game->checkStatus.check, newGame->checkStatus.check);
+	EXPECT_EQ(game->checkStatus.discoveryCheck, newGame->checkStatus.discoveryCheck);
+	EXPECT_EQ(game->checkStatus.doubleCheck, newGame->checkStatus.doubleCheck);
+	EXPECT_EQ(game->checkStatus.checkmate, newGame->checkStatus.checkmate);
 
-	int checkPositionsCount = 0;
-	int xRayPositionsCount = 0;
 	for (int i = 0; i < 64; ++i) {
-		if (newGame->checkStatus.checkPositions[i] != 0) {
-			++checkPositionsCount;
-		}
-		if (newGame->checkStatus.xRayPositions[i] != 0) {
-			++xRayPositionsCount;
-		}
+		EXPECT_EQ(game->checkStatus.checkPositions[i], newGame->checkStatus.checkPositions[i]);
+		EXPECT_EQ(game->checkStatus.xRayPositions[i], newGame->checkStatus.xRayPositions[i]);
 	}
-
-	EXPECT_EQ(checkPositionsCount, 14);
-	EXPECT_EQ(xRayPositionsCount, 5);
 }
 
 

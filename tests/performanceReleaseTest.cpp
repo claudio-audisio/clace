@@ -186,20 +186,20 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	auto start = chrono::steady_clock::now();
 
 	for (int i = 1; i < 500000; ++i) {
-		game1->calculateCheckPositions(_WHITE);
-		game1->calculateCheckPositions(_BLACK);
-		game2->calculateCheckPositions(_WHITE);
-		game2->calculateCheckPositions(_BLACK);
-		game3->calculateCheckPositions(_WHITE);
-		game3->calculateCheckPositions(_BLACK);
-		game4->calculateCheckPositions(_WHITE);
-		game4->calculateCheckPositions(_BLACK);
-		game4m->calculateCheckPositions(_WHITE);
-		game4m->calculateCheckPositions(_BLACK);
-		game5->calculateCheckPositions(_WHITE);
-		game5->calculateCheckPositions(_BLACK);
-		game6->calculateCheckPositions(_WHITE);
-		game6->calculateCheckPositions(_BLACK);
+		game1->calculateCheckPositions(_WHITE, 4);
+		game1->calculateCheckPositions(_BLACK, 60);
+		game2->calculateCheckPositions(_WHITE, 4);
+		game2->calculateCheckPositions(_BLACK, 60);
+		game3->calculateCheckPositions(_WHITE, 39);
+		game3->calculateCheckPositions(_BLACK, 24);
+		game4->calculateCheckPositions(_WHITE, 4);
+		game4->calculateCheckPositions(_BLACK, 62);
+		game4m->calculateCheckPositions(_WHITE, 6);
+		game4m->calculateCheckPositions(_BLACK, 60);
+		game5->calculateCheckPositions(_WHITE, 5);
+		game5->calculateCheckPositions(_BLACK, 60);
+		game6->calculateCheckPositions(_WHITE, 6);
+		game6->calculateCheckPositions(_BLACK, 62);
 	}
 
 	unsLL time = getElapsedMillis(start);
@@ -207,53 +207,11 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 1100, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1050, 50);
+	GTEST_ASSERT_NEAR(time, 850, 50);
 #endif
 
 	cout << "time: " << time  << endl;
 }
-
-/*TEST_F(PerformanceReleaseTest, calculateCheckPositions2PerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Game* game1 = FEN::fenToNewGame(INITIAL_FEN_POSITION);
-	Game* game2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
-	Game* game3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
-	Game* game4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
-	Game* game4m = FEN::fenToNewGame(PERFT_FEN_POSITION_4_MIRRORED);
-	Game* game5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
-	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
-
-	auto start = chrono::steady_clock::now();
-
-	for (int i = 1; i < 500000; ++i) {
-		game1->fastCalculateCheckPositions(_WHITE, 4);
-		game1->fastCalculateCheckPositions(_BLACK, 60);
-		game2->fastCalculateCheckPositions(_WHITE, 4);
-		game2->fastCalculateCheckPositions(_BLACK, 60);
-		game3->fastCalculateCheckPositions(_WHITE, 39);
-		game3->fastCalculateCheckPositions(_BLACK, 24);
-		game4->fastCalculateCheckPositions(_WHITE, 4);
-		game4->fastCalculateCheckPositions(_BLACK, 62);
-		game4m->fastCalculateCheckPositions(_WHITE, 6);
-		game4m->fastCalculateCheckPositions(_BLACK, 60);
-		game5->fastCalculateCheckPositions(_WHITE, 5);
-		game5->fastCalculateCheckPositions(_BLACK, 60);
-		game6->fastCalculateCheckPositions(_WHITE, 6);
-		game6->fastCalculateCheckPositions(_BLACK, 62);
-	}
-
-	unsLL time = getElapsedMillis(start);
-
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 1100, 50);
-#else
-	GTEST_ASSERT_NEAR(time, 1000, 50);
-#endif
-
-	cout << "time: " << time  << endl;
-}*/
 
 TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 #ifndef PERFORMANCE_TESTS
@@ -548,7 +506,7 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5100, 50);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 4950, 50);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
