@@ -26,16 +26,16 @@ public:
 	MoveResult finalizeMove(Move& move);
 	MoveResult applyMove(Move& move);
 	void applyMoves(list<Move>& moves);
-	void simulateMove(Move& move);
-	Piece completeEnPassant(Move move);
-	void completePawnPromotion(Move move);
-    void undoSimulateMove(Move& move);
-    void undoEnPassant(Move& move);
+	void simulateMove(Move& move) const;
+	Piece completeEnPassant(Move move) const;
+	void completePawnPromotion(Move move) const;
+    void undoSimulateMove(Move move) const;
+    void undoEnPassant(Move move) const;
 	void verifyChecks();
 	EndGameType checkEndGame(unsigned int legalMoves);
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
-	bool checkControl(Move move);
+	bool checkControl(Move move) const;
 	void changeTurn();
 	Side getSide(Position position) const;
 	void save();
@@ -44,10 +44,10 @@ public:
     Player* getOtherPlayer() const;
     bool isComputerToMove() const;
 	void setLastMove(Move move);
-	Game* duplicate();
+	Game* duplicate() const;
     string printMovesHistory(int depth = 0) const;
     string printCastlingInfo() const;
-	string getCapturedList(Side side);
+	string getCapturedList(Side side) const;
 	void calculateCheckPositions(Side side, Position kingPosition);
 	int getAllDestinationQty(Side side) const;
 
@@ -67,7 +67,8 @@ public:
     string getDescription() const;
 
     Board *board;
-	deque<Move> movesHistory;	// TODO renderla thread safe (davvero necessario?)
+	Move *movesHistory;
+	unsigned int movesHistIndex = 0;
 	GameSnapshot **snapshots;
 	unsigned int snapshotIndex = 0;
 	CheckStatus checkStatus;

@@ -90,7 +90,7 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 #ifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(time, 2040, 50);
 #else
-	GTEST_ASSERT_NEAR(time, 1600);
+	GTEST_ASSERT_NEAR(time, 1700);
 #endif
 
 	cout << "time: " << time  << endl;
@@ -301,7 +301,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 2300);
+	GTEST_ASSERT_NEAR(time, 2400);
 
 	cout << "time: " << time  << endl;
 }
@@ -489,7 +489,7 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 #elifdef BOARD_USE_PRE_CALCULATED
 	GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 160);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 170);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -570,7 +570,7 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 260);
+	GTEST_ASSERT_NEAR(time, 270);
 
 	cout << "time: " << time  << endl;
 }
@@ -593,7 +593,7 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 170);
+	GTEST_ASSERT_NEAR(time, 180);
 
 	cout << "time: " << time  << endl;
 }

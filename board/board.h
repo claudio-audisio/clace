@@ -227,11 +227,9 @@ inline void updateCastlingInfo(Board *board, const Position source, const Positi
 inline void updateEnPassantInfo(Board *board, const Position source, const Position destination, const Piece piece) {
     const Side side = _getSide(piece);
 
-    if (_isPawn(piece) &&
-        isSecondRow(source, side) &&
-        isFourthRow(destination, side)) {
+    if (_isPawn(piece) && isSecondRow(source, side) && isFourthRow(destination, side)) {
         board->enPassantPosition = source - 8 + (16 * side);
-        }
+    }
     else {
         board->enPassantPosition = NO_POS;
     }

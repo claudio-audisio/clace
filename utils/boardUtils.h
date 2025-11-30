@@ -51,6 +51,10 @@ inline bool isUnderCheck(const Rawboard board, const Position position) {
     return (board & posInd(position)) != 0;
 }
 
+inline bool areUnderCheck(const Rawboard board, const Rawboard positions) {
+    return (board & positions) > 0;
+}
+
 inline int positionsCount(Rawboard board) {
     return popcount(board);
 }

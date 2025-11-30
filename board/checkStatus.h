@@ -23,9 +23,6 @@ public:
 	Rawboard checkPositions[64];		// positions under check by piece position
 	Rawboard xRayPositions[64];			// xray positions under check by piece position
 
-	/*unordered_map<Position, Rawboard> checkPositions;    // positions under check by piece position
-	unordered_map<Position, Rawboard> xRayPositions;     // xray positions under check by piece position*/
-
     bool check;
     bool discoveryCheck;
     bool doubleCheck;

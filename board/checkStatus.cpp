@@ -72,16 +72,11 @@ void CheckStatus::reset() {
     check = discoveryCheck = doubleCheck = checkmate = false;
     allCheckPositions = 0;
 
-    /*for (int i = 0; i < 64; i++) {
-        checkPositions[i] = 0;
-        xRayPositions[i] = 0;
-    }*/
     memset(checkPositions, 0L, sizeof(checkPositions));
     memset(xRayPositions, 0L, sizeof(xRayPositions));
 }
 
 void CheckStatus::set(const CheckStatus& checkStatus) {
-    reset();
     check = checkStatus.check;
     discoveryCheck = checkStatus.discoveryCheck;
     doubleCheck = checkStatus.doubleCheck;

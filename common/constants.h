@@ -22,6 +22,7 @@ using namespace std;
 #define NO_POS 64
 #define SIZE 13
 #define MAX_MOVES 218
+#define HISTORY_MOVES 100
 
 // pieces
 constexpr Piece Empty = 0;
@@ -120,7 +121,7 @@ inline const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQuee
 #define WKC_RookAdd 0x2000000000000000
 #define WKC_EmptyRem 0x9fffffffffffffff
 #define WKC_EmptyAdd 0x9000000000000000
-inline const CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+inline constexpr CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
 
 // xray pieces
 inline unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{_WHITE, { WRook, WBishop, WQueen }}, {_BLACK, { BRook, BBishop, BQueen }}};

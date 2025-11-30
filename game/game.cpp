@@ -12,6 +12,7 @@
 
 Game::Game() :
 	sideToMove(0), fullMoves(0), halfMoveClock(0) {
+	movesHistory = static_cast<Move*>(calloc(HISTORY_MOVES, sizeof(Move)));
 	snapshots = allocateSnapshots(10);
 	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
@@ -19,6 +20,7 @@ Game::Game() :
 }
 
 Game::~Game() {
+	free(movesHistory);
 	deallocateSnapshots(snapshots, 10);
 	delete whitePlayer;
 	delete blackPlayer;
@@ -66,7 +68,7 @@ MoveResult Game::finalizeMove(Move& move) {
 MoveResult Game::applyMove(Move& move) {
 	const MoveResult moveResult = finalizeMove(move);
 	lastMove = move;
-	movesHistory.push_front(move);
+	movesHistory[movesHistIndex++] = move;
 
 	if (!isWhite(move)) {
 		fullMoves++;
@@ -82,7 +84,7 @@ void Game::applyMoves(list<Move>& moves) {
     }
 }
 
-void Game::simulateMove(Move& move) {
+void Game::simulateMove(Move& move) const {
 	Piece captured = simulateMovePiece(
 		board,
 		getSourcePosition(move),
@@ -94,22 +96,22 @@ void Game::simulateMove(Move& move) {
 		completePawnPromotion(move);
 	}
 
-	if (captured == Empty && isEnPassant(move)) {
+	if (!captured && isEnPassant(move)) {
 		captured = completeEnPassant(move);
 	}
 
 	setCaptured(move, captured);
 }
 
-Piece Game::completeEnPassant(const Move move) {
-	const Position destination = getDestinationPosition(move) + (isWhite(move) ? 8 : -8);
+Piece Game::completeEnPassant(const Move move) const {
+	const Position destination = getDestinationPosition(move) + (8 - 8 * 2 * getMoveSide(move));
 	return setEmpty(board, destination);
 }
 
-void Game::completePawnPromotion(const Move move) {
+void Game::completePawnPromotion(const Move move) const {
 	const Piece promotionPiece = getPromotion(move);
 
-	if (promotionPiece == Empty) {
+	if (!promotionPiece) {
 		throw runtime_error("promotion piece not set");
 	}
 
@@ -117,7 +119,7 @@ void Game::completePawnPromotion(const Move move) {
 	setPiece(board, getDestinationPosition(move), promotionPiece);
 }
 
-void Game::undoSimulateMove(Move& move) {
+void Game::undoSimulateMove(const Move move) const {
 	if (isCastling(move)) {
 		undoCastlingMove(board, getSourcePosition(move), getDestinationPosition(move));
 	} else {
@@ -125,7 +127,7 @@ void Game::undoSimulateMove(Move& move) {
 		setEmpty(board, getDestinationPosition(move));
 		const Piece captured = getCaptured(move);
 
-		if (captured != Empty) {
+		if (captured) {
 			if (isEnPassant(move)) {
 				undoEnPassant(move);
 			} else {
@@ -137,15 +139,16 @@ void Game::undoSimulateMove(Move& move) {
     // Undo Pawn promotion is not needed because undoing original move we have already moved a Pawn
 }
 
-void Game::undoEnPassant(Move& move) {
-    const Position destination = getDestinationPosition(move) + (isWhite(move) ? 8 : -8);
-    setPiece(board, destination, isWhite(move) ? BPawn : WPawn);
+void Game::undoEnPassant(const Move move) const {
+	const Side side = getMoveSide(move);
+    const Position destination = getDestinationPosition(move) + (8 - 8 * 2 * side);
+    setPiece(board, destination, BPawn - side);
 }
 
 void Game::verifyChecks() {
 	const Position kingPosition = getKingPosition(board, sideToMove);
 	calculateCheckPositions(getOppositeSide(), kingPosition);
-	checkStatus.updateStatus(kingPosition, movesHistory.empty() ? 0 : movesHistory.front());
+	checkStatus.updateStatus(kingPosition, lastMove);
 }
 
 EndGameType Game::checkEndGame(const unsigned int legalMoves) {
@@ -170,7 +173,7 @@ bool Game::checkFiveFoldRepetitions() const {
 	return false;
 }
 
-bool Game::checkControl(const Move move) {
+bool Game::checkControl(const Move move) const {
 	const Side side = getMoveSide(move);
 	const Position kingPosition = getKingPosition(board, side);
 	Rawboard checkBoard = allAttacks(board, OPPOSITE(side), kingPosition);
@@ -179,35 +182,26 @@ bool Game::checkControl(const Move move) {
 		return false;
 	}
 
-	bool castlingNotValid = false;
-
 	if (isCastling(move)) {
 		checkBoard |= allRayAttacks(board, OPPOSITE(side));
 
-		if (side) {
-			switch (getDestinationPosition(move)) {
-				case 2: castlingNotValid = isUnderCheck(checkBoard, 4) || isUnderCheck(checkBoard, 3); break;
-				case 6: castlingNotValid = isUnderCheck(checkBoard, 4) || isUnderCheck(checkBoard, 5); break;
-				default: break;
-			}
-		}
-		else {
-			switch (getDestinationPosition(move)) {
-				case 58: castlingNotValid = isUnderCheck(checkBoard, 60) || isUnderCheck(checkBoard, 59); break;
-				case 62: castlingNotValid = isUnderCheck(checkBoard, 60) || isUnderCheck(checkBoard, 61); break;
-				default: break;
-			}
+		switch (getDestinationPosition(move)) {
+			case 2: return (checkBoard & 24L) == 0;
+			case 6: return (checkBoard & 48L) == 0;
+			case 58: return (checkBoard & 1729382256910270464L) == 0;
+			case 62: return (checkBoard & 3458764513820540928L) == 0;
+			default: break;
 		}
 	}
 
-	return !castlingNotValid;
+	return true;
 }
 
 void Game::changeTurn() {
 	sideToMove = OPPOSITE(sideToMove);
 }
 
-Side Game::getSide(Position position) const {
+Side Game::getSide(const Position position) const {
 	if (isEmpty(board, position)) {
 		assert(false);
 	}
@@ -225,8 +219,8 @@ void Game::save() {
 
 void Game::rollbackLastMove() {
 	checkStatus.reset();
-	movesHistory.pop_front();
-	lastMove = movesHistory.empty() ? 0 : movesHistory.front();
+	movesHistIndex--;
+	lastMove = movesHistIndex == 0 ? 0 : movesHistory[movesHistIndex - 1];
 	loadSnapshot(this->board, sideToMove, fullMoves, halfMoveClock, snapshots, --snapshotIndex);
 }
 
@@ -239,7 +233,7 @@ Player* Game::getOtherPlayer() const {
 }
 
 bool Game::isComputerToMove() const {
-	Player* player = this->getCurrentPlayer();
+	const Player* player = this->getCurrentPlayer();
 
 	if (!player) {
 		return false;
@@ -249,11 +243,11 @@ bool Game::isComputerToMove() const {
 }
 
 void Game::setLastMove(const Move move) {
-	movesHistory.push_front(move);
+	movesHistory[movesHistIndex++] = move;
 	lastMove = move;
 }
 
-Game* Game::duplicate() {
+Game* Game::duplicate() const {
 	Game* newGame = new Game();
 	newGame->init();
 	copy(board, newGame->board);
@@ -262,20 +256,23 @@ Game* Game::duplicate() {
 	newGame->board->enPassantPosition = board->enPassantPosition;
 	newGame->fullMoves = fullMoves;
 	newGame->halfMoveClock = halfMoveClock;
-	dequeAddAll(movesHistory, newGame->movesHistory);
+	/*for (unsigned int i = 0; i < HISTORY_MOVES; i++) {
+		newGame->movesHistory[i] = movesHistory[i];
+	}*/
+	memcpy(newGame->movesHistory, movesHistory, sizeof(movesHistory));
+	newGame->movesHistIndex = movesHistIndex;
 	newGame->checkStatus.set(checkStatus);
 	return newGame;
 }
 
 string Game::printMovesHistory(const int depth) const {
     string moves;
-	int i = 0;
-    for (Move move : movesHistory) {
-        moves = moveToString(move) + ", " + moves;
-    	if (depth > 0 && ++i == depth) {
-    		break;
-    	}
-    }
+	int size = depth == 0 ? movesHistIndex : depth;
+
+	for (int i = 0; i < size; i++) {
+		moves = moveToString(movesHistory[i]) + ", " + moves;
+	}
+
     return moves.substr(0, moves.length() - 2);
 }
 
@@ -283,7 +280,7 @@ string Game::printCastlingInfo() const {
     return FEN::castlingInfoToFEN(board->castlingInfo);
 }
 
-string Game::getCapturedList(const Side side) {
+string Game::getCapturedList(const Side side) const {
 	string captured;
 	for (int i = 0; i < 1 - positionsCount(board->pieceBoards[WQueen + side]); ++i) {
 		captured += getPieceCode(WQueen + side);
