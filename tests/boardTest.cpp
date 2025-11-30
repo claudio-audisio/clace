@@ -46,7 +46,8 @@ TEST_F(BoardTest, ConstructorTest) {
 	}
 	EXPECT_EQ(board->castlingInfo, 0);
 	EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts[] = {64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, allBoardsTest) {
@@ -55,7 +56,8 @@ TEST_F(BoardTest, allBoardsTest) {
     EXPECT_EQ(~board->pieceBoards[Empty], PIECES(board, _WHITE) | PIECES(board, _BLACK));
 	EXPECT_EQ(~PIECES(board, _WHITE), board->pieceBoards[Empty] | OPP_PIECES(board, _WHITE));
 	EXPECT_EQ(~PIECES(board, _BLACK), board->pieceBoards[Empty] | OPP_PIECES(board, _BLACK));
-    checkPositionCount(board, (unsigned int[]){32, 8, 8, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1});
+    unsigned int expected_counts[] = {32, 8, 8, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1};
+    checkPositionCount(board, expected_counts);
     delete game;
 }
 
@@ -277,14 +279,16 @@ TEST_F(BoardTest, setPieceTest) {
 	EXPECT_EQ(board->piecePositions[4], BKing);
 	EXPECT_EQ(board->pieceBoards[BKing], 0x10);
 	EXPECT_EQ(board->pieceBoards[Empty], 0xFFFFFFFFFFFFFFEF);
-    checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
+    unsigned int expected_counts[] = {63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    checkPositionCount(board, expected_counts);
     oldPiece = setPiece(board, 4, WQueen);
     EXPECT_EQ(oldPiece, BKing);
 	EXPECT_EQ(board->piecePositions[4], WQueen);
 	EXPECT_EQ(board->pieceBoards[WQueen], 0x10);
 	EXPECT_EQ(board->pieceBoards[BKing], 0);
 	EXPECT_EQ(board->pieceBoards[Empty], 0xFFFFFFFFFFFFFFEF);
-    checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0});
+    unsigned int expected_counts2[] = {63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};
+    checkPositionCount(board, expected_counts2);
 }
 
 TEST_F(BoardTest, setEmptyTest) {
@@ -297,7 +301,8 @@ TEST_F(BoardTest, setEmptyTest) {
 	EXPECT_EQ(board->piecePositions[4], Empty);
 	EXPECT_EQ(board->pieceBoards[BKing], 0);
 	EXPECT_EQ(board->pieceBoards[Empty], 0xFFFFFFFFFFFFFFFF);
-    checkPositionCount(board, (unsigned int[]){64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts[] = {64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 // TODO aggiungere i test mancanti
@@ -315,7 +320,8 @@ TEST_F(BoardTest, moveTest) {
     EXPECT_EQ(getPiece(board, 12), BKing);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
     EXPECT_EQ(board->castlingInfo, 0b1100);
-    checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
+    unsigned int expected_counts[] = {63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    checkPositionCount(board, expected_counts);
 
     setPiece(board, 19, WPawn);
     oldPiece = movePiece(board, 19, 12, WPawn);
@@ -323,7 +329,8 @@ TEST_F(BoardTest, moveTest) {
     EXPECT_EQ(oldPiece, BKing);
     GTEST_ASSERT_TRUE(isEmpty(board, 19));
     EXPECT_EQ(getPiece(board, 12), WPawn);
-    checkPositionCount(board, (unsigned int[]){63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts2[] = {63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(board, expected_counts2);
 
     setPiece(board, 48, WPawn);
     oldPiece = movePiece(board, 48, 32, WPawn);
@@ -332,7 +339,8 @@ TEST_F(BoardTest, moveTest) {
     GTEST_ASSERT_TRUE(isEmpty(board, 48));
     EXPECT_EQ(getPiece(board, 32), WPawn);
     EXPECT_EQ(board->enPassantPosition, 40);
-    checkPositionCount(board, (unsigned int[]){62, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts3[] = {62, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(board, expected_counts3);
 }
 
 TEST_F(BoardTest, moveWithBQCastlingTest) {
@@ -354,7 +362,8 @@ TEST_F(BoardTest, moveWithBQCastlingTest) {
     EXPECT_EQ(getPiece(board, 3), BRook);
     EXPECT_EQ(board->castlingInfo, 0b1100);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1});
+    unsigned int expected_counts[] = {61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, moveWithBKCastlingTest) {
@@ -375,7 +384,8 @@ TEST_F(BoardTest, moveWithBKCastlingTest) {
     EXPECT_EQ(getPiece(board, 5), BRook);
     EXPECT_EQ(board->castlingInfo, 0b1100);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1});
+    unsigned int expected_counts[] = {61, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, moveWithWQCastlingTest) {
@@ -397,7 +407,8 @@ TEST_F(BoardTest, moveWithWQCastlingTest) {
     EXPECT_EQ(getPiece(board, 59), WRook);
     EXPECT_EQ(board->castlingInfo, 0b0011);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0});
+    unsigned int expected_counts[] = {61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, moveWithWKCastlingTest) {
@@ -418,7 +429,8 @@ TEST_F(BoardTest, moveWithWKCastlingTest) {
     EXPECT_EQ(getPiece(board, 61), WRook);
     EXPECT_EQ(board->castlingInfo, 0b0011);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0});
+    unsigned int expected_counts[] = {61, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, moveEnPassant) {
@@ -437,7 +449,8 @@ TEST_F(BoardTest, moveEnPassant) {
     EXPECT_EQ(getPiece(board, 41), BPawn);
     EXPECT_EQ(board->castlingInfo, 0b1111);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){63, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts[] = {63, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, movePawnPromotion) {
@@ -457,7 +470,8 @@ TEST_F(BoardTest, movePawnPromotion) {
     EXPECT_EQ(getPiece(board, 1), WQueen);
     EXPECT_EQ(board->castlingInfo, 0b1111);
     EXPECT_EQ(board->enPassantPosition, NO_POS);
-    checkPositionCount(board, (unsigned int[]){63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0});
+    unsigned int expected_counts[] = {63, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};
+    checkPositionCount(board, expected_counts);
 }
 
 TEST_F(BoardTest, copyTest) {
@@ -472,7 +486,8 @@ TEST_F(BoardTest, copyTest) {
     GTEST_ASSERT_TRUE(isWhite(board, 63));
     GTEST_ASSERT_FALSE(isBlack(board, 63));
     GTEST_ASSERT_TRUE(isPawn(board, 63));
-    checkPositionCount(newboard, (unsigned int[]){63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    unsigned int expected_counts[] = {63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    checkPositionCount(newboard, expected_counts);
 }
 
 class TestParams {

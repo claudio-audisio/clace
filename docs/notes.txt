@@ -4,7 +4,7 @@ DA FINIRE
 
 GENERALE
 
-    - vedere xche' abilitando la fastverifyChecks perft peggiora le performance di 200ms anche se no nla usa (depth 6)
+    - vedere xche' abilitando la fastverifyChecks perft peggiora le performance di 200ms anche se non la usa (depth 6)
 
     - aggiungere il log della board (fen?) in caso di assert false
 
@@ -21,19 +21,12 @@ i
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
         - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
             - generateLegalMoves    (1700)
-                - generatePseudoLegalMoves  (155)
+                - generatePseudoLegalMoves  (160)
                     - getDestinationPositions
-                - isValid
-                    - simulateMove (170)
-                    - checkControl (1200)
-                        - allAttacks    (questi li calcolo ogni volta, proviamo a calcolarli prima della chiamata)
-                            - pawn      OPP_PIECES
-                            - knight    OPP_PIECES
-                            - bishop    ~EMPTY  ~PIECES
-                            - rook      ~EMPTY  ~PIECES
-                            - queen     ~EMPTY  ~PIECES
-                            - king      OPP_PIECES
-                    - undoSimulateMove (170)
+                - isValid   (1400)
+                    - simulateMove (180)
+                    - checkControl (1000) (provato a calcolare prima i vari OPP_PIECES, ~EMPTY, ~PIECES, ma non cambia nulla, anzi)
+                    - undoSimulateMove (180)
 
 
 
