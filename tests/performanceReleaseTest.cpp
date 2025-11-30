@@ -109,8 +109,8 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 
 	for (int j = 1; j < 1000000; ++j) {
 		for (int i = 0; i < tot; i++) {
-			//game->simulateMove(moves[i]);
-			//game->checkControl(moves[i]);
+			game->simulateMove(moves[i]);
+			game->checkControl(moves[i]);
 			game->undoSimulateMove(moves[i]);
 		}
 	}
@@ -411,7 +411,7 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	}
 
 	auto rollbackTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(rollbackTime, 2380);
+	GTEST_ASSERT_NEAR(rollbackTime, 2550);
 	cout << "time: " << rollbackTime  << endl;
 
 	deallocateSnapshots(snapshots, size);

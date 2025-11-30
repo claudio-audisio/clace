@@ -4,6 +4,7 @@
 #include "../utils/messenger.h"
 #include "../evaluation/basicEvaluator.h"
 #include "../move/movesGenerator.h"
+#include "../utils/movePool.h"
 #include "../utils/toString.h"
 
 
@@ -15,13 +16,13 @@ public:
         }
 
         this->depth = depth;
-        this->pool = new ArrayPool<Move>(this->depth + 1);
+        this->pool = new MovePool(this->depth + 1);
         this->evaluator = new BasicEvaluator();
     }
 
     unsigned int depth;
     IEvaluator* evaluator = nullptr;
-    ArrayPool<Move>* pool = nullptr;
+    MovePool* pool = nullptr;
     Messenger& messenger = Messenger::getInstance();
     Evaluation best;
 

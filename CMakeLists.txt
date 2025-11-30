@@ -55,6 +55,7 @@ add_executable (clace
 		movesCalculation/staticAttacks.h
 		common/defines.h
 		utils/arrayPool.h
+		utils/movePool.h
 		engine/abstract_engine.h
 		ui/gui/gui.cpp
 		ui/gui/gui.h
@@ -92,6 +93,7 @@ add_library(claceLib
 		movesCalculation/staticAttacks.h
 		common/defines.h
 		utils/arrayPool.h
+		utils/movePool.h
 		engine/abstract_engine.h
 		ui/gui/guiConstants.h
 		ui/gui/button.cpp

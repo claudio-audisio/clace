@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "../utils/logger.h"
 
 using namespace std;
 
@@ -12,7 +11,7 @@ class MovesProcessor {
 public:
 	vector<string> movesHistory;
 	unsigned int movesHistoryIndex = 0;
-	ArrayPool<Move>* pool = new ArrayPool<Move>(1);
+	MovePool* pool = new MovePool(1);
 	IEngine* engine = new BF_Engine(2);
 	Messenger& messenger = Messenger::getInstance();
 

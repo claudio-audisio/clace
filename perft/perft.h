@@ -4,13 +4,13 @@
 
 #include "../game/game.h"
 #include "result.h"
-#include "../utils/vectorPool.h"
-#include "../utils/arrayPool.h"
 #include "../move/movesCache.h"
 #include "../utils/logger.h"
 
 using namespace std;
 
+
+class MovePool;
 
 class Perft {
 public:
@@ -25,7 +25,7 @@ private:
 	unsigned int depth;
 	string fenGame;
 	Result* result;
-	ArrayPool<Move>* pool;
+	MovePool* pool;
     MovesCache* cache;
     unsigned int cacheUsage = 0;
     unsigned int generatorUsage = 0;

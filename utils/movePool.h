@@ -5,20 +5,18 @@
 
 using namespace std;
 
-template<class T>
-class ArrayPool {
+class MovePool {
 public:
-    ArrayPool(unsigned int size, unsigned int arraySize = MAX_MOVES) {
+    explicit MovePool(const unsigned int size) {
         this->size = size;
-        this->arraySize = arraySize;
-        pool = new T*[size];
+        pool = new Move*[size];
 
         for (unsigned int index = 0; index < size; index++) {
-            pool[index] = new T[arraySize];
+            pool[index] = new Move[MAX_MOVES];
         }
     }
 
-    ~ArrayPool() {
+    ~MovePool() {
         for (unsigned int index = 0; index < size; index++) {
             delete pool[index];
         }
@@ -26,12 +24,11 @@ public:
         delete pool;
     }
 
-    T* getArray(unsigned int index = 0) {
-        memset(pool[index], 0, sizeof(T) * arraySize);
+    Move* getArray(const unsigned int index = 0) const {
+        memset(pool[index], 0, sizeof(Move) * MAX_MOVES);
         return pool[index];
     }
 
     unsigned int size;
-    unsigned int arraySize;
-    T** pool;
+    Move** pool;
 };

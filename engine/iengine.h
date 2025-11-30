@@ -1,8 +1,6 @@
 #pragma once
 
 #include "../game/game.h"
-#include "../evaluation/ievaluator.h"
-#include "../utils/arrayPool.h"
 
 
 class IEngine {

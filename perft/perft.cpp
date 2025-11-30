@@ -3,7 +3,7 @@
 #include "perft.h"
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
-#include "../common/defines.h"
+#include "../utils/movePool.h"
 
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {
@@ -11,7 +11,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->depth = depth;
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
-    this->pool = new ArrayPool<Move>(depth + 1);
+    this->pool = new MovePool(depth + 1);
 #ifdef PERFT_USE_CACHE
     this->cache = new MovesCache(0);
 #else
