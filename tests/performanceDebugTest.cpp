@@ -222,27 +222,15 @@ TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 
 #ifdef BOARD_STANDARD_RAY_ATTACKS
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2170, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1090, 50);
-#endif
 #endif
 
 #ifdef BOARD_BRANCHLESS_RAY_ATTACKS
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2160, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1300, 50);
-#endif
 #endif
 
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2085, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1345, 50);
-#endif
 #endif
 
 	cout << "time: " << time  << endl;

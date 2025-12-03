@@ -86,13 +86,7 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2040, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1700);
-#endif
-
 	cout << "time: " << time  << endl;
 }
 
@@ -116,13 +110,7 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2040, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1370);
-#endif
-
 	cout << "time: " << time  << endl;
 }
 
@@ -169,13 +157,7 @@ TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 2040, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 1250);
-#endif
-
 	cout << "time: " << time  << endl;
 }
 
@@ -211,13 +193,7 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(start);
-
-#ifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(time, 1100, 50);
-#else
 	GTEST_ASSERT_NEAR(time, 970);
-#endif
-
 	cout << "time: " << time  << endl;
 }
 
@@ -486,8 +462,6 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);
-#elifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 240, 10);
 #else
 	GTEST_ASSERT_NEAR(result->getElapsed(), 170);
 #endif
@@ -505,8 +479,6 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);
-#elifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
 	GTEST_ASSERT_NEAR(result->getElapsed(), 4080);
 #endif
@@ -524,8 +496,6 @@ TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
 
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);
-#elifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
 	GTEST_ASSERT_NEAR(result->getElapsed(), 210);
 #endif
@@ -543,8 +513,6 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);
-#elifdef BOARD_USE_PRE_CALCULATED
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6110, 50);
 #else
 	GTEST_ASSERT_NEAR(result->getElapsed(), 5350);
 #endif

@@ -8,11 +8,6 @@
 #include "../utils/utils.h"
 #include "../utils/positions.h"
 
-#ifdef BOARD_USE_PRE_CALCULATED
-    /*Rawboard _OPP_PIECES[2];
-    Rawboard _PIECES[2];*/
-#endif
-
 typedef struct {
     Rawboard pieceBoards[SIZE];
     Piece piecePositions[64];
@@ -21,63 +16,22 @@ typedef struct {
 } Board;
 
 inline Rawboard PIECES(const Board *board, const Side side) {
-    // TODO capire quanto questo venga effettivamente usate (per esempio con perft 6)
-#ifdef BOARD_USE_PRE_CALCULATED
-    if (!board->_PIECES[side]) {
-        board->_PIECES[side] = board->pieceBoards[WPawn + side] |
-               board->pieceBoards[WBishop + side] |
-               board->pieceBoards[WQueen + side] |
-               board->pieceBoards[WKnight + side] |
-               board->pieceBoards[WKing + side] |
-               board->pieceBoards[WRook + side];
-    }
-
-    return board->_PIECES[side];
-#else
-    // Usare per test di performance sui metodi della board
     return board->pieceBoards[WPawn + side] |
            board->pieceBoards[WBishop + side] |
            board->pieceBoards[WQueen + side] |
            board->pieceBoards[WKnight + side] |
            board->pieceBoards[WKing + side] |
            board->pieceBoards[WRook + side];
-#endif
 }
 
 inline Rawboard OPP_PIECES(const Board *board, const Side side) {
-#ifdef BOARD_USE_PRE_CALCULATED
-    if (!board->_OPP_PIECES[side]) {
-        board->_OPP_PIECES[side] = board->pieceBoards[BPawn - side] |
-                board->pieceBoards[BBishop - side] |
-                board->pieceBoards[BQueen - side] |
-                board->pieceBoards[BKnight - side] |
-                board->pieceBoards[BKing - side] |
-                board->pieceBoards[BRook - side];
-    }
-
-    return board->_OPP_PIECES[side];
-#else
-    // Usare per test di performance sui metodi della board
     return board->pieceBoards[BPawn - side] |
            board->pieceBoards[BBishop - side] |
            board->pieceBoards[BQueen - side] |
            board->pieceBoards[BKnight - side] |
            board->pieceBoards[BKing - side] |
            board->pieceBoards[BRook - side];
-#endif
 }
-
-#ifdef BOARD_USE_PRE_CALCULATED
-inline void resetCalculated(Board *board, const Side side) {
-    board->_PIECES[side] = 0;
-    board->_OPP_PIECES[side] = 0;
-}
-
-inline void resetCalculated(Board *board) {
-    resetCalculated(board, _WHITE);
-    resetCalculated(board, _BLACK);
-}
-#endif
 
 inline void reset(Board *board) {
     for (RawboardIndex i = 1; i < SIZE; ++i) {
@@ -92,9 +46,6 @@ inline void reset(Board *board) {
 
     board->castlingInfo = 0;
     board->enPassantPosition = NO_POS;
-#ifdef BOARD_USE_PRE_CALCULATED
-    resetCalculated(board);
-#endif
 }
 
 inline bool equals(const Board *board1, const Board *board2) {
@@ -124,10 +75,6 @@ inline void copy(const Board* source, Board* destination) {
 
     destination->castlingInfo = source->castlingInfo;
     destination->enPassantPosition = source->enPassantPosition;
-
-#ifdef BOARD_USE_PRE_CALCULATED
-    resetCalculated();
-#endif
 }
 
 inline unsigned int getPieceCount(const Board *board, const Piece piece) {
@@ -200,9 +147,6 @@ inline Piece setPiece(Board *board, const Position position, const Piece piece) 
     board->pieceBoards[oldPiece] &= ~posIndex;
     board->pieceBoards[piece] |= posIndex;
     board->piecePositions[position] = piece;
-#ifdef BOARD_USE_PRE_CALCULATED
-    resetCalculated(board);
-#endif
     return oldPiece;
 }
 
@@ -292,9 +236,6 @@ inline void castlingMove(Board *board, const Position source, const Position des
 inline Piece simulateMovePiece(Board *board, const Position source, const Position destination, const Piece piece, const bool isCastling) {
     if (isCastling) {
         castlingMove(board, source, destination);
-#ifdef BOARD_USE_PRE_CALCULATED
-        resetCalculated(board);
-#endif
         return Empty;
     }
 
@@ -317,9 +258,6 @@ inline Piece movePiece(Board *board, const Position source, const Position desti
             board->enPassantPosition = NO_POS;
             castlingMove(board, source, destination);
             updateCastlingInfo(board, source, destination);
-#ifdef BOARD_USE_PRE_CALCULATED
-            resetCalculated(board);
-#endif
             return Empty;
     }
     case EN_PASSANT: {
