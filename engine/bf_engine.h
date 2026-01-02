@@ -15,7 +15,7 @@ public:
 				game.applyMove(moves[i]);
 				const double value = -negaMax(game, depth - 1);
 
-				if (value > best.value) {
+				if (value >= best.value) {
 					best.move = moves[i];
 					best.value = value;
 				}

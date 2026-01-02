@@ -33,8 +33,8 @@ TEST_F(MovesGeneratorTest, calculateLegalMoves) {
 
 	EXPECT_EQ(amount.total, 2);
 	EXPECT_EQ(amount.legal, 1);
-	EXPECT_EQ(moves[0], 0);
-	EXPECT_EQ(moveToString(moves[1]), "a1b1");
+	EXPECT_EQ(moveToString(moves[0]), "a1b1");
+	EXPECT_EQ(moves[1], 0);
 }
 
 

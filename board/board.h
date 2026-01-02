@@ -172,7 +172,7 @@ inline void updateEnPassantInfo(Board *board, const Position source, const Posit
     const Side side = _getSide(piece);
 
     if (_isPawn(piece) && isSecondRow(source, side) && isFourthRow(destination, side)) {
-        board->enPassantPosition = source - 8 + (16 * side);
+        board->enPassantPosition = source + 8 - (16 * side);
     }
     else {
         board->enPassantPosition = NO_POS;
@@ -187,10 +187,10 @@ inline void castlingMove(Board *board, const Position source, const Position des
             board->pieceBoards[BRook] |= BQC_RookAdd;
             board->pieceBoards[Empty] &= BQC_EmptyRem;
             board->pieceBoards[Empty] |= BQC_EmptyAdd;
-            board->piecePositions[0] = Empty;
-            board->piecePositions[2] = BKing;
-            board->piecePositions[3] = BRook;
-            board->piecePositions[4] = Empty;
+            board->piecePositions[56] = Empty;
+            board->piecePositions[58] = BKing;
+            board->piecePositions[59] = BRook;
+            board->piecePositions[60] = Empty;
             break;
     }
     case BKCastling: {
@@ -199,10 +199,10 @@ inline void castlingMove(Board *board, const Position source, const Position des
             board->pieceBoards[BRook] |= BKC_RookAdd;
             board->pieceBoards[Empty] &= BKC_EmptyRem;
             board->pieceBoards[Empty] |= BKC_EmptyAdd;
-            board->piecePositions[4] = Empty;
-            board->piecePositions[6] = BKing;
-            board->piecePositions[5] = BRook;
-            board->piecePositions[7] = Empty;
+            board->piecePositions[60] = Empty;
+            board->piecePositions[62] = BKing;
+            board->piecePositions[61] = BRook;
+            board->piecePositions[63] = Empty;
             break;
     }
     case WQCastling: {
@@ -211,10 +211,10 @@ inline void castlingMove(Board *board, const Position source, const Position des
             board->pieceBoards[WRook] |= WQC_RookAdd;
             board->pieceBoards[Empty] &= WQC_EmptyRem;
             board->pieceBoards[Empty] |= WQC_EmptyAdd;
-            board->piecePositions[56] = Empty;
-            board->piecePositions[58] = WKing;
-            board->piecePositions[59] = WRook;
-            board->piecePositions[60] = Empty;
+            board->piecePositions[0] = Empty;
+            board->piecePositions[2] = WKing;
+            board->piecePositions[3] = WRook;
+            board->piecePositions[4] = Empty;
             break;
     }
     case WKCastling: {
@@ -223,10 +223,10 @@ inline void castlingMove(Board *board, const Position source, const Position des
             board->pieceBoards[WRook] |= WKC_RookAdd;
             board->pieceBoards[Empty] &= WKC_EmptyRem;
             board->pieceBoards[Empty] |= WKC_EmptyAdd;
-            board->piecePositions[60] = Empty;
-            board->piecePositions[62] = WKing;
-            board->piecePositions[61] = WRook;
-            board->piecePositions[63] = Empty;
+            board->piecePositions[4] = Empty;
+            board->piecePositions[6] = WKing;
+            board->piecePositions[5] = WRook;
+            board->piecePositions[7] = Empty;
             break;
     }
     default: throw runtime_error("wrong castling move");
@@ -264,7 +264,7 @@ inline Piece movePiece(Board *board, const Position source, const Position desti
             board->enPassantPosition = NO_POS;
             setPiece(board, destination, piece);
             setEmpty(board, source, piece);
-            return setEmpty(board, destination + (piece == WPawn ? 8 : -8));
+            return setEmpty(board, destination - 24 + piece * 16);
     }
     case PROMOTION: {
             if (promotionPiece == Empty) { throw runtime_error("promotion piece not set"); }
@@ -287,10 +287,10 @@ inline void undoCastlingMove(Board *board, const Position source, const Position
             board->pieceBoards[BRook] &= ~BQC_RookAdd;
             board->pieceBoards[Empty] |= ~BQC_EmptyRem;
             board->pieceBoards[Empty] &= ~BQC_EmptyAdd;
-            board->piecePositions[2] = Empty;
-            board->piecePositions[4] = BKing;
-            board->piecePositions[0] = BRook;
-            board->piecePositions[3] = Empty;
+            board->piecePositions[58] = Empty;
+            board->piecePositions[60] = BKing;
+            board->piecePositions[56] = BRook;
+            board->piecePositions[59] = Empty;
             break;
     }
     case BKCastling: {
@@ -299,10 +299,10 @@ inline void undoCastlingMove(Board *board, const Position source, const Position
             board->pieceBoards[BRook] &= ~BKC_RookAdd;
             board->pieceBoards[Empty] |= ~BKC_EmptyRem;
             board->pieceBoards[Empty] &= ~BKC_EmptyAdd;
-            board->piecePositions[5] = Empty;
-            board->piecePositions[7] = BRook;
-            board->piecePositions[4] = BKing;
-            board->piecePositions[6] = Empty;
+            board->piecePositions[61] = Empty;
+            board->piecePositions[63] = BRook;
+            board->piecePositions[60] = BKing;
+            board->piecePositions[62] = Empty;
             break;
     }
     case WQCastling: {
@@ -311,10 +311,10 @@ inline void undoCastlingMove(Board *board, const Position source, const Position
             board->pieceBoards[WRook] &= ~WQC_RookAdd;
             board->pieceBoards[Empty] |= ~WQC_EmptyRem;
             board->pieceBoards[Empty] &= ~WQC_EmptyAdd;
-            board->piecePositions[58] = Empty;
-            board->piecePositions[60] = WKing;
-            board->piecePositions[56] = WRook;
-            board->piecePositions[59] = Empty;
+            board->piecePositions[2] = Empty;
+            board->piecePositions[4] = WKing;
+            board->piecePositions[0] = WRook;
+            board->piecePositions[3] = Empty;
             break;
     }
     case WKCastling: {
@@ -323,10 +323,10 @@ inline void undoCastlingMove(Board *board, const Position source, const Position
             board->pieceBoards[WRook] &= ~WKC_RookAdd;
             board->pieceBoards[Empty] |= ~WKC_EmptyRem;
             board->pieceBoards[Empty] &= ~WKC_EmptyAdd;
-            board->piecePositions[61] = Empty;
-            board->piecePositions[63] = WRook;
-            board->piecePositions[60] = WKing;
-            board->piecePositions[62] = Empty;
+            board->piecePositions[5] = Empty;
+            board->piecePositions[7] = WRook;
+            board->piecePositions[4] = WKing;
+            board->piecePositions[6] = Empty;
             break;
     }
     default: throw runtime_error("wrong undo castling move");

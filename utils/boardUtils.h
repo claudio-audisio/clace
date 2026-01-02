@@ -10,18 +10,21 @@
 
 
 inline void printBoard(const Rawboard board) {
-    for (int i = 0; i < 64; ++i) {
-        if (i % 8 == 0) {
-            std::cout << " ";
-        }
-        if ((board & posInd(i)) == 0) {
-            std::cout << ". ";
-        }
-        else {
-            std::cout << "1 ";
-        }
-        if ((i + 1) % 8 == 0) {
-            cout << endl;
+    for (int row = 7; row >= 0; row--) {
+        for (int col = 0; col < 8; col++) {
+            int sq = row * 8 + col;
+            if (sq % 8 == 0) {
+                std::cout << " ";
+            }
+            if ((board & posInd(sq)) == 0) {
+                std::cout << ". ";
+            }
+            else {
+                std::cout << "1 ";
+            }
+            if ((sq + 1) % 8 == 0) {
+                cout << endl;
+            }
         }
     }
 }

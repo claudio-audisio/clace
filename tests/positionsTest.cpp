@@ -21,18 +21,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IndexToCoordsTest,
     ::testing::Values(
-        make_tuple(0, "a8"),
-        make_tuple(56, "a1"),
-        make_tuple(7, "h8"),
-        make_tuple(63, "h1"),
-        make_tuple(24, "a5"),
-        make_tuple(31, "h5"),
-        make_tuple(32, "a4"),
-        make_tuple(39, "h4"),
-        make_tuple(27, "d5"),
-        make_tuple(35, "d4"),
-        make_tuple(28, "e5"),
-        make_tuple(36, "e4")
+        make_tuple(0, "a1"),
+        make_tuple(56, "a8"),
+        make_tuple(7, "h1"),
+        make_tuple(63, "h8"),
+        make_tuple(24, "a4"),
+        make_tuple(31, "h4"),
+        make_tuple(32, "a5"),
+        make_tuple(39, "h5"),
+        make_tuple(27, "d4"),
+        make_tuple(35, "d5"),
+        make_tuple(28, "e4"),
+        make_tuple(36, "e5")
     )
 );
 
@@ -49,18 +49,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     CoordsToIndexTest,
     ::testing::Values(
-        make_tuple("a8", 0),
-        make_tuple("a1", 56),
-        make_tuple("h8", 7),
-        make_tuple("h1", 63),
-        make_tuple("a5", 24),
-        make_tuple("h5", 31),
-        make_tuple("a4", 32),
-        make_tuple("h4", 39),
-        make_tuple("d5", 27),
-        make_tuple("d4", 35),
-        make_tuple("e5", 28),
-        make_tuple("e4", 36)
+        make_tuple("a1", 0),
+        make_tuple("a8", 56),
+        make_tuple("h1", 7),
+        make_tuple("h8", 63),
+        make_tuple("a4", 24),
+        make_tuple("h4", 31),
+        make_tuple("a5", 32),
+        make_tuple("h5", 39),
+        make_tuple("d4", 27),
+        make_tuple("d5", 35),
+        make_tuple("e4", 28),
+        make_tuple("e5", 36)
     )
 );
 
@@ -89,18 +89,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsFirstRowTest,
     ::testing::Values(
-        new TestParams(0, _WHITE, false),
-        new TestParams(0, _BLACK, true),
-        new TestParams(7, _WHITE, false),
-        new TestParams(7, _BLACK, true),
+        new TestParams(0, _WHITE, true),
+        new TestParams(0, _BLACK, false),
+        new TestParams(7, _WHITE, true),
+        new TestParams(7, _BLACK, false),
         new TestParams(8, _WHITE, false),
         new TestParams(8, _BLACK, false),
         new TestParams(55, _WHITE, false),
         new TestParams(55, _BLACK, false),
-        new TestParams(56, _WHITE, true),
-        new TestParams(56, _BLACK, false),
-        new TestParams(63, _WHITE, true),
-        new TestParams(63, _BLACK, false)
+        new TestParams(56, _WHITE, false),
+        new TestParams(56, _BLACK, true),
+        new TestParams(63, _WHITE, false),
+        new TestParams(63, _BLACK, true)
     )
 );
 
@@ -118,18 +118,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         new TestParams(7, _WHITE, false),
         new TestParams(7, _BLACK, false),
-        new TestParams(8, _WHITE, false),
-        new TestParams(8, _BLACK, true),
-        new TestParams(15, _WHITE, false),
-        new TestParams(15, _BLACK, true),
+        new TestParams(8, _WHITE, true),
+        new TestParams(8, _BLACK, false),
+        new TestParams(15, _WHITE, true),
+        new TestParams(15, _BLACK, false),
         new TestParams(16, _WHITE, false),
         new TestParams(16, _BLACK, false),
         new TestParams(47, _WHITE, false),
         new TestParams(47, _BLACK, false),
-        new TestParams(48, _WHITE, true),
-        new TestParams(48, _BLACK, false),
-        new TestParams(55, _WHITE, true),
-        new TestParams(55, _BLACK, false),
+        new TestParams(48, _WHITE, false),
+        new TestParams(48, _BLACK, true),
+        new TestParams(55, _WHITE, false),
+        new TestParams(55, _BLACK, true),
         new TestParams(56, _WHITE, false),
         new TestParams(56, _BLACK, false)
     )
@@ -149,14 +149,14 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         new TestParams(23, _WHITE, false),
         new TestParams(23, _BLACK, false),
-        new TestParams(24, _WHITE, false),
-        new TestParams(24, _BLACK, true),
-        new TestParams(31, _WHITE, false),
-        new TestParams(31, _BLACK, true),
-        new TestParams(32, _WHITE, true),
-        new TestParams(32, _BLACK, false),
-        new TestParams(39, _WHITE, true),
-        new TestParams(39, _BLACK, false),
+        new TestParams(24, _WHITE, true),
+        new TestParams(24, _BLACK, false),
+        new TestParams(31, _WHITE, true),
+        new TestParams(31, _BLACK, false),
+        new TestParams(32, _WHITE, false),
+        new TestParams(32, _BLACK, true),
+        new TestParams(39, _WHITE, false),
+        new TestParams(39, _BLACK, true),
         new TestParams(40, _WHITE, false),
         new TestParams(40, _BLACK, false)
     )
@@ -187,18 +187,18 @@ INSTANTIATE_TEST_SUITE_P(
     positionsTest,
     IsEightRowTest,
     ::testing::Values(
-        new TestParams12(0, _WHITE, true),
-        new TestParams12(0, _BLACK, false),
-        new TestParams12(7, _WHITE, true),
-        new TestParams12(7, _BLACK, false),
+        new TestParams12(0, _WHITE, false),
+        new TestParams12(0, _BLACK, true),
+        new TestParams12(7, _WHITE, false),
+        new TestParams12(7, _BLACK, true),
         new TestParams12(8, _WHITE, false),
         new TestParams12(8, _BLACK, false),
         new TestParams12(55, _WHITE, false),
         new TestParams12(55, _BLACK, false),
-        new TestParams12(56, _WHITE, false),
-        new TestParams12(56, _BLACK, true),
-        new TestParams12(63, _WHITE, false),
-        new TestParams12(63, _BLACK, true)
+        new TestParams12(56, _WHITE, true),
+        new TestParams12(56, _BLACK, false),
+        new TestParams12(63, _WHITE, true),
+        new TestParams12(63, _BLACK, false)
     )
 );
 

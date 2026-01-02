@@ -50,61 +50,7 @@ public:
 		cout << endl;
 	}
 
-	/*static string readName(const string& color) {
-		if (!color.empty()) {
-			cout << "  Enter " + color + " name: ";
-		} else {
-			cout << "  Enter name: ";
-		}
 
-		return readString();
-	}
-
-	static unsigned int readGamesQuantity() {
-		cout << "Enter how many games: " << endl;
-		return readInt();
-	}
-
-	static string readBoard() {
-		cout << "Enter FEN board: " << endl;
-		return readString();
-	}
-
-	static unsigned int readDepth() {
-		cout << "Enter depth: " << endl;
-		return readInt();
-	}
-
-	static unsigned int readPerftQuantity() {
-		cout << "Enter how many runs: " << endl;
-		return readInt();
-	}
-
-	static unsigned int readPerftType() {
-		cout << "Please choose type of perft" << endl;
-		cout << "\t1. complete" << endl;
-		cout << "\t2. bulk" << endl;
-		return readInt();
-	}
-
-    static unsigned int readPerftIndex() {
-        cout << "Please choose which perft" << endl;
-        cout << "\t1...6" << endl;
-        return readInt();
-    }
-
-	static unsigned int menuGame() {
-		cout << endl;
-		cout << "Please choose type of game" << endl;
-		cout << "\t1. computer vs computer" << endl;
-		cout << "\t2. white user vs computer" << endl;
-		cout << "\t3. black user vs computer" << endl;
-		cout << "\t4. user vs user" << endl;
-		cout << "\t5. computer vs computer (more games)" << endl;
-		cout << "\t6. user vs computer (board provided)" << endl;
-		cout << "\t0. <-- back" << endl;
-		return readInt();
-	}*/
 
 	static void printLogo() {
 		cout << "        |" << endl;
@@ -141,25 +87,25 @@ public:
 
 	static void printGame(Game& game) {
 		cout << endl;
-		int row = 0;
+		int row = 7;
 
-		while (row <= 56) {
+		while (row >= 0) {
 			cout << " ";
 			for (int i = 0; i < 8; i++) {
-				cout << getPieceCode(getPiece(game.board, row + i)) << " ";
+				cout << getPieceCode(getPiece(game.board, (row * 8) + i)) << " ";
 			}
 
 			switch (row) {
-				case 0: {
+				case 7: {
 						if (game.checkStatus.check && !game.checkStatus.checkmate) {
 							cout << "\t\tcheck!";
 						}
 						break;
 					}
-				case 8: cout << "\t\tmoves: " << game.fullMoves; break;
-				case 16: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.currentEvaluation; break;
-				case 24: cout << "\t\ttimes: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime(); break;
-				case 32: {
+				case 6: cout << "\t\tmoves: " << game.fullMoves; break;
+				case 5: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.currentEvaluation; break;
+				case 4: cout << "\t\ttimes: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime(); break;
+				case 3: {
 						const string& whiteCaptured = game.getCapturedList(_WHITE);
 						const string& blackCaptured = game.getCapturedList(_BLACK);
 						if (!whiteCaptured.empty() || !blackCaptured.empty()) {
@@ -167,8 +113,8 @@ public:
 						}
 						break;
 					}
-				case 40: cout << "\t\tfen: " << FEN::gameToFEN(game); break;
-				case 48: {
+				case 2: cout << "\t\tfen: " << FEN::gameToFEN(game); break;
+				case 1: {
 						if (game.lastMove != 0) {
 							cout << "\t\tlast move: " << moveToString(game.lastMove);
 						}
@@ -178,7 +124,7 @@ public:
 			}
 
 			cout << endl;
-			row += 8;
+			row--;
 		}
 
 		cout << endl;
@@ -210,22 +156,6 @@ public:
 		cout << "  " << FEN::gameToFEN(game) << endl;
 	}
 
-	/*
-	static Move getNextMove(Player* player) {
-		while (true) {
-
-			cout << "  " << player->getNameAndColor() << " to move: ";
-			try {
-				string line = UI::readString(false);
-				return
-			}
-			catch (exception e) {
-				cout << "  --> malformed move: please use this notation e2-e4" << endl;
-			}
-		}
-	}
-	*/
-
 	static Piece choosePromotionType(bool white) {
 		while(true) {
 			cout << " promotion, choose piece: ";
@@ -248,34 +178,6 @@ public:
 
 			cout << "Use piece's initial char" << endl;
 		}
-	}
-
-	static void printBoard_old(const Board *board) {
-		int row = 0;
-
-		cout << "        a   b   c   d   e   f   g   h      " << endl;
-		cout << "      ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗    " << endl;
-
-		while (row <= 56) {
-			cout << "    " << ((64 - row) / 8) << " ║";
-
-			for (int i = 0; i < 8; i++) {
-				cout << " " << getPieceCode(getPiece(board, row + i)) << " ";
-
-				if (i < 7) {
-					cout << "│";
-				}
-			}
-			cout << "║ " << ((64 - row) / 8) << "  " << endl;
-			row += 8;
-
-			if (row <= 56) {
-				cout << "      ╟───┼───┼───┼───┼───┼───┼───┼───╢    " << endl;
-			}
-		}
-
-		cout << "      ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝    " << endl;
-		cout << "        a   b   c   d   e   f   g   h      " << endl << endl;
 	}
 
 };

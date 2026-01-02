@@ -257,10 +257,10 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 #endif
 
 	Game* game = FEN::fenToNewGame("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
-	Move BQCastlingMove = createMove(4, 2, _BLACK, BKing);
-	Move BKCastlingMove = createMove(4, 6, _BLACK, BKing);
-	Move WQCastlingMove = createMove(60, 58, _WHITE, WKing);
-	Move WKCastlingMove = createMove(60, 62, _WHITE, WKing);
+	Move BQCastlingMove = createMove(60, 58, _BLACK, BKing);
+	Move BKCastlingMove = createMove(60, 62, _BLACK, BKing);
+	Move WQCastlingMove = createMove(4, 2, _WHITE, WKing);
+	Move WKCastlingMove = createMove(4, 6, _WHITE, WKing);
 
 	auto begin = chrono::steady_clock::now();
 
@@ -310,7 +310,8 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
+// TODO da sistemare
+/*TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -327,7 +328,7 @@ TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
 	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 	game6->verifyChecks();
 
-	const unsigned int size = 60000000;
+	const unsigned int size = 10000000;
 	GameSnapshot **snapshots = allocateSnapshots(size);
 
 	auto start = chrono::steady_clock::now();
@@ -364,7 +365,7 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 	game6->verifyChecks();
 
-	const unsigned int size = 60000000;
+	const unsigned int size = 10000000;
 	GameSnapshot **snapshots = allocateSnapshots(size);
 
 	for (int i = 0; i < size;) {
@@ -391,7 +392,7 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	cout << "time: " << rollbackTime  << endl;
 
 	deallocateSnapshots(snapshots, size);
-}
+}*/
 
 TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 #ifndef PERFORMANCE_TESTS

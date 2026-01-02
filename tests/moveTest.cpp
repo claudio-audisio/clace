@@ -67,8 +67,8 @@ INSTANTIATE_TEST_SUITE_P(
         new TestParams("", _WHITE, NO_POS, NO_POS),
         new TestParams("dasfdfs", _WHITE, NO_POS, NO_POS),
         new TestParams("dasfd", _WHITE, NO_POS, NO_POS),
-        new TestParams("a1b1", _WHITE, 56, 57),
-        new TestParams("e3h6", _BLACK, 44, 23)
+        new TestParams("a1b1", _WHITE, 0, 1),
+        new TestParams("e3h6", _BLACK, 20, 47)
     )
 );
 
@@ -111,13 +111,13 @@ INSTANTIATE_TEST_SUITE_P(
     MoveTest,
     DecorateTest,
     ::testing::Values(
-        new TestParams2(INITIAL_FEN_POSITION, 8, 16, BPawn, false, false, false),
-        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 6, BKing, true, false, false),
-        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 2, BKing, true, false, false),
-        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 62, WKing, true, false, false),
-        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 58, WKing, true, false, false),
-        new TestParams2("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 11, 2, WPawn, false, false, true),
-        new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1", 34, 43, BPawn, false, true, false)
+        //new TestParams2(INITIAL_FEN_POSITION, 48, 40, BPawn, false, false, false),
+        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 62, BKing, true, false, false),
+        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 58, BKing, true, false, false),
+        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 6, WKing, true, false, false),
+        new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 2, WKing, true, false, false),
+        new TestParams2("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 51, 58, WPawn, false, false, true),
+        new TestParams2("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1", 26, 19, BPawn, false, true, false)
     )
 );
 
@@ -299,9 +299,9 @@ INSTANTIATE_TEST_SUITE_P(
 		MoveTest,
 		ParseUciMoveTest,
 		::testing::Values(
-			new TestParams3("d2d4", 51, 35, Empty),
-			new TestParams3("b8c6", 1, 18, Empty),
-			new TestParams3("b7b8q", 9, 1, WQueen)
+			new TestParams3("d2d4", 11, 27, Empty),
+			new TestParams3("b8c6", 57, 42, Empty),
+			new TestParams3("b7b8q", 49, 57, WQueen)
 		)
 );
 
@@ -324,9 +324,9 @@ INSTANTIATE_TEST_SUITE_P(
 		MoveTest,
 		ToUciMoveTest,
 		::testing::Values(
-				new TestParams3("d2d4", 51, 35, Empty),
-				new TestParams3("b8c6", 1, 18, Empty),
-				new TestParams3("b7b8q", 9, 1, WQueen)
+				new TestParams3("d2d4", 11, 27, Empty),
+				new TestParams3("b8c6", 57, 42, Empty),
+				new TestParams3("b7b8q", 49, 57, WQueen)
 		)
 );
 

@@ -55,8 +55,8 @@ inline const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQuee
 #define SH_6DX_MSK 0x3ffffffffffffffLL
 #define SH_17DX_MSK 0x7fffffffffffLL
 #define SH_10DX_MSK 0x3fffffffffffffLL
-#define ROW_5 0x00000000ff000000LL
-#define ROW_4 0x000000ff00000000LL
+#define ROW_4 0x00000000ff000000LL
+#define ROW_5 0x000000ff00000000LL
 #define MAIN_DIAG 0x8040201008040201LL
 #define MAIN_ANTI_DIAG 0x0102040810204080LL
 
@@ -95,33 +95,33 @@ inline const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQuee
 #define MR_CASTLING_MASK 0x08
 
 // castling
-#define BQCastling	6
-#define BKCastling	10
-#define WQCastling	118
-#define WKCastling	122
-#define BC_King	0x10
-#define WC_King	0x1000000000000000
-#define BQC_King 0x4
-#define BQC_RookRem 0xfffffffffffffffe
-#define BQC_RookAdd 0x8
-#define BQC_EmptyRem 0xfffffffffffffff3
-#define BQC_EmptyAdd 0x11
-#define BKC_King 0x40
-#define BKC_RookRem 0xffffffffffffff7f
-#define BKC_RookAdd 0x20
-#define BKC_EmptyRem 0xffffffffffffff9f
-#define BKC_EmptyAdd 0x90
-#define WQC_King 0x400000000000000
-#define WQC_RookRem 0xfeffffffffffffff
-#define WQC_RookAdd 0x800000000000000
-#define WQC_EmptyRem 0xf3ffffffffffffff
-#define WQC_EmptyAdd 0x1100000000000000
-#define WKC_King 0x4000000000000000
-#define WKC_RookRem 0x7fffffffffffffff
-#define WKC_RookAdd 0x2000000000000000
-#define WKC_EmptyRem 0x9fffffffffffffff
-#define WKC_EmptyAdd 0x9000000000000000
-inline constexpr CastlingInfo CASTLING_INFO_MASK[64] = {0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111};
+#define WQCastling	6
+#define WKCastling	10
+#define BQCastling	118
+#define BKCastling	122
+#define WC_King	0x10
+#define BC_King	0x1000000000000000
+#define WQC_King 0x4
+#define WQC_RookRem 0xfffffffffffffffe
+#define WQC_RookAdd 0x8
+#define WQC_EmptyRem 0xfffffffffffffff3
+#define WQC_EmptyAdd 0x11
+#define WKC_King 0x40
+#define WKC_RookRem 0xffffffffffffff7f
+#define WKC_RookAdd 0x20
+#define WKC_EmptyRem 0xffffffffffffff9f
+#define WKC_EmptyAdd 0x90
+#define BQC_King 0x400000000000000
+#define BQC_RookRem 0xfeffffffffffffff
+#define BQC_RookAdd 0x800000000000000
+#define BQC_EmptyRem 0xf3ffffffffffffff
+#define BQC_EmptyAdd 0x1100000000000000
+#define BKC_King 0x4000000000000000
+#define BKC_RookRem 0x7fffffffffffffff
+#define BKC_RookAdd 0x2000000000000000
+#define BKC_EmptyRem 0x9fffffffffffffff
+#define BKC_EmptyAdd 0x9000000000000000
+inline constexpr CastlingInfo CASTLING_INFO_MASK[64] = {0b1011, 0b1111, 0b1111, 0b1111, 0b0011, 0b1111, 0b1111, 0b0111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1110, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, 0b1111, 0b1101};
 
 // xray pieces
 inline unordered_map<Side, const unordered_set<Piece>> XRAY_PIECES = {{_WHITE, { WRook, WBishop, WQueen }}, {_BLACK, { BRook, BBishop, BQueen }}};

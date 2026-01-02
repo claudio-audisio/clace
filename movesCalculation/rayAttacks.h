@@ -13,7 +13,7 @@
 		Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
-			const Position firstBlockPos = getFirstPosReverse(blocker);
+			const Position firstBlockPos = getFirstPos(blocker);
 			attacks ^= staticRayAttacks[direction][firstBlockPos];
 		}
 		return attacks;
@@ -23,7 +23,7 @@
 		Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		if (blocker) {
-			const Position firstBlockPos = getFirstPos(blocker);
+			const Position firstBlockPos = getFirstPosReverse(blocker);
 			attacks ^= staticRayAttacks[direction][firstBlockPos];
 		}
 		return attacks;
@@ -88,9 +88,9 @@ inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
 
 inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getNegativeRayAttacks(occupied, eastRay, position);
+	return getPositiveRayAttacks(occupied, eastRay, position);
 #else
-	return getNegativeRayAttacks(occupied, East, position);
+	return getPositiveRayAttacks(occupied, East, position);
 #endif
 }
 
@@ -120,8 +120,8 @@ inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
 
 inline Rawboard westAttack(const Rawboard occupied, const Position position) {
 #ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getPositiveRayAttacks(occupied, westRay, position);
+	return getNegativeRayAttacks(occupied, westRay, position);
 #else
-	return getPositiveRayAttacks(occupied, West, position);
+	return getNegativeRayAttacks(occupied, West, position);
 #endif
 }

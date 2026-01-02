@@ -7,8 +7,8 @@ using namespace std;
 
 
 inline Position coordsToIndex(const string& coordinates) {
-    const Position sourceColumn = coordinates.at(0) - 97;
-    const Position sourceRow = 7 - (coordinates.at(1) - 49);
+    const int sourceColumn = coordinates.at(0) - 97;
+    const int sourceRow = coordinates.at(1) - 49;
 
     if (sourceColumn < 0 || sourceColumn > 7 || sourceRow < 0 || sourceRow > 7) {
 		throw std::runtime_error("piece coordinates malformed");
@@ -19,8 +19,8 @@ inline Position coordsToIndex(const string& coordinates) {
 
 inline string indexToCoords(const Position position) {
     string coords;
-    const char sourceColumn = (char)((position % 8) + 97);
-    const char sourceRow = (char)(7 - (position / 8) + 49);
+    const char sourceColumn = static_cast<char>(position % 8 + 97);
+    const char sourceRow = static_cast<char>(position / 8 + 49);
     coords.append(1, sourceColumn);
     coords.append(1, sourceRow);
     return coords;
@@ -35,23 +35,23 @@ inline Position getColumn(const Position position) {
 }
 
 inline bool isFirstRow(const Position position, const Side side) {
-    return getRow(position) == 7 - side * 7;
+    return getRow(position) == 0 + side * 7;
 }
 
 inline bool isSecondRow(const Position position, const Side side) {
-    return getRow(position) == 6 - side * 5;
+    return getRow(position) == 1 + side * 5;
 }
 
 inline bool isFourthRow(const Position position, const Side side) {
-    return getRow(position) == 4 - side;
-}
-
-inline bool isFifthRow(const Position position, const Side side) {
     return getRow(position) == 3 + side;
 }
 
+inline bool isFifthRow(const Position position, const Side side) {
+    return getRow(position) == 4 - side;
+}
+
 inline bool isEighthRow(const Position position, const Side side) {
-    return getRow(position) == side * 7;
+    return getRow(position) == 7 - side * 7;
 }
 
 inline bool areOnSameRowOrColumn(const Position firstPosition, const Position secondPosition) {

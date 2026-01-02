@@ -89,8 +89,8 @@ private:
     static void fenToChessBoard(const string& fenChessBoard, Game& game) {
         vector<string>* tokens = tokenize(fenChessBoard, '/', 8);
 
-        for (int i = 0; i < 8; i++) {
-            populateChessBoard(game, i * 8, tokens->at(i));
+        for (int i = 7; i >= 0; i--) {
+            populateChessBoard(game, (7 - i) * 8, tokens->at(i));
         }
 
         delete tokens;
@@ -137,28 +137,31 @@ private:
         string fenBoard;
         int empty = 0;
 
-        for (int i = 0; i < 64; i++) {
-            const Piece piece = getPiece(board, i);
+        for (int row = 7; row >= 0; row--) {
+            for (int col = 0; col < 8; col++) {
+                const int i = row * 8 + col;
+                const Piece piece = getPiece(board, i);
 
-            if (_isEmpty(piece)) {
-                empty++;
-            }
-            else {
-                if (empty > 0) {
-                    fenBoard.append(EMPTY_FEN[empty]);
-                    empty = 0;
+                if (_isEmpty(piece)) {
+                    empty++;
                 }
-                fenBoard.append(PIECE_TO_FEN[piece]);
-            }
-
-            if ((i + 1) % 8 == 0) {
-                if (empty > 0) {
-                    fenBoard.append(EMPTY_FEN[empty]);
-                    empty = 0;
+                else {
+                    if (empty > 0) {
+                        fenBoard.append(EMPTY_FEN[empty]);
+                        empty = 0;
+                    }
+                    fenBoard.append(PIECE_TO_FEN[piece]);
                 }
 
-                if (i < 64 - 1) {
-                    fenBoard.append("/");
+                if (col == 7) {
+                    if (empty > 0) {
+                        fenBoard.append(EMPTY_FEN[empty]);
+                        empty = 0;
+                    }
+
+                    if (row > 0) {
+                        fenBoard.append("/");
+                    }
                 }
             }
         }
@@ -170,18 +173,21 @@ private:
         string fenKey;
         int empty = 0;
 
-        for (int i = 0; i < 64; i++) {
-            const Piece piece = getPiece(board, i);
+        for (int row = 7; row >= 0; row--) {
+            for (int col = 0; col < 8; col++) {
+                const int i = row * 8 + col;
+                const Piece piece = getPiece(board, i);
 
-            if (_isEmpty(piece)) {
-                empty++;
-            }
-            else {
-                if (empty > 0) {
-                    fenKey.append(to_string(empty));
-                    empty = 0;
+                if (_isEmpty(piece)) {
+                    empty++;
                 }
-                fenKey.append(PIECE_TO_FEN[piece]);
+                else {
+                    if (empty > 0) {
+                        fenKey.append(to_string(empty));
+                        empty = 0;
+                    }
+                    fenKey.append(PIECE_TO_FEN[piece]);
+                }
             }
         }
 

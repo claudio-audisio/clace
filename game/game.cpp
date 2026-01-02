@@ -104,7 +104,7 @@ void Game::simulateMove(Move& move) const {
 }
 
 Piece Game::completeEnPassant(const Move move) const {
-	const Position destination = getDestinationPosition(move) + (8 - 8 * 2 * getMoveSide(move));
+	const Position destination = getDestinationPosition(move) + (-8 + 8 * 2 * getMoveSide(move));
 	return setEmpty(board, destination);
 }
 
@@ -141,7 +141,7 @@ void Game::undoSimulateMove(const Move move) const {
 
 void Game::undoEnPassant(const Move move) const {
 	const Side side = getMoveSide(move);
-    const Position destination = getDestinationPosition(move) + (8 - 8 * 2 * side);
+    const Position destination = getDestinationPosition(move) + (-8 + 8 * 2 * side);
     setPiece(board, destination, BPawn - side);
 }
 
