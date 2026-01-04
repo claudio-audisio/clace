@@ -1,6 +1,8 @@
 #include <cassert>
 
 #include "game.h"
+
+#include "../cache/zobrist.h"
 #include "../utils/fen.h"
 #include "../move/move.h"
 #include "../move/movesGenerator.h"
@@ -17,6 +19,7 @@ Game::Game() :
 	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
 	evaluator = new BasicEvaluator();
+	initRandoms(randoms);
 }
 
 Game::~Game() {

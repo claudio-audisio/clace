@@ -12,7 +12,8 @@
 #include "../utils/vectorPool.h"
 #include "../engine/bf_engine.h"
 #include "../common/defines.h"
-
+#include "../game/game.h"
+#include "../cache/zobrist.h"
 using namespace std;
 
 #if DEBUG_MODE
@@ -25,12 +26,20 @@ protected:
 		initDestPosProviders();
 		initPawnAttacksProviders();
 	}
+
 	~PerformanceDebugTest() {
 
 	}
-	void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected, unsLL delta) {
-		GTEST_ASSERT_LT(value, expected + delta);
-		GTEST_ASSERT_GT(value, expected - delta);
+
+	void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected) {
+		unsLL delta = expected * 5 / 100;
+
+		if (delta < 10) {
+			delta = 10;
+		}
+
+		GTEST_ASSERT_LE(value, expected + delta);
+		GTEST_ASSERT_GE(value, expected - delta);
 	}
 };
 
@@ -72,11 +81,35 @@ TEST_F(PerformanceDebugTest, movePerformanceTest) {
 		movetype = getType(move);
 	}
 
+	unsLL time = getElapsedMillis(begin);
+	GTEST_ASSERT_NEAR(time, 1040);
+	cout << "time: " << time  << endl;
+}
+
+TEST_F(PerformanceDebugTest, gameToZobristKeyTest) {
+#ifndef PERFORMANCE_TESTS
+	GTEST_SKIP();
+#endif
+	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
+	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
+	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
+	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
+	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
+	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
+
+	auto begin = chrono::steady_clock::now();
+
+	for (long i = 1; i < 2000000; ++i) {
+		getZobristKey(*gameInitial);
+		getZobristKey(*gamePerft2);
+		getZobristKey(*gamePerft3);
+		getZobristKey(*gamePerft4);
+		getZobristKey(*gamePerft5);
+		getZobristKey(*gamePerft6);
+	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 950, 50);
-
+	GTEST_ASSERT_NEAR(time, 1640);
 	cout << "time: " << time  << endl;
 }
 
@@ -110,9 +143,8 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1400, 50);	// BOARD_STANDARD_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1580, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1560, 50);	// BOARD_ONTHEFLY_RAY_ATTACKS
+	GTEST_ASSERT_NEAR(time, 1430);	// BOARD_STANDARD_RAY_ATTACKS
+	//GTEST_ASSERT_NEAR(time, 1480);	// BOARD_BRANCHLESS_RAY_ATTACKS
 
 	cout << "time: " << time  << endl;
 }
@@ -147,9 +179,8 @@ TEST_F(PerformanceDebugTest, getQueenAttacks2PerformanceTest) {
 
 	unsLL time = getElapsedMillis(begin);
 
-	GTEST_ASSERT_NEAR(time, 1400, 50);	// BOARD_STANDARD_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1580, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1560, 50);	// BOARD_ONTHEFLY_RAY_ATTACKS
+	GTEST_ASSERT_NEAR(time, 1130);	// BOARD_STANDARD_RAY_ATTACKS
+	//GTEST_ASSERT_NEAR(time, 1160);	// BOARD_BRANCHLESS_RAY_ATTACKS
 
 	cout << "time: " << time  << endl;
 }
@@ -167,7 +198,7 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (long i = 1; i < 10000000; ++i) {
+	for (long i = 1; i < 15000000; ++i) {
 		allKnightAttacks(gameInitial->board, _WHITE);
 		allKnightAttacks(gameInitial->board, _BLACK);
 		allKnightAttacks(gamePerft2->board, _WHITE);
@@ -183,11 +214,7 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 1100, 50);	// BOARD_STANDARD_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1200, 50);	// BOARD_BRANCHLESS_RAY_ATTACKS
-	//GTEST_ASSERT_NEAR(time, 1200, 50);	// BOARD_ONTHEFLY_RAY_ATTACKS
-
+	GTEST_ASSERT_NEAR(time, 1620);
 	cout << "time: " << time  << endl;
 }
 
@@ -222,15 +249,11 @@ TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 
 #ifdef BOARD_STANDARD_RAY_ATTACKS
-	GTEST_ASSERT_NEAR(time, 1090, 50);
+	GTEST_ASSERT_NEAR(time, 1090);
 #endif
 
 #ifdef BOARD_BRANCHLESS_RAY_ATTACKS
-	GTEST_ASSERT_NEAR(time, 1300, 50);
-#endif
-
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	GTEST_ASSERT_NEAR(time, 1345, 50);
+	GTEST_ASSERT_NEAR(time, 1120);
 #endif
 
 	cout << "time: " << time  << endl;

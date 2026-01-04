@@ -31,97 +31,49 @@
 #endif
 
 #ifdef BOARD_BRANCHLESS_RAY_ATTACKS
-	static inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
-		const Rawboard attacks = staticRayAttacks[direction][position];
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
-		return attacks ^ staticRayAttacks[direction][firstBlockPos];
-	}
-
-	static inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
+	inline Rawboard getPositiveRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
 		const Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
 		return attacks ^ staticRayAttacks[direction][firstBlockPos];
 	}
-#endif
 
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
+	inline Rawboard getNegativeRayAttacks(const Rawboard occupied, const unsigned int direction, const Position position) {
+		const Rawboard attacks = staticRayAttacks[direction][position];
 		const Rawboard blocker = attacks & occupied;
 		const Position firstBlockPos = getFirstPosReverse(blocker | 1);
-		return attacks ^ direction(firstBlockPos);
-	}
-
-	static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
-		const Rawboard attacks = direction(position);
-		const Rawboard blocker = attacks & occupied;
-		const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
-		return attacks ^ direction(firstBlockPos);
+		return attacks ^ staticRayAttacks[direction][firstBlockPos];
 	}
 #endif
 
 inline Rawboard noWestAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getPositiveRayAttacks(occupied, noWestRay, position);
-#else
 	return getPositiveRayAttacks(occupied, NoWest, position);
-#endif
 }
 
 inline Rawboard northAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getPositiveRayAttacks(occupied, northRay, position);
-#else
 	return getPositiveRayAttacks(occupied, North, position);
-#endif
 }
 
 inline Rawboard noEastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getPositiveRayAttacks(occupied, noEastRay, position);
-#else
 	return getPositiveRayAttacks(occupied, NoEast, position);
-#endif
 }
 
 inline Rawboard eastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getPositiveRayAttacks(occupied, eastRay, position);
-#else
 	return getPositiveRayAttacks(occupied, East, position);
-#endif
 }
 
 inline Rawboard soEastAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getNegativeRayAttacks(occupied, soEastRay, position);
-#else
 	return getNegativeRayAttacks(occupied, SoEast, position);
-#endif
 }
 
 inline Rawboard southAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getNegativeRayAttacks(occupied, southRay, position);
-#else
 	return getNegativeRayAttacks(occupied, South, position);
-#endif
 }
 
 inline Rawboard soWestAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getNegativeRayAttacks(occupied, soWestRay, position);
-#else
 	return getNegativeRayAttacks(occupied, SoWest, position);
-#endif
 }
 
 inline Rawboard westAttack(const Rawboard occupied, const Position position) {
-#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
-	return getNegativeRayAttacks(occupied, westRay, position);
-#else
 	return getNegativeRayAttacks(occupied, West, position);
-#endif
 }

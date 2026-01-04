@@ -10,7 +10,7 @@ GENERALE
 
     - Ottimizzare uso della cache
         - Per esempio in perft 6 viene usata il 73% delle volte ma
-            - la chiave della mappa fa schifo (usare long)
+            - sosituire FENKey con ZobristKey
             - vedere se la mappa e' quella giusta
             - nei motori va mantenuta smilza (cancellare le mosse non piu' possibili)
             - aggiungere gli attacks di opposite
@@ -27,7 +27,6 @@ i
                     - simulateMove (180)
                     - checkControl (1000) (provato a calcolare prima i vari OPP_PIECES, ~EMPTY, ~PIECES, ma non cambia nulla, anzi)
                     - undoSimulateMove (180)
-
 
 
 VALUTAZIONE

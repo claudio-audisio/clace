@@ -28,3 +28,10 @@ typedef struct {
 	double value;
 	EndGameType endGameType;
 } Evaluation;
+
+typedef struct {
+	unsLL pieces[12][64];
+	unsLL sideToMove;
+	unsLL castling[4];
+	unsLL enPassant[8];
+} Randoms;

@@ -70,7 +70,8 @@ add_executable (clace
 		movesCalculation/movesCalculation.h
 		movesCalculation/rayAttacks.h
         board/board.h
-		move/rollback.h)
+		move/rollback.h
+		cache/zobrist.h)
 add_library(claceLib 
 	"clace.cpp" "clace.h"
 	"ui/userInterface.h" 
@@ -106,7 +107,8 @@ add_library(claceLib
 		movesCalculation/movesCalculation.h
 		movesCalculation/rayAttacks.h
         board/board.h
-		move/rollback.h)
+		move/rollback.h
+		cache/zobrist.h)
 
 if(CMAKE_CXX_STANDARD)
     message(STATUS "C++ standard version is: C++${CMAKE_CXX_STANDARD}")
@@ -234,6 +236,11 @@ add_executable(
 	"tests/movesCalculationTest.cpp"
 )
 
+add_executable(
+	zobristTest
+	"tests/zobristTest.cpp"
+)
+
 target_link_libraries(
 	phaseTest
 	GTest::gtest_main
@@ -354,6 +361,12 @@ target_link_libraries(
 	claceLib
 )
 
+target_link_libraries(
+	zobristTest
+	GTest::gtest_main
+	claceLib
+)
+
 include(GoogleTest)
 gtest_discover_tests(phaseTest)
 gtest_discover_tests(bitwiseTest)
@@ -375,3 +388,4 @@ gtest_discover_tests(evaluationTest)
 gtest_discover_tests(bfEngineTest)
 gtest_discover_tests(rayAttacksTest)
 gtest_discover_tests(movesCalculationTest)
+gtest_discover_tests(zobristTest)

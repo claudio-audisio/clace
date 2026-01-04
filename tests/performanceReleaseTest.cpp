@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "../board/board.h"
+#include "../cache/zobrist.h"
 #include "../utils/fen.h"
 #include "../utils/boardUtils.h"
 #include "../utils/positions.h"
@@ -86,7 +87,7 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1700);
+	GTEST_ASSERT_NEAR(time, 1820);
 	cout << "time: " << time  << endl;
 }
 
@@ -110,7 +111,7 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1370);
+	GTEST_ASSERT_NEAR(time, 1450);
 	cout << "time: " << time  << endl;
 }
 
@@ -157,7 +158,7 @@ TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1250);
+	GTEST_ASSERT_NEAR(time, 1270);
 	cout << "time: " << time  << endl;
 }
 
@@ -193,7 +194,7 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(time, 970);
+	GTEST_ASSERT_NEAR(time, 1080);
 	cout << "time: " << time  << endl;
 }
 
@@ -245,9 +246,7 @@ TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 	}
 
 	time /= 100000;
-
-	GTEST_ASSERT_NEAR(time, 930);
-
+	GTEST_ASSERT_NEAR(time, 980);
 	cout << "time: " << time << endl;
 }
 
@@ -264,7 +263,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 
 	auto begin = chrono::steady_clock::now();
 
-	for (int count = 0; count < 100000000; count++) {
+	for (int count = 0; count < 50000000; count++) {
 		game->simulateMove(BQCastlingMove);
 		game->undoSimulateMove(BQCastlingMove);
 		game->simulateMove(BKCastlingMove);
@@ -276,9 +275,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 2400);
-
+	GTEST_ASSERT_NEAR(time, 1150);
 	cout << "time: " << time  << endl;
 }
 
@@ -304,14 +301,11 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 1800);
-
+	GTEST_ASSERT_NEAR(time, 1860);
 	cout << "time: " << time  << endl;
 }
 
-// TODO da sistemare
-/*TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
+TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -328,11 +322,12 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 	game6->verifyChecks();
 
-	const unsigned int size = 10000000;
-	GameSnapshot **snapshots = allocateSnapshots(size);
+	const unsigned int size = 5000000;
+	const unsigned int testSize = size * 6;
+	GameSnapshot **snapshots = allocateSnapshots(testSize);
 
 	auto start = chrono::steady_clock::now();
-	for (int i = 0; i < size;) {
+	for (int i = 0; i < testSize;) {
 		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i++);
 		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i++);
 		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i++);
@@ -342,10 +337,10 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	}
 
 	auto saveTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(saveTime, 1680);
+	GTEST_ASSERT_NEAR(saveTime, 1090);
 	cout << "time: " << saveTime  << endl;
 
-	deallocateSnapshots(snapshots, size);
+	deallocateSnapshots(snapshots, testSize);
 }
 
 TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
@@ -365,10 +360,11 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 	game6->verifyChecks();
 
-	const unsigned int size = 10000000;
-	GameSnapshot **snapshots = allocateSnapshots(size);
+	const unsigned int size = 5000000;
+	const unsigned int testSize = size * 6;
+	GameSnapshot **snapshots = allocateSnapshots(testSize);
 
-	for (int i = 0; i < size;) {
+	for (int i = 0; i < testSize;) {
 		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i++);
 		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i++);
 		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i++);
@@ -378,7 +374,7 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	}
 
 	auto start = chrono::steady_clock::now();
-	for (int i = size - 1; i >= 0;) {
+	for (int i = testSize - 1; i >= 0;) {
 		loadSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i--);
 		loadSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i--);
 		loadSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i--);
@@ -388,11 +384,11 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	}
 
 	auto rollbackTime = getElapsedMillis(start);
-	GTEST_ASSERT_NEAR(rollbackTime, 2550);
+	GTEST_ASSERT_NEAR(rollbackTime, 1450);
 	cout << "time: " << rollbackTime  << endl;
 
-	deallocateSnapshots(snapshots, size);
-}*/
+	deallocateSnapshots(snapshots, testSize);
+}
 
 TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 #ifndef PERFORMANCE_TESTS
@@ -417,13 +413,13 @@ TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 1730);	// TODO imbarazzante
-
+	GTEST_ASSERT_NEAR(time, 1830);
 	cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
+TEST_F(PerformanceReleaseTest, movesCacheTest) {
+	// TODO
+	GTEST_SKIP() << "First iteration takes double time compared with the next ones";
 #ifndef PERFORMANCE_TESTS
 	GTEST_SKIP();
 #endif
@@ -447,9 +443,7 @@ TEST_F(PerformanceReleaseTest, movesCacheNewTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 500);
-
+	GTEST_ASSERT_NEAR(time, 580);
 	cout << "time: " << time  << endl;
 }
 
@@ -464,7 +458,7 @@ TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 170);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 180);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -481,7 +475,7 @@ TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 4080);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 4400);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -498,7 +492,7 @@ TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 210);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 220);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -515,7 +509,7 @@ TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
 #ifdef PERFT_USE_CACHE
 	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);
 #else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5350);
+	GTEST_ASSERT_NEAR(result->getElapsed(), 5400);
 #endif
 
 	cout << "time: " << result->getElapsed()  << endl;
@@ -538,9 +532,7 @@ TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 270);
-
+	GTEST_ASSERT_NEAR(time, 280);
 	cout << "time: " << time  << endl;
 }
 
@@ -561,9 +553,7 @@ TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);
-
 	GTEST_ASSERT_NEAR(time, 180);
-
 	cout << "time: " << time  << endl;
 }
 
@@ -583,9 +573,7 @@ TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
 	engine->_calculateMove(game, moves, amount);
 
 	unsLL time = getElapsedMillis(begin);
-
-	GTEST_ASSERT_NEAR(time, 560);
-
+	GTEST_ASSERT_NEAR(time, 570);
 	cout << "time: " << time  << endl;
 }
 

@@ -67,6 +67,7 @@ public:
     string getDescription() const;
 
     Board *board;
+	Randoms randoms;
 	Move *movesHistory;
 	unsigned int movesHistIndex = 0;
 	GameSnapshot **snapshots;

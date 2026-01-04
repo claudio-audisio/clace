@@ -13,8 +13,16 @@ typedef struct {
 inline GameSnapshot** allocateSnapshots(const unsigned int size) {
     const auto snapshots = static_cast<GameSnapshot**>(malloc(sizeof(GameSnapshot*) * size));
 
+    if (snapshots == nullptr) {
+        throw runtime_error("malloc failed");
+    }
+
     for (int i = 0; i < size; i++) {
         snapshots[i] = static_cast<GameSnapshot*>(malloc(sizeof(GameSnapshot)));
+
+        if (snapshots[i] == NULL) {
+            throw runtime_error("malloc failed");
+        }
     }
 
     return snapshots;

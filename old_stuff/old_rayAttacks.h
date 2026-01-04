@@ -34,3 +34,19 @@ inline Rawboard slidingAttack(Rawboard(*direction)(Rawboard), const Rawboard pos
     board.setPiece(29, WPawn);
     GTEST_ASSERT_TRUE(checkBoard(board.slidingAttack(Board::noEastOne, posInd, board.PIECES(_WHITE)), 29));
 }*/
+
+#ifdef BOARD_ONTHEFLY_RAY_ATTACKS
+static Rawboard getPositiveRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+    const Rawboard attacks = direction(position);
+    const Rawboard blocker = attacks & occupied;
+    const Position firstBlockPos = getFirstPos(blocker | 0x8000000000000000LL);
+    return attacks ^ direction(firstBlockPos);
+}
+
+static Rawboard getNegativeRayAttacks(const Rawboard occupied, Rawboard(*direction)(Position), const Position position) {
+    const Rawboard attacks = direction(position);
+    const Rawboard blocker = attacks & occupied;
+    const Position firstBlockPos = getFirstPosReverse(blocker | 1);
+    return attacks ^ direction(firstBlockPos);
+}
+#endif
