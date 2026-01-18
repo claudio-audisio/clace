@@ -14,9 +14,7 @@ using namespace std;
 class GameTest : public testing::Test {
 protected:
 	GameTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~GameTest() override = default;
 };
@@ -219,9 +217,7 @@ public:
 class VerifyChecksTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
 	VerifyChecksTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 };
 
@@ -270,9 +266,7 @@ TEST_F(GameTest, verifyChecksWithEnPassantTest) {
 class CheckEndGameTest : public ::testing::TestWithParam<tuple<string, EndGameType>> {
 protected:
 	CheckEndGameTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 };
 
@@ -320,9 +314,7 @@ public:
 class CheckControlTest : public ::testing::TestWithParam<TestParams4*> {
 protected:
 	CheckControlTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 };
 
@@ -417,7 +409,7 @@ TEST_P(SimulateAndUndoMoveTest, simulateAndUndoMoveTest) {
 
     EXPECT_EQ(params->fenBoard, FEN::gameToFEN(*game));
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < 13; ++i) {
         EXPECT_EQ(board->pieceBoards[i], game->board->pieceBoards[i]);
     }
 

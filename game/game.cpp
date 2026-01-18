@@ -11,6 +11,7 @@
 #include "../utils/toString.h"
 #include "../utils/boardUtils.h"
 #include "../move/rollback.h"
+#include "cache/transpositionTable.h"
 
 Game::Game() :
 	sideToMove(0), fullMoves(0), halfMoveClock(0) {
@@ -19,7 +20,9 @@ Game::Game() :
 	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
 	evaluator = new BasicEvaluator();
+#ifdef USE_CACHE
 	initRandoms(randoms);
+#endif
 }
 
 Game::~Game() {
@@ -36,6 +39,9 @@ void Game::init() {
 
 void Game::initFromFEN(const string& fenPosition) {
 	FEN::fenToGame(fenPosition, *this);
+#ifdef USE_CACHE
+	key = calculateKey(*this);
+#endif
 }
 
 void Game::initPlayers(Player* white, Player* black) {
@@ -69,6 +75,8 @@ MoveResult Game::finalizeMove(Move& move) {
 }
 
 MoveResult Game::applyMove(Move& move) {
+	const CastlingInfo prevCastlingInfo = board->castlingInfo;
+	const Position prevEnPassant = board->enPassantPosition;
 	const MoveResult moveResult = finalizeMove(move);
 	lastMove = move;
 	movesHistory[movesHistIndex++] = move;
@@ -78,6 +86,9 @@ MoveResult Game::applyMove(Move& move) {
 	}
 
 	changeTurn();
+#ifdef USE_CACHE
+	updateKey(*this, move, prevCastlingInfo, prevEnPassant);
+#endif
 	return moveResult;
 }
 
@@ -217,14 +228,14 @@ Side Game::getSide(const Position position) const {
 }
 
 void Game::save() {
-	saveSnapshot(board, sideToMove, fullMoves, halfMoveClock, snapshots, snapshotIndex++);
+	saveSnapshot(board, sideToMove, fullMoves, halfMoveClock, key, snapshots, snapshotIndex++);
 }
 
 void Game::rollbackLastMove() {
 	checkStatus.reset();
 	movesHistIndex--;
 	lastMove = movesHistIndex == 0 ? 0 : movesHistory[movesHistIndex - 1];
-	loadSnapshot(this->board, sideToMove, fullMoves, halfMoveClock, snapshots, --snapshotIndex);
+	loadSnapshot(this->board, sideToMove, fullMoves, halfMoveClock, key, snapshots, --snapshotIndex);
 }
 
 Player* Game::getCurrentPlayer() const {

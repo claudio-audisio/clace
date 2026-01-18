@@ -6,12 +6,17 @@
 #include "../game/game.h"
 #include "../utils/positions.h"
 #include "../utils/pieceHelper.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "movesCalculation.h"
 
 using namespace std;
 
+inline void initMovesGenerator() {
+	initAttacks();
+	initDestPosProviders();
+	initPawnAttacksProviders();
+}
 
-static bool isValid(Game& game, Move& move) {
+static bool isValid(const Game& game, Move& move) {
 	game.simulateMove(move);
 	const bool checkControl = game.checkControl(move);
     game.undoSimulateMove(move);
@@ -19,7 +24,7 @@ static bool isValid(Game& game, Move& move) {
 	return checkControl;
 }
 
-static unsigned int generatePseudoLegalMoves(Game& game, Move* moves) {
+static unsigned int generatePseudoLegalMoves(const Game& game, Move* moves) {
 	Rawboard sources = PIECES(game.board, game.sideToMove);
 	unsigned int count = 0;
 
@@ -61,7 +66,7 @@ static unsigned int generatePseudoLegalMoves(Game& game, Move* moves) {
 	return count;
 }
 
-static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {
+static void generateLegalMoves(const Game& game, Move* moves, MovesAmount* legalMoves) {
 	const unsigned int tot = generatePseudoLegalMoves(game, moves);
 	unsigned int removed = 0;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../common/defines.h"
+#include "../common/structures.h"
 #include "../common/types.h"
 #include "../common/constants.h"
 #include "../utils/pieceHelper.h"
@@ -8,12 +8,6 @@
 #include "../utils/utils.h"
 #include "../utils/positions.h"
 
-typedef struct {
-    Rawboard pieceBoards[SIZE];
-    Piece piecePositions[64];
-    CastlingInfo castlingInfo;
-    Position enPassantPosition;
-} Board;
 
 inline Rawboard PIECES(const Board *board, const Side side) {
     return board->pieceBoards[WPawn + side] |
@@ -34,7 +28,7 @@ inline Rawboard OPP_PIECES(const Board *board, const Side side) {
 }
 
 inline void reset(Board *board) {
-    for (RawboardIndex i = 1; i < SIZE; ++i) {
+    for (RawboardIndex i = 1; i < 13; ++i) {
         board->pieceBoards[i] = 0;
     }
 
@@ -49,7 +43,7 @@ inline void reset(Board *board) {
 }
 
 inline bool equals(const Board *board1, const Board *board2) {
-    for (RawboardIndex i = 1; i < SIZE; ++i) {
+    for (RawboardIndex i = 1; i < 13; ++i) {
         if (board1->pieceBoards[i] != board2->pieceBoards[i]) {
             return false;
         }
@@ -65,7 +59,7 @@ inline bool equals(const Board *board1, const Board *board2) {
 }
 
 inline void copy(const Board* source, Board* destination) {
-    for (RawboardIndex i = 0; i < SIZE; ++i) {
+    for (RawboardIndex i = 0; i < 13; ++i) {
         destination->pieceBoards[i] = source->pieceBoards[i];
     }
 

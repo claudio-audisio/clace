@@ -10,9 +10,7 @@ using namespace std;
 class BFEngineTest : public testing::Test {
 protected:
 	BFEngineTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~BFEngineTest() {
 

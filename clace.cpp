@@ -39,9 +39,7 @@ int main(int argc, char* argv[]) {
 
 /* mode: 0 -> uci, 1 -> console, 2 -> gui */
 Clace::Clace(const unsigned int mode) {
-	initAttacks();
-	initDestPosProviders();
-	initPawnAttacksProviders();
+	initMovesGenerator();
 	this->uciMode = mode == 0;
 	this->guiMode = mode == 2;
 }

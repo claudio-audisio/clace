@@ -68,6 +68,7 @@ public:
 
     Board *board;
 	Randoms randoms;
+	mutable unsLL key = 0;
 	Move *movesHistory;
 	unsigned int movesHistIndex = 0;
 	GameSnapshot **snapshots;

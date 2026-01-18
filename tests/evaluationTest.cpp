@@ -3,7 +3,8 @@
 #include "../evaluation/basicEvaluator.h"
 #include "../utils/fen.h"
 #include "testUtils.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -12,9 +13,7 @@ class EvaluationTest : public testing::Test
 {
 protected:
 	EvaluationTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~EvaluationTest() {
 

@@ -246,10 +246,10 @@ inline Rawboard blackKingCastling(const Board *board, const Position position) {
     Rawboard positions = 0L;
 
     if (position == 60) {
-        if ((board->castlingInfo & 0b0010) && isEmpty(board, 61)) {
+        if ((board->castlingInfo & BKCastlingInfo) && isEmpty(board, 61)) {
             positions |= posInd(62) & board->pieceBoards[Empty];
         }
-        if ((board->castlingInfo & 0b0001) && isEmpty(board, 59) && isEmpty(board, 57)) {
+        if ((board->castlingInfo & BQCastlingInfo) && isEmpty(board, 59) && isEmpty(board, 57)) {
             positions |= posInd(58) & board->pieceBoards[Empty];
         }
     }
@@ -261,10 +261,10 @@ inline Rawboard whiteKingCastling(const Board *board, const Position position) {
     Rawboard positions = 0L;
 
     if (position == 4) {
-        if ((board->castlingInfo & 0b1000) && isEmpty(board, 5)) {
+        if ((board->castlingInfo & WKCastlingInfo) && isEmpty(board, 5)) {
             positions |= posInd(6) & board->pieceBoards[Empty];
         }
-        if ((board->castlingInfo & 0b0100) && isEmpty(board, 3) && isEmpty(board, 1)) {
+        if ((board->castlingInfo & WQCastlingInfo) && isEmpty(board, 3) && isEmpty(board, 1)) {
             positions |= posInd(2) & board->pieceBoards[Empty];
         }
     }

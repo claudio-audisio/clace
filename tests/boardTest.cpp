@@ -3,8 +3,9 @@
 #include "../board/board.h"
 #include "../utils/fen.h"
 #include "testUtils.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
 #include "../move/move.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -12,9 +13,7 @@ using namespace std;
 class BoardTest : public testing::Test {
 protected:
 	BoardTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 	~BoardTest() {
 
@@ -41,7 +40,7 @@ TEST_F(BoardTest, ConstructorTest) {
 	Board *board = new Board();
     reset(board);
 	EXPECT_EQ(board->pieceBoards[0], 0xffffffffffffffff);
-	for (RawboardIndex i = 1; i < SIZE; i++) {
+	for (RawboardIndex i = 1; i < 13; i++) {
 		EXPECT_EQ(board->pieceBoards[i], Empty);
 	}
 	EXPECT_EQ(board->castlingInfo, 0);

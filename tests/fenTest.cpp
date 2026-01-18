@@ -3,7 +3,8 @@
 #include "../utils/fen.h"
 #include "../game/game.h"
 #include "../common/constants.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -11,9 +12,7 @@ using namespace std;
 class fenTest : public testing::Test {
 protected:
 	fenTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~fenTest() {
 
@@ -72,31 +71,6 @@ INSTANTIATE_TEST_SUITE_P(
 		"r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1",
 		"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
 		"r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10"
-	)
-);
-
-class GameToFENKeyTest : public ::testing::TestWithParam<tuple<string, string>> {};
-
-TEST_P(GameToFENKeyTest, gameToFENKeyTest) {
-	string fenGame = get<0>(GetParam());
-	string expectedFENKey = get<1>(GetParam());
-	Game game;
-	FEN::fenToGame(fenGame, game);
-	EXPECT_EQ(FEN::gameToFENKey(game), expectedFENKey);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-	fenTest,
-	GameToFENKeyTest,
-	::testing::Values(
-		make_tuple(INITIAL_FEN_POSITION, "rnbqkbnrpppppppp32PPPPPPPPRNBQKBNRwKQkq-"),
-		make_tuple(CASTLING_FEN_POSITION, "r3k2rpppppppp32PPPPPPPPR3K2RwKQkq-"),
-		make_tuple(PERFT_FEN_POSITION_2, "r3k2rp1ppqpb1bn2pnp4PN4p2P5N2Q1pPPPBBPPPR3K2RwKQkq-"),
-		make_tuple(PERFT_FEN_POSITION_3, "10p8p4KP5r1R3p1k12P1P9w--"),
-		make_tuple(PERFT_FEN_POSITION_4, "r3k2rPppp1ppp1b3nbNnP6BBP1P3q4N2Pp1P2PPR2Q1RK1wkq-"),
-		make_tuple(PERFT_FEN_POSITION_5, "rnbq1k1rpp1Pbppp2p15B13PPP1NnPPRNBQK2RwKQ-"),
-		make_tuple(PERFT_FEN_POSITION_6, "r4rk2pp1qpppp1np1n4b1p1B3B1P1b1P1NP1N3PP1QPPPR4RK1w--"),
-		make_tuple(END_FEN_POSITION, "4k55K3w--")
 	)
 );
 

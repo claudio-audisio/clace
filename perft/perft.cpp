@@ -12,21 +12,13 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
     this->pool = new MovePool(depth + 1);
-#ifdef PERFT_USE_CACHE
-    this->cache = new MovesCache(0);
-#else
-    this->cache = nullptr;
-#endif
 }
 
 Perft::~Perft() {
 	delete this->game;
     delete this->result;
     delete this->pool;
-
-    if (this->cache) {
-        delete this->cache;
-    }
+    table.clear();
 }
 
 Result* Perft::runComplete(const bool consoleMode) {
@@ -34,9 +26,11 @@ Result* Perft::runComplete(const bool consoleMode) {
     runCompletePerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
-#ifdef PERFT_USE_CACHE
-    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
-#endif
+
+    if (table.getUsage() != -1) {
+        cout << "Cache usage " << table.getUsage() * 100 / totalUsage << " %" << endl;
+    }
+
     return result;
 }
 
@@ -44,18 +38,8 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
     Move* moves = pool->getArray(currentDepth);
     MovesAmount amount;
 
-#ifdef PERFT_USE_CACHE
-    const string fenKey = FEN::gameToFENKey(*game);
-    if (!cache->get(fenKey, moves, amount)) {
-        generateLegalMoves(*game, moves, &amount);
-        cache->add(fenKey, moves, amount.total, amount.legal);
-        generatorUsage++;
-    } else {
-        cacheUsage++;
-    }
-#else
-    generateLegalMoves(*game, moves, &amount);
-#endif
+    table.getMoves(*game, moves, amount);
+    totalUsage++;
 
     if (game->checkStatus.check && amount.legal == 0) {
         result->incrementCheckmates((depth - currentDepth) - 1);
@@ -89,9 +73,11 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
-#ifdef PERFT_USE_CACHE
-    cout << "Cache usage " << (cacheUsage * 100) / (cacheUsage + generatorUsage) << " %" << endl;
-#endif
+
+    if (table.getUsage() != -1) {
+        cout << "Cache usage " << table.getUsage() * 100 / totalUsage << " %" << endl;
+    }
+
     return result;
 }
 
@@ -99,18 +85,8 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     Move* moves = pool->getArray(currentDepth - 1);
     MovesAmount amount;
 
-#ifdef PERFT_USE_CACHE
-    const string fenKey = FEN::gameToFENKey(*game);
-    if (!cache->get(fenKey, moves, amount)) {
-        generateLegalMoves(*game, moves, &amount);
-        cache->add(fenKey, moves, amount.total, amount.legal);
-        generatorUsage++;
-    } else {
-        cacheUsage++;
-    }
-#else
-    generateLegalMoves(*game, moves, &amount);
-#endif
+    table.getMoves(*game, moves, amount);
+    totalUsage++;
 
     if (currentDepth == 1) {
         return amount.legal;

@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <bitset>
 
 using namespace std;
 
@@ -13,25 +12,7 @@ typedef unsigned long long Rawboard;
 typedef unsigned int Piece;
 typedef unsigned int CastlingInfo;
 typedef unsigned long long unsLL;
-//typedef bitset<72> PieceAndDest;
 typedef unsigned long long Move;
 typedef unsigned int MoveType;
 typedef unsigned int MoveResult;
 
-typedef struct {
-	unsigned int total;
-	unsigned int legal;
-} MovesAmount;
-
-typedef struct {
-	Move move;
-	double value;
-	EndGameType endGameType;
-} Evaluation;
-
-typedef struct {
-	unsLL pieces[12][64];
-	unsLL sideToMove;
-	unsLL castling[4];
-	unsLL enPassant[8];
-} Randoms;

@@ -3,12 +3,6 @@
 
 #include "../board/board.h"
 
-typedef struct {
-    Board board;
-    Side sideToMove;
-    unsigned int fullMoves;
-    unsigned int halfMoveClock;
-} GameSnapshot;
 
 inline GameSnapshot** allocateSnapshots(const unsigned int size) {
     const auto snapshots = static_cast<GameSnapshot**>(malloc(sizeof(GameSnapshot*) * size));
@@ -36,18 +30,20 @@ inline void deallocateSnapshots(GameSnapshot** snapshots, const unsigned int siz
     free(snapshots);
 }
 
-inline void saveSnapshot(const Board* board, const unsigned int sideToMove, const unsigned int fullMoves, const unsigned int halfMoveClock, GameSnapshot** snapshots, const unsigned int index) {
+inline void saveSnapshot(const Board* board, const unsigned int sideToMove, const unsigned int fullMoves, const unsigned int halfMoveClock, const unsLL key, GameSnapshot** snapshots, const unsigned int index) {
     GameSnapshot *snapshot = snapshots[index];
     copy(board, &snapshot->board);
     snapshot->sideToMove = sideToMove;
     snapshot->fullMoves = fullMoves;
     snapshot->halfMoveClock = halfMoveClock;
+    snapshot->key = key;
 }
 
-inline void loadSnapshot(Board *board, unsigned int &sideToMove, unsigned int &fullMoves, unsigned int &halfMoveClock, GameSnapshot** snapshots, const unsigned int index) {
+inline void loadSnapshot(Board *board, unsigned int &sideToMove, unsigned int &fullMoves, unsigned int &halfMoveClock, unsLL &key, GameSnapshot** snapshots, const unsigned int index) {
     const GameSnapshot *snapshot = snapshots[index];
     copy(&snapshot->board, board);
     sideToMove = snapshot->sideToMove;
     fullMoves = snapshot->fullMoves;
     halfMoveClock = snapshot->halfMoveClock;
+    key = snapshot->key;
 }

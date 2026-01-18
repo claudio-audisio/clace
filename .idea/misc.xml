@@ -4,4 +4,25 @@
     <option name="pythonIntegrationState" value="YES" />
   </component>
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <sourceRoots>
+      <file path="$PROJECT_DIR$/board" />
+      <file path="$PROJECT_DIR$/cache" />
+      <file path="$PROJECT_DIR$/common" />
+      <file path="$PROJECT_DIR$/engine" />
+      <file path="$PROJECT_DIR$/evaluation" />
+      <file path="$PROJECT_DIR$/game" />
+      <file path="$PROJECT_DIR$/move" />
+      <file path="$PROJECT_DIR$/movesCalculation" />
+      <file path="$PROJECT_DIR$/perft" />
+      <file path="$PROJECT_DIR$/tests" />
+      <file path="$PROJECT_DIR$/uci" />
+      <file path="$PROJECT_DIR$/ui" />
+      <file path="$PROJECT_DIR$/utils" />
+    </sourceRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/#old_stuff" />
+      <file path="$PROJECT_DIR$/docs" />
+    </excludeRoots>
+  </component>
 </project>

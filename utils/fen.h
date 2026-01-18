@@ -20,7 +20,7 @@ public:
 
     static Game* fenToNewGame(const string& fenPosition) {
         Game* game = new Game();
-        fenToGame(fenPosition, *game);
+        game->initFromFEN(fenPosition);
 
         return game;
     }
@@ -36,7 +36,7 @@ public:
         delete tokens;
     }
 
-    static string gameToFEN(Game& game) {
+    static string gameToFEN(const Game& game) {
         string fenBoard;
         fenBoard.append(chessBoardToFEN(game.board));
         fenBoard.append(string(1, SEPARATOR));
@@ -52,16 +52,19 @@ public:
         return fenBoard;
     }
 
-    static string gameToFENKey(Game& game) {
-        string fenKey;
-        fenKey.append(chessBoardToFENKey(game.board));
-        fenKey.append(game.isWhiteToMove() ? "w" : "b");
-        fenKey.append(castlingInfoToFEN(game.board->castlingInfo));
-        fenKey.append(enPassantToFEN(game.board->enPassantPosition));
-        return fenKey;
+    static string gameToFENWithoutMoves(const Game& game) {
+        string fenBoard;
+        fenBoard.append(chessBoardToFEN(game.board));
+        fenBoard.append(string(1, SEPARATOR));
+        fenBoard.append(game.isWhiteToMove() ? "w" : "b");
+        fenBoard.append(string(1, SEPARATOR));
+        fenBoard.append(castlingInfoToFEN(game.board->castlingInfo));
+        fenBoard.append(string(1, SEPARATOR));
+        fenBoard.append(enPassantToFEN(game.board->enPassantPosition));
+        return fenBoard;
     }
 
-    static Game* mirrorGame(Game& game) {
+    static Game* mirrorGame(const Game& game) {
         return fenToNewGame(mirrorFenGame(gameToFEN(game)));
     }
 
@@ -299,7 +302,7 @@ public:
 
 	static void setBKCastling(CastlingInfo& castlingInfo, const bool info) {
 		if (info) {
-			castlingInfo |= 0b0010;
+			castlingInfo |= BKCastlingInfo;
 		}
 		else {
 			castlingInfo &= 0b1101;
@@ -308,7 +311,7 @@ public:
 
 	static void setBQCastling(CastlingInfo& castlingInfo, const bool info) {
 		if (info) {
-			castlingInfo |= 0b0001;
+			castlingInfo |= BQCastlingInfo;
 		}
 		else {
 			castlingInfo &= 0b1110;
@@ -317,7 +320,7 @@ public:
 
 	static void setWKCastling(CastlingInfo& castlingInfo, const bool info) {
 		if (info) {
-			castlingInfo |= 0b1000;
+			castlingInfo |= WKCastlingInfo;
 		}
 		else {
 			castlingInfo &= 0b0111;
@@ -326,7 +329,7 @@ public:
 
 	static void setWQCastling(CastlingInfo& castlingInfo, const bool info) {
 		if (info) {
-			castlingInfo |= 0b0100;
+			castlingInfo |= WQCastlingInfo;
 		}
 		else {
 			castlingInfo &= 0b1011;
@@ -334,19 +337,19 @@ public:
 	}
 
 	static bool isWhiteKingCastling(const CastlingInfo castlingInfo) {
-		return (castlingInfo & 0b1000) > 0;
+		return (castlingInfo & WKCastlingInfo) > 0;
 	}
 
 	static bool isWhiteQueenCastling(const CastlingInfo castlingInfo) {
-		return (castlingInfo & 0b0100) > 0;
+		return (castlingInfo & WQCastlingInfo) > 0;
 	}
 
 	static bool isBlackKingCastling(const CastlingInfo castlingInfo) {
-		return (castlingInfo & 0b0010) > 0;
+		return (castlingInfo & BKCastlingInfo) > 0;
 	}
 
 	static bool isBlackQueenCastling(const CastlingInfo castlingInfo) {
-		return (castlingInfo & 0b0001) > 0;
+		return (castlingInfo & BQCastlingInfo) > 0;
 	}
 
 };

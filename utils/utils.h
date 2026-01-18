@@ -39,22 +39,3 @@ inline unsLL getElapsedSeconds(const chrono::time_point<chrono::steady_clock> st
 	return chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count();
 }
 
-inline Position getFirstPos(const Rawboard board) {
-    #ifdef __GNUC__
-        return __builtin_ctzll(board);
-    #elif defined(_MSC_VER)
-        unsigned long position;
-        _BitScanForward64(&position, board);
-        return static_cast<Position>(position);
-    #endif
-}
-
-inline Position getFirstPosReverse(const Rawboard board) {
-    #ifdef __GNUC__
-        return 63 - __builtin_clzll(board);
-    #elif defined(_MSC_VER)
-        unsigned long position;
-        _BitScanReverse64(&position, board);
-        return static_cast<Position>(position);
-    #endif
-}

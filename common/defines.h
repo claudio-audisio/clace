@@ -4,6 +4,7 @@
 //#define BOARD_BRANCHLESS_RAY_ATTACKS
 
 //#define PROFILER
-//#define PERFT_USE_CACHE
+
+#define USE_CACHE
 
 #define PERFORMANCE_TESTS

@@ -4,7 +4,8 @@
 #include "testUtils.h"
 #include "../board/board.h"
 #include "../utils/boardUtils.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -12,9 +13,7 @@ using namespace std;
 class BoardUtilsTest : public testing::Test {
 protected:
 	BoardUtilsTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~BoardUtilsTest() {
 

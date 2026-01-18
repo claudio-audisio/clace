@@ -13,7 +13,7 @@
 #include "../engine/bf_engine.h"
 #include "../common/defines.h"
 #include "../move/rollback.h"
-#include "../movesCalculation/staticAttacks.h"
+#include "../cache/transpositionTable.h"
 
 using namespace std;
 
@@ -23,9 +23,7 @@ using namespace std;
 class PerformanceReleaseTest : public testing::Test {
 protected:
 	PerformanceReleaseTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 
 	~PerformanceReleaseTest() override {
@@ -328,12 +326,12 @@ TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
 
 	auto start = chrono::steady_clock::now();
 	for (int i = 0; i < testSize;) {
-		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i++);
-		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i++);
-		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i++);
-		saveSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, snapshots, i++);
-		saveSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, snapshots, i++);
-		saveSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, snapshots, i++);
+		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, game1->key, snapshots, i++);
+		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, game2->key, snapshots, i++);
+		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, game3->key, snapshots, i++);
+		saveSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, game4->key, snapshots, i++);
+		saveSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, game5->key, snapshots, i++);
+		saveSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, game6->key, snapshots, i++);
 	}
 
 	auto saveTime = getElapsedMillis(start);
@@ -365,22 +363,22 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	GameSnapshot **snapshots = allocateSnapshots(testSize);
 
 	for (int i = 0; i < testSize;) {
-		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i++);
-		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i++);
-		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i++);
-		saveSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, snapshots, i++);
-		saveSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, snapshots, i++);
-		saveSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, snapshots, i++);
+		saveSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, game1->key, snapshots, i++);
+		saveSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, game2->key, snapshots, i++);
+		saveSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, game3->key, snapshots, i++);
+		saveSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, game4->key, snapshots, i++);
+		saveSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, game5->key, snapshots, i++);
+		saveSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, game6->key, snapshots, i++);
 	}
 
 	auto start = chrono::steady_clock::now();
 	for (int i = testSize - 1; i >= 0;) {
-		loadSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, snapshots, i--);
-		loadSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, snapshots, i--);
-		loadSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, snapshots, i--);
-		loadSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, snapshots, i--);
-		loadSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, snapshots, i--);
-		loadSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, snapshots, i--);
+		loadSnapshot(game1->board, game1->sideToMove, game1->fullMoves, game1->halfMoveClock, game1->key, snapshots, i--);
+		loadSnapshot(game2->board, game2->sideToMove, game2->fullMoves, game2->halfMoveClock, game2->key, snapshots, i--);
+		loadSnapshot(game3->board, game3->sideToMove, game3->fullMoves, game3->halfMoveClock, game3->key, snapshots, i--);
+		loadSnapshot(game4->board, game4->sideToMove, game4->fullMoves, game4->halfMoveClock, game4->key, snapshots, i--);
+		loadSnapshot(game5->board, game5->sideToMove, game5->fullMoves, game5->halfMoveClock, game5->key, snapshots, i--);
+		loadSnapshot(game6->board, game6->sideToMove, game6->fullMoves, game6->halfMoveClock, game6->key, snapshots, i--);
 	}
 
 	auto rollbackTime = getElapsedMillis(start);
@@ -388,193 +386,6 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	cout << "time: " << rollbackTime  << endl;
 
 	deallocateSnapshots(snapshots, testSize);
-}
-
-TEST_F(PerformanceReleaseTest, gameToFENKeyTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
-	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
-	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
-	Game* gamePerft4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
-	Game* gamePerft5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
-	Game* gamePerft6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
-
-	auto begin = chrono::steady_clock::now();
-
-	for (long i = 1; i < 1000000; ++i) {
-		FEN::gameToFENKey(*gameInitial);
-		FEN::gameToFENKey(*gamePerft2);
-		FEN::gameToFENKey(*gamePerft3);
-		FEN::gameToFENKey(*gamePerft4);
-		FEN::gameToFENKey(*gamePerft5);
-		FEN::gameToFENKey(*gamePerft6);
-	}
-
-	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1830);
-	cout << "time: " << time  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, movesCacheTest) {
-	// TODO
-	GTEST_SKIP() << "First iteration takes double time compared with the next ones";
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Move moves[MAX_MOVES];
-	Move* moves2;
-	MovesAmount amount;
-
-	for (int i = 0; i < MAX_MOVES; ++i) {
-		moves[i] = i;
-	}
-
-	const unsigned int testSize = 1000000;
-	MovesCache cache(testSize);
-
-	auto begin = chrono::steady_clock::now();
-
-	for (int m = 0; m < testSize; ++m) {
-		const string key = to_string(m);
-		cache.add(key, moves, MAX_MOVES, MAX_MOVES - 1);
-		cache.get(key, moves2, amount);
-	}
-
-	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 580);
-	cout << "time: " << time  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft5BulkTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
-
-	auto result = perft->runBulk();
-
-#ifdef PERFT_USE_CACHE
-	GTEST_ASSERT_NEAR(result->getElapsed(), 265, 10);
-#else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 180);
-#endif
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft6BulkTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 6);
-
-	auto result = perft->runBulk();
-
-#ifdef PERFT_USE_CACHE
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5450, 50);
-#else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 4400);
-#endif
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft4CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 4);
-
-	auto result = perft->runComplete();
-
-#ifdef PERFT_USE_CACHE
-	GTEST_ASSERT_NEAR(result->getElapsed(), 320, 10);
-#else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 220);
-#endif
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, Perft5CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	auto perft = new Perft(INITIAL_FEN_POSITION, 5);
-
-	auto result = perft->runComplete();
-
-#ifdef PERFT_USE_CACHE
-	GTEST_ASSERT_NEAR(result->getElapsed(), 6610, 50);
-#else
-	GTEST_ASSERT_NEAR(result->getElapsed(), 5400);
-#endif
-
-	cout << "time: " << result->getElapsed()  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, BFEngineOpenGameDepth4Test) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Game game;
-	game.initFromFEN(INITIAL_FEN_POSITION);
-	auto engine = new BF_Engine(4);
-	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new Move[MAX_MOVES];
-	MovesAmount amount;
-
-	auto begin = chrono::steady_clock::now();
-
-	generateLegalMoves(game, moves, &amount);
-	engine->_calculateMove(game, moves, amount);
-
-	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 280);
-	cout << "time: " << time  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, BFEngineMidGameDepth3Test) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Game game;
-	game.initFromFEN(PERFT_FEN_POSITION_6);
-	auto engine = new BF_Engine(3);
-	engine->setEvaluator(new BasicEvaluator());
-	auto moves = new Move[MAX_MOVES];
-	MovesAmount amount;
-
-	auto begin = chrono::steady_clock::now();
-
-	generateLegalMoves(game, moves, &amount);
-	engine->_calculateMove(game, moves, amount);
-
-	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 180);
-	cout << "time: " << time  << endl;
-}
-
-TEST_F(PerformanceReleaseTest, BFEngineEndGameDepth5Test) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
-	Game game;
-	game.initFromFEN(PERFT_FEN_POSITION_3);
-	auto engine = new BF_Engine(5);
-	auto moves = new Move[MAX_MOVES];
-	MovesAmount amount;
-
-	auto begin = chrono::steady_clock::now();
-
-	generateLegalMoves(game, moves, &amount);
-	engine->_calculateMove(game, moves, amount);
-
-	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 570);
-	cout << "time: " << time  << endl;
 }
 
 

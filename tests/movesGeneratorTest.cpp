@@ -12,9 +12,7 @@ using namespace std;
 class MovesGeneratorTest : public testing::Test {
 protected:
 	MovesGeneratorTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~MovesGeneratorTest() {
 
@@ -53,9 +51,7 @@ public:
 class GetLegalMovesTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetLegalMovesTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 };
 

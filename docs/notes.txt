@@ -4,17 +4,16 @@ DA FINIRE
 
 GENERALE
 
+    - MAGIC BITBOARDS ?
+
     - vedere xche' abilitando la fastverifyChecks perft peggiora le performance di 200ms anche se non la usa (depth 6)
 
     - aggiungere il log della board (fen?) in caso di assert false
 
-    - Ottimizzare uso della cache
-        - Per esempio in perft 6 viene usata il 73% delle volte ma
-            - sosituire FENKey con ZobristKey
-            - vedere se la mappa e' quella giusta
-            - nei motori va mantenuta smilza (cancellare le mosse non piu' possibili)
-            - aggiungere gli attacks di opposite
-            - aggiungere i check positions
+    - Ampliare uso della cache
+        - nei motori va mantenuta smilza (cancellare le mosse non piu' possibili)
+        - aggiungere gli attacks di opposite
+        - aggiungere i check positions
 
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
 i

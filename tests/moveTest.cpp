@@ -4,7 +4,8 @@
 #include "../move/move.h"
 #include "../utils/positions.h"
 #include "../utils/fen.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -12,9 +13,7 @@ using namespace std;
 class MoveTest : public testing::Test {
 protected:
 	MoveTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 	~MoveTest() {
 
@@ -24,7 +23,7 @@ protected:
 
 class TestParams {
 public:
-    TestParams(string stringMove, Side side, Position sourcePosition, Position destinationPosition) {
+    TestParams(const string& stringMove, Side side, Position sourcePosition, Position destinationPosition) {
         this->stringMove = stringMove;
         this->side = side;
         this->sourcePosition = sourcePosition;
@@ -111,7 +110,7 @@ INSTANTIATE_TEST_SUITE_P(
     MoveTest,
     DecorateTest,
     ::testing::Values(
-        //new TestParams2(INITIAL_FEN_POSITION, 48, 40, BPawn, false, false, false),
+        new TestParams2(INITIAL_FEN_POSITION, 48, 40, BPawn, false, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 62, BKing, true, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 60, 58, BKing, true, false, false),
         new TestParams2("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 4, 6, WKing, true, false, false),

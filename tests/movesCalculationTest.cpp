@@ -2,7 +2,8 @@
 
 #include "../utils/fen.h"
 #include "testUtils.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -11,9 +12,7 @@ class MovesCalculationTest : public testing::Test
 {
 protected:
     MovesCalculationTest() {
-        initAttacks();
-        initDestPosProviders();
-        initPawnAttacksProviders();
+        initMovesGenerator();
     }
     ~MovesCalculationTest() {
 
@@ -36,9 +35,7 @@ public:
 class GetKingAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
     GetKingAttacksTest() {
-        initAttacks();
-        initDestPosProviders();
-        initPawnAttacksProviders();
+        initMovesGenerator();
     }
 };
 
@@ -66,9 +63,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetKingMovesTest : public ::testing::TestWithParam<TestParams*> {
 protected:
     GetKingMovesTest() {
-        initAttacks();
-        initDestPosProviders();
-        initPawnAttacksProviders();
+        initMovesGenerator();
     }
 };
 
@@ -107,9 +102,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetQueenAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetQueenAttacksTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -138,9 +131,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetRookAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetRookAttacksTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -169,9 +160,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetBishopAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetBishopAttacksTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -200,9 +189,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetKnightAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetKnightAttacksTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -231,9 +218,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetPawnMovesTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetPawnMovesTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -285,9 +270,7 @@ public:
 class GetSinglePawnMovesTest : public ::testing::TestWithParam<TestParams2*> {
 protected:
 	GetSinglePawnMovesTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -319,9 +302,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetPawnAttacksTest : public ::testing::TestWithParam<TestParams*> {
 protected:
 	GetPawnAttacksTest() {
-		initAttacks();
-	    initDestPosProviders();
-	    initPawnAttacksProviders();
+	    initMovesGenerator();
 	}
 };
 
@@ -447,9 +428,7 @@ public:
 class IsOnXRayTest : public ::testing::TestWithParam<TestParams3*> {
 protected:
     IsOnXRayTest() {
-        initAttacks();
-        initDestPosProviders();
-        initPawnAttacksProviders();
+        initMovesGenerator();
     }
 };
 

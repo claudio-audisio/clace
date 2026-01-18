@@ -22,9 +22,7 @@ using namespace std;
 class PerformanceDebugTest : public testing::Test {
 protected:
 	PerformanceDebugTest() {
-		initAttacks();
-		initDestPosProviders();
-		initPawnAttacksProviders();
+		initMovesGenerator();
 	}
 
 	~PerformanceDebugTest() {
@@ -100,12 +98,12 @@ TEST_F(PerformanceDebugTest, gameToZobristKeyTest) {
 	auto begin = chrono::steady_clock::now();
 
 	for (long i = 1; i < 2000000; ++i) {
-		getZobristKey(*gameInitial);
-		getZobristKey(*gamePerft2);
-		getZobristKey(*gamePerft3);
-		getZobristKey(*gamePerft4);
-		getZobristKey(*gamePerft5);
-		getZobristKey(*gamePerft6);
+		calculateKey(*gameInitial);
+		calculateKey(*gamePerft2);
+		calculateKey(*gamePerft3);
+		calculateKey(*gamePerft4);
+		calculateKey(*gamePerft5);
+		calculateKey(*gamePerft6);
 	}
 
 	unsLL time = getElapsedMillis(begin);

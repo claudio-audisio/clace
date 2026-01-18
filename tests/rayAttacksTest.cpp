@@ -2,7 +2,8 @@
 
 #include "../utils/fen.h"
 #include "testUtils.h"
-#include "../movesCalculation/movesCalculation.h"
+#include "../move/movesCalculation.h"
+#include "move/movesGenerator.h"
 
 using namespace std;
 
@@ -11,9 +12,7 @@ class RayAttacksTest : public testing::Test
 {
 protected:
     RayAttacksTest() {
-        initAttacks();
-        initDestPosProviders();
-        initPawnAttacksProviders();
+        initMovesGenerator();
     }
     ~RayAttacksTest() {
 

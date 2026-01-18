@@ -4,8 +4,8 @@
 
 #include "../game/game.h"
 #include "result.h"
-#include "../move/movesCache.h"
 #include "../utils/logger.h"
+#include "cache/transpositionTable.h"
 
 using namespace std;
 
@@ -26,9 +26,8 @@ private:
 	string fenGame;
 	Result* result;
 	MovePool* pool;
-    MovesCache* cache;
-    unsigned int cacheUsage = 0;
-    unsigned int generatorUsage = 0;
+	TranspositionTable table;
+    unsigned int totalUsage = 0;
 
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);
