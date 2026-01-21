@@ -14,5 +14,4 @@ typedef unsigned int CastlingInfo;
 typedef unsigned long long unsLL;
 typedef unsigned long long Move;
 typedef unsigned int MoveType;
-typedef unsigned int MoveResult;
 

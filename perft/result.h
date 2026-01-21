@@ -17,7 +17,7 @@ public:
 	void init();
 	void incrementNodes(unsLL qty, unsigned int currentDepth);
 	void incrementCounters(const CheckStatus& checkStatus, unsigned int currentDepth);
-	void incrementCounters(MoveResult moveResult, unsigned int currentDepth);
+	void incrementCounters(Move move, unsigned int currentDepth);
 	void incrementCheckmates(unsigned int currentDepth);
 	void add(const Result& result);
 	void print(const string& fenGame, bool consoleMode);

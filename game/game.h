@@ -23,8 +23,8 @@ public:
 	void initFromFEN(const string& fenPosition);
 	void initPlayers(Player* white, Player* black);
 	Evaluation calculateMove();
-	MoveResult finalizeMove(Move& move);
-	MoveResult applyMove(Move& move);
+	void finalizeMove(Move& move);
+	void applyMove(Move& move);
 	void applyMoves(list<Move>& moves);
 	void simulateMove(Move& move) const;
 	Piece completeEnPassant(Move move) const;

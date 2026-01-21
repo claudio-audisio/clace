@@ -53,7 +53,7 @@ Evaluation Game::calculateMove() {
 	return getCurrentPlayer()->engine->calculateMove(*this);
 }
 
-MoveResult Game::finalizeMove(Move& move) {
+void Game::finalizeMove(Move& move) {
 	const Piece captured = movePiece(
 		board,
 		getSourcePosition(move),
@@ -70,14 +70,12 @@ MoveResult Game::finalizeMove(Move& move) {
 	else {
 		halfMoveClock++;
 	}
-
-	return getMoveResult(captured != Empty, getType(move));
 }
 
-MoveResult Game::applyMove(Move& move) {
+void Game::applyMove(Move& move) {
 	const CastlingInfo prevCastlingInfo = board->castlingInfo;
 	const Position prevEnPassant = board->enPassantPosition;
-	const MoveResult moveResult = finalizeMove(move);
+	finalizeMove(move);
 	lastMove = move;
 	movesHistory[movesHistIndex++] = move;
 
@@ -89,7 +87,6 @@ MoveResult Game::applyMove(Move& move) {
 #ifdef USE_CACHE
 	updateKey(*this, move, prevCastlingInfo, prevEnPassant);
 #endif
-	return moveResult;
 }
 
 void Game::applyMoves(list<Move>& moves) {
@@ -270,9 +267,6 @@ Game* Game::duplicate() const {
 	newGame->board->enPassantPosition = board->enPassantPosition;
 	newGame->fullMoves = fullMoves;
 	newGame->halfMoveClock = halfMoveClock;
-	/*for (unsigned int i = 0; i < HISTORY_MOVES; i++) {
-		newGame->movesHistory[i] = movesHistory[i];
-	}*/
 	memcpy(newGame->movesHistory, movesHistory, sizeof(movesHistory));
 	newGame->movesHistIndex = movesHistIndex;
 	newGame->checkStatus.set(checkStatus);

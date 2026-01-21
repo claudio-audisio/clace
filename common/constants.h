@@ -87,12 +87,6 @@ inline const unordered_map<Piece, char> PIECE_TO_CODE = {{WKing, 0x004B}, {WQuee
 #define PAWN_PROM_MASK	0x0000080000000000LL
 #define MOVE_TYPE_MASK	0x00000E0000000000LL
 
-// move result mask
-#define MR_CAPTURED_MASK 0x01
-#define MR_PROMOTED_MASK 0x02
-#define MR_PASSANT_MASK  0x04
-#define MR_CASTLING_MASK 0x08
-
 // castling
 #define WQCastling	6
 #define WKCastling	10
@@ -145,7 +139,6 @@ inline const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3
 inline const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
 inline const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 inline const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
-// TODO aggiungere queste ai test (generatore di mosse il primo, motori il secondo)
 inline const string FEN_EN_PASSANT_LEGALITY_TEST = "8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 0";
 inline const string FEN_EN_PASSANT_BUG_TEST = "2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 0 23";
 

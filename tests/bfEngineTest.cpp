@@ -27,6 +27,19 @@ TEST_F(BFEngineTest, ConstructorTest) {
 	EXPECT_EQ(engine->pool->size, 4);
 }
 
+TEST_F(BFEngineTest, enPassantBugTest) {
+	//GTEST_SKIP_("");
+#ifdef PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.initFromFEN(FEN_EN_PASSANT_BUG_TEST);
+	auto engine = new BF_Engine(4);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_NE(moveToString(best.move), "c4b3");
+}
+
 TEST_F(BFEngineTest, Depth1Test) {
 #ifdef PROFILER
 	GTEST_SKIP();

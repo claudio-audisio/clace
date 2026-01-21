@@ -166,12 +166,12 @@ TEST_P(ApplyMoveTest, applyMoveTest) {
 	game->sideToMove = side;
 	Move move = createMove(testParams->sourcePos, testParams->destinationPos, side, getPiece(game->board, testParams->sourcePos), game->board->enPassantPosition);
 	setPromotion(move, side == _WHITE ? WQueen : BQueen);
-	const MoveResult moveResult = game->applyMove(move);
+	game->applyMove(move);
 	string fenBoardAfterMove = FEN::gameToFEN(*game);
 
 	EXPECT_EQ(fenBoardAfterMove, testParams->expectedFenBoardAfterMove);
-	EXPECT_EQ(isCapturedMR(moveResult), testParams->expectedCaptured);
-	EXPECT_EQ(isPromotedMR(moveResult), testParams->expectedPromotion);
+	EXPECT_EQ(isCaptured(move), testParams->expectedCaptured);
+	EXPECT_EQ(isPawnPromotion(move), testParams->expectedPromotion);
 	EXPECT_EQ(moveToString(game->lastMove), testParams->expectedLastMove);
 	EXPECT_EQ(game->movesHistIndex, 1);
 	EXPECT_EQ(moveToString(game->movesHistory[0]), testParams->expectedLastMove);
@@ -181,12 +181,12 @@ INSTANTIATE_TEST_SUITE_P(
 	GameTest,
 	ApplyMoveTest,
 	::testing::Values(
-		/*new TestParams2(INITIAL_FEN_POSITION, 8, 16, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2a3"),
-		/new TestParams2(INITIAL_FEN_POSITION, 8, 24, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2a4"),
+		new TestParams2(INITIAL_FEN_POSITION, 8, 16, "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1", false, false, "a2a3"),
+		new TestParams2(INITIAL_FEN_POSITION, 8, 24, "rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", false, false, "a2a4"),
 		new TestParams2(CASTLING_FEN_POSITION, 60, 58, "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8c8"),
 		new TestParams2(CASTLING_FEN_POSITION, 60, 62, "r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2", false, false, "e8g8"),
 		new TestParams2(CASTLING_FEN_POSITION, 4, 2, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1", false, false, "e1c1"),
-		new TestParams2(CASTLING_FEN_POSITION, 4, 6, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1g1"),*/
+		new TestParams2(CASTLING_FEN_POSITION, 4, 6, "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1", false, false, "e1g1"),
 		new TestParams2("8/8/8/8/Pp6/8/8/8 b - a3 0 1", 25, 16, "8/8/8/8/8/p7/8/8 w - - 0 2", true, false, "b4a3"),
 		new TestParams2("8/P7/8/8/8/8/8/8 w - - 0 1", 48, 56, "Q7/8/8/8/8/8/8/8 b - - 0 1", false, true, "a7a8"),
 		new TestParams2("1b6/P7/8/8/8/8/8/8 w - - 0 1", 48, 57, "1Q6/8/8/8/8/8/8/8 b - - 0 1", true, true, "a7b8"),

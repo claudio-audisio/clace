@@ -76,6 +76,8 @@ INSTANTIATE_TEST_SUITE_P(
 		new TestParams("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", 44),
 		new TestParams("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", 46),
 		new TestParams("R6R/3Q4/1Q4Q1/4Q3/2Q4Q/Q4Q2/pp1Q4/kBNN1KB1 w - - 0 1", 218),
-		new TestParams("3Q4/1Q4Q1/4Q3/2Q4R/Q4Q2/3Q4/1Q4Rp/1K1BBNNk w - - 0 1", 218)
+		new TestParams("3Q4/1Q4Q1/4Q3/2Q4R/Q4Q2/3Q4/1Q4Rp/1K1BBNNk w - - 0 1", 218),
+		new TestParams(FEN_EN_PASSANT_LEGALITY_TEST, 21),
+		new TestParams(FEN_EN_PASSANT_BUG_TEST, 46)
 	)
 );

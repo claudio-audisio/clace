@@ -161,68 +161,6 @@ inline Move createMove(const Position sourcePosition, const Position destination
 	return createMove(sourcePosition, destinationPosition, side, piece, NO_POS);
 }
 
-inline void setCapturedMR(MoveResult& moveResult, const bool captured) {
-    if (captured) {
-        moveResult |= MR_CAPTURED_MASK;
-    }
-    else {
-        moveResult &= ~MR_CAPTURED_MASK;
-    }
-}
-
-inline bool isCapturedMR(const MoveResult moveResult) {
-    return (moveResult & MR_CAPTURED_MASK);
-}
-
-inline void setPromotedMR(MoveResult& moveResult, const bool promoted) {
-    if (promoted) {
-        moveResult |= MR_PROMOTED_MASK;
-    }
-    else {
-        moveResult &= ~MR_PROMOTED_MASK;
-    }
-}
-
-inline bool isPromotedMR(const MoveResult moveResult) {
-    return (moveResult & MR_PROMOTED_MASK);
-}
-
-inline void setEnPassantMR(MoveResult& moveResult, const bool enPassant) {
-    if (enPassant) {
-        moveResult |= MR_PASSANT_MASK;
-    }
-    else {
-        moveResult &= ~MR_PASSANT_MASK;
-    }
-}
-
-inline bool isEnPassantMR(const MoveResult moveResult) {
-    return (moveResult & MR_PASSANT_MASK);
-}
-
-inline void setCastlingMR(MoveResult& moveResult, const bool castling) {
-    if (castling) {
-        moveResult |= MR_CASTLING_MASK;
-    }
-    else {
-        moveResult &= ~MR_CASTLING_MASK;
-    }
-}
-
-inline bool isCastlingMR(const MoveResult moveResult) {
-    return (moveResult & MR_CASTLING_MASK);
-}
-
-inline MoveResult getMoveResult(const bool captured, const MoveType moveType) {
-	MoveResult moveResult = 0;
-	setCapturedMR(moveResult, captured);
-	// TODO posso buttare direttamente il valore di Game type se i bit fossero ordinati nello stesso modo
-	setPromotedMR(moveResult, moveType == PROMOTION);
-	setEnPassantMR(moveResult, moveType == EN_PASSANT);
-	setCastlingMR(moveResult, moveType == CASTLING);
-	return moveResult;
-}
-
 inline bool isPresent(const Move move, const vector<Move>& moves) {
 	const Position source = getSourcePosition(move);
 	const Position destination  = getDestinationPosition(move);

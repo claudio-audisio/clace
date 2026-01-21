@@ -53,8 +53,8 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
     for (unsigned int i = 0; i < amount.total; i++) {
         if (moves[i]) {
             game->save();
-            const MoveResult moveResult = game->applyMove(moves[i]);
-            result->incrementCounters(moveResult, depth - currentDepth);
+            game->applyMove(moves[i]);
+            result->incrementCounters(moves[i], depth - currentDepth);
             game->verifyChecks();
             result->incrementCounters(game->checkStatus, depth - currentDepth);
             //cout << game->printMovesHistory() << " done " << endl;
