@@ -2,6 +2,17 @@ DA FINIRE
 
     - Completare test unita'
 
+
+SEARCH
+
+    - Iniziato ab_engine con motore che fa search alpha-beta
+        - occorre ordinare le mosse per rendere alpha-beta piu' efficente
+        - al suo interno occorre fare una ricerca quiescente una volta raggiunta la profondita' voluta
+
+    - L'uso dovrebbe essere inglobato in un contesto piu' ampio di iterative deepening
+        https://www.chessprogramming.org/Iterative_Deepening
+
+
 GENERALE
 
     - MAGIC BITBOARDS ?
@@ -43,7 +54,5 @@ VALUTAZIONE
                 - A questo proposito ho implementato il calcolo della fase a seconda dei pezzi rimasti e la utilizzo per pesare
                 la valutazione tra medio gioco e gioco finale
 
-SEARCH
 
-    - Iniziato ab_engine con motore che fa search alpha-beta
 

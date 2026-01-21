@@ -113,6 +113,7 @@ set(TEST_NAMES
 	perftTest
 	evaluationTest
 	bfEngineTest
+	abEngineTest
 	rayAttacksTest
 	movesCalculationTest
 	zobristTest
