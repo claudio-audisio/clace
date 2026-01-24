@@ -39,5 +39,7 @@ typedef struct {
 typedef struct {
     Move *moves;
     MovesAmount amount;
+    /*unsigned int* movesOrder;     // TODO to be used in alpha-beta
+    Move *principalVariation;*/
 } Transposition;
 

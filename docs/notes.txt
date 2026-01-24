@@ -5,6 +5,9 @@ DA FINIRE
 
 SEARCH
 
+    - Convertire l'array pool in un vero array pool con allocazione, rilascio, riuso
+    - La transposition table verra' usata sempre d'ora in poi (perft, engine) quindi il pool va immerso nella table
+
     - Iniziato ab_engine con motore che fa search alpha-beta
         - occorre ordinare le mosse per rendere alpha-beta piu' efficente
         - al suo interno occorre fare una ricerca quiescente una volta raggiunta la profondita' voluta

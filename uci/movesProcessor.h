@@ -12,7 +12,7 @@ public:
 	vector<string> movesHistory;
 	unsigned int movesHistoryIndex = 0;
 	MovePool* pool = new MovePool(1);
-	IEngine* engine = new BF_Engine(2);
+	IEngine* engine = new BruteForceEngine(2);
 	Messenger& messenger = Messenger::getInstance();
 
 	void processMove(Game& game, string& command) {

@@ -7,13 +7,15 @@
 #include "../utils/vectorPool.h"
 
 // https://www.chessprogramming.org/Alpha-Beta
-class AB_Engine : public Abstract_Engine {
+class AlphaBetaEngine : public AbstractEngine {
 public:
-	explicit AB_Engine(unsigned int depth): Abstract_Engine(depth) {};
+	explicit AlphaBetaEngine(unsigned int depth): AbstractEngine(depth, "AlphaBetaEngine") {};
 
 	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
 		// TODO le mosse dovrebbero essere ordinate
 		// https://www.chessprogramming.org/Move_Ordering
+		// Ecco l'ordine di valutazione delle mosse che dovrebbe essere adottato
+
 
 		double alpha = LOSS_VALUE;	// punteggio minimo di cui il bianco e' sicuro
 		double beta = WIN_VALUE;	// punteggio massimo di cui il nero e' sicuro
@@ -49,7 +51,7 @@ public:
 			// TODO dovremmo fare un ricerca quiescente
 			// https://www.chessprogramming.org/Quiescence_Search
 			const double value = evaluator->evaluate(game);
-			//messenger.send(MSG_LOG, "abEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
+			//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
 			return value;
 		}
 
@@ -71,18 +73,14 @@ public:
 				}
 
 				if (value >= beta) {
-					//messenger.send(MSG_LOG, "abEngine", format("{} --> {:.2f} - cutoff", game.printMovesHistory(this->depth - depth), best));
+					//messenger.send(MSG_LOG, description, format("{} --> {:.2f} - cutoff", game.printMovesHistory(this->depth - depth), best));
 					return best;
 				}
 			}
 		}
 
-		//messenger.send(MSG_LOG, "abEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
-	}
-
-	string getDescription() override {
-		return format("AB_Engine({})", depth);
 	}
 
 };

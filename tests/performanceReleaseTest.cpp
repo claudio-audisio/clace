@@ -10,7 +10,7 @@
 #include "../move/movesGenerator.h"
 #include "../move/move.h"
 #include "../perft/perft.h"
-#include "../engine/bf_engine.h"
+#include "../engine/bruteForceEngine.h"
 #include "../common/defines.h"
 #include "../move/rollback.h"
 #include "../cache/transpositionTable.h"

@@ -10,7 +10,7 @@
 #include "../move/move.h"
 #include "../perft/perft.h"
 #include "../utils/vectorPool.h"
-#include "../engine/bf_engine.h"
+#include "../engine/bruteForceEngine.h"
 #include "../common/defines.h"
 #include "../game/game.h"
 #include "../cache/zobrist.h"
@@ -262,7 +262,7 @@ TEST_F(PerformanceDebugTest, bugOfTheDayTest) {
 	//GTEST_SKIP();
 	Game game;
 	game.initFromFEN("1nb1kbnQ/pppp1pp1/4p3/8/4P3/8/PPPP1PPP/RNB1KBNR b KQ - 0 1");
-	auto engine = new BF_Engine(3);
+	auto engine = new BruteForceEngine(3);
 	Evaluation best = engine->calculateMove(game);
 	cout << "best: " << moveToString(best.move) << " --> " << best.value << endl;
 }

@@ -3,14 +3,14 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "abstract_engine.h"
+#include "abstractEngine.h"
 #include "../move/movesGenerator.h"
 
 using namespace std;
 
-class R_Engine : public Abstract_Engine {
+class RandomEngine : public AbstractEngine {
 public:
-	R_Engine() : Abstract_Engine(1) {
+	RandomEngine() : AbstractEngine(1, "RandomEngine") {
 		srand(time(nullptr));
 	};
 
@@ -26,10 +26,6 @@ public:
 
 	static unsigned int getRandom(unsigned int upper) {
 		return rand() % upper;
-	}
-
-	string getDescription() override {
-		return "R_Engine";
 	}
 
 };

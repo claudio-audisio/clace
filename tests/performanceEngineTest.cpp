@@ -10,11 +10,11 @@
 #include "../move/movesGenerator.h"
 #include "../move/move.h"
 #include "../perft/perft.h"
-#include "../engine/bf_engine.h"
+#include "../engine/bruteForceEngine.h"
 #include "../common/defines.h"
 #include "../move/rollback.h"
 #include "../cache/transpositionTable.h"
-#include "engine/ab_engine.h"
+#include "engine/alphaBetaEngine.h"
 
 using namespace std;
 
@@ -51,7 +51,7 @@ TEST_F(PerformanceEngineTest, BFEngineOpenGameDepth4Test) {
 #endif
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
-    auto engine = new BF_Engine(4);
+    auto engine = new BruteForceEngine(4);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -72,7 +72,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGameDepth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
-    auto engine = new BF_Engine(3);
+    auto engine = new BruteForceEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -93,7 +93,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGame2Depth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
-    auto engine = new BF_Engine(3);
+    auto engine = new BruteForceEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -114,7 +114,7 @@ TEST_F(PerformanceEngineTest, BFEngineEndGameDepth5Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
-    auto engine = new BF_Engine(5);
+    auto engine = new BruteForceEngine(5);
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
 
@@ -136,7 +136,7 @@ TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth4Test) {
 #endif
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
-    auto engine = new AB_Engine(4);
+    auto engine = new AlphaBetaEngine(4);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -157,7 +157,7 @@ TEST_F(PerformanceEngineTest, ABEngineMidGameDepth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
-    auto engine = new AB_Engine(3);
+    auto engine = new AlphaBetaEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -178,7 +178,7 @@ TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
-    auto engine = new AB_Engine(3);
+    auto engine = new AlphaBetaEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -199,7 +199,7 @@ TEST_F(PerformanceEngineTest, ABEngineEndGameDepth5Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
-    auto engine = new AB_Engine(5);
+    auto engine = new AlphaBetaEngine(5);
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
 

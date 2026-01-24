@@ -27,7 +27,7 @@ public:
 	chrono::time_point<chrono::steady_clock> currentMoveTime;
 	string name;
 
-	string getDescription() {
+	string getDescription() const {
 		if (engine) {
 			return engine->getDescription();
 		}

@@ -2,8 +2,8 @@
 
 #include <ranges>
 
-#include "engine/ab_engine.h"
-#include "engine/bf_engine.h"
+#include "engine/alphaBetaEngine.h"
+#include "engine/bruteForceEngine.h"
 #include "perft/perft.h"
 #include "uci/uciProcessor.h"
 #include "ui/gui/gui.h"

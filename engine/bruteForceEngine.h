@@ -1,12 +1,12 @@
 #pragma once
 
-#include "abstract_engine.h"
+#include "abstractEngine.h"
 #include "iengine.h"
 #include "../move/movesGenerator.h"
 
-class BF_Engine : public Abstract_Engine {
+class BruteForceEngine : public AbstractEngine {
 public:
-	explicit BF_Engine(unsigned int depth): Abstract_Engine(depth) {};
+	explicit BruteForceEngine(const unsigned int depth): AbstractEngine(depth, "BruteForceEngine") {};
 
 	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
 		for (unsigned int i = 0; i < amount.total; i++) {
@@ -38,7 +38,7 @@ public:
 
 		if (depth == 0) {
 			const double value = evaluator->evaluate(game);
-			//messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
+			//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
 			return value;
 		}
 
@@ -57,12 +57,8 @@ public:
 			}
 		}
 
-		//messenger.send(MSG_LOG, "bfEngine", format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
-	}
-
-	string getDescription() override {
-		return format("BF_Engine({})", depth);
 	}
 
 };

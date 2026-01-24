@@ -6,8 +6,8 @@
 #include "statistics.h"
 #include "player.h"
 #include "../engine/iengine.h"
-#include "../engine/r_engine.h"
-#include "../engine/bf_engine.h"
+#include "../engine/randomEngine.h"
+#include "../engine/bruteForceEngine.h"
 #include "../ui/userInterface.h"
 #include "../ui/gui/igui.h"
 
@@ -33,10 +33,10 @@ public:
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
-			new Player(_WHITE, new BF_Engine(3)) :
+			new Player(_WHITE, new BruteForceEngine(3)) :
 			new Player(_WHITE);
 
-		blackPlayer = new Player(_BLACK, new BF_Engine(3));
+		blackPlayer = new Player(_BLACK, new BruteForceEngine(3));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
