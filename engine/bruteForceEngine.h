@@ -27,16 +27,18 @@ public:
 
 	double negaMax(Game& game, const unsigned int depth) {
 		game.verifyChecks();
-		Move* moves = pool->getArray(depth);
+		Move* moves = pool->getArray();
 		MovesAmount amount;
 		generateLegalMoves(game, moves, &amount);
 		const EndGameType endGame = game.checkEndGame(amount.legal);
 
 		if (endGame != NONE) {
+			pool->release(moves);
 			return endGame == CHECKMATE ? WIN_VALUE : DRAW_VALUE;
 		}
 
 		if (depth == 0) {
+			pool->release(moves);
 			const double value = evaluator->evaluate(game);
 			//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
 			return value;
@@ -56,6 +58,8 @@ public:
 				}
 			}
 		}
+
+		pool->release(moves);
 
 		//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;

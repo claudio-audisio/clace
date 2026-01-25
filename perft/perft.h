@@ -6,6 +6,7 @@
 #include "result.h"
 #include "../utils/logger.h"
 #include "cache/transpositionTable.h"
+#include "utils/arrayPool.h"
 
 using namespace std;
 
@@ -24,8 +25,8 @@ private:
 	Game* game;
 	unsigned int depth;
 	string fenGame;
-	Result* result;
-	MovePool* pool;
+	Result *result;
+	ArrayPool<Move> *pool;
 	TranspositionTable table;
     unsigned int totalUsage = 0;
 

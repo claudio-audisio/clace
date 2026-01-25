@@ -21,7 +21,7 @@ public:
 	Player* blackPlayer;
 	Statistics* statistics;
 	string fenBoard;
-	MovePool* pool;
+	ArrayPool<Move> *pool;
 	string humanMove = "";
 	mutex moveMtx;
 	Messenger& messenger = Messenger::getInstance();
@@ -29,7 +29,7 @@ public:
 	IGui *gui = nullptr;
 
 	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
-		pool = new MovePool(1);
+		pool = new ArrayPool<Move>(1, MAX_MOVES);
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?

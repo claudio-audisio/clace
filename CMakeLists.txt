@@ -118,6 +118,7 @@ set(TEST_NAMES
 	movesCalculationTest
 	zobristTest
 	transpositionTableTest
+	arrayPoolTest
 )
 
 foreach(test ${TEST_NAMES})

@@ -4,7 +4,7 @@
 #include "../utils/messenger.h"
 #include "../evaluation/basicEvaluator.h"
 #include "../move/movesGenerator.h"
-#include "../utils/movePool.h"
+#include "../utils/arrayPool.h"
 #include "../utils/toString.h"
 
 
@@ -17,25 +17,25 @@ public:
 
         this->description = description;
         this->depth = depth;
-        this->pool = new MovePool(this->depth + 1);
+        this->pool = new ArrayPool<Move>(this->depth + 1, MAX_MOVES);
         this->evaluator = new BasicEvaluator();
     }
 
     string description;
     unsigned int depth;
-    IEvaluator* evaluator = nullptr;
-    MovePool* pool = nullptr;
-    Messenger& messenger = Messenger::getInstance();
+    IEvaluator *evaluator = nullptr;
+    ArrayPool<Move> *pool = nullptr;
+    Messenger &messenger = Messenger::getInstance();
     Evaluation best;
 
-    virtual void _calculateMove(Game& game, Move* moves, MovesAmount amount) = 0;
+    virtual void _calculateMove(Game& game, Move *moves, MovesAmount amount) = 0;
 
     Evaluation calculateMove(Game& game) override {
         messenger.send(MSG_LOG, description, format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
         auto time = chrono::steady_clock::now();
 
         game.verifyChecks();
-        Move* moves = pool->getArray(depth);
+        Move* moves = pool->getArray();
         MovesAmount amount;
         generateLegalMoves(game, moves, &amount);
         const EndGameType endGame = game.checkEndGame(amount.legal);
@@ -44,6 +44,8 @@ public:
         if (!endGame) {
             _calculateMove(game, moves, amount);
         }
+
+        pool->release(moves);
 
         if (!game.isWhiteToMove()) {
             best.value = -best.value;

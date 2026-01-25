@@ -38,16 +38,18 @@ public:
 
 	double alphaBeta(Game& game, double alpha, double beta, const unsigned int depth) {
 		game.verifyChecks();
-		Move* moves = pool->getArray(depth);
+		Move* moves = pool->getArray();
 		MovesAmount amount;
 		generateLegalMoves(game, moves, &amount);
 		const EndGameType endGame = game.checkEndGame(amount.legal);
 
 		if (endGame != NONE) {
+			pool->release(moves);
 			return endGame == CHECKMATE ? WIN_VALUE : DRAW_VALUE;
 		}
 
 		if (depth == 0) {
+			pool->release(moves);
 			// TODO dovremmo fare un ricerca quiescente
 			// https://www.chessprogramming.org/Quiescence_Search
 			const double value = evaluator->evaluate(game);
@@ -73,12 +75,14 @@ public:
 				}
 
 				if (value >= beta) {
+					pool->release(moves);
 					//messenger.send(MSG_LOG, description, format("{} --> {:.2f} - cutoff", game.printMovesHistory(this->depth - depth), best));
 					return best;
 				}
 			}
 		}
 
+		pool->release(moves);
 		//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
 		return best;
 	}

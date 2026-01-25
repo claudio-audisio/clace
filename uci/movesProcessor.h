@@ -11,7 +11,7 @@ class MovesProcessor {
 public:
 	vector<string> movesHistory;
 	unsigned int movesHistoryIndex = 0;
-	MovePool* pool = new MovePool(1);
+	ArrayPool<Move> *pool = new ArrayPool<Move>(1, MAX_MOVES);
 	IEngine* engine = new BruteForceEngine(2);
 	Messenger& messenger = Messenger::getInstance();
 

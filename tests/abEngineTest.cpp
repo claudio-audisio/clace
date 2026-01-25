@@ -25,7 +25,7 @@ TEST_F(ABEngineTest, ConstructorTest) {
 	auto engine = new AlphaBetaEngine(3);
 
 	EXPECT_EQ(engine->depth, 3);
-	EXPECT_EQ(engine->pool->size, 4);
+	EXPECT_EQ(engine->pool->capacitiy(), 4);
 }
 
 TEST_F(ABEngineTest, enPassantBugTest) {

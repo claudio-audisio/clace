@@ -3,7 +3,7 @@
 #include "perft.h"
 #include "../utils/fen.h"
 #include "../move/movesGenerator.h"
-#include "../utils/movePool.h"
+#include "../utils/arrayPool.h"
 
 
 Perft::Perft(const string& fenGame, const unsigned int depth) {
@@ -11,7 +11,7 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->depth = depth;
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
-    this->pool = new MovePool(depth + 1);
+    this->pool = new ArrayPool<Move>(depth + 1, MAX_MOVES);
 }
 
 Perft::~Perft() {
@@ -35,18 +35,20 @@ Result* Perft::runComplete(const bool consoleMode) {
 }
 
 void Perft::runCompletePerft(const unsigned int currentDepth) {
-    Move* moves = pool->getArray(currentDepth);
+    Move* moves = pool->getArray();
     MovesAmount amount;
 
     table.getMoves(*game, moves, amount);
     totalUsage++;
 
     if (game->checkStatus.check && amount.legal == 0) {
+        pool->release(moves);
         result->incrementCheckmates((depth - currentDepth) - 1);
         return;
     }
 
     if (currentDepth == 0) {
+        pool->release(moves);
         return;
     }
 
@@ -65,6 +67,8 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
             game->rollbackLastMove();
         }
     }
+
+    pool->release(moves);
 }
 
 Result* Perft::runBulk() {
@@ -82,13 +86,14 @@ Result* Perft::runBulk() {
 }
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
-    Move* moves = pool->getArray(currentDepth - 1);
+    Move* moves = pool->getArray();
     MovesAmount amount;
 
     table.getMoves(*game, moves, amount);
     totalUsage++;
 
     if (currentDepth == 1) {
+        pool->release(moves);
         return amount.legal;
     }
 
@@ -104,6 +109,8 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
         }
     }
 
+    pool->release(moves);
+
     return nodes;
 }
 
@@ -115,7 +122,7 @@ unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
         return 1LL;
     }
 
-    Move* moves = pool->getArray(currentDepth - 1);
+    Move* moves = pool->getArray();
     const unsigned int tot = generatePseudoLegalMoves(*game, moves);
 
     unsLL nodes = 0;
@@ -131,6 +138,8 @@ unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
 
         game->rollbackLastMove();
     }
+
+    pool->release(moves);
 
     return nodes;
 }

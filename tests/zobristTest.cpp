@@ -5,13 +5,13 @@
 #include "cache/transpositionTable.h"
 #include "move/movesGenerator.h"
 #include "utils/fen.h"
-#include "utils/movePool.h"
+#include "utils/arrayPool.h"
 
 using namespace std;
 
 class ZobristTest : public testing::Test {
 protected:
-    MovePool* pool;
+    ArrayPool<Move> *pool;
     int depth = 4;
     TranspositionTable table;
     Game *game;
@@ -19,7 +19,7 @@ protected:
 
     ZobristTest() {
         initMovesGenerator();
-        pool = new MovePool(depth + 1);
+        pool = new ArrayPool<Move>(depth + 1, MAX_MOVES);
         game = new Game();
     }
 
@@ -29,7 +29,7 @@ protected:
     }
 
     unsLL runBulkPerft(const unsigned int currentDepth) {
-        Move* moves = pool->getArray(currentDepth - 1);
+        Move* moves = pool->getArray();
         MovesAmount amount;
         generateLegalMoves(*game, moves, &amount);
 
@@ -45,6 +45,7 @@ protected:
         }
 
         if (currentDepth == 1) {
+            pool->release(moves);
             return amount.legal;
         }
 
@@ -59,6 +60,8 @@ protected:
                 game->rollbackLastMove();
             }
         }
+
+        pool->release(moves);
 
         return nodes;
     }

@@ -24,7 +24,7 @@ TEST_F(BFEngineTest, ConstructorTest) {
 	auto engine = new BruteForceEngine(3);
 
 	EXPECT_EQ(engine->depth, 3);
-	EXPECT_EQ(engine->pool->size, 4);
+	EXPECT_EQ(engine->pool->capacitiy(), 4);
 }
 
 TEST_F(BFEngineTest, enPassantBugTest) {
