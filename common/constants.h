@@ -142,7 +142,6 @@ inline const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 inline const string FEN_EN_PASSANT_LEGALITY_TEST = "8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 0";
 inline const string FEN_EN_PASSANT_BUG_TEST = "2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 0 23";
 
-
 // evaluation weights
 #define KING_WT     200.0
 #define QUEEN_WT    9.0
@@ -175,3 +174,6 @@ inline const string FEN_EN_PASSANT_BUG_TEST = "2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1
 #define MSG_ALL 0
 #define MSG_LOG 1
 #define MSG_GUI 2
+
+// array pool
+#define POOL_INCREMENT_RATIO    0.2     // 20% of pool size increment each time the pool is empty

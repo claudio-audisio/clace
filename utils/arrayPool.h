@@ -13,16 +13,22 @@ class ArrayPool {
     stack<T*> pool;
     unsigned int size;
     unsigned int arraySize;
+    unsigned int incrementSize;
 
 public:
 
-    explicit ArrayPool(const unsigned int poolSize, const unsigned int arraySize) {
+    ArrayPool(const unsigned int poolSize, const unsigned int arraySize, const unsigned int incrementSize) {
         this->size = poolSize;
         this->arraySize = arraySize;
+        this->incrementSize = incrementSize;
 
         for (unsigned int i = 0; i < poolSize; i++) {
             pool.push(new T[arraySize]);
         }
+    }
+
+    ArrayPool(const unsigned int poolSize, const unsigned int arraySize) :
+        ArrayPool(poolSize, arraySize, max(static_cast<int>(poolSize * POOL_INCREMENT_RATIO), 1)) {
     }
 
     ~ArrayPool() noexcept(false) {
@@ -42,8 +48,12 @@ public:
             pool.pop();
             return array;
         } else {
-            size++;
-            return new T[arraySize];
+            for (int i = 0; i < incrementSize; i++) {
+                pool.push(new T[arraySize]);
+            }
+
+            size += incrementSize;
+            return getArray();
         }
     }
 
@@ -58,6 +68,11 @@ public:
 
     unsigned int occupancy() {
         return size - pool.size();
+    }
+
+    // only for testing
+    unsigned int _incrementSize() const {
+        return incrementSize;
     }
 
 };

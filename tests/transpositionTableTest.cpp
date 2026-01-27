@@ -16,53 +16,50 @@ protected:
 };
 
 TEST_F(TranspositionTableTest, tableTest) {
-#ifndef USE_CACHE
-    GTEST_SKIP();
-#endif
-    TranspositionTable table;
+    auto *table = new TranspositionTable(1);
 
     Game game1, game2, game3;
     game1.init();
     game2.init();
     game3.init();
 
-    Move *moves1 = new Move[216];
-    Move *moves2 = new Move[216];
+    Move *moves1;
+    Move *moves2;
     Move *moves1g;
     Move *moves2g;
     MovesAmount amount1, amount2, amount1g, amount2g;
 
-    table.getMoves(game1, moves1, amount1);
+    table->getMoves(game1, moves1, amount1);
 
-    EXPECT_EQ(table.size(), 1);
+    EXPECT_EQ(table->size(), 1);
 
-    table.getMoves(game2, moves2, amount2);
+    table->getMoves(game2, moves2, amount2);
 
-    EXPECT_EQ(table.size(), 2);
+    EXPECT_EQ(table->size(), 2);
 
-    table.getMoves(game1, moves1g, amount1g);
+    table->getMoves(game1, moves1g, amount1g);
 
-    EXPECT_EQ(table.size(), 2);
+    EXPECT_EQ(table->size(), 2);
     EXPECT_EQ(*moves1, *moves1g);
     EXPECT_EQ(amount1.total, amount1g.total);
     EXPECT_EQ(amount1.legal, amount1g.legal);
 
-    table.getMoves(game2, moves2g, amount2g);
+    table->getMoves(game2, moves2g, amount2g);
 
-    EXPECT_EQ(table.size(), 2);
+    EXPECT_EQ(table->size(), 2);
     EXPECT_EQ(*moves2, *moves2g);
     EXPECT_EQ(amount2.total, amount2g.total);
     EXPECT_EQ(amount2.legal, amount2g.legal);
 
-    table.remove(game1.key);
+    table->remove(game1.key);
 
-    EXPECT_EQ(table.size(), 1);
+    EXPECT_EQ(table->size(), 1);
 
-    table.remove(game3.key);
+    table->remove(game3.key);
 
-    EXPECT_EQ(table.size(), 1);
+    EXPECT_EQ(table->size(), 1);
 
-    table.clear();
+    table->clear();
 
-    EXPECT_EQ(table.size(), 0);
+    EXPECT_EQ(table->size(), 0);
 }

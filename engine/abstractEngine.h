@@ -17,7 +17,7 @@ public:
 
         this->description = description;
         this->depth = depth;
-        this->pool = new ArrayPool<Move>(this->depth + 1, MAX_MOVES);
+        this->pool = new ArrayPool<Move>(this->depth + 1, MAX_MOVES, 1);
         this->evaluator = new BasicEvaluator();
     }
 

@@ -20,9 +20,7 @@ Game::Game() :
 	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
 	evaluator = new BasicEvaluator();
-#ifdef USE_CACHE
 	initRandoms(randoms);
-#endif
 }
 
 Game::~Game() {
@@ -39,9 +37,7 @@ void Game::init() {
 
 void Game::initFromFEN(const string& fenPosition) {
 	FEN::fenToGame(fenPosition, *this);
-#ifdef USE_CACHE
 	key = calculateKey(*this);
-#endif
 }
 
 void Game::initPlayers(Player* white, Player* black) {
@@ -84,9 +80,7 @@ void Game::applyMove(Move& move) {
 	}
 
 	changeTurn();
-#ifdef USE_CACHE
 	updateKey(*this, move, prevCastlingInfo, prevEnPassant);
-#endif
 }
 
 void Game::applyMoves(list<Move>& moves) {

@@ -11,14 +11,13 @@ Perft::Perft(const string& fenGame, const unsigned int depth) {
 	this->depth = depth;
 	this->game = FEN::fenToNewGame(fenGame);
 	this->result = new Result(depth);
-    this->pool = new ArrayPool<Move>(depth + 1, MAX_MOVES);
+    this->table = new TranspositionTable();
 }
 
 Perft::~Perft() {
 	delete this->game;
     delete this->result;
-    delete this->pool;
-    table.clear();
+    delete this->table;
 }
 
 Result* Perft::runComplete(const bool consoleMode) {
@@ -26,29 +25,24 @@ Result* Perft::runComplete(const bool consoleMode) {
     runCompletePerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
-
-    if (table.getUsage() != -1) {
-        cout << "Cache usage " << table.getUsage() * 100 / totalUsage << " %" << endl;
-    }
+    cout << "Cache usage " << table->getUsage() * 100 / totalUsage << " % (" << table->size() << " entries)" << endl;
 
     return result;
 }
 
 void Perft::runCompletePerft(const unsigned int currentDepth) {
-    Move* moves = pool->getArray();
+    Move* moves;
     MovesAmount amount;
 
-    table.getMoves(*game, moves, amount);
+    table->getMoves(*game, moves, amount);
     totalUsage++;
 
     if (game->checkStatus.check && amount.legal == 0) {
-        pool->release(moves);
         result->incrementCheckmates((depth - currentDepth) - 1);
         return;
     }
 
     if (currentDepth == 0) {
-        pool->release(moves);
         return;
     }
 
@@ -67,8 +61,6 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
             game->rollbackLastMove();
         }
     }
-
-    pool->release(moves);
 }
 
 Result* Perft::runBulk() {
@@ -77,23 +69,19 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
-
-    if (table.getUsage() != -1) {
-        cout << "Cache usage " << table.getUsage() * 100 / totalUsage << " %" << endl;
-    }
+    cout << "Cache usage " << table->getUsage() * 100 / totalUsage << " % (" << table->size() << " entries)" << endl;
 
     return result;
 }
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
-    Move* moves = pool->getArray();
+    Move* moves;
     MovesAmount amount;
 
-    table.getMoves(*game, moves, amount);
+    table->getMoves(*game, moves, amount);
     totalUsage++;
 
     if (currentDepth == 1) {
-        pool->release(moves);
         return amount.legal;
     }
 
@@ -109,15 +97,13 @@ unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
         }
     }
 
-    pool->release(moves);
-
     return nodes;
 }
 
 // TODO qua viene fatta una iterazione in piu' (come per complete)
 // ma la simulate/uindoSimulate della mossa non viene fatta
 // eppure i tempi sono duplicati
-unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
+/*unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
     if (currentDepth == 0) {
         return 1LL;
     }
@@ -142,4 +128,4 @@ unsLL Perft::runBulkPerft_NEW(const unsigned int currentDepth) {
     pool->release(moves);
 
     return nodes;
-}
+}*/

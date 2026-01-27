@@ -22,17 +22,16 @@ public:
 	Result* runComplete(bool consoleMode = false);
 
 private:
-	Game* game;
+	Game *game;
 	unsigned int depth;
 	string fenGame;
 	Result *result;
-	ArrayPool<Move> *pool;
-	TranspositionTable table;
+	TranspositionTable *table;
     unsigned int totalUsage = 0;
 
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);
 	unsLL runBulkPerft_NEW(unsigned int depth);
 
-	Messenger& messenger = Messenger::getInstance();
+	Messenger &messenger = Messenger::getInstance();
 };

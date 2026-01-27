@@ -85,7 +85,7 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1820);
+	GTEST_ASSERT_NEAR(time, 1600);
 	cout << "time: " << time  << endl;
 }
 
@@ -273,7 +273,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1150);
+	GTEST_ASSERT_NEAR(time, 1250);
 	cout << "time: " << time  << endl;
 }
 

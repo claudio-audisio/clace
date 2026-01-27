@@ -22,12 +22,14 @@ using namespace std;
 
 class PerformancePerftTest : public testing::Test {
 protected:
+    Perft *perft;
+
     PerformancePerftTest() {
         initMovesGenerator();
     }
 
     ~PerformancePerftTest() override {
-
+        delete perft;
     }
 
     void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected) {
@@ -46,15 +48,11 @@ TEST_F(PerformancePerftTest, InitPerft5BulkTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(INITIAL_FEN_POSITION, 5);
+    perft = new Perft(INITIAL_FEN_POSITION, 5);
 
     auto result = perft->runBulk();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 160);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 180);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 140);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -63,15 +61,11 @@ TEST_F(PerformancePerftTest, InitPerft6BulkTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(INITIAL_FEN_POSITION, 6);
+    perft = new Perft(INITIAL_FEN_POSITION, 6);
 
     auto result = perft->runBulk();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 3300);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 4400);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 3030);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -80,15 +74,11 @@ TEST_F(PerformancePerftTest, Pos2Perft5BulkTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(PERFT_FEN_POSITION_2, 5);
+    perft = new Perft(PERFT_FEN_POSITION_2, 5);
 
     auto result = perft->runBulk();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 4800);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 7200);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 4100);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -97,15 +87,11 @@ TEST_F(PerformancePerftTest, Pos4Perft5BulkTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(PERFT_FEN_POSITION_4, 5);
+    perft = new Perft(PERFT_FEN_POSITION_4, 5);
 
     auto result = perft->runBulk();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 640);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 660);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 520);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -114,15 +100,11 @@ TEST_F(PerformancePerftTest, InitPerft4CompleteTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(INITIAL_FEN_POSITION, 4);
+    perft = new Perft(INITIAL_FEN_POSITION, 4);
 
     auto result = perft->runComplete();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 215);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 220);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 170);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -131,15 +113,11 @@ TEST_F(PerformancePerftTest, InitPerft5CompleteTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(INITIAL_FEN_POSITION, 5);
+    perft = new Perft(INITIAL_FEN_POSITION, 5);
 
     auto result = perft->runComplete();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 4300);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 5400);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 3900);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -148,15 +126,11 @@ TEST_F(PerformancePerftTest, Pos2Perft4CompleteTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(PERFT_FEN_POSITION_2, 4);
+    perft = new Perft(PERFT_FEN_POSITION_2, 4);
 
     auto result = perft->runComplete();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 5700);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 8200);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 5100);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -165,15 +139,11 @@ TEST_F(PerformancePerftTest, Pos4Perft4CompleteTest) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
-    auto perft = new Perft(PERFT_FEN_POSITION_4, 4);
+    perft = new Perft(PERFT_FEN_POSITION_4, 4);
 
     auto result = perft->runComplete();
 
-#ifdef USE_CACHE
-    GTEST_ASSERT_NEAR(result->getElapsed(), 720);
-#else
-    GTEST_ASSERT_NEAR(result->getElapsed(), 760);
-#endif
+    GTEST_ASSERT_NEAR(result->getElapsed(), 640);
 
     cout << "time: " << result->getElapsed()  << endl;
 }

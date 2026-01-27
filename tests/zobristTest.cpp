@@ -19,7 +19,7 @@ protected:
 
     ZobristTest() {
         initMovesGenerator();
-        pool = new ArrayPool<Move>(depth + 1, MAX_MOVES);
+        pool = new ArrayPool<Move>(depth + 1, MAX_MOVES, 1);
         game = new Game();
     }
 
@@ -78,9 +78,6 @@ TEST_F(ZobristTest, getZobristKeyTest) {
 }
 
 TEST_F(ZobristTest, zobristKeyCollisionTest) {
-#ifndef USE_CACHE
-    GTEST_SKIP();
-#endif
     game->initFromFEN(PERFT_FEN_POSITION_2);
     runBulkPerft(depth);
 }

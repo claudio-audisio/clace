@@ -5,6 +5,4 @@
 
 //#define PROFILER
 
-//#define USE_CACHE
-
 //#define PERFORMANCE_TESTS

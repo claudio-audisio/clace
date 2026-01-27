@@ -29,7 +29,7 @@ public:
 	IGui *gui = nullptr;
 
 	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
-		pool = new ArrayPool<Move>(1, MAX_MOVES);
+		pool = new ArrayPool<Move>(1, MAX_MOVES, 1);
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
