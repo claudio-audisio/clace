@@ -23,12 +23,14 @@ using namespace std;
 
 class PerformanceEngineTest : public testing::Test {
 protected:
+    AbstractEngine *engine;
+
     PerformanceEngineTest() {
         initMovesGenerator();
     }
 
     ~PerformanceEngineTest() override {
-
+        delete engine;
     }
 
     void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected) {
@@ -51,7 +53,7 @@ TEST_F(PerformanceEngineTest, BFEngineOpenGameDepth4Test) {
 #endif
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
-    auto engine = new BruteForceEngine(4);
+    engine = new BruteForceEngine(4);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -62,7 +64,7 @@ TEST_F(PerformanceEngineTest, BFEngineOpenGameDepth4Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 280);
+    GTEST_ASSERT_NEAR(time, 240);
     cout << "time: " << time  << endl;
 }
 
@@ -72,7 +74,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGameDepth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
-    auto engine = new BruteForceEngine(3);
+    engine = new BruteForceEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -83,7 +85,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGameDepth3Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 200);
+    GTEST_ASSERT_NEAR(time, 155);
     cout << "time: " << time  << endl;
 }
 
@@ -93,7 +95,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGame2Depth3Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
-    auto engine = new BruteForceEngine(3);
+    engine = new BruteForceEngine(3);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -104,7 +106,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGame2Depth3Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 180);
+    GTEST_ASSERT_NEAR(time, 140);
     cout << "time: " << time  << endl;
 }
 
@@ -114,7 +116,7 @@ TEST_F(PerformanceEngineTest, BFEngineEndGameDepth5Test) {
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
-    auto engine = new BruteForceEngine(5);
+    engine = new BruteForceEngine(5);
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
 
@@ -124,19 +126,19 @@ TEST_F(PerformanceEngineTest, BFEngineEndGameDepth5Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 570);
+    GTEST_ASSERT_NEAR(time, 390);
     cout << "time: " << time  << endl;
 }
 
 //******** ABEngine ****************************************
 
-TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth4Test) {
+TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth5Test) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
-    auto engine = new AlphaBetaEngine(4);
+    engine = new AlphaBetaEngine(5);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -147,17 +149,17 @@ TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth4Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 70);
+    GTEST_ASSERT_NEAR(time, 540);
     cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceEngineTest, ABEngineMidGameDepth3Test) {
+TEST_F(PerformanceEngineTest, ABEngineMidGameDepth4Test) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
-    auto engine = new AlphaBetaEngine(3);
+    engine = new AlphaBetaEngine(4);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -168,17 +170,17 @@ TEST_F(PerformanceEngineTest, ABEngineMidGameDepth3Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 80);
+    GTEST_ASSERT_NEAR(time, 900);
     cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth3Test) {
+TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth4Test) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
-    auto engine = new AlphaBetaEngine(3);
+    engine = new AlphaBetaEngine(4);
     engine->setEvaluator(new BasicEvaluator());
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
@@ -189,17 +191,17 @@ TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth3Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 100);
+    GTEST_ASSERT_NEAR(time, 1100);
     cout << "time: " << time  << endl;
 }
 
-TEST_F(PerformanceEngineTest, ABEngineEndGameDepth5Test) {
+TEST_F(PerformanceEngineTest, ABEngineEndGameDepth6Test) {
 #ifndef PERFORMANCE_TESTS
     GTEST_SKIP();
 #endif
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
-    auto engine = new AlphaBetaEngine(5);
+    engine = new AlphaBetaEngine(6);
     auto moves = new Move[MAX_MOVES];
     MovesAmount amount;
 
@@ -209,7 +211,7 @@ TEST_F(PerformanceEngineTest, ABEngineEndGameDepth5Test) {
     engine->_calculateMove(game, moves, amount);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 40);
+    GTEST_ASSERT_NEAR(time, 190);
     cout << "time: " << time  << endl;
 }
 

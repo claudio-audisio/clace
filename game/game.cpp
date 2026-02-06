@@ -15,7 +15,7 @@
 
 Game::Game() :
 	sideToMove(0), fullMoves(0), halfMoveClock(0) {
-	movesHistory = static_cast<Move*>(calloc(HISTORY_MOVES, sizeof(Move)));
+	movesHistory = static_cast<Move*>(calloc(MOVES_HISTORY_SIZE, sizeof(Move)));
 	snapshots = allocateSnapshots(10);
 	board = static_cast<Board*>(malloc(sizeof(Board)));
 	reset(board);
@@ -269,13 +269,15 @@ Game* Game::duplicate() const {
 
 string Game::printMovesHistory(const int depth) const {
     string moves;
-	int size = depth == 0 ? movesHistIndex : depth;
+	int size = depth == 0 ? movesHistIndex : depth > movesHistIndex ? movesHistIndex : depth;
+	return movesToString(movesHistory, size);
 
+	/*
 	for (int i = 0; i < size; i++) {
 		moves = moveToString(movesHistory[i]) + ", " + moves;
 	}
 
-    return moves.substr(0, moves.length() - 2);
+    return moves.substr(0, moves.length() - 2);*/
 }
 
 string Game::printCastlingInfo() const {

@@ -27,6 +27,8 @@ typedef struct {
     Move move;
     double value;
     EndGameType endGameType;
+    unsigned int depth;
+    Move *pvMoves;
 } Evaluation;
 
 typedef struct {

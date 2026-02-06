@@ -12,7 +12,7 @@
 using namespace std;
 
 class Player;
-class IEvaluator;
+class Evaluator;
 
 class Game {
 public:
@@ -60,6 +60,10 @@ public:
 		return sideToMove == _WHITE;
 	}
 
+	bool isBlackToMove() const {
+		return sideToMove == _BLACK;
+	}
+
     Side getOppositeSide() const {
 		return OPPOSITE(sideToMove);
 	}
@@ -80,7 +84,7 @@ public:
 	unsigned int halfMoveClock;
 	Player* whitePlayer = nullptr;
 	Player* blackPlayer = nullptr;
-	IEvaluator* evaluator = nullptr;
-	double currentEvaluation = 0;
+	Evaluator* evaluator = nullptr;
+	Evaluation currentEvaluation = {0, 0, NONE, 0};
 	Messenger& messenger = Messenger::getInstance();
 };

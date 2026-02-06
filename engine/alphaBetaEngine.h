@@ -1,89 +1,117 @@
 #pragma once
 
-#include "iengine.h"
-#include "../evaluation/basicEvaluator.h"
-#include "../move/move.h"
-#include "../move/movesGenerator.h"
-#include "../utils/vectorPool.h"
+#include "abstractEngine.h"
+
 
 // https://www.chessprogramming.org/Alpha-Beta
-class AlphaBetaEngine : public AbstractEngine {
+class AlphaBetaEngine final : public AbstractEngine {
 public:
-	explicit AlphaBetaEngine(unsigned int depth): AbstractEngine(depth, "AlphaBetaEngine") {};
+	explicit AlphaBetaEngine(const unsigned int depth) :
+		AbstractEngine(depth, "AlphaBetaEngine") {}
 
-	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
+	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
 		// TODO le mosse dovrebbero essere ordinate
 		// https://www.chessprogramming.org/Move_Ordering
 		// Ecco l'ordine di valutazione delle mosse che dovrebbe essere adottato
 
 
-		double alpha = LOSS_VALUE;	// punteggio minimo di cui il bianco e' sicuro
-		double beta = WIN_VALUE;	// punteggio massimo di cui il nero e' sicuro
+		double alpha = LOSS_VALUE * 2;	// punteggio minimo di cui il bianco e' sicuro
+		double beta = WIN_VALUE * 2;	// punteggio massimo di cui il nero e' sicuro
 
 		for (unsigned int i = 0; i < amount.total; i++) {
 			if (moves[i]) {
 				game.save();
 				game.applyMove(moves[i]);
-				const double value = -alphaBeta(game, alpha, beta, depth - 1);
 
-				if (value >= best.value) {
-					best.move = moves[i];
-					best.value = value;
-				}
+				Evaluation eval = alphaBeta(game, alpha, beta, depth - 1);
+				Evaluator::changeSign(eval);
+				eval.pvMoves[0] = moves[i];
 
 				game.rollbackLastMove();
+
+				//messenger.send(MSG_LOG, description, evalShortToString(eval));
+
+				if (Evaluator::isBetter(eval, best)) {
+					delete best.pvMoves;
+					best = eval;
+					best.move = moves[i];
+				} else {
+					delete eval.pvMoves;
+				}
+
+				if (Evaluator::isBest(best)) {
+					break;
+				}
 			}
 		}
 	};
 
-	double alphaBeta(Game& game, double alpha, double beta, const unsigned int depth) {
+	Evaluation alphaBeta(Game& game, double alpha, double beta, const unsigned int depth) {
 		game.verifyChecks();
-		Move* moves = pool->getArray();
+		Move *moves;
 		MovesAmount amount;
-		generateLegalMoves(game, moves, &amount);
+		table->getMoves(game, moves, amount);
 		const EndGameType endGame = game.checkEndGame(amount.legal);
 
 		if (endGame != NONE) {
-			pool->release(moves);
-			return endGame == CHECKMATE ? WIN_VALUE : DRAW_VALUE;
+			const Evaluation eval = evaluator->evaluateEndGame(game, this->depth - depth, endGame);
+			/*if (moveToString(game.movesHistory[0]) == "c3c2" && endGame == CHECKMATE) {
+				messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(eval.depth), eval.value));
+			}*/
+			return eval;
 		}
 
 		if (depth == 0) {
-			pool->release(moves);
 			// TODO dovremmo fare un ricerca quiescente
 			// https://www.chessprogramming.org/Quiescence_Search
-			const double value = evaluator->evaluate(game);
-			//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth), value));
-			return value;
+			const Evaluation eval = evaluator->evaluate(game, this->depth);
+			/*if (moveToString(game.movesHistory[0]) == "c3c2") {
+				messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(eval.depth), eval.value));
+			}*/
+			return eval;
 		}
 
-		double best = LOSS_VALUE;
+		Evaluation best = {0, LOSS_VALUE * 2, NONE, MAX_DEPTH, nullptr};
 
 		for (unsigned int i = 0; i < amount.total; i++) {
 			if (moves[i]) {
 				game.save();
 				game.applyMove(moves[i]);
-				const double value = -alphaBeta(game, -beta, -alpha, depth - 1);
+
+				Evaluation eval = alphaBeta(game, -beta, -alpha, depth - 1);
+				Evaluator::changeSign(eval);
+				eval.pvMoves[this->depth - depth] = moves[i];
+
 				game.rollbackLastMove();
 
-				if (value > best) {
-					best = value;
+				if (Evaluator::isBetter(eval, best)) {
+					/*if (moveToString(game.movesHistory[0]) == "c3c2" && depth == 3) {
+						messenger.send(MSG_LOG, description, format("side to move {}", sideToString(game.sideToMove)));
+						messenger.send(MSG_LOG, description, format("old best {}", evalToString(best)));
+						messenger.send(MSG_LOG, description, format("new best {}", evalToString(eval)));
+					}*/
+					delete best.pvMoves;
+					best = eval;
 
-					if (value > alpha) {
-						alpha = value;
+					if (eval.value > alpha) {
+						alpha = eval.value;
 					}
+				} else {
+					delete eval.pvMoves;
 				}
 
-				if (value >= beta) {
-					pool->release(moves);
-					//messenger.send(MSG_LOG, description, format("{} --> {:.2f} - cutoff", game.printMovesHistory(this->depth - depth), best));
+				if (eval.value >= beta) {
+					/*if (moveToString(game.movesHistory[0]) == "c3c2" && depth == 3) {
+						messenger.send(MSG_LOG, description, format("{} --> {:.2f} - cutoff", game.printMovesHistory(best.depth), best.value));
+					}*/
 					return best;
 				}
 			}
 		}
 
-		pool->release(moves);
-		//messenger.send(MSG_LOG, description, format("{} --> {:.2f}", game.printMovesHistory(this->depth - depth), best));
+		/*if (moveToString(game.movesHistory[0]) == "c3c2" && depth == 3) {
+			messenger.send(MSG_LOG, description, format("best {}", evalToString(best)));
+		}*/
 		return best;
 	}
 

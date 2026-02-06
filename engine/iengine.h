@@ -6,7 +6,7 @@
 class IEngine {
 public:
 
-	virtual void setEvaluator(IEvaluator* evaluator) = 0;
+	virtual void setEvaluator(Evaluator* evaluator) = 0;
 
 	virtual Evaluation calculateMove(Game& game) = 0;
 

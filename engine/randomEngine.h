@@ -14,7 +14,7 @@ public:
 		srand(time(nullptr));
 	};
 
-	void _calculateMove(Game& game, Move* moves, MovesAmount amount) override {
+	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
 		int index;
 
 		do {

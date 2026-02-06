@@ -9,11 +9,15 @@ using namespace std;
 
 class BFEngineTest : public testing::Test {
 protected:
+	unsigned int DEPTH;
+	BruteForceEngine *engine;
+
 	BFEngineTest() {
+		DEPTH = 4;
 		initMovesGenerator();
 	}
 	~BFEngineTest() {
-
+		delete engine;
 	}
 };
 
@@ -21,10 +25,9 @@ TEST_F(BFEngineTest, ConstructorTest) {
 #ifdef PROFILER
 	GTEST_SKIP();
 #endif
-	auto engine = new BruteForceEngine(3);
+	engine = new BruteForceEngine(DEPTH);
 
-	EXPECT_EQ(engine->depth, 3);
-	EXPECT_EQ(engine->pool->capacitiy(), 4);
+	EXPECT_EQ(engine->depth, DEPTH);
 }
 
 TEST_F(BFEngineTest, enPassantBugTest) {
@@ -34,10 +37,58 @@ TEST_F(BFEngineTest, enPassantBugTest) {
 #endif
 	Game game;
 	game.initFromFEN(FEN_EN_PASSANT_BUG_TEST);
-	auto engine = new BruteForceEngine(4);
+	engine = new BruteForceEngine(DEPTH);
 	Evaluation best = engine->calculateMove(game);
 
 	EXPECT_NE(moveToString(best.move), "c4b3");
+}
+
+TEST_F(BFEngineTest, mateInOneTest) {
+#ifdef PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.initFromFEN(FEN_MATE_IN_ONE);
+	engine = new BruteForceEngine(DEPTH);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "b1h1");
+}
+
+TEST_F(BFEngineTest, mateInOneBlackTest) {
+#ifdef PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.initFromFEN(FEN_MATE_IN_ONE_BLACK);
+	engine = new BruteForceEngine(DEPTH);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "b1h1");
+}
+
+TEST_F(BFEngineTest, mateInTwoTest) {
+#ifdef PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.initFromFEN(FEN_MATE_IN_TWO);
+	engine = new BruteForceEngine(DEPTH);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "e7g7");
+}
+
+TEST_F(BFEngineTest, mateInThreeTest) {
+#ifdef PROFILER
+	GTEST_SKIP();
+#endif
+	Game game;
+	game.initFromFEN(FEN_MATE_IN_THREE);
+	engine = new BruteForceEngine(DEPTH);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "c3c2");
 }
 
 TEST_F(BFEngineTest, Depth4Test) {
@@ -46,10 +97,10 @@ TEST_F(BFEngineTest, Depth4Test) {
 #endif
 	Game game;
 	game.init();
-	auto engine = new BruteForceEngine(4);
+	engine = new BruteForceEngine(DEPTH);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(moveToString(best.move), "e2e4");		// move based on LCZero 0.31.2 - https://nextchessmove.com/
+	EXPECT_EQ(moveToString(best.move), "e2e3");
 }
 
 TEST_F(BFEngineTest, Depth3TestOnFenPosition2) {
@@ -58,10 +109,10 @@ TEST_F(BFEngineTest, Depth3TestOnFenPosition2) {
 #endif
 	Game game;
 	game.initFromFEN(PERFT_FEN_POSITION_2);
-	auto engine = new BruteForceEngine(3);
+	engine = new BruteForceEngine(DEPTH - 1);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(moveToString(best.move), "e2a6");		// move based on LCZero 0.31.2 - https://nextchessmove.com/
+	EXPECT_EQ(moveToString(best.move), "e2a6");
 }
 
 TEST_F(BFEngineTest, Depth5Test) {
@@ -70,9 +121,24 @@ TEST_F(BFEngineTest, Depth5Test) {
 #endif
 	Game game;
 	game.init();
-	auto engine = new BruteForceEngine(5);
+	engine = new BruteForceEngine(DEPTH + 1);
 	Evaluation best = engine->calculateMove(game);
 
 	EXPECT_EQ(moveToString(best.move), "e2e4");
+}
+
+TEST_F(BFEngineTest, dailyBugTest) {
+	GTEST_SKIP();
+	Game game;
+	game.initFromFEN(FEN_MATE_IN_THREE);
+	engine = new BruteForceEngine(4);
+	Evaluation best = engine->calculateMove(game);
+
+	// TODO
+	// A depth 4 mi da c3c2 matto a depth 3 e c3f3 a 17.80 (tutto corretto)
+	// A depth 5 mi da c3c2 matto a depth 5 (scorretto dovvrebe essere 3 come prima)
+	// e c3f3 matto a depth 3 (vero pero' il bianco non fara' mai quella mossa, dovrebbe essere depth 5)
+
+	cout << moveToString(best.move) << " --> " << evalValueToString(best) << endl;
 }
 

@@ -13,6 +13,8 @@
 using namespace std;
 
 
+#define EPSILON 1e-9
+
 #define HvsC 0
 #define CvsC 1
 
@@ -21,7 +23,8 @@ using namespace std;
 #define OPPOSITE(side) (_BLACK - side)
 #define NO_POS 64
 #define MAX_MOVES 218
-#define HISTORY_MOVES 100
+#define MOVES_HISTORY_SIZE 1024
+#define MAX_DEPTH 1024
 
 // pieces
 constexpr Piece Empty = 0;
@@ -130,17 +133,25 @@ inline const vector<string> EMPTY_FEN = {"0", "1", "2", "3", "4", "5", "6", "7",
 
 // positions
 inline const string INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+inline const string INITIAL_FEN_POSITION_BLACK = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1";
 inline const string CASTLING_FEN_POSITION = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
 inline const string PERFT_FEN_POSITION_2 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
-inline const string PERFT_FEN_POSITION_2_BLACK_TO_MOVE = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1";
+inline const string PERFT_FEN_POSITION_2_BLACK = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1";
 inline const string PERFT_FEN_POSITION_3 = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1";
 inline const string PERFT_FEN_POSITION_4 = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
-inline const string PERFT_FEN_POSITION_4_MIRRORED = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
+inline const string PERFT_FEN_POSITION_4_BLACK = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1";
 inline const string PERFT_FEN_POSITION_5 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
 inline const string PERFT_FEN_POSITION_6 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 inline const string END_FEN_POSITION = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
 inline const string FEN_EN_PASSANT_LEGALITY_TEST = "8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 0";
 inline const string FEN_EN_PASSANT_BUG_TEST = "2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 0 23";
+inline const string FEN_AVOID_STALEMATE = "8/4k3/1p6/3r4/8/2q5/8/5K2 b - - 49 128";
+inline const string FEN_MATE_IN_ONE = "1R4Q1/3QQ3/7k/8/Q3Q3/2Q5/4KB2/1R6 w - - 0 1";
+inline const string FEN_MATE_IN_ONE_BLACK = "1r4q1/3qq3/7K/8/q3q3/2q5/4kb2/1r6 b - - 0 1";
+inline const string FEN_MATE_IN_TWO = "8/4R3/3N2k1/6pp/3B4/P2P3b/2PK3P/8 w - h6 0 42";
+// TODO mate in 2 black
+inline const string FEN_MATE_IN_THREE = "8/4k3/1p6/3r4/8/2q5/8/5K2 b - - 0 1";
+// TODO mate in 3 black
 
 // evaluation weights
 #define KING_WT     200.0

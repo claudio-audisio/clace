@@ -1,3 +1,9 @@
+NEXT ITEM
+
+    - Nell'evaluation e' contenuta la PV, il problema e' che faccio una montagna di new/delete (una per nodo)
+        - Capire come ottimizzare sta roba
+
+
 DA FINIRE
 
     - Completare test unita'
@@ -5,8 +11,7 @@ DA FINIRE
 
 SEARCH
 
-    - Convertire l'array pool in un vero array pool con allocazione, rilascio, riuso
-    - La transposition table verra' usata sempre d'ora in poi (perft, engine) quindi il pool va immerso nella table
+    - La transposition table va snellita quando faccio delle mosse non revertabili (pedone, castling, etc.... vedere wiki)
 
     - Iniziato ab_engine con motore che fa search alpha-beta
         - occorre ordinare le mosse per rendere alpha-beta piu' efficente

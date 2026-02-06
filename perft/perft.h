@@ -6,7 +6,6 @@
 #include "result.h"
 #include "../utils/logger.h"
 #include "cache/transpositionTable.h"
-#include "utils/arrayPool.h"
 
 using namespace std;
 

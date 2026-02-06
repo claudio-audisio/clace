@@ -206,6 +206,7 @@ void Clace::newCpuGame(int gamesAmount) {
 	}
 
 	for (auto& game : games) {
+		game->stop();
 		delete game;
 	}
 

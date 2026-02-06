@@ -24,5 +24,7 @@ TEST_F(EvaluationTest, noMovesEvaluationTest) {
 	Game game;
 	game.init();
 
-	EXPECT_EQ(game.evaluator->evaluate(game), 0);
+	EXPECT_EQ(game.evaluator->evaluate(game, 0).value, 0);
 }
+
+// TODO scrivere dei test

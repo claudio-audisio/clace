@@ -103,7 +103,7 @@ public:
 						break;
 					}
 				case 6: cout << "\t\tmoves: " << game.fullMoves; break;
-				case 5: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.currentEvaluation; break;
+				case 5: cout << "\t\tevaluation: " << fixed << setprecision(2) << game.currentEvaluation.value; break;
 				case 4: cout << "\t\ttimes: " << game.whitePlayer->getMoveTime() << " - " << game.blackPlayer->getMoveTime(); break;
 				case 3: {
 						const string& whiteCaptured = game.getCapturedList(_WHITE);
@@ -142,7 +142,7 @@ public:
 			cout << " captured: " << whiteCaptured << "- " << blackCaptured << endl;
 		}
 
-		cout << " evaluation: " << fixed << setprecision(2) << game.currentEvaluation << endl;
+		cout << " evaluation: " << fixed << setprecision(2) << game.currentEvaluation.value << endl;
 
 		if (game.lastMove != 0) {
 			cout << " last move: " << moveToString(game.lastMove) << " (" << (isWhite(game.lastMove) ? "white" : "black") << ")" << endl;

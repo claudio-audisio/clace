@@ -87,6 +87,13 @@ TEST_F(PerformanceReleaseTest, generatePseudoLegalMovesPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1600);
 	cout << "time: " << time  << endl;
+
+	delete boardInitial;
+	delete boardPerft2;
+	delete boardPerft3;
+	delete boardPerft4;
+	delete boardPerft5;
+	delete boardPerft6;
 }
 
 TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
@@ -111,6 +118,8 @@ TEST_F(PerformanceReleaseTest, simulatePerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1450);
 	cout << "time: " << time  << endl;
+
+	delete game;
 }
 
 TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
@@ -158,6 +167,13 @@ TEST_F(PerformanceReleaseTest, generateLegalMovesPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1270);
 	cout << "time: " << time  << endl;
+
+	delete boardInitial;
+	delete boardPerft2;
+	delete boardPerft3;
+	delete boardPerft4;
+	delete boardPerft5;
+	delete boardPerft6;
 }
 
 TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
@@ -168,7 +184,7 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	Game* game2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* game3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
 	Game* game4 = FEN::fenToNewGame(PERFT_FEN_POSITION_4);
-	Game* game4m = FEN::fenToNewGame(PERFT_FEN_POSITION_4_MIRRORED);
+	Game* game4m = FEN::fenToNewGame(PERFT_FEN_POSITION_4_BLACK);
 	Game* game5 = FEN::fenToNewGame(PERFT_FEN_POSITION_5);
 	Game* game6 = FEN::fenToNewGame(PERFT_FEN_POSITION_6);
 
@@ -194,6 +210,14 @@ TEST_F(PerformanceReleaseTest, calculateCheckPositionsPerformanceTest) {
 	unsLL time = getElapsedMillis(start);
 	GTEST_ASSERT_NEAR(time, 1080);
 	cout << "time: " << time  << endl;
+
+	delete game1;
+	delete game2;
+	delete game3;
+	delete game4;
+	delete game4m;
+	delete game5;
+	delete game6;
 }
 
 TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
@@ -246,6 +270,12 @@ TEST_F(PerformanceReleaseTest, finalizeMovePerformanceTest) {
 	time /= 100000;
 	GTEST_ASSERT_NEAR(time, 980);
 	cout << "time: " << time << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
@@ -275,6 +305,8 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1250);
 	cout << "time: " << time  << endl;
+
+	delete game;
 }
 
 TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
@@ -301,6 +333,8 @@ TEST_F(PerformanceReleaseTest, castlingMaskPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1860);
 	cout << "time: " << time  << endl;
+
+	delete game;
 }
 
 TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
@@ -339,6 +373,13 @@ TEST_F(PerformanceReleaseTest, saveSnapshotTest) {
 	cout << "time: " << saveTime  << endl;
 
 	deallocateSnapshots(snapshots, testSize);
+
+	delete game1;
+	delete game2;
+	delete game3;
+	delete game4;
+	delete game5;
+	delete game6;
 }
 
 TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
@@ -386,6 +427,13 @@ TEST_F(PerformanceReleaseTest, loadSnapshotTest) {
 	cout << "time: " << rollbackTime  << endl;
 
 	deallocateSnapshots(snapshots, testSize);
+
+	delete game1;
+	delete game2;
+	delete game3;
+	delete game4;
+	delete game5;
+	delete game6;
 }
 
 

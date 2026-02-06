@@ -10,6 +10,7 @@
 #include "../engine/bruteForceEngine.h"
 #include "../ui/userInterface.h"
 #include "../ui/gui/igui.h"
+#include "engine/alphaBetaEngine.h"
 
 using namespace std;
 
@@ -33,10 +34,10 @@ public:
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
-			new Player(_WHITE, new BruteForceEngine(3)) :
+			new Player(_WHITE, new AlphaBetaEngine(4)) :
 			new Player(_WHITE);
 
-		blackPlayer = new Player(_BLACK, new BruteForceEngine(3));
+		blackPlayer = new Player(_BLACK, new AlphaBetaEngine(4));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
@@ -53,44 +54,46 @@ public:
 
 		game->initPlayers(whitePlayer, blackPlayer);
 		messenger.send(MSG_ALL, "gameRunner", format("new game: {}", game->getDescription()));
-		EndGameType endGame;
+		Evaluation eval;
 		running = true;
 		gui->onBoardChange();
 
 		do {
+			messenger.send(MSG_LOG, "fen: ", FEN::gameToFEN(*game));
+
 			if (game->getCurrentPlayer()->computer) {
-				endGame = processComputerMove();
+				eval = processComputerMove();
 				gui->onBoardChange(true);
 			} else {
 				if (statistics->consoleOutput) {
 					UI::printGame(*game);
 				}
-				endGame = processHumanMove();
+				eval = processHumanMove();
 				gui->onBoardChange();
 			}
-		} while (running && !isGameEnded(endGame));
+		} while (running && !isGameEnded(eval));
 	}
 
-	EndGameType processComputerMove() {
+	Evaluation processComputerMove() const {
 		game->getCurrentPlayer()->startMoveTime();
 		Evaluation evaluation = game->calculateMove();
 		game->getCurrentPlayer()->stopMoveTime();
 
-		if (evaluation.endGameType == NONE) {
+		if (evaluation.move) {
 			messenger.send(MSG_LOG, "gameRunner", format("{}: {}", game->getCurrentPlayer()->name, moveToString(evaluation.move)));
 			game->applyMove(evaluation.move);
-			game->currentEvaluation = evaluation.value;
+			game->currentEvaluation = evaluation;
 		}
 
-		return evaluation.endGameType;
+		return evaluation;
 	}
 
-	EndGameType processHumanMove() {
+	Evaluation processHumanMove() {
 		game->verifyChecks();
 		gui->setGameInfo(game->sideToMove,
 				game->checkStatus.check && !game->checkStatus.checkmate,
 				game->fullMoves,
-				game->currentEvaluation,
+				game->currentEvaluation.value,
 				FEN::gameToFEN(*game),
 				moveToString(game->lastMove),
 				game->whitePlayer->getMoveTime(),
@@ -103,7 +106,7 @@ public:
 
 		if (endGame != NONE) {
 			game->getCurrentPlayer()->stopMoveTime();
-			return endGame;
+			return {0, 0, endGame, 0};
 		}
 
 		Move move;
@@ -138,9 +141,11 @@ public:
 
 		messenger.send(MSG_LOG, "gameRunner", format("{}: {}", game->getCurrentPlayer()->name, moveToString(move)));
 		game->applyMove(move);
-		game->currentEvaluation = game->evaluator->evaluate(*game);
+		game->currentEvaluation = game->evaluator->evaluate(*game, 0);
 
-		return NONE;
+		pool->release(moves);
+
+		return game->currentEvaluation;
 	}
 
 	string waitForHumanMove() {
@@ -164,9 +169,9 @@ public:
 		moveMtx.unlock();
 	}
 
-	bool isGameEnded(EndGameType endGame) {
-		if (endGame != NONE) {
-			if (endGame == CHECKMATE) {
+	bool isGameEnded(const Evaluation& evaluation) {
+		if (evaluation.endGameType != NONE && !evaluation.move) {
+			if (evaluation.endGameType == CHECKMATE) {
 				statistics->gameEnded(game->isWhiteToMove() ? -1 : 1);
 				messenger.send(MSG_ALL, "gameRunner", format("Game ended: {} WINS ({} moves in {} ms)",
 					game->isWhiteToMove() ? "black" : "white", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
@@ -175,15 +180,15 @@ public:
 			} else {
 				statistics->gameEnded(0);
 				messenger.send(MSG_ALL, "gameRunner", format("Game ended: DRAW{} ({} moves in {} ms)",
-					endGame == STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
+					evaluation.endGameType == STALEMATE ? " (stalemate)" : "", game->fullMoves, game->whitePlayer->gameTime + game->blackPlayer->gameTime));
 			}
 
 			if (statistics->consoleOutput) {
 				UI::printGame(*game);
-				if (endGame == CHECKMATE) {
+				if (evaluation.endGameType == CHECKMATE) {
 					cout << (game->isWhiteToMove() ? " black" : " white") << " wins" << endl << endl;
 				} else {
-					cout << " draw" << (endGame == STALEMATE ? " (stalemate)" : "") << endl << endl;
+					cout << " draw" << (evaluation.endGameType == STALEMATE ? " (stalemate)" : "") << endl << endl;
 				}
 			}
 
