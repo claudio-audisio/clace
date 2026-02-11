@@ -54,14 +54,10 @@ TEST_F(PerformanceEngineTest, BFEngineOpenGameDepth4Test) {
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
     engine = new BruteForceEngine(4);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
     GTEST_ASSERT_NEAR(time, 240);
@@ -75,14 +71,10 @@ TEST_F(PerformanceEngineTest, BFEngineMidGameDepth3Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
     engine = new BruteForceEngine(3);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
     GTEST_ASSERT_NEAR(time, 155);
@@ -96,14 +88,10 @@ TEST_F(PerformanceEngineTest, BFEngineMidGame2Depth3Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
     engine = new BruteForceEngine(3);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
     GTEST_ASSERT_NEAR(time, 140);
@@ -117,13 +105,10 @@ TEST_F(PerformanceEngineTest, BFEngineEndGameDepth5Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
     engine = new BruteForceEngine(5);
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
     GTEST_ASSERT_NEAR(time, 390);
@@ -139,17 +124,13 @@ TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth5Test) {
     Game game;
     game.initFromFEN(INITIAL_FEN_POSITION);
     engine = new AlphaBetaEngine(5);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 540);
+    GTEST_ASSERT_NEAR(time, 270);
     cout << "time: " << time  << endl;
 }
 
@@ -160,17 +141,13 @@ TEST_F(PerformanceEngineTest, ABEngineMidGameDepth4Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_2);
     engine = new AlphaBetaEngine(4);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 900);
+    GTEST_ASSERT_NEAR(time, 70);
     cout << "time: " << time  << endl;
 }
 
@@ -181,17 +158,13 @@ TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth4Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_6);
     engine = new AlphaBetaEngine(4);
-    engine->setEvaluator(new BasicEvaluator());
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 1100);
+    GTEST_ASSERT_NEAR(time, 265);
     cout << "time: " << time  << endl;
 }
 
@@ -202,16 +175,13 @@ TEST_F(PerformanceEngineTest, ABEngineEndGameDepth6Test) {
     Game game;
     game.initFromFEN(PERFT_FEN_POSITION_3);
     engine = new AlphaBetaEngine(6);
-    auto moves = new Move[MAX_MOVES];
-    MovesAmount amount;
 
     auto begin = chrono::steady_clock::now();
 
-    generateLegalMoves(game, moves, &amount);
-    engine->_calculateMove(game, moves, amount);
+    engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 190);
+    GTEST_ASSERT_NEAR(time, 50);
     cout << "time: " << time  << endl;
 }
 

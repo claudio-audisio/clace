@@ -100,8 +100,7 @@ TEST_F(ABEngineTest, mateInThreeTest) {
 	engine = new AlphaBetaEngine(DEPTH);
 	Evaluation best = engine->calculateMove(game);
 
-	EXPECT_EQ(moveToString(best.move), "c3b2");		// different from brute force due to cut off
-													// probably with move ordering the shortest path will be returned
+	EXPECT_EQ(moveToString(best.move), "c3c2");
 }
 
 TEST_F(ABEngineTest, Depth5Test) {

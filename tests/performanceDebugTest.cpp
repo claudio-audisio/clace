@@ -109,6 +109,13 @@ TEST_F(PerformanceDebugTest, gameToZobristKeyTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1640);
 	cout << "time: " << time  << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft4;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
@@ -145,6 +152,13 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 	//GTEST_ASSERT_NEAR(time, 1480);	// BOARD_BRANCHLESS_RAY_ATTACKS
 
 	cout << "time: " << time  << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft4;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 TEST_F(PerformanceDebugTest, getQueenAttacks2PerformanceTest) {
@@ -181,6 +195,13 @@ TEST_F(PerformanceDebugTest, getQueenAttacks2PerformanceTest) {
 	//GTEST_ASSERT_NEAR(time, 1160);	// BOARD_BRANCHLESS_RAY_ATTACKS
 
 	cout << "time: " << time  << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft4;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
@@ -214,6 +235,13 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 	unsLL time = getElapsedMillis(begin);
 	GTEST_ASSERT_NEAR(time, 1620);
 	cout << "time: " << time  << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft4;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
@@ -255,6 +283,13 @@ TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
 #endif
 
 	cout << "time: " << time  << endl;
+
+	delete gameInitial;
+	delete gamePerft2;
+	delete gamePerft3;
+	delete gamePerft4;
+	delete gamePerft5;
+	delete gamePerft6;
 }
 
 

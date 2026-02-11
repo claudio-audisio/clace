@@ -6,35 +6,12 @@
 class BruteForceEngine : public AbstractEngine {
 public:
 	explicit BruteForceEngine(const unsigned int depth):
-		AbstractEngine(depth, "BruteForceEngine") {}
+		AbstractEngine(depth, "BruteForceEngine") {
+		evaluator = new BasicEvaluator();
+	}
 
-	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
-		for (unsigned int i = 0; i < amount.total; i++) {
-			if (moves[i]) {
-				game.save();
-				game.applyMove(moves[i]);
-
-				Evaluation eval = negaMax(game, depth - 1);
-				Evaluator::changeSign(eval);
-				eval.pvMoves[0] = moves[i];
-
-				game.rollbackLastMove();
-
-				//messenger.send(MSG_LOG, description, evalShortToString(eval));
-
-				if (Evaluator::isBetter(eval, best)) {
-					delete best.pvMoves;
-					best = eval;
-					best.move = moves[i];
-				} else {
-					delete eval.pvMoves;
-				}
-
-				if (Evaluator::isBest(best)) {
-					break;
-				}
-			}
-		}
+	Evaluation _calculateMove(Game& game) override {
+		return negaMax(game, depth);
 	}
 
 	Evaluation negaMax(Game& game, const unsigned int depth) {
@@ -81,6 +58,7 @@ public:
 					}*/
 					delete best.pvMoves;
 					best = eval;
+					best.move = moves[i];
 				} else {
 					delete eval.pvMoves;
 				}

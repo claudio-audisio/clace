@@ -11,7 +11,12 @@ DA FINIRE
 
 SEARCH
 
-    - La transposition table va snellita quando faccio delle mosse non revertabili (pedone, castling, etc.... vedere wiki)
+    - La transposition table va snellita quando faccio delle mosse non reversibili
+        - padone, catture, castling e cambiamento dei diritti di castling sono irreversibili
+            - per queste due ultime pero' l'halfmove clock non si azzera
+        - capire come snellire: in teoria dovrei togliere tutti i nodi dei rami che non hanno come parente la mossa irreversibile appena fatta
+            - per fare questo nella transposition table devo tenere le chiavi linkate tra di loro,
+                - in modo che poi mi basta eliminare una radice per eliminare tutto i sotto nodi
 
     - Iniziato ab_engine con motore che fa search alpha-beta
         - occorre ordinare le mosse per rendere alpha-beta piu' efficente

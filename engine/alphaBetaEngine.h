@@ -3,50 +3,25 @@
 #include "abstractEngine.h"
 
 
-// https://www.chessprogramming.org/Alpha-Beta
 class AlphaBetaEngine final : public AbstractEngine {
 public:
 	explicit AlphaBetaEngine(const unsigned int depth) :
-		AbstractEngine(depth, "AlphaBetaEngine") {}
+		AbstractEngine(depth, "AlphaBetaEngine") {
+		evaluator = new BasicEvaluator();
+	}
 
-	void _calculateMove(Game& game, Move* moves, const MovesAmount amount) override {
+	Evaluation _calculateMove(Game& game) override {
+		double alpha = LOSS_VALUE * 2;	// punteggio minimo di cui il bianco e' sicuro
+		double beta = WIN_VALUE * 2;	// punteggio massimo di cui il nero e' sicuro
+
+		return alphaBeta(game, alpha, beta, depth);
+	};
+
+	Evaluation alphaBeta(Game& game, double alpha, double beta, const unsigned int depth) {
 		// TODO le mosse dovrebbero essere ordinate
 		// https://www.chessprogramming.org/Move_Ordering
 		// Ecco l'ordine di valutazione delle mosse che dovrebbe essere adottato
 
-
-		double alpha = LOSS_VALUE * 2;	// punteggio minimo di cui il bianco e' sicuro
-		double beta = WIN_VALUE * 2;	// punteggio massimo di cui il nero e' sicuro
-
-		for (unsigned int i = 0; i < amount.total; i++) {
-			if (moves[i]) {
-				game.save();
-				game.applyMove(moves[i]);
-
-				Evaluation eval = alphaBeta(game, alpha, beta, depth - 1);
-				Evaluator::changeSign(eval);
-				eval.pvMoves[0] = moves[i];
-
-				game.rollbackLastMove();
-
-				//messenger.send(MSG_LOG, description, evalShortToString(eval));
-
-				if (Evaluator::isBetter(eval, best)) {
-					delete best.pvMoves;
-					best = eval;
-					best.move = moves[i];
-				} else {
-					delete eval.pvMoves;
-				}
-
-				if (Evaluator::isBest(best)) {
-					break;
-				}
-			}
-		}
-	};
-
-	Evaluation alphaBeta(Game& game, double alpha, double beta, const unsigned int depth) {
 		game.verifyChecks();
 		Move *moves;
 		MovesAmount amount;
@@ -82,6 +57,10 @@ public:
 				Evaluator::changeSign(eval);
 				eval.pvMoves[this->depth - depth] = moves[i];
 
+				/*if (depth == this->depth) {
+					messenger.send(MSG_LOG, description, evalToString(eval));
+				}*/
+
 				game.rollbackLastMove();
 
 				if (Evaluator::isBetter(eval, best)) {
@@ -92,6 +71,7 @@ public:
 					}*/
 					delete best.pvMoves;
 					best = eval;
+					best.move = moves[i];
 
 					if (eval.value > alpha) {
 						alpha = eval.value;
@@ -101,7 +81,7 @@ public:
 				}
 
 				if (eval.value >= beta) {
-					/*if (moveToString(game.movesHistory[0]) == "c3c2" && depth == 3) {
+					/*if (moveToString(game.movesHistory[0]) == "c3c2") {
 						messenger.send(MSG_LOG, description, format("{} --> {:.2f} - cutoff", game.printMovesHistory(best.depth), best.value));
 					}*/
 					return best;

@@ -314,6 +314,7 @@ string Game::getCapturedList(const Side side) const {
 	return captured;
 }
 
+// TODO non e' la stessa minestra di IsValid (vedere come accumunare le cose)
 void Game::calculateCheckPositions(const Side side, const Position kingPosition) {
 	checkStatus.reset();
 	Rawboard positions = PIECES(board, side);

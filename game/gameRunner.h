@@ -37,7 +37,7 @@ public:
 			new Player(_WHITE, new AlphaBetaEngine(4)) :
 			new Player(_WHITE);
 
-		blackPlayer = new Player(_BLACK, new AlphaBetaEngine(4));
+		blackPlayer = new Player(_BLACK, new BruteForceEngine(3));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
@@ -59,7 +59,7 @@ public:
 		gui->onBoardChange();
 
 		do {
-			messenger.send(MSG_LOG, "fen: ", FEN::gameToFEN(*game));
+			//messenger.send(MSG_LOG, "fen: ", FEN::gameToFEN(*game));
 
 			if (game->getCurrentPlayer()->computer) {
 				eval = processComputerMove();

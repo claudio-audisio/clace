@@ -14,7 +14,6 @@ public:
     TranspositionTable *table = nullptr;
     Evaluator *evaluator = nullptr;
     Messenger &messenger = Messenger::getInstance();
-    Evaluation best;
 
 
     AbstractEngine(const unsigned int depth, const string& description) {
@@ -33,22 +32,13 @@ public:
         delete this->evaluator;
     }
 
-    virtual void _calculateMove(Game& game, Move *moves, MovesAmount amount) = 0;
+    virtual Evaluation _calculateMove(Game& game) = 0;
 
     Evaluation calculateMove(Game& game) override {
         messenger.send(MSG_LOG, description, format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
         auto time = chrono::steady_clock::now();
 
-        game.verifyChecks();
-        Move* moves;
-        MovesAmount amount;
-        table->getMoves(game, moves, amount);
-        const EndGameType endGame = game.checkEndGame(amount.legal);
-        best = {0, LOSS_VALUE * 2, endGame, MAX_DEPTH, nullptr};
-
-        if (!endGame) {
-            _calculateMove(game, moves, amount);
-        }
+        Evaluation best = _calculateMove(game);
 
         if (!game.isWhiteToMove()) {
             best.value = -best.value;

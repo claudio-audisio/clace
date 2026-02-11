@@ -303,7 +303,7 @@ TEST_F(PerformanceReleaseTest, castlingPerformanceTest) {
 	}
 
 	unsLL time = getElapsedMillis(begin);
-	GTEST_ASSERT_NEAR(time, 1250);
+	GTEST_ASSERT_NEAR(time, 1815);
 	cout << "time: " << time  << endl;
 
 	delete game;

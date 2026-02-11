@@ -19,14 +19,21 @@ public:
 
 	Evaluation evaluateEndGame(Game& game, const unsigned int depth, const EndGameType endGame) override {
 		const double evaluation = endGame == CHECKMATE ? game.sideToMove ? WIN_VALUE : LOSS_VALUE : DRAW_VALUE;
-
 		return {0, evaluation * signForSide(game.sideToMove), endGame, depth, createPvMoves(depth)};
 	}
 
 	static Move *createPvMoves(const unsigned int size) {
-		auto pvMoves = new Move[size];
-		memset(pvMoves, 0, size * sizeof(Move));
-		return pvMoves;
+		if (size) {
+			auto pvMoves = new Move[size];
+			memset(pvMoves, 0, size * sizeof(Move));
+			return pvMoves;
+		}
+
+		return nullptr;
+	}
+
+	static void setPVMove(const Evaluation& eval, const unsigned int pos, const Move move) {
+		eval.pvMoves[pos] = move;
 	}
 
 	static double calculateMaterialScore(Game& game) {
