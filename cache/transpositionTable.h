@@ -16,16 +16,16 @@ class TranspositionTable {
 
     unordered_map<unsLL, Transposition*> tables;
     ArrayPool<Move> *pool;
-    unsigned int usage;
+    unsigned int usage, allocation;
 
 public:
     TranspositionTable() {
-        usage = 0;
+        allocation = usage = 0;
         pool = new ArrayPool<Move>(1500000, MAX_MOVES);
     }
 
     TranspositionTable(const unsigned int preallocation) {
-        usage = 0;
+        allocation = usage = 0;
         pool = new ArrayPool<Move>(preallocation, MAX_MOVES);
     }
 
@@ -33,7 +33,9 @@ public:
         clear();
     }
 
-    void getMoves(const Game& game, Move*& moves, MovesAmount& amount) {
+    unsigned int getMoves(const Game& game, Move*& moves) {
+        unsigned int amount;
+
         if (tables.contains(game.key)) {
             const Transposition *table = tables.at(game.key);
             moves = table->moves;
@@ -41,16 +43,19 @@ public:
             usage++;
         } else {
             moves = pool->getArray();
-            generateLegalMoves(game, moves, &amount);
+            amount = generateLegalMoves(game, moves);
             addMoves(game.key, moves, amount);
+            allocation++;
         }
+
+        return amount;
     }
 
-    void addMoves(const unsLL key, Move* moves, const MovesAmount& movesAmount) {
+    void addMoves(const unsLL key, Move* moves, const unsigned int amount) {
         if (!tables.contains(key)) {
             const auto transposition = static_cast<Transposition*>(malloc(sizeof(Transposition)));
             transposition->moves = moves;
-            transposition->amount = movesAmount;
+            transposition->amount = amount;
             tables.insert(make_pair(key, transposition));
         } else {
             throw runtime_error("transposition table already present");
@@ -61,8 +66,8 @@ public:
         return tables.size();
     }
 
-    int getUsage() const {
-        return usage;
+    int getUsagePercentage() const {
+        return (usage * 100) / (usage + allocation);
     }
 
     void remove(const unsLL key) {

@@ -30,9 +30,7 @@ protected:
 
     unsLL runBulkPerft(const unsigned int currentDepth) {
         Move* moves = pool->getArray();
-        MovesAmount amount;
-        generateLegalMoves(*game, moves, &amount);
-
+        const unsigned int amount = generateLegalMoves(*game, moves);
         const unsLL key = game->key;
         const string fen = FEN::gameToFENWithoutMoves(*game);
 
@@ -46,19 +44,17 @@ protected:
 
         if (currentDepth == 1) {
             pool->release(moves);
-            return amount.legal;
+            return amount;
         }
 
         unsLL nodes = 0;
 
-        for (unsigned int i = 0; i < amount.total; i++) {
-            if (moves[i]) {
-                game->save();
-                game->applyMove(moves[i]);
-                const unsLL newNodes = runBulkPerft(currentDepth - 1);
-                nodes += newNodes;
-                game->rollbackLastMove();
-            }
+        for (unsigned int i = 0; i < amount; i++) {
+            game->save();
+            game->applyMove(moves[i]);
+            const unsLL newNodes = runBulkPerft(currentDepth - 1);
+            nodes += newNodes;
+            game->rollbackLastMove();
         }
 
         pool->release(moves);

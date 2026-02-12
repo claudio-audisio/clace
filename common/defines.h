@@ -5,4 +5,4 @@
 
 //#define PROFILER
 
-//#define PERFORMANCE_TESTS
+#define PERFORMANCE_TESTS

@@ -40,6 +40,6 @@ typedef struct {
 
 typedef struct {
     Move *moves;
-    MovesAmount amount;
+    unsigned int amount;
 } Transposition;
 

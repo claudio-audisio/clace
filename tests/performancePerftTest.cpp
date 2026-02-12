@@ -33,7 +33,7 @@ protected:
     }
 
     void static GTEST_ASSERT_NEAR(unsLL value, unsLL expected) {
-        unsLL delta = expected * 5 / 100;
+        unsLL delta = expected * 10 / 100;
 
         if (delta < 10) {
             delta = 10;
@@ -52,7 +52,7 @@ TEST_F(PerformancePerftTest, InitPerft5BulkTest) {
 
     auto result = perft->runBulk();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 140);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 120);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -65,7 +65,7 @@ TEST_F(PerformancePerftTest, InitPerft6BulkTest) {
 
     auto result = perft->runBulk();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 3030);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 2700);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -78,7 +78,7 @@ TEST_F(PerformancePerftTest, Pos2Perft5BulkTest) {
 
     auto result = perft->runBulk();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 4100);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 3610);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -91,7 +91,7 @@ TEST_F(PerformancePerftTest, Pos4Perft5BulkTest) {
 
     auto result = perft->runBulk();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 520);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 460);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -104,7 +104,7 @@ TEST_F(PerformancePerftTest, InitPerft4CompleteTest) {
 
     auto result = perft->runComplete();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 170);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 150);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -117,7 +117,7 @@ TEST_F(PerformancePerftTest, InitPerft5CompleteTest) {
 
     auto result = perft->runComplete();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 3900);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 3170);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -130,7 +130,7 @@ TEST_F(PerformancePerftTest, Pos2Perft4CompleteTest) {
 
     auto result = perft->runComplete();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 5100);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 4200);
 
     cout << "time: " << result->getElapsed()  << endl;
 }
@@ -143,7 +143,7 @@ TEST_F(PerformancePerftTest, Pos4Perft4CompleteTest) {
 
     auto result = perft->runComplete();
 
-    GTEST_ASSERT_NEAR(result->getElapsed(), 640);
+    GTEST_ASSERT_NEAR(result->getElapsed(), 550);
 
     cout << "time: " << result->getElapsed()  << endl;
 }

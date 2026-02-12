@@ -66,19 +66,17 @@ static unsigned int generatePseudoLegalMoves(const Game& game, Move* moves) {
 	return count;
 }
 
-static void generateLegalMoves(const Game& game, Move* moves, MovesAmount* legalMoves) {
+static unsigned int generateLegalMoves(const Game& game, Move* moves) {
 	const unsigned int tot = generatePseudoLegalMoves(game, moves);
-	unsigned int removed = 0;
+	unsigned int legal = 0;
 
 	for (unsigned int i = 0; i < tot; ++i) {
-		if (!isValid(game, moves[i])) {
-			moves[i] = 0;
-			++removed;
+		if (isValid(game, moves[i])) {
+			moves[legal++] = moves[i];
 		}
 	}
 
-	legalMoves->total = tot;
-	legalMoves->legal = tot - removed;
+	return legal;
 }
 
 /*static void generateLegalMoves(Game& game, Move* moves, MovesAmount* legalMoves) {

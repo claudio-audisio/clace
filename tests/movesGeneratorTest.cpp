@@ -26,13 +26,10 @@ TEST_F(MovesGeneratorTest, calculateLegalMoves) {
 	game->verifyChecks();
 
 	Move* moves = new Move[MAX_MOVES];
-	MovesAmount amount;
-	generateLegalMoves(*game, moves, &amount);
+	const unsigned int amount = generateLegalMoves(*game, moves);
 
-	EXPECT_EQ(amount.total, 2);
-	EXPECT_EQ(amount.legal, 1);
+	EXPECT_EQ(amount, 1);
 	EXPECT_EQ(moveToString(moves[0]), "a1b1");
-	EXPECT_EQ(moves[1], 0);
 }
 
 
@@ -59,10 +56,9 @@ TEST_P(GetLegalMovesTest, getLegalMovesTest) {
 	TestParams* params = GetParam();
 	Game* game = FEN::fenToNewGame(params->fenGame);
 	Move* moves = new Move[MAX_MOVES];
-	MovesAmount amount;
-	generateLegalMoves(*game, moves, &amount);
+	const unsigned int amount = generateLegalMoves(*game, moves);
 
-	EXPECT_EQ(amount.legal, params->expectedPossibleMoves);
+	EXPECT_EQ(amount, params->expectedPossibleMoves);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -100,9 +100,8 @@ public:
 				game->blackPlayer->getMoveTime());
 
 		Move* moves = pool->getArray();
-		MovesAmount amount;
-		generateLegalMoves(*game, moves, &amount);
-		EndGameType endGame = game->checkEndGame(amount.legal);
+		const unsigned int amount = generateLegalMoves(*game, moves);
+		const EndGameType endGame = game->checkEndGame(amount);
 
 		if (endGame != NONE) {
 			game->getCurrentPlayer()->stopMoveTime();
@@ -130,7 +129,7 @@ public:
 
 			game->getCurrentPlayer()->stopMoveTime();
 
-			if (isPresent(move, moves, amount.total)) {
+			if (isPresent(move, moves, amount)) {
 				break;
 			}
 

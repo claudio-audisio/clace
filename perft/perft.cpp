@@ -25,19 +25,16 @@ Result* Perft::runComplete(const bool consoleMode) {
     runCompletePerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
-    cout << "Cache usage " << table->getUsage() * 100 / totalUsage << " % (" << table->size() << " entries)" << endl;
+    cout << "Cache usage " << table->getUsagePercentage() << " % (" << table->size() << " entries)" << endl;
 
     return result;
 }
 
 void Perft::runCompletePerft(const unsigned int currentDepth) {
     Move* moves;
-    MovesAmount amount;
+    const unsigned int amount = table->getMoves(*game, moves);
 
-    table->getMoves(*game, moves, amount);
-    totalUsage++;
-
-    if (game->checkStatus.check && amount.legal == 0) {
+    if (game->checkStatus.check && amount == 0) {
         result->incrementCheckmates((depth - currentDepth) - 1);
         return;
     }
@@ -46,20 +43,18 @@ void Perft::runCompletePerft(const unsigned int currentDepth) {
         return;
     }
 
-    for (unsigned int i = 0; i < amount.total; i++) {
-        if (moves[i]) {
-            game->save();
-            game->applyMove(moves[i]);
-            result->incrementCounters(moves[i], depth - currentDepth);
-            game->verifyChecks();
-            result->incrementCounters(game->checkStatus, depth - currentDepth);
-            //cout << game->printMovesHistory() << " done " << endl;
-            runCompletePerft(currentDepth - 1);
-            /*if (currentDepth == 3) {
-                cout << moveToString(move) << "\t" << result->getCaptures(2) << endl;
-            }*/
-            game->rollbackLastMove();
-        }
+    for (unsigned int i = 0; i < amount; i++) {
+        game->save();
+        game->applyMove(moves[i]);
+        result->incrementCounters(moves[i], depth - currentDepth);
+        game->verifyChecks();
+        result->incrementCounters(game->checkStatus, depth - currentDepth);
+        //cout << game->printMovesHistory() << " done " << endl;
+        runCompletePerft(currentDepth - 1);
+        /*if (currentDepth == 3) {
+            cout << moveToString(move) << "\t" << result->getCaptures(2) << endl;
+        }*/
+        game->rollbackLastMove();
     }
 }
 
@@ -69,32 +64,27 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
-    cout << "Cache usage " << table->getUsage() * 100 / totalUsage << " % (" << table->size() << " entries)" << endl;
+    cout << "Cache usage " << table->getUsagePercentage() << " % (" << table->size() << " entries)" << endl;
 
     return result;
 }
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     Move* moves;
-    MovesAmount amount;
-
-    table->getMoves(*game, moves, amount);
-    totalUsage++;
+    const unsigned int amount = table->getMoves(*game, moves);
 
     if (currentDepth == 1) {
-        return amount.legal;
+        return amount;
     }
 
     unsLL nodes = 0;
 
-    for (unsigned int i = 0; i < amount.total; i++) {
-        if (moves[i]) {
-            game->save();
-            game->applyMove(moves[i]);
-            const unsLL newNodes = runBulkPerft(currentDepth - 1);
-            nodes += newNodes;
-            game->rollbackLastMove();
-        }
+    for (unsigned int i = 0; i < amount; i++) {
+        game->save();
+        game->applyMove(moves[i]);
+        const unsLL newNodes = runBulkPerft(currentDepth - 1);
+        nodes += newNodes;
+        game->rollbackLastMove();
     }
 
     return nodes;

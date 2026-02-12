@@ -27,29 +27,28 @@ TEST_F(TranspositionTableTest, tableTest) {
     Move *moves2;
     Move *moves1g;
     Move *moves2g;
-    MovesAmount amount1, amount2, amount1g, amount2g;
 
-    table->getMoves(game1, moves1, amount1);
+    const unsigned int amount1 = table->getMoves(game1, moves1);
 
     EXPECT_EQ(table->size(), 1);
 
-    table->getMoves(game2, moves2, amount2);
+    const unsigned int amount2 = table->getMoves(game2, moves2);
 
     EXPECT_EQ(table->size(), 2);
 
-    table->getMoves(game1, moves1g, amount1g);
+    const unsigned int amount1g = table->getMoves(game1, moves1g);
 
     EXPECT_EQ(table->size(), 2);
     EXPECT_EQ(*moves1, *moves1g);
-    EXPECT_EQ(amount1.total, amount1g.total);
-    EXPECT_EQ(amount1.legal, amount1g.legal);
+    EXPECT_EQ(amount1, amount1g);
+    EXPECT_EQ(amount1, amount1g);
 
-    table->getMoves(game2, moves2g, amount2g);
+    const unsigned int amount2g = table->getMoves(game2, moves2g);
 
     EXPECT_EQ(table->size(), 2);
     EXPECT_EQ(*moves2, *moves2g);
-    EXPECT_EQ(amount2.total, amount2g.total);
-    EXPECT_EQ(amount2.legal, amount2g.legal);
+    EXPECT_EQ(amount2, amount2g);
+    EXPECT_EQ(amount2, amount2g);
 
     table->remove(game1.key);
 

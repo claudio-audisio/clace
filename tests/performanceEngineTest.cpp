@@ -60,7 +60,7 @@ TEST_F(PerformanceEngineTest, BFEngineOpenGameDepth4Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 240);
+    GTEST_ASSERT_NEAR(time, 205);
     cout << "time: " << time  << endl;
 }
 
@@ -77,7 +77,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGameDepth3Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 155);
+    GTEST_ASSERT_NEAR(time, 140);
     cout << "time: " << time  << endl;
 }
 
@@ -94,7 +94,7 @@ TEST_F(PerformanceEngineTest, BFEngineMidGame2Depth3Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 140);
+    GTEST_ASSERT_NEAR(time, 125);
     cout << "time: " << time  << endl;
 }
 
@@ -111,7 +111,7 @@ TEST_F(PerformanceEngineTest, BFEngineEndGameDepth5Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 390);
+    GTEST_ASSERT_NEAR(time, 300);
     cout << "time: " << time  << endl;
 }
 
@@ -130,7 +130,7 @@ TEST_F(PerformanceEngineTest, ABEngineOpenGameDepth5Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 270);
+    GTEST_ASSERT_NEAR(time, 220);
     cout << "time: " << time  << endl;
 }
 
@@ -147,7 +147,7 @@ TEST_F(PerformanceEngineTest, ABEngineMidGameDepth4Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 70);
+    GTEST_ASSERT_NEAR(time, 60);
     cout << "time: " << time  << endl;
 }
 
@@ -164,7 +164,7 @@ TEST_F(PerformanceEngineTest, ABEngineMidGame2Depth4Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 265);
+    GTEST_ASSERT_NEAR(time, 225);
     cout << "time: " << time  << endl;
 }
 
@@ -181,7 +181,7 @@ TEST_F(PerformanceEngineTest, ABEngineEndGameDepth6Test) {
     engine->_calculateMove(game);
 
     unsLL time = getElapsedMillis(begin);
-    GTEST_ASSERT_NEAR(time, 50);
+    GTEST_ASSERT_NEAR(time, 35);
     cout << "time: " << time  << endl;
 }
 

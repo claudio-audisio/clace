@@ -276,11 +276,9 @@ TEST_P(CheckEndGameTest, checkEndGameTest) {
 	Game* game = FEN::fenToNewGame(fenBoard);
 	game->verifyChecks();
 	Move* moves = new Move[MAX_MOVES];
+	const unsigned int amount = generateLegalMoves(*game, moves);
 
-	MovesAmount amount;
-	generateLegalMoves(*game, moves, &amount);
-
-	EXPECT_EQ(game->checkEndGame(amount.legal), expectedEndGame);
+	EXPECT_EQ(game->checkEndGame(amount), expectedEndGame);
 }
 
 INSTANTIATE_TEST_SUITE_P(

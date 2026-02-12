@@ -26,7 +26,6 @@ private:
 	string fenGame;
 	Result *result;
 	TranspositionTable *table;
-    unsigned int totalUsage = 0;
 
 	unsLL runBulkPerft(unsigned int depth);
 	void runCompletePerft(unsigned int depth);

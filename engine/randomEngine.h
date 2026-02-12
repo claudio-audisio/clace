@@ -18,19 +18,14 @@ public:
 	Evaluation _calculateMove(Game& game) override {
 		game.verifyChecks();
 		Move* moves;
-		MovesAmount amount;
-		table->getMoves(game, moves, amount);
-		const EndGameType endGame = game.checkEndGame(amount.legal);
+		const unsigned int amount = table->getMoves(game, moves);
+		const EndGameType endGame = game.checkEndGame(amount);
 
 		if (endGame != NONE) {
 			return evaluator->evaluateEndGame(game, 0, endGame);
 		}
 
-		int index;
-
-		do {
-			index = getRandom(amount.total);
-		} while (moves[index] == 0);
+		const unsigned int index = getRandom(amount);
 
 		return {moves[index], 0, NONE, 0, nullptr};
 	}
