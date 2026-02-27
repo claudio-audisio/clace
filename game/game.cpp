@@ -150,10 +150,16 @@ void Game::undoEnPassant(const Move move) const {
     setPiece(board, destination, BPawn - side);
 }
 
-void Game::verifyChecks() {
+void Game::verifyChecks(const bool complete /*= true*/) {
 	const Position kingPosition = getKingPosition(board, sideToMove);
-	calculateCheckPositions(getOppositeSide(), kingPosition);
-	checkStatus.updateStatus(kingPosition, lastMove);
+
+	if (complete) {
+		calculateCheckPositions(OPPOSITE(sideToMove), kingPosition);
+		checkStatus.updateStatus(kingPosition, lastMove);
+	} else {
+		checkStatus.allCheckPositions = allAttacks(board, OPPOSITE(sideToMove), kingPosition);
+		checkStatus.updateStatus(kingPosition, 0);
+	}
 }
 
 EndGameType Game::checkEndGame(const unsigned int legalMoves) {
@@ -314,7 +320,6 @@ string Game::getCapturedList(const Side side) const {
 	return captured;
 }
 
-// TODO non e' la stessa minestra di IsValid (vedere come accumunare le cose)
 void Game::calculateCheckPositions(const Side side, const Position kingPosition) {
 	checkStatus.reset();
 	Rawboard positions = PIECES(board, side);
@@ -353,7 +358,7 @@ void Game::calculateCheckPositions(const Side side, const Position kingPosition)
 				checkStatus.addXRayPosition(position, attacks);
 			}
 		} else if (_isKing(piece)) {
-			const Rawboard attacks = kingMoves(board, position, side);
+			const Rawboard attacks = _kingAttacks(board, position, OPP_PIECES(board, side));
 			checkStatus.updateAllCheckPositions(attacks);
 			checkStatus.addCheckPosition(position, attacks);
 		}

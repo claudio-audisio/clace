@@ -41,5 +41,7 @@ typedef struct {
 typedef struct {
     Move *moves;
     unsigned int amount;
+    bool check;
+
 } Transposition;
 

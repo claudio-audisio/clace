@@ -15,7 +15,6 @@ public:
 	}
 
 	Evaluation negaMax(Game& game, const unsigned int depth) {
-		game.verifyChecks();
 		Move* moves;
 		const unsigned int amount = table->getMoves(game, moves);
 		const EndGameType endGame = game.checkEndGame(amount);

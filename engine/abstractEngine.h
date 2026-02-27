@@ -45,6 +45,7 @@ public:
         }
 
         messenger.send(MSG_ALL, description, format("best: {} ({} ms)", evalToString(best), getElapsedMillis(time)));
+        messenger.send(MSG_ALL, description, format("table: {}", table->getStatistics()));
 
         return best;
     }

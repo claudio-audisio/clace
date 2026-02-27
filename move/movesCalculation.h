@@ -277,16 +277,16 @@ inline Rawboard allKingAttacks(const Board *board, const Side side) {
     return staticKingAttacks[position] & (board->pieceBoards[Empty] | OPP_PIECES(board, side));
 }
 
-inline Rawboard kingAttacks(const Board *board, const Position position, const Rawboard opposite) {
+inline Rawboard _kingAttacks(const Board *board, const Position position, const Rawboard opposite) {
     return staticKingAttacks[position] & (board->pieceBoards[Empty] | opposite);
 }
 
 inline Rawboard whiteKingMoves(const Board *board, const Position position, const Side side) {
-    return kingAttacks(board, position, OPP_PIECES(board, side)) | whiteKingCastling(board, position);
+    return _kingAttacks(board, position, OPP_PIECES(board, side)) | whiteKingCastling(board, position);
 }
 
 inline Rawboard blackKingMoves(const Board *board, const Position position, const Side side) {
-    return kingAttacks(board, position, OPP_PIECES(board, side)) | blackKingCastling(board, position);
+    return _kingAttacks(board, position, OPP_PIECES(board, side)) | blackKingCastling(board, position);
 }
 
 inline Rawboard kingMoves(const Board *board, const Position position, const Side side) {

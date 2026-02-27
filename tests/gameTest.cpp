@@ -157,7 +157,12 @@ public:
 	string expectedLastMove;
 };
 
-class ApplyMoveTest : public ::testing::TestWithParam<TestParams2*> {};
+class ApplyMoveTest : public ::testing::TestWithParam<TestParams2*> {
+protected:
+	ApplyMoveTest() {
+		initMovesGenerator();
+	}
+};
 
 TEST_P(ApplyMoveTest, applyMoveTest) {
 	TestParams2* testParams = GetParam();
@@ -476,3 +481,45 @@ TEST_F(GameTest, getAllDestinationQty) {
 	FEN::fenToGame(PERFT_FEN_POSITION_6, game);
 	EXPECT_EQ(game.getAllDestinationQty(_WHITE), 46);
 }
+
+
+class AttacksCoherenceTest : public ::testing::TestWithParam<tuple<string, Position>> {
+protected:
+	AttacksCoherenceTest() {
+		initMovesGenerator();
+	}
+};
+
+TEST_P(AttacksCoherenceTest, attacksCoherenceTest) {
+	Game game;
+	const string fenPosition = get<0>(GetParam());
+	const Position kingPosition = get<1>(GetParam());
+	game.initFromFEN(fenPosition);
+
+	game.verifyChecks();
+	const bool check = game.checkStatus.check;
+	const Rawboard allCheckPositions = game.checkStatus.allCheckPositions;
+	game.verifyChecks(false);
+
+	ASSERT_EQ(check, game.checkStatus.check);
+	ASSERT_EQ(allCheckPositions, game.checkStatus.allCheckPositions);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+	GameTest,
+	AttacksCoherenceTest,
+	::testing::Values(
+		make_tuple(INITIAL_FEN_POSITION, 4),
+		make_tuple(INITIAL_FEN_POSITION_BLACK, 60),
+		make_tuple(PERFT_FEN_POSITION_2, 4),
+		make_tuple(PERFT_FEN_POSITION_2_BLACK, 60),
+		make_tuple(PERFT_FEN_POSITION_3, 32),
+		make_tuple(PERFT_FEN_POSITION_3_BLACK, 31),
+		make_tuple(PERFT_FEN_POSITION_4, 6),
+		make_tuple(PERFT_FEN_POSITION_4_BLACK, 62),
+		make_tuple(PERFT_FEN_POSITION_5, 4),
+		make_tuple(PERFT_FEN_POSITION_5_BLACK, 61),
+		make_tuple(PERFT_FEN_POSITION_6, 6),
+		make_tuple(PERFT_FEN_POSITION_6_BLACK, 62)
+	)
+);

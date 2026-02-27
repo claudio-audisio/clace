@@ -6,7 +6,7 @@
 
 using namespace std;
 
-
+// TODO transform to struct
 class CheckStatus {
 public:
 	CheckStatus();

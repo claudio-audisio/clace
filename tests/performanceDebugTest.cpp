@@ -41,10 +41,9 @@ protected:
 	}
 };
 
+#ifdef PERFORMANCE_TESTS
+
 TEST_F(PerformanceDebugTest, movePerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Move move;
 	Position pos = 14;
 	Piece piece = WQueen;
@@ -85,9 +84,6 @@ TEST_F(PerformanceDebugTest, movePerformanceTest) {
 }
 
 TEST_F(PerformanceDebugTest, gameToZobristKeyTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -119,9 +115,6 @@ TEST_F(PerformanceDebugTest, gameToZobristKeyTest) {
 }
 
 TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -162,9 +155,6 @@ TEST_F(PerformanceDebugTest, getQueenAttacksPerformanceTest) {
 }
 
 TEST_F(PerformanceDebugTest, getQueenAttacks2PerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -205,9 +195,6 @@ TEST_F(PerformanceDebugTest, getQueenAttacks2PerformanceTest) {
 }
 
 TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -245,9 +232,6 @@ TEST_F(PerformanceDebugTest, getKnightAttacksPerformanceTest) {
 }
 
 TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
-#ifndef PERFORMANCE_TESTS
-	GTEST_SKIP();
-#endif
 	Game* gameInitial = FEN::fenToNewGame(INITIAL_FEN_POSITION);
 	Game* gamePerft2 = FEN::fenToNewGame(PERFT_FEN_POSITION_2);
 	Game* gamePerft3 = FEN::fenToNewGame(PERFT_FEN_POSITION_3);
@@ -294,13 +278,14 @@ TEST_F(PerformanceDebugTest, getAttacksPerformanceTest) {
 
 
 TEST_F(PerformanceDebugTest, bugOfTheDayTest) {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 	Game game;
-	game.initFromFEN("1nb1kbnQ/pppp1pp1/4p3/8/4P3/8/PPPP1PPP/RNB1KBNR b KQ - 0 1");
-	auto engine = new BruteForceEngine(3);
-	Evaluation best = engine->calculateMove(game);
-	cout << "best: " << moveToString(best.move) << " --> " << best.value << endl;
+	game.initFromFEN(PERFT_FEN_POSITION_4);
+	Rawboard allAtt = allAttacks(game.board,_BLACK, 6);
+	game.calculateCheckPositions(_BLACK, 6);
+
+	ASSERT_EQ(allAtt, game.checkStatus.allCheckPositions);
 }
 
-
+#endif
 #endif

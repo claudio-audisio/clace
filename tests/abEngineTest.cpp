@@ -22,19 +22,26 @@ protected:
 	}
 };
 
-TEST_F(ABEngineTest, ConstructorTest) {
 #ifdef PROFILER
-	GTEST_SKIP();
-#endif
+
+TEST_F(ABEngineTest, Depth6Test) {
+	Game game;
+	game.init();
+	engine = new AlphaBetaEngine(DEPTH + 1);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "e2e3");
+}
+
+#elifndef PROFILER
+
+TEST_F(ABEngineTest, ConstructorTest) {
 	engine = new AlphaBetaEngine(DEPTH);
 
 	EXPECT_EQ(engine->depth, DEPTH);
 }
 
 TEST_F(ABEngineTest, enPassantBugTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_EN_PASSANT_BUG_TEST);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -44,9 +51,6 @@ TEST_F(ABEngineTest, enPassantBugTest) {
 }
 
 TEST_F(ABEngineTest, avoidStalemateTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_AVOID_STALEMATE);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -56,9 +60,6 @@ TEST_F(ABEngineTest, avoidStalemateTest) {
 }
 
 TEST_F(ABEngineTest, mateInOneTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_ONE);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -68,9 +69,6 @@ TEST_F(ABEngineTest, mateInOneTest) {
 }
 
 TEST_F(ABEngineTest, mateInOneBlackTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_ONE_BLACK);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -80,9 +78,6 @@ TEST_F(ABEngineTest, mateInOneBlackTest) {
 }
 
 TEST_F(ABEngineTest, mateInTwoTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_TWO);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -92,9 +87,6 @@ TEST_F(ABEngineTest, mateInTwoTest) {
 }
 
 TEST_F(ABEngineTest, mateInThreeTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_THREE);
 	engine = new AlphaBetaEngine(DEPTH);
@@ -104,9 +96,6 @@ TEST_F(ABEngineTest, mateInThreeTest) {
 }
 
 TEST_F(ABEngineTest, Depth5Test) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.init();
 	engine = new AlphaBetaEngine(DEPTH);
@@ -116,27 +105,12 @@ TEST_F(ABEngineTest, Depth5Test) {
 }
 
 TEST_F(ABEngineTest, Depth4TestOnFenPosition2) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(PERFT_FEN_POSITION_2);
 	engine = new AlphaBetaEngine(DEPTH - 1);
 	Evaluation best = engine->calculateMove(game);
 
 	EXPECT_EQ(moveToString(best.move), "e2a6");
-}
-
-TEST_F(ABEngineTest, Depth6Test) {
-#ifndef PROFILER
-	GTEST_SKIP();
-#endif
-	Game game;
-	game.init();
-	engine = new AlphaBetaEngine(DEPTH + 1);
-	Evaluation best = engine->calculateMove(game);
-
-	EXPECT_EQ(moveToString(best.move), "e2e3");
 }
 
 TEST_F(ABEngineTest, dailyBugTest) {
@@ -153,3 +127,5 @@ TEST_F(ABEngineTest, dailyBugTest) {
 
 	cout << moveToString(best.move) << " --> " << evalValueToString(best) << endl;
 }
+
+#endif

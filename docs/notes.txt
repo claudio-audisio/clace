@@ -44,7 +44,7 @@ GENERALE
         - aggiungere i check positions
 
     - Introdurre logging (usare spdlog) oppure introdurre il format nel log casalingo che abbiamo
-i
+
     - Rivedere tutti i passi per arrivare a calcolare le mosse possibili (Perft)
         - Probabilmente faccio delle cose in piu' e/o piu' volte (per esempio il calcolo della numerosita' dei pezzi)
             - generateLegalMoves    (1700)

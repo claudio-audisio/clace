@@ -60,10 +60,9 @@ TEST_F(PerftTest, initialPositionBulkPerft) {
     checkBulkPerftResult(3195901860L, DEPTH, 7, *result);
 }
 
+#ifndef PROFILER
+
 TEST_F(PerftTest, position2BulkPerft) {
-#ifdef PROFILER
-    GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
     Result* result = perft->runBulk();
 
@@ -75,9 +74,6 @@ TEST_F(PerftTest, position2BulkPerft) {
 }
 
 TEST_F(PerftTest, position3BulkPerft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
     Result* result = perft->runBulk();
 
@@ -91,9 +87,6 @@ TEST_F(PerftTest, position3BulkPerft) {
 }
 
 TEST_F(PerftTest, position4BulkPerft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
     Result* result = perft->runBulk();
 
@@ -106,9 +99,6 @@ TEST_F(PerftTest, position4BulkPerft) {
 }
 
 TEST_F(PerftTest, position5BulkPerft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_5, DEPTH);
     Result* result = perft->runBulk();
 
@@ -120,9 +110,6 @@ TEST_F(PerftTest, position5BulkPerft) {
 }
 
 TEST_F(PerftTest, position6BulkPerft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_6, DEPTH);
     Result* result = perft->runBulk();
 
@@ -138,9 +125,6 @@ TEST_F(PerftTest, position6BulkPerft) {
 }
 
 TEST_F(PerftTest, initialPositionPerft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(INITIAL_FEN_POSITION, DEPTH);
     Result* result = perft->runComplete();
 
@@ -157,9 +141,6 @@ TEST_F(PerftTest, initialPositionPerft) {
 
 #if RELEASE_MODE
 TEST_F(PerftTest, Position2Perft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_2, DEPTH);
     Result* result = perft->runComplete();
 
@@ -173,9 +154,6 @@ TEST_F(PerftTest, Position2Perft) {
 #endif
 
 TEST_F(PerftTest, Position3Perft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_3, DEPTH);
     Result* result = perft->runComplete();
 
@@ -191,9 +169,6 @@ TEST_F(PerftTest, Position3Perft) {
 }
 
 TEST_F(PerftTest, Position4Perft) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_4, DEPTH);
 	//perft = new Perft(PERFT_FEN_POSITION_4_MIRRORED, DEPTH);
     Result* result = perft->runComplete();
@@ -208,6 +183,8 @@ TEST_F(PerftTest, Position4Perft) {
     // TODO
     checkPerftResult(706045033, 210369132, 212, 10882006, 81102984, 26973664, -1, -1, 81076, DEPTH, 6, *result);
 }
+
+#endif
 
 /*TEST_F(PerftTest, test) {
 	perft = new Perft("r3k2r/p1ppqpb1/bn2pnp1/1B1PN3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R w KQkq - 0 1", 3);

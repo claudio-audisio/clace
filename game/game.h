@@ -31,7 +31,7 @@ public:
 	void completePawnPromotion(Move move) const;
     void undoSimulateMove(Move move) const;
     void undoEnPassant(Move move) const;
-	void verifyChecks();
+	void verifyChecks(bool complete = true);
 	EndGameType checkEndGame(unsigned int legalMoves);
 	bool checkFiftyMoveRule() const;
 	bool checkFiveFoldRepetitions() const;
@@ -60,12 +60,8 @@ public:
 		return sideToMove == _WHITE;
 	}
 
-	bool isBlackToMove() const {
+    bool isBlackToMove() const {
 		return sideToMove == _BLACK;
-	}
-
-    Side getOppositeSide() const {
-		return OPPOSITE(sideToMove);
 	}
 
     string getDescription() const;

@@ -21,10 +21,8 @@ public:
 		// TODO le mosse dovrebbero essere ordinate
 		// https://www.chessprogramming.org/Move_Ordering
 		// Ecco l'ordine di valutazione delle mosse che dovrebbe essere adottato
-
-		game.verifyChecks();
 		Move *moves;
-		const unsigned int amount  =table->getMoves(game, moves);
+		const unsigned int amount = table->getMoves(game, moves);
 		const EndGameType endGame = game.checkEndGame(amount);
 
 		if (endGame != NONE) {

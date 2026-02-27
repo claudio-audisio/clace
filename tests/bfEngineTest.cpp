@@ -21,20 +21,26 @@ protected:
 	}
 };
 
-TEST_F(BFEngineTest, ConstructorTest) {
 #ifdef PROFILER
-	GTEST_SKIP();
-#endif
+
+TEST_F(BFEngineTest, Depth5Test) {
+	Game game;
+	game.init();
+	engine = new BruteForceEngine(DEPTH + 1);
+	Evaluation best = engine->calculateMove(game);
+
+	EXPECT_EQ(moveToString(best.move), "e2e4");
+}
+
+#elifndef PROFILER
+
+TEST_F(BFEngineTest, ConstructorTest) {
 	engine = new BruteForceEngine(DEPTH);
 
 	EXPECT_EQ(engine->depth, DEPTH);
 }
 
 TEST_F(BFEngineTest, enPassantBugTest) {
-	//GTEST_SKIP_("");
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_EN_PASSANT_BUG_TEST);
 	engine = new BruteForceEngine(DEPTH);
@@ -44,9 +50,6 @@ TEST_F(BFEngineTest, enPassantBugTest) {
 }
 
 TEST_F(BFEngineTest, mateInOneTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_ONE);
 	engine = new BruteForceEngine(DEPTH);
@@ -56,9 +59,6 @@ TEST_F(BFEngineTest, mateInOneTest) {
 }
 
 TEST_F(BFEngineTest, mateInOneBlackTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_ONE_BLACK);
 	engine = new BruteForceEngine(DEPTH);
@@ -68,9 +68,6 @@ TEST_F(BFEngineTest, mateInOneBlackTest) {
 }
 
 TEST_F(BFEngineTest, mateInTwoTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_TWO);
 	engine = new BruteForceEngine(DEPTH);
@@ -80,9 +77,6 @@ TEST_F(BFEngineTest, mateInTwoTest) {
 }
 
 TEST_F(BFEngineTest, mateInThreeTest) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(FEN_MATE_IN_THREE);
 	engine = new BruteForceEngine(DEPTH);
@@ -92,9 +86,6 @@ TEST_F(BFEngineTest, mateInThreeTest) {
 }
 
 TEST_F(BFEngineTest, Depth4Test) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.init();
 	engine = new BruteForceEngine(DEPTH);
@@ -104,27 +95,12 @@ TEST_F(BFEngineTest, Depth4Test) {
 }
 
 TEST_F(BFEngineTest, Depth3TestOnFenPosition2) {
-#ifdef PROFILER
-	GTEST_SKIP();
-#endif
 	Game game;
 	game.initFromFEN(PERFT_FEN_POSITION_2);
 	engine = new BruteForceEngine(DEPTH - 1);
 	Evaluation best = engine->calculateMove(game);
 
 	EXPECT_EQ(moveToString(best.move), "e2a6");
-}
-
-TEST_F(BFEngineTest, Depth5Test) {
-#ifndef PROFILER
-	GTEST_SKIP();
-#endif
-	Game game;
-	game.init();
-	engine = new BruteForceEngine(DEPTH + 1);
-	Evaluation best = engine->calculateMove(game);
-
-	EXPECT_EQ(moveToString(best.move), "e2e4");
 }
 
 TEST_F(BFEngineTest, dailyBugTest) {
@@ -142,3 +118,4 @@ TEST_F(BFEngineTest, dailyBugTest) {
 	cout << moveToString(best.move) << " --> " << evalValueToString(best) << endl;
 }
 
+#endif

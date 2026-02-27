@@ -31,10 +31,23 @@ static unsigned int generatePseudoLegalMoves(const Game& game, Move* moves) {
 	while (sources) {
 		const Position position = getFirstPos(sources);
 
-		if (game.checkStatus.doubleCheck && !isKing(game.board, position)) {
-			sources &= (sources - 1);
-			continue;
-		}
+		// TODO tutta questa logica andrebbe messa in un generatore di mosse dedicato al caso del re sotto scacco
+		// Va gestita in modo completo a seguito della chiamata di verifyChecks.
+		// Al momento non la chiamo, quindi possiamo commentare provvisoriamente
+		// https://www.chessprogramming.org/Check
+		/*if (game.checkStatus.check) {
+			if (game.checkStatus.doubleCheck && !isKing(game.board, position)) {
+				sources &= (sources - 1);
+				continue;
+			}
+
+			/*if (game.checkStatus.discoveryCheck) {
+				// TODO le mosse ammesse dovrebbero avere solo come destinazione le caselle dei raggi del re
+			} else {
+				// TODO le mosse ammesse dovrebbero avere solo come destinazione la destinazione della mossa precedente (cattura)
+				// oppure essere una mossa del re
+			}#1#
+		}*/
 
 		const Piece piece = getPiece(game.board, position);
 		Rawboard destinations = getDestinationPositions(game.board, position, piece, game.sideToMove);

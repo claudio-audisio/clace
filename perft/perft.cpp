@@ -25,14 +25,14 @@ Result* Perft::runComplete(const bool consoleMode) {
     runCompletePerft(depth);
     result->stopTime();
     result->print(fenGame, consoleMode);
-    cout << "Cache usage " << table->getUsagePercentage() << " % (" << table->size() << " entries)" << endl;
+    cout << "TT usage " << table->getStatistics() << endl;
 
     return result;
 }
 
 void Perft::runCompletePerft(const unsigned int currentDepth) {
     Move* moves;
-    const unsigned int amount = table->getMoves(*game, moves);
+    const unsigned int amount = table->getOnlyMoves(*game, moves);
 
     if (game->checkStatus.check && amount == 0) {
         result->incrementCheckmates((depth - currentDepth) - 1);
@@ -64,14 +64,14 @@ Result* Perft::runBulk() {
     result->stopTime();
     result->incrementNodes(nodes, depth - 1);
     result->print();
-    cout << "Cache usage " << table->getUsagePercentage() << " % (" << table->size() << " entries)" << endl;
+    cout << "TT usage " << table->getStatistics() << endl;
 
     return result;
 }
 
 unsLL Perft::runBulkPerft(const unsigned int currentDepth) {
     Move* moves;
-    const unsigned int amount = table->getMoves(*game, moves);
+    const unsigned int amount = table->getOnlyMoves(*game, moves);
 
     if (currentDepth == 1) {
         return amount;

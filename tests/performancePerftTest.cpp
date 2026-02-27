@@ -44,10 +44,9 @@ protected:
     }
 };
 
+#ifdef PERFORMANCE_TESTS
+
 TEST_F(PerformancePerftTest, InitPerft5BulkTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(INITIAL_FEN_POSITION, 5);
 
     auto result = perft->runBulk();
@@ -58,9 +57,6 @@ TEST_F(PerformancePerftTest, InitPerft5BulkTest) {
 }
 
 TEST_F(PerformancePerftTest, InitPerft6BulkTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(INITIAL_FEN_POSITION, 6);
 
     auto result = perft->runBulk();
@@ -71,9 +67,6 @@ TEST_F(PerformancePerftTest, InitPerft6BulkTest) {
 }
 
 TEST_F(PerformancePerftTest, Pos2Perft5BulkTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_2, 5);
 
     auto result = perft->runBulk();
@@ -84,9 +77,6 @@ TEST_F(PerformancePerftTest, Pos2Perft5BulkTest) {
 }
 
 TEST_F(PerformancePerftTest, Pos4Perft5BulkTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_4, 5);
 
     auto result = perft->runBulk();
@@ -97,9 +87,6 @@ TEST_F(PerformancePerftTest, Pos4Perft5BulkTest) {
 }
 
 TEST_F(PerformancePerftTest, InitPerft4CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(INITIAL_FEN_POSITION, 4);
 
     auto result = perft->runComplete();
@@ -110,9 +97,6 @@ TEST_F(PerformancePerftTest, InitPerft4CompleteTest) {
 }
 
 TEST_F(PerformancePerftTest, InitPerft5CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(INITIAL_FEN_POSITION, 5);
 
     auto result = perft->runComplete();
@@ -123,9 +107,6 @@ TEST_F(PerformancePerftTest, InitPerft5CompleteTest) {
 }
 
 TEST_F(PerformancePerftTest, Pos2Perft4CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_2, 4);
 
     auto result = perft->runComplete();
@@ -136,9 +117,6 @@ TEST_F(PerformancePerftTest, Pos2Perft4CompleteTest) {
 }
 
 TEST_F(PerformancePerftTest, Pos4Perft4CompleteTest) {
-#ifndef PERFORMANCE_TESTS
-    GTEST_SKIP();
-#endif
     perft = new Perft(PERFT_FEN_POSITION_4, 4);
 
     auto result = perft->runComplete();
@@ -148,4 +126,5 @@ TEST_F(PerformancePerftTest, Pos4Perft4CompleteTest) {
     cout << "time: " << result->getElapsed()  << endl;
 }
 
+#endif
 #endif
