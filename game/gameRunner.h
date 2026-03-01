@@ -28,16 +28,17 @@ public:
 	Messenger& messenger = Messenger::getInstance();
 	bool running = false;
 	IGui *gui = nullptr;
+	Move* humanMoves = nullptr;
 
-	GameRunner(Statistics* statistics, GameType gameType = HvsC, const string& fenBoard = "") {
+	GameRunner(Statistics* statistics, const GameType gameType, const string& fenBoard) {
 		pool = new ArrayPool<Move>(1, MAX_MOVES, 1);
 		game = new Game();
 
 		whitePlayer = gameType == CvsC ?
-			new Player(_WHITE, new AlphaBetaEngine(4)) :
+			new Player(_WHITE, new AlphaBetaEngine(5)) :
 			new Player(_WHITE);
 
-		blackPlayer = new Player(_BLACK, new BruteForceEngine(3));
+		blackPlayer = new Player(_BLACK, new AlphaBetaEngine(5));
 
 		this->statistics = statistics;
 		this->fenBoard = fenBoard;
@@ -45,15 +46,11 @@ public:
 
 	void run(IGui *gui = new IGui) {
 		this->gui = gui;
-
-		if (fenBoard.empty()) {
-			game->init();
-		} else {
-			game->initFromFEN(fenBoard);
-		}
-
+		game->initFromFEN(fenBoard);
 		game->initPlayers(whitePlayer, blackPlayer);
+
 		messenger.send(MSG_ALL, "gameRunner", format("new game: {}", game->getDescription()));
+
 		Evaluation eval;
 		running = true;
 		gui->onBoardChange();
@@ -90,21 +87,14 @@ public:
 
 	Evaluation processHumanMove() {
 		game->verifyChecks();
-		gui->setGameInfo(game->sideToMove,
-				game->checkStatus.check && !game->checkStatus.checkmate,
-				game->fullMoves,
-				game->currentEvaluation.value,
-				FEN::gameToFEN(*game),
-				moveToString(game->lastMove),
-				game->whitePlayer->getMoveTime(),
-				game->blackPlayer->getMoveTime());
-
-		Move* moves = pool->getArray();
-		const unsigned int amount = generateLegalMoves(*game, moves);
+		gui->setGameInfo(*game);
+		humanMoves = pool->getArray();
+		const unsigned int amount = generateLegalMoves(*game, humanMoves);
 		const EndGameType endGame = game->checkEndGame(amount);
 
 		if (endGame != NONE) {
 			game->getCurrentPlayer()->stopMoveTime();
+			gui->notifyEndGame(endGame);
 			return {0, 0, endGame, 0};
 		}
 
@@ -129,7 +119,7 @@ public:
 
 			game->getCurrentPlayer()->stopMoveTime();
 
-			if (isPresent(move, moves, amount)) {
+			if (isPresent(move, humanMoves, amount)) {
 				break;
 			}
 
@@ -142,7 +132,7 @@ public:
 		game->applyMove(move);
 		game->currentEvaluation = game->evaluator->evaluate(*game, 0);
 
-		pool->release(moves);
+		pool->release(humanMoves);
 
 		return game->currentEvaluation;
 	}
@@ -199,6 +189,7 @@ public:
 
 	void stop() {
 		running = false;
+		pool->release(humanMoves);
 		delete game;
 		delete pool;
 		game = nullptr;

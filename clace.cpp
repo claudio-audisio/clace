@@ -19,7 +19,15 @@ unsigned int getMode(char* mode) {
 		return 2;
 	}
 
-	cout << "Usage: clace [|console|gui]" << endl;
+	if (strcmp(mode, "--help") == 0) {
+		cout << "Usage:" << endl;
+		cout << "\t'clace' with no parameters for UCI interface" << endl;
+		cout << "\t'clace console' for command line interface" << endl;
+		cout << "\t'clace gui' for graphical user interface" << endl;
+	} else {
+		cout << "Usage: clace [console|gui]" << endl;
+		cout << "Try 'clace --help' for more information." << endl;
+	}
 
 	exit(0);
 }
@@ -172,7 +180,7 @@ void Clace::stopGame() {
 void Clace::newHumanGame(const string& fenGame) {
 	stopGame();
 	statistics = new Statistics(1);
-	gameRunner = fenGame.empty() ? new GameRunner(statistics) : new GameRunner(statistics, HvsC, fenGame);
+	gameRunner = new GameRunner(statistics, HvsC, fenGame);
 	gameFuture = async(launch::async, [&]() {
 		return gameRunner->run();
 	});
@@ -190,7 +198,7 @@ void Clace::newCpuGame(int gamesAmount) {
 	vector<future<void>> futures;
 
 	for (int i = 0; i < gamesAmount; i++) {
-		auto game = new GameRunner(statistics, CvsC);
+		auto game = new GameRunner(statistics, CvsC, INITIAL_FEN_POSITION);
 		games.push_back(game);
 		futures.push_back(async(launch::async, [game]() {
 			return game->run();

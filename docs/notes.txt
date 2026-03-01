@@ -1,3 +1,8 @@
+
+GUI
+    - Rivedere panel
+    - Rivedere grafica del fen
+
 NEXT ITEM
 
     - Nell'evaluation e' contenuta la PV, il problema e' che faccio una montagna di new/delete (una per nodo)

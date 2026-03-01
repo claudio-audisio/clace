@@ -22,6 +22,7 @@ class Button {
     void init(Vector2 position, Vector2 size, Color bgColor, Color textColor, const std::string& text, const Font& font);
     void init(Vector2 position, Vector2 size, Color bgColor, Color textColor, const Texture2D& texture, float scale);
     void draw() const;
+    void draw2() const;
     bool isPressed(Vector2 mousePos) const;
 
 };

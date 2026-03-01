@@ -2,15 +2,16 @@
 #include "guiConstants.h"
 #include "../../game/gameRunner.h"
 #include "../../clace.h"
+#include "utils.h"
 
 Gui::Gui() {
 }
 
 void Gui::init() {
-    newGame();
+    newGame(INITIAL_FEN_POSITION);
     resetGameInfo();
     InitWindow(WINDOW_W, WINDOW_H, TITLE);
-    SetTargetFPS(60);
+    SetTargetFPS(FPS);
     loadFonts();
     loadTextures();
     loadButtons();
@@ -22,21 +23,14 @@ void Gui::init() {
 
 void Gui::run() {
     init();
-    int selectedCell = -1;
 
     while (!WindowShouldClose())
     {
-        const float dt = GetFrameTime();
-
-        // cell selection
-        /*if (gameRunner && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            const int newSelection = getCell(GetMousePosition());
-            selectedCell = newSelection == selectedCell ? -1 : newSelection;
-            logger.log(format("cell selected: {}", selectedCell));
-        }*/
-
         checkButtonPressed();
-        dragAndDropPiece();
+
+        if (endGame == NONE) {
+            dragAndDropPiece();
+        }
 
         BeginDrawing();
         ClearBackground(BG_COLOR);
@@ -105,6 +99,7 @@ void Gui::drawBoard() const {
         Color cellColor = ((i % 2) + ((i / 8) % 2)) % 2 == 0 ? CELL_COLOR_1 : CELL_COLOR_2;
         DrawRectangleV(getStartPos(i), {CELL_SIZE, CELL_SIZE}, cellColor);
     }
+
     DrawTextEx(font, "ABCDEFGH", {BOARD_START_X + 40, BOARD_END_Y + 10}, 30, CELL_SIZE - 13.5, ColorAlpha(RAYWHITE, 0.8));
 
     for (int i = 0; i < 8; i++) {
@@ -112,7 +107,7 @@ void Gui::drawBoard() const {
     }
 }
 
-void Gui::drawPieces() const {
+void Gui::drawPieces() {
     for (int i = 0; i < 64; i++) {
         if (piecePositions[i]) {
             Vector2 piecePosition;
@@ -127,12 +122,18 @@ void Gui::drawPieces() const {
                 piecePosition.y = startCell.y + 15;
             }
 
-            // TODO far vedere la mossa del computer lentamente
-            /*if (i == computerCellDestination) {
+            if (i == computerCellDestination) {
+                computerMovePosition.x += computerMoveDelta.x;
+                computerMovePosition.y += computerMoveDelta.y;
 
-            } else {*/
+                if (getCell(computerMovePosition) == i) {
+                    computerCellDestination = -1;
+                } else {
+                    DrawTextureEx(pieces[piecePositions[i] - 1], computerMovePosition, 0, PIECE_SCALE, ColorAlpha(WHITE, PIECE_ALPHA));
+                }
+            } else {
                 DrawTextureEx(pieces[piecePositions[i] - 1], piecePosition, 0, PIECE_SCALE, ColorAlpha(WHITE, PIECE_ALPHA));
-            //}
+            }
         }
     }
 }
@@ -142,8 +143,8 @@ void Gui::drawInfoPanel() {
     DrawTextEx(font, format("{} to move", sideToMove ? "black" : "white").c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing}, INFO_FONT_SIZE, 1, RAYWHITE);
     DrawTextEx(font, format("time {} - {}", whiteTime, blackTime).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 2}, INFO_FONT_SIZE, 1, RAYWHITE);
     DrawTextEx(font, format("{} moves", moves).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 3}, INFO_FONT_SIZE, 1, RAYWHITE);
-    DrawTextEx(font, format("evaluation {:.2f}", evaluation).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 4}, INFO_FONT_SIZE, 1, RAYWHITE);
     DrawTextEx(font, format("last move {}", lastMove).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 5}, INFO_FONT_SIZE, 1, RAYWHITE);
+    DrawTextEx(font, format("evaluation {}", evalValueToString(evaluation)).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 4}, INFO_FONT_SIZE, 1, RAYWHITE);
 
     if (check) {
         DrawTextEx(font, format("CHECK!", fen).c_str(), { INFO_START_X, INFO_START_Y + BUTTON_H + lineSpacing * 6}, INFO_FONT_SIZE, 1, RAYWHITE);
@@ -160,14 +161,15 @@ void Gui::drawSelection(const int selectedCell) const {
 }
 
 void Gui::drawButtons() const {
-    newButton.draw();
-    fenButton.draw();
-    hintButton.draw();
-    noneButton.draw();
+    newButton.draw2();
+    fenButton.draw2();
+    hintButton.draw2();
+    noneButton.draw2();
 }
 
 void Gui::loadFonts() {
-    font = LoadFont("../ui/gui/asset/NotoSans-SemiBold.ttf");
+    font = LoadFontEx("../ui/gui/asset/NotoSans-SemiBold.ttf", 30, nullptr, 0);
+    SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
 }
 
 void Gui::loadTextures() {
@@ -203,27 +205,35 @@ void Gui::loadInfo() {
 }
 
 void Gui::onBoardChange(const bool isComputerMove /* = false */) {
-    // TODO far vedere la mossa del computer lentamente
-    /*if (isComputerMove) {
+    if (isComputerMove) {
         Position computerCellSource = getSourcePosition(gameRunner->game->lastMove);
         computerCellDestination = getDestinationPosition(gameRunner->game->lastMove);
-        computerPiecePosition = getStartPos(computerCellSource);
-        // TODO qua prendo le coordinate iniziale del pezzo da far muove
-        // devo calcolare le coordinate finali e il delta di movimento (x e y)
-        // quando a forza di aggiugnere i delta arrivo a destinazione ho finito di fare il movimento
-    }*/
+        Vector2 startPos = getStartPos(computerCellSource);
+        Vector2 endPos = getStartPos(computerCellDestination);
+        const float dist = distance(startPos, endPos);
+        const float time = dist / MOVE_SPEED;
+
+        computerMoveDelta = {(endPos.x - startPos.x) / (FPS * time), (endPos.y - startPos.y) / (FPS * time)};
+        computerMovePosition.x = startPos.x + 15;
+        computerMovePosition.y = startPos.y + 15;
+
+        /*cout << "source: " << computerCellSource << " --> " << computerMovePosition.x << "-" << computerMovePosition.y << endl;
+        cout << "dest: " << computerCellDestination << " --> " << endPos.x << "-" << endPos.y << endl;
+        cout << "delta: " << computerMoveDelta.x << "-" << computerMoveDelta.y << endl;*/
+    }
 
     memcpy(piecePositions, gameRunner->game->board->piecePositions, sizeof(Piece) * 64);
 }
 
-void Gui::newGame(const string& fenGame /*= ""*/) {
+void Gui::newGame(const string& fenGame) {
     panel.clean();
     memset(piecePositions, Empty, sizeof(piecePositions));
     statistics = new Statistics(1, true);
-    gameRunner = fenGame.empty() ? new GameRunner(statistics) : new GameRunner(statistics, HvsC, fenGame);
+    gameRunner = new GameRunner(statistics, HvsC, fenGame);
     gameFuture = async(launch::async, [&]() {
         return gameRunner->run(this);
     });
+    endGame = NONE;
 }
 
 void Gui::closeGame() const {
@@ -238,7 +248,7 @@ void Gui::dragAndDropPiece() {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             const int selection = getCell(GetMousePosition());
 
-            if (isWhite(gameRunner->game->board, selection)) {
+            if (selection != -1 && isWhite(gameRunner->game->board, selection)) {
                 cellSelected = selection;
             }
         } else {
@@ -262,10 +272,10 @@ void Gui::dragAndDropPiece() {
 }
 
 void Gui::makeMove(const Piece piece) {
+    panel.write(SEPARATION_LINE);
     piecePositions[cellDestination] = piece;
     piecePositions[cellSelected] = Empty;
     gameRunner->setHumanMove(indexToCoords(cellSelected)+indexToCoords(cellDestination));
-    panel.clean();
     cellSelected = cellDestination = -1;
 }
 
@@ -280,6 +290,7 @@ void Gui::unloadTextures() const {
 void Gui::checkButtonPressed() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         const Vector2 mousePos = GetMousePosition();
+        //panel.write(format("{}-{}", mousePos.x, mousePos.y));
 
         if (showPromotionPanel) {
             const Vector2 pos = getPromotionPanelPosition();
@@ -325,7 +336,7 @@ void Gui::checkButtonPressed() {
 
         if (newButton.isPressed(mousePos)) {
             closeGame();
-            newGame();
+            newGame(INITIAL_FEN_POSITION);
             return;
         }
 
@@ -335,6 +346,7 @@ void Gui::checkButtonPressed() {
         }
 
         if (hintButton.isPressed(mousePos)) {
+            panel.write(SEPARATION_LINE);
             Clace::manageNextMove(gameRunner, this);
         }
     }
@@ -344,22 +356,22 @@ void Gui::showMessage(const string& message) {
     panel.write(message);
 }
 
-void Gui::setGameInfo(Side sideToMove, bool check, int moves, double evaluation, const std::string& fen, const std::string& lastMove, const std::string& whiteTime, const std::string& blackTime) {
-    this->sideToMove = sideToMove;
-    this->check = check;
-    this->moves = moves;
-    this->evaluation = evaluation;
-    this->fen = fen;
-    this->lastMove = lastMove;
-    this->whiteTime = whiteTime;
-    this->blackTime = blackTime;
+void Gui::setGameInfo(const Game& game) {
+    sideToMove = game.sideToMove;
+    check = game.checkStatus.check && !game.checkStatus.checkmate;
+    moves = game.fullMoves;
+    evaluation = game.currentEvaluation;
+    fen = FEN::gameToFEN(game);
+    lastMove = moveToString(game.lastMove);
+    whiteTime = game.whitePlayer->getMoveTime();
+    blackTime = game.blackPlayer->getMoveTime();
 }
 
 void Gui::resetGameInfo() {
     this->sideToMove = _WHITE;
     this->check = false;
     this->moves = 0;
-    this->evaluation = 0.0;
+    this->evaluation = NO_EVAL;
     this->fen = "";
     this->lastMove = "";
     this->whiteTime = "00:00:00";
@@ -368,4 +380,12 @@ void Gui::resetGameInfo() {
 
 Piece Gui::choosePromotionType() {
     return promotion;
+}
+
+void Gui::notifyEndGame(const EndGameType endGame) {
+    this->endGame = endGame;
+
+    if (endGame != NONE) {
+        check = false;
+    }
 }

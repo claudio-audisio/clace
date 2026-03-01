@@ -11,6 +11,7 @@ class AbstractEngine : public IEngine {
 public:
     string description;
     unsigned int depth;
+    unsigned int nodes;
     TranspositionTable *table = nullptr;
     Evaluator *evaluator = nullptr;
     Messenger &messenger = Messenger::getInstance();
@@ -36,6 +37,7 @@ public:
 
     Evaluation calculateMove(Game& game) override {
         messenger.send(MSG_LOG, description, format("{} evaluation at depth {} ({})", game.isWhiteToMove() ? "white" : "black", depth, game.fullMoves));
+        nodes = 0;
         auto time = chrono::steady_clock::now();
 
         Evaluation best = _calculateMove(game);
@@ -44,8 +46,9 @@ public:
             best.value = -best.value;
         }
 
-        messenger.send(MSG_ALL, description, format("best: {} ({} ms)", evalToString(best), getElapsedMillis(time)));
-        messenger.send(MSG_ALL, description, format("table: {}", table->getStatistics()));
+        messenger.send(MSG_LOG, description, format("best: {} ({} ms)", evalToString(best), getElapsedMillis(time)));
+        messenger.send(MSG_LOG, description, format("table: {}", table->getStatistics()));
+        messenger.send(MSG_GUI, description, completeInfo(best, nodes, getElapsedMillis(time), table->size()));
 
         return best;
     }

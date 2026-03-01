@@ -38,6 +38,7 @@ public:
 		Evaluation best = {0, LOSS_VALUE * 2, NONE, MAX_DEPTH, nullptr};
 
 		for (unsigned int i = 0; i < amount; i++) {
+			nodes++;
 			game.save();
 			game.applyMove(moves[i]);
 

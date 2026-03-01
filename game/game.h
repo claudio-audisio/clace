@@ -81,6 +81,6 @@ public:
 	Player* whitePlayer = nullptr;
 	Player* blackPlayer = nullptr;
 	Evaluator* evaluator = nullptr;
-	Evaluation currentEvaluation = {0, 0, NONE, 0, nullptr};
+	Evaluation currentEvaluation = NO_EVAL;
 	Messenger& messenger = Messenger::getInstance();
 };

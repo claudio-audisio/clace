@@ -137,6 +137,7 @@ inline Move createMove(const Position sourcePosition, const Position destination
 	return move;
 }
 
+// TODO scrivere test di questo
 inline void decorate(Move& move, const Piece piece, const Position enPassantPosition) {
 	const Position sourcePosition = getSourcePosition(move);
 	const Position destinationPosition = getDestinationPosition(move);
@@ -152,8 +153,8 @@ inline void decorate(Move& move, const Piece piece, const Position enPassantPosi
 	} else if (_isKing(piece)) {
 		// castling
 		setCastling(move,
-					(side == _BLACK && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
-					(side == _WHITE && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
+					(side == _WHITE && sourcePosition == 4 && (destinationPosition == 2 || destinationPosition == 6)) ||
+					(side == _BLACK && sourcePosition == 60 && (destinationPosition == 58 || destinationPosition == 62)));
 	}
 }
 

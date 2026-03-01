@@ -35,6 +35,33 @@ void Button::draw() const {
     }
 }
 
+void Button::draw2() const {
+    // Hover detection
+    bool hovered = CheckCollisionPointRec(GetMousePosition(), {position.x, position.y, size.x, size.y});
+
+    Color currColor = hovered ? bgColor : BLANK;
+    Color borderColor = bgColor;
+    float borderThick = hovered ? 0 : 2;
+
+    DrawRectangleRounded({position.x, position.y, size.x, size.y}, 0.2, 8, currColor);
+    DrawRectangleRoundedLines({position.x, position.y, size.x, size.y}, 0.2, 8, borderColor);
+
+    // Center text
+    Vector2 textSize = MeasureTextEx(font, text.c_str(), BUTTON_FONT_SIZE, 1);
+    Vector2 textPos = {
+        position.x + (size.x - textSize.x) / 2,
+        position.y + (size.y - textSize.y) / 2
+    };
+
+    Color currTextColor = hovered ? textColor : bgColor;
+
+    if (hasTexture) {
+        DrawTextureEx(texture, textPos, 0, scale, currTextColor);
+    } else {
+        DrawTextEx(font, text.c_str(), textPos, BUTTON_FONT_SIZE, 1, currTextColor);
+    }
+}
+
 bool Button::isPressed(const Vector2 mousePos) const {
     return CheckCollisionPointRec(mousePos, rectangle);
 }

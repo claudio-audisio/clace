@@ -2,6 +2,7 @@
 
 
 #define TITLE "Clace"
+#define FPS 60
 #define BG_COLOR CLITERAL(Color){ 43, 43, 43, 255 }
 #define CELL_COLOR_1 CLITERAL(Color){ 235, 236, 208, 255 }
 #define CELL_COLOR_2 CLITERAL(Color){ 115, 149, 82, 255 }
@@ -28,6 +29,7 @@
 #define PANEL_START_Y (INFO_START_Y + BOARD_H / 2)
 #define PANEL_W (WINDOW_W - PADDING - BOARD_W - PADDING - PADDING)
 #define PANEL_H (WINDOW_H - PADDING - BOARD_H / 2 - PADDING)
+#define PANEL_MAX_ROWS 19
 #define FEN_PANEL_W 900
 #define FEN_PANEL_H 60
 #define FEN_PANEL_X ((WINDOW_W - FEN_PANEL_W) / 2)
@@ -35,3 +37,6 @@
 #define BUTTON_W 95
 #define BUTTON_H 30
 #define BUTTON_FONT_SIZE 28
+#define MOVE_SPEED BOARD_W
+#define EMPTY_LINE ""
+#define SEPARATION_LINE " - - - - - - - - - "

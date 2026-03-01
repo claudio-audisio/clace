@@ -24,6 +24,7 @@ public:
 			return evaluator->evaluateEndGame(game, 0, endGame);
 		}
 
+		nodes++;
 		const unsigned int index = getRandom(amount);
 
 		return {moves[index], 0, NONE, 0, nullptr};

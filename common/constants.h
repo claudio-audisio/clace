@@ -191,3 +191,6 @@ inline const string FEN_MATE_IN_THREE = "8/4k3/1p6/3r4/8/2q5/8/5K2 b - - 0 1";
 
 // array pool
 #define POOL_INCREMENT_RATIO    0.2     // 20% of pool size increment each time the pool is empty
+
+// evaluation
+#define NO_EVAL {0, 0, NONE, 0, nullptr};
